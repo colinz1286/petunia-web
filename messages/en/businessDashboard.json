@@ -1,0 +1,21 @@
+{
+  "greeting": "Welcome to your business dashboard",
+  "verified": "Verified",
+  "not_verified": "Not Verified",
+  "verify_now": "Verify Now",
+  "upload_logo": "Upload Logo",
+  "uploading_logo": "Uploading...",
+  "dogs_on_property": "Dogs on Property",
+  "upcoming_reservations": "Upcoming Reservations",
+  "pending_requests": "Pending Requests",
+  "client_management": "Client Management",
+  "manage_employees": "Manage Employees",
+  "schedule_employees": "Schedule Employees",
+  "state_paperwork_log": "State Paperwork Log",
+  "business_settings": "Business Settings",
+  "logout": "Logout",
+  "verify_your_business": "Verify Your Business",
+  "business_license_number": "Business License Number",
+  "submit_for_verification": "Submit for Verification",
+  "cancel_button": "Cancel"
+}
