@@ -14,7 +14,6 @@ import {
   where,
   getDocs,
   doc,
-  getDoc,
   updateDoc
 } from 'firebase/firestore';
 import {
@@ -26,7 +25,6 @@ import {
 
 import { initializeApp } from 'firebase/app';
 import Image from 'next/image';
-
 import { useTranslations } from 'next-intl';
 
 const firebaseConfig = {
@@ -47,25 +45,23 @@ export default function BoardingAndDaycareDashboardPage() {
   const router = useRouter();
   const t = useTranslations('businessDashboard');
 
-  const [userId, setUserId] = useState<string>('');
-  const [businessId, setBusinessId] = useState<string>('');
-  const [isVerified, setIsVerified] = useState<boolean>(false);
-  const [logoUrl, setLogoUrl] = useState<string>('');
+  const [userId, setUserId] = useState('');
+  const [businessId, setBusinessId] = useState('');
+  const [isVerified, setIsVerified] = useState(false);
+  const [logoUrl, setLogoUrl] = useState('');
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [licenseFile, setLicenseFile] = useState<File | null>(null);
+  const [licenseNumber, setLicenseNumber] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [showVerifyForm, setShowVerifyForm] = useState(false);
 
   const [enableEmployeeManagement, setEnableEmployeeManagement] = useState(false);
   const [enableStatePaperwork, setEnableStatePaperwork] = useState(false);
 
-  const [showVerifyForm, setShowVerifyForm] = useState(false);
-  const [licenseNumber, setLicenseNumber] = useState('');
-  const [licenseFile, setLicenseFile] = useState<File | null>(null);
-
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        router.push('/loginsignup');
+        router.push('/en/loginsignup');
         return;
       }
       setUserId(user.uid);
@@ -129,13 +125,15 @@ export default function BoardingAndDaycareDashboardPage() {
 
   const logout = async () => {
     await signOut(auth);
-    router.push('/loginsignup');
+    router.push('/en/loginsignup');
   };
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)] px-4 py-6">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold text-[color:var(--color-accent)] mb-6">{t('greeting')}</h1>
+        <h1 className="text-4xl font-bold text-[color:var(--color-accent)] text-center mb-6">
+          {t('greeting')}
+        </h1>
 
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
@@ -154,33 +152,31 @@ export default function BoardingAndDaycareDashboardPage() {
             )}
           </div>
 
-          <div>
-            <label className="cursor-pointer">
-              <input
-                type="file"
-                accept=".jpg,.jpeg,.png"
-                className="hidden"
-                onChange={(e) => {
-                  if (e.target.files?.[0]) {
-                    setLogoFile(e.target.files[0]);
-                  }
-                }}
+          <label className="cursor-pointer">
+            <input
+              type="file"
+              accept=".jpg,.jpeg,.png"
+              className="hidden"
+              onChange={(e) => {
+                if (e.target.files?.[0]) {
+                  setLogoFile(e.target.files[0]);
+                }
+              }}
+            />
+            {logoUrl ? (
+              <Image
+                src={logoUrl}
+                alt="Business Logo"
+                width={80}
+                height={80}
+                className="rounded-full border"
               />
-              {logoUrl ? (
-                <Image
-                  src={logoUrl}
-                  alt="Business Logo"
-                  width={80}
-                  height={80}
-                  className="rounded-full border"
-                />
-              ) : (
-                <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
-                  +
-                </div>
-              )}
-            </label>
-          </div>
+            ) : (
+              <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+                +
+              </div>
+            )}
+          </label>
         </div>
 
         {logoFile && (
@@ -193,23 +189,23 @@ export default function BoardingAndDaycareDashboardPage() {
         )}
 
         <div className="space-y-3">
-          <DashboardLink href="/app/boardinganddaycare-dogsonproperty" label={t('dogs_on_property')} />
-          <DashboardLink href="/app/boardinganddaycare-upcomingreservations" label={t('upcoming_reservations')} />
-          <DashboardLink href="/app/boardinganddaycare-pendingrequests" label={t('pending_requests')} />
-          <DashboardLink href="/app/boardinganddaycare-clientmanagement" label={t('client_management')} />
+          <DashboardLink href="/app/boardinganddaycare-dogsonproperty" label={t('dogs_on_property')} disabled={!isVerified} />
+          <DashboardLink href="/app/boardinganddaycare-upcomingreservations" label={t('upcoming_reservations')} disabled={!isVerified} />
+          <DashboardLink href="/app/boardinganddaycare-pendingrequests" label={t('pending_requests')} disabled={!isVerified} />
+          <DashboardLink href="/app/boardinganddaycare-clientmanagement" label={t('client_management')} disabled={!isVerified} />
 
           {enableEmployeeManagement && (
             <>
-              <DashboardLink href="/app/boardinganddaycare-manageemployees" label={t('manage_employees')} />
-              <DashboardLink href="/app/boardinganddaycare-scheduleemployees" label={t('schedule_employees')} />
+              <DashboardLink href="/app/boardinganddaycare-manageemployees" label={t('manage_employees')} disabled={!isVerified} />
+              <DashboardLink href="/app/boardinganddaycare-scheduleemployees" label={t('schedule_employees')} disabled={!isVerified} />
             </>
           )}
 
           {enableStatePaperwork && (
-            <DashboardLink href="/app/boardinganddaycare-statepaperworklog" label={t('state_paperwork_log')} />
+            <DashboardLink href="/app/boardinganddaycare-statepaperworklog" label={t('state_paperwork_log')} disabled={!isVerified} />
           )}
 
-          <DashboardLink href="/app/boardinganddaycare-businesssettings" label={t('business_settings')} />
+          <DashboardLink href="/app/boardinganddaycare-businesssettings" label={t('business_settings')} disabled={!isVerified} />
 
           <button
             onClick={logout}
@@ -258,10 +254,21 @@ export default function BoardingAndDaycareDashboardPage() {
   );
 }
 
-function DashboardLink({ href, label }: { href: string; label: string }) {
+import Link from 'next/link';
+
+function DashboardLink({
+  href,
+  label
+}: {
+  href: string;
+  label: string;
+}) {
   return (
-    <a href={href} className="block w-full bg-[color:var(--color-accent)] text-white text-center py-2 px-4 rounded hover:opacity-90">
+    <Link
+      href={href}
+      className="block w-full text-white bg-[#2c4a30] hover:opacity-90 py-2 px-4 rounded text-center"
+    >
       {label}
-    </a>
+    </Link>
   );
 }

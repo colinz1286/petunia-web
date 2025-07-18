@@ -1,6 +1,13 @@
 import createNextIntlPlugin from 'next-intl/plugin';
-import intlConfig from './next-intl.config';
+import nextIntlConfig from './next-intl.config';
 
-const withNextIntl = createNextIntlPlugin(intlConfig);
+const withNextIntl = createNextIntlPlugin(nextIntlConfig);
 
-export default withNextIntl({});
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    domains: ['firebasestorage.googleapis.com'],
+  },
+};
+
+export default withNextIntl(nextConfig);

@@ -1,0 +1,21 @@
+{
+  "dashboard_welcome": "Welcome Back, {firstName}!",
+  "book_services_title": "Book Services",
+  "upcoming_appointments": "Upcoming Appointments",
+  "reminders": "Reminders",
+  "notifications": "Notifications",
+  "search_businesses": "Search Businesses",
+  "my_pets": "My Pets",
+  "edit_profile": "Edit Profile",
+  "logout": "Logout",
+  "uploading_image": "Uploading Image...",
+  "upload_image": "Upload Profile Image",
+  "invite_banner_title": "You have a pending invite from:",
+  "accept": "Accept",
+  "decline": "Decline",
+  "employee_tools": "Employee Tools",
+  "view_assigned_schedule": "View Schedule (Coming Soon)",
+  "upcoming_reservations": "Upcoming Reservations",
+  "dogs_on_property": "Dogs on Property",
+  "feature_coming_soon": "This feature is coming soon!"
+}
