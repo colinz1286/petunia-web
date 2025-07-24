@@ -1,28 +1,33 @@
 import { getRequestConfig } from 'next-intl/server';
+import { routing } from './routing';
 
-export default getRequestConfig(async ({ request }) => {
-  const defaultLocale = 'en';
-  const supportedLocales = ['en'];
+export default getRequestConfig(async ({ locale }) => {
+  const safeLocale = (locale ?? routing.defaultLocale) as (typeof routing.locales)[number];
 
-  const locale = request?.headers.get('x-next-intl-locale') || defaultLocale;
-
-  if (!supportedLocales.includes(locale)) {
-    throw new Error(`Unsupported locale: ${locale}`);
+  if (!routing.locales.includes(safeLocale)) {
+    throw new Error(`Unsupported locale: ${safeLocale}`);
   }
 
-  const messages: Record<string, any> = {};
-
-  try {
-    messages.businessDashboard = (await import(`../../messages/${locale}/businessDashboard.json`)).default;
-    messages.boardingAndDaycareBusinessSettings = (await import(`../../messages/${locale}/boardingAndDaycareBusinessSettings.json`)).default;
-    messages.individualDashboard = (await import(`../../messages/${locale}/individualDashboard.json`)).default;
-    messages.individualEditProfile = (await import(`../../messages/${locale}/individualEditProfile.json`)).default;
-  } catch (error) {
-    console.warn('⚠️ Failed to load translations for locale:', locale, error);
-  }
+  const messages = {
+    businessDashboard: (await import(`../../messages/${safeLocale}/businessDashboard.json`)).default,
+    boardingAndDaycareBusinessSettings: (await import(`../../messages/${safeLocale}/boardingAndDaycareBusinessSettings.json`)).default,
+    individualDashboard: (await import(`../../messages/${safeLocale}/individualDashboard.json`)).default,
+    individualEditProfile: (await import(`../../messages/${safeLocale}/individualEditProfile.json`)).default,
+    individualSearchBusinesses: (await import(`../../messages/${safeLocale}/individualSearchBusinesses.json`)).default,
+    individualSendClientRequest: (await import(`../../messages/${safeLocale}/individualSendClientRequest.json`)).default,
+    individualReminders: (await import(`../../messages/${safeLocale}/individualReminders.json`)).default,
+    individualMyPets: (await import(`../../messages/${safeLocale}/individualMyPets.json`)).default,
+    individualAddEditPet: (await import(`../../messages/${safeLocale}/individualAddEditPet.json`)).default,
+    individualNotifications: (await import(`../../messages/${safeLocale}/individualNotifications.json`)).default,
+    individualUpcomingAppointments: (await import(`../../messages/${safeLocale}/individualUpcomingAppointments.json`)).default,
+    individualBookServices: (await import(`../../messages/${safeLocale}/individualBookServices.json`)).default,
+    individualSelectService: (await import(`../../messages/${safeLocale}/individualSelectService.json`)).default,
+    individualBookDaycare: (await import(`../../messages/${safeLocale}/individualBookDaycare.json`)).default,
+    individualBookBoarding: (await import(`../../messages/${safeLocale}/individualBookBoarding.json`)).default // ✅ Added this line
+  };
 
   return {
-    locale,
+    locale: safeLocale,
     messages
   };
 });

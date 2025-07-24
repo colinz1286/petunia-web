@@ -1,0 +1,27 @@
+{
+  "upcoming_appointments_title": "Upcoming Appointments",
+  "loading_label": "Loading appointments...",
+  "no_upcoming_appointments": "You have no upcoming appointments.",
+  "back_to_dashboard": "Back to Dashboard",
+
+  "boarding_label": "Boarding",
+  "daycare_label": "Daycare",
+
+  "appointment_date": "Appointment Date",
+  "boarding_end_label": "Pick-Up Date",
+  "business_label": "Business",
+  "address_label": "Address",
+  "pets_label": "Pets",
+  "grooming_addons_title": "Grooming Add-Ons",
+  "grooming_addon_detail": "{petName}: {addons}",
+
+  "cancel_appointment_button": "Cancel Appointment",
+  "canceling_label": "Canceling...",
+
+  "late_cancel_alert_title": "Too Late to Cancel Online",
+  "late_cancel_message": "This appointment is within 24 hours. Please call the business directly to cancel.",
+  "call_business_button": "Call Business",
+
+  "unknown_business": "Unknown Business",
+  "unknown_pet_name": "Unknown Pet"
+}

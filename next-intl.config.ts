@@ -1,5 +1,5 @@
-export default {
-  locales: ['en'],
-  defaultLocale: 'en',
-  getRequestConfig: () => import('./src/i18n/request')
+module.exports = {
+  experimental: {
+    requestConfigPath: './src/i18n/request.ts'
+  }
 };

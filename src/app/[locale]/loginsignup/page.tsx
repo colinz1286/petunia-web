@@ -60,41 +60,41 @@ export default function LoginSignupPage() {
 
       const userDoc = await getDoc(doc(db, 'users', uid));
       if (userDoc.exists()) {
-      router.push(`/${locale}/individualdashboard`);
-      return;
+        router.push(`/${locale}/individualdashboard`);
+        return;
+      }
+
+      setLoginError('Account found, but no matching profile was detected.');
+    } catch (error: any) {
+      console.error('❌ Login error:', error);
+      switch (error.code) {
+        case 'auth/user-not-found':
+          setLoginError('No user found with that email.');
+          break;
+        case 'auth/wrong-password':
+          setLoginError('Incorrect password.');
+          break;
+        case 'auth/invalid-email':
+          setLoginError('Invalid email address.');
+          break;
+        default:
+          setLoginError('Login failed. Please try again.');
+      }
     }
 
-     setLoginError('Account found, but no matching profile was detected.');
-   } catch (error: any) {
-     console.error('❌ Login error:', error);
-     switch (error.code) {
-       case 'auth/user-not-found':
-         setLoginError('No user found with that email.');
-         break;
-       case 'auth/wrong-password':
-         setLoginError('Incorrect password.');
-         break;
-       case 'auth/invalid-email':
-         setLoginError('Invalid email address.');
-         break;
-       default:
-         setLoginError('Login failed. Please try again.');
-     }
-   }
-
-   setIsLoggingIn(false);
- };
+    setIsLoggingIn(false);
+  };
 
   return (
     <main className="min-h-screen bg-[#f6efe4] text-[#2c4a30] font-sans flex flex-col items-center justify-start px-4 py-10">
-      <div className="w-full max-w-md space-y-6 text-center">
+      <div className="w-full max-w-xs sm:max-w-md space-y-6 text-center">
         <img
           src="/petunia_logo.png"
           alt="Petunia Logo"
           className="mx-auto w-40 h-auto"
         />
 
-        <p className="italic text-gray-600 text-lg">
+        <p className="italic text-gray-600 text-lg leading-relaxed">
           The perfect app for your business.<br />
           The perfect world for your pet.
         </p>
@@ -105,7 +105,7 @@ export default function LoginSignupPage() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border-2 border-gray-300 rounded outline-none"
+            className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm"
           />
 
           <input
@@ -113,13 +113,13 @@ export default function LoginSignupPage() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border-2 border-gray-300 rounded outline-none"
+            className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm"
           />
 
           <button
             onClick={handleLogin}
             disabled={isLoggingIn}
-            className="w-full bg-[#2c4a30] text-white py-2 rounded hover:bg-[#1e3624] transition"
+            className="w-full bg-[#2c4a30] text-white py-2 rounded hover:bg-[#1e3624] transition text-sm"
           >
             {isLoggingIn ? 'Logging in...' : 'Log In'}
           </button>
@@ -130,9 +130,7 @@ export default function LoginSignupPage() {
         </div>
 
         <div className="text-sm text-center space-y-2 pt-4">
-          <button className="text-[#2c4a30] underline">
-            Forgot Password?
-          </button>
+          <button className="text-[#2c4a30] underline">Forgot Password?</button>
           <br />
           <Link href={`/${locale}/createnewaccount`} className="text-[#2c4a30] underline">
             Create New Account

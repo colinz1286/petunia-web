@@ -67,7 +67,7 @@ export default function BusinessSignUpPage() {
 
   return (
     <main className="min-h-screen bg-[#f6efe4] text-[#2c4a30] font-sans flex flex-col items-center px-4 py-10">
-      <div className="w-full max-w-xl space-y-6">
+      <div className="w-full max-w-md space-y-6 px-2 sm:px-4">
         <h1 className="text-3xl font-bold text-center">Create Business Account</h1>
 
         {/* Owner Info */}
@@ -108,11 +108,10 @@ export default function BusinessSignUpPage() {
             <button
               key={type}
               type="button"
-              className={`w-full px-4 py-3 rounded border-2 ${
-                form.businessType === type
+              className={`w-full px-4 py-3 rounded border-2 text-sm ${form.businessType === type
                   ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
                   : 'bg-white text-[#2c4a30] border-gray-400'
-              }`}
+                }`}
               onClick={() => handleChange('businessType', type)}
             >
               {type}
@@ -122,7 +121,10 @@ export default function BusinessSignUpPage() {
 
         {error && <p className="text-red-600 text-sm text-center">{error}</p>}
 
-        <button onClick={handleSubmit} className="w-full bg-[#2c4a30] text-white py-3 rounded hover:bg-[#1e3624] transition mt-6">
+        <button
+          onClick={handleSubmit}
+          className="w-full bg-[#2c4a30] text-white py-3 rounded hover:bg-[#1e3624] transition mt-6 text-sm"
+        >
           Create Account
         </button>
       </div>

@@ -12,6 +12,7 @@ import {
     updateDoc
 } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
+import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 
 const firebaseConfig = {
@@ -30,6 +31,8 @@ const auth = getAuth(app);
 export default function BusinessSettingsPage() {
     const t = useTranslations('boardingAndDaycareBusinessSettings');
     const locale = useLocale();
+
+    const router = useRouter();
 
     const [businessId, setBusinessId] = useState('');
     const [businessName, setBusinessName] = useState('');
@@ -60,7 +63,19 @@ export default function BusinessSettingsPage() {
 
     const [noDaycareDays, setNoDaycareDays] = useState<Set<string>>(new Set());
     const [noBoardingDays, setNoBoardingDays] = useState<Set<string>>(new Set());
-    const [collapsedDays, setCollapsedDays] = useState<Record<string, boolean>>({});
+    const [collapsedDays, setCollapsedDays] = useState<Record<string, boolean>>(() => {
+        const initial: Record<string, boolean> = {};
+        const sections = ['daycare-drop', 'daycare-pickup', 'boarding-drop', 'boarding-pickup'];
+
+        for (const day of ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']) {
+            for (const section of sections) {
+                const key = `${day}-${section}`;
+                initial[key] = true;
+            }
+        }
+
+        return initial;
+    });
 
     const [optionalFeatures, setOptionalFeatures] = useState({
         employeeManagement: false,
@@ -79,60 +94,66 @@ export default function BusinessSettingsPage() {
     });
 
     useEffect(() => {
-        const user = auth.currentUser;
-        if (!user) return;
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (!user) return;
 
-        const loadBusiness = async () => {
-            const q = query(
-                collection(db, 'businesses'),
-                where('ownerId', '==', user.uid)
-            );
-            const snapshot = await getDocs(q);
-            const docSnap = snapshot.docs[0];
-            if (!docSnap) return;
+            const loadBusiness = async () => {
+                const q = query(
+                    collection(db, 'businesses'),
+                    where('ownerId', '==', user.uid)
+                );
+                const snapshot = await getDocs(q);
+                const docSnap = snapshot.docs[0];
+                if (!docSnap) return;
 
-            const data = docSnap.data();
-            setBusinessId(docSnap.id);
-            setBusinessName(data.businessName || '');
-            setBusinessPhone(data.businessPhone || '');
+                const data = docSnap.data();
+                setBusinessId(docSnap.id);
+                setBusinessName(data.businessName || '');
+                setBusinessPhone(data.businessPhone || '');
 
-            const addr = data.businessAddress || {};
-            setBusinessAddress(
-                `${addr.street || ''}, ${addr.city || ''}, ${addr.state || ''} ${addr.zipCode || ''}`
-            );
+                const addr = data.businessAddress || {};
+                setBusinessAddress(
+                    `${addr.street || ''}, ${addr.city || ''}, ${addr.state || ''} ${addr.zipCode || ''}`
+                );
 
-            setOffersBoarding(data.offersBoarding || false);
-            setOffersDaycare(data.offersDaycare || false);
-            setOffersGrooming(data.offersGrooming || false);
-            setOffersTraining(data.offersTraining || false);
-            setGroomingServices(data.groomingServices || ['']);
-            setWaiverRequired(data.waiverRequired || false);
-            setWaiverText(data.waiverText || '');
-            setDropOffTimeRequiredDaycare(data.dropOffTimeRequiredDaycare || false);
-            setPickUpTimeRequiredDaycare(data.pickUpTimeRequiredDaycare || false);
-            setDropOffTimeRequiredBoarding(data.dropOffTimeRequiredBoarding || false);
-            setPickUpTimeRequiredBoarding(data.pickUpTimeRequiredBoarding || false);
+                setOffersBoarding(data.offersBoarding || false);
+                setOffersDaycare(data.offersDaycare || false);
+                setOffersGrooming(data.offersGrooming || false);
+                setOffersTraining(data.offersTraining || false);
+                setGroomingServices(data.groomingServices || ['']);
+                setWaiverRequired(data.waiverRequired || false);
+                setWaiverText(data.waiverText || '');
+                setDropOffTimeRequiredDaycare(data.dropOffTimeRequiredDaycare || false);
+                setPickUpTimeRequiredDaycare(data.pickUpTimeRequiredDaycare || false);
+                setDropOffTimeRequiredBoarding(data.dropOffTimeRequiredBoarding || false);
+                setPickUpTimeRequiredBoarding(data.pickUpTimeRequiredBoarding || false);
 
-            const limits = data.bookingLimits || {};
-            setMaxAppointmentsPerSlot(limits.maxPerTimeSlot || 3);
+                const limits = data.bookingLimits || {};
+                setMaxAppointmentsPerSlot(limits.maxPerTimeSlot || 3);
 
-            setDropOffTimesDaycare(data.dropOffTimesDaycare || {});
-            setPickUpTimesDaycare(data.pickUpTimesDaycare || {});
-            setDropOffTimesBoarding(data.dropOffTimesBoarding || {});
-            setPickUpTimesBoarding(data.pickUpTimesBoarding || {});
-            setNoDaycareDays(new Set(data.noDaycareDays || []));
-            setNoBoardingDays(new Set(data.noBoardingDays || []));
+                setDropOffTimesDaycare(data.dropOffTimesDaycare || {});
+                setPickUpTimesDaycare(data.pickUpTimesDaycare || {});
+                setDropOffTimesBoarding(data.dropOffTimesBoarding || {});
+                setPickUpTimesBoarding(data.pickUpTimesBoarding || {});
+                setNoDaycareDays(new Set(data.noDaycareDays || []));
+                setNoBoardingDays(new Set(data.noBoardingDays || []));
 
-            const features = data.optionalFeatures || {
-                employeeManagement: false,
-                statePaperworkLog: false
+                const features = data.features || {
+                    enableEmployeeManagement: false,
+                    enableStatePaperwork: false
+                };
+                setOptionalFeatures({
+                    employeeManagement: features.enableEmployeeManagement,
+                    statePaperworkLog: features.enableStatePaperwork
+                });
+
+                setLoading(false);
             };
-            setOptionalFeatures(features);
 
-            setLoading(false);
-        };
+            loadBusiness();
+        });
 
-        loadBusiness();
+        return () => unsubscribe();
     }, []);
 
     const updateSetting = async () => {
@@ -175,7 +196,7 @@ export default function BusinessSettingsPage() {
 
         setSaving(false);
     };
-    
+
     const handleGroomingChange = (index: number, value: string) => {
         const updated = [...groomingServices];
         updated[index] = value.slice(0, 50);
@@ -199,7 +220,13 @@ export default function BusinessSettingsPage() {
         day: string,
         time: string
     ) => {
-        const map = {
+        const map: Record<
+            'daycare' | 'boarding',
+            Record<
+                'dropOff' | 'pickUp',
+                [Record<string, string[]>, React.Dispatch<React.SetStateAction<Record<string, string[]>>>]
+            >
+        > = {
             daycare: {
                 dropOff: [dropOffTimesDaycare, setDropOffTimesDaycare],
                 pickUp: [pickUpTimesDaycare, setPickUpTimesDaycare]
@@ -211,35 +238,58 @@ export default function BusinessSettingsPage() {
         };
 
         const [times, setTimes] = map[service][type];
+
         const current = times[day] || [];
         const updated = current.includes(time)
             ? current.filter((t) => t !== time)
             : [...current, time];
+
         setTimes({ ...times, [day]: updated });
     };
 
     return (
-        <div className="max-w-3xl mx-auto px-4 py-8 text-[color:var(--color-foreground)]">
+        <div className="w-full max-w-md mx-auto px-2 sm:px-4 py-8 text-[color:var(--color-foreground)]">
+            {/* Back Button */}
+            <button
+                onClick={() => router.push('/boardinganddaycaredashboard')}
+                className="text-sm text-blue-600 underline mb-4"
+            >
+                ← {t('back_to_dashboard')}
+            </button>
+
+            {/* Page Title */}
             <h1 className="text-3xl font-bold text-[color:var(--color-accent)] mb-6 text-center">
                 {t('business_settings_title')}
             </h1>
 
             {loading ? (
-                <p>{t('loading')}</p>
+                <p className="text-center text-sm">{t('loading')}</p>
             ) : (
                 <>
                     <div className="space-y-3 mb-6">
                         <div>
-                            <label className="font-semibold">{t('business_name_field')}</label>
-                            <input value={businessName} disabled className="w-full border px-3 py-2 rounded bg-gray-100" />
+                            <label className="font-semibold text-sm">{t('business_name_field')}</label>
+                            <input
+                                value={businessName}
+                                disabled
+                                className="w-full border px-3 py-2 rounded bg-gray-100 text-sm"
+                            />
                         </div>
                         <div>
-                            <label className="font-semibold">{t('business_phone_field')}</label>
-                            <input value={businessPhone} disabled className="w-full border px-3 py-2 rounded bg-gray-100" />
+                            <label className="font-semibold text-sm">{t('business_phone_field')}</label>
+                            <input
+                                value={businessPhone}
+                                disabled
+                                className="w-full border px-3 py-2 rounded bg-gray-100 text-sm"
+                            />
                         </div>
                         <div>
-                            <label className="font-semibold">{t('business_address_field')}</label>
-                            <input value={businessAddress} disabled className="w-full border px-3 py-2 rounded bg-gray-100" />
+                            <label className="font-semibold text-sm">{t('business_address_field')}</label>
+                            <input
+                                value={businessAddress}
+                                disabled
+                                className="w-full border px-3 py-2 rounded bg-gray-100 text-sm"
+                            />
                         </div>
                     </div>
 
@@ -255,16 +305,19 @@ export default function BusinessSettingsPage() {
 
                         {offersGrooming && (
                             <div className="mt-4 space-y-2">
-                                <label className="font-semibold">{t('grooming_services_label')}</label>
+                                <label className="font-semibold text-sm">{t('grooming_services_label')}</label>
                                 {groomingServices.map((service, index) => (
-                                    <div key={index} className="flex gap-2">
+                                    <div key={index} className="flex flex-wrap gap-2">
                                         <input
                                             value={service}
                                             onChange={(e) => handleGroomingChange(index, e.target.value)}
-                                            className="w-full border px-3 py-2 rounded"
+                                            className="w-full sm:flex-1 border px-3 py-2 rounded text-sm"
                                         />
                                         {groomingServices.length > 1 && (
-                                            <button onClick={() => removeGroomingService(index)} className="text-red-600 font-bold">
+                                            <button
+                                                onClick={() => removeGroomingService(index)}
+                                                className="text-red-600 font-bold text-lg"
+                                            >
                                                 &times;
                                             </button>
                                         )}
@@ -295,15 +348,15 @@ export default function BusinessSettingsPage() {
                         />
 
                         <div>
-                            <label className="block font-semibold mb-1">{t('waiver_text_label')}</label>
+                            <label className="block font-semibold mb-1 text-sm">{t('waiver_text_label')}</label>
                             <div className="relative">
                                 {waiverText.trim() === '' && (
-                                    <span className="absolute top-2 left-3 text-gray-400 pointer-events-none">
+                                    <span className="absolute top-2 left-3 text-gray-400 pointer-events-none text-sm">
                                         {t('waiver_text_placeholder')}
                                     </span>
                                 )}
                                 <textarea
-                                    className="w-full h-64 border px-3 py-2 rounded resize-none"
+                                    className="w-full h-64 border px-3 py-2 rounded resize-none text-sm"
                                     value={waiverText}
                                     onChange={(e) => setWaiverText(e.target.value)}
                                 />
@@ -316,14 +369,14 @@ export default function BusinessSettingsPage() {
                                 {t('booking_slot_limits_title')}
                             </h2>
 
-                            <label className="block font-semibold mb-2">
+                            <label className="block font-semibold mb-2 text-sm">
                                 {t('max_appointments_picker_label')}
                             </label>
 
                             <select
                                 value={maxAppointmentsPerSlot}
                                 onChange={(e) => setMaxAppointmentsPerSlot(Number(e.target.value))}
-                                className="w-full border px-3 py-2 rounded"
+                                className="w-full border px-3 py-2 rounded text-sm"
                             >
                                 {Array.from({ length: 10 }, (_, i) => i + 1).map((val) => (
                                     <option key={val} value={val}>
@@ -354,9 +407,11 @@ export default function BusinessSettingsPage() {
 
                                     {dropOffTimeRequiredDaycare && (
                                         <div className="mt-10">
-                                            <h3 className="text-lg font-semibold mb-2">{t('daycare_drop_times')}</h3>
+                                            <h3 className="text-lg font-semibold mb-2 text-center">
+                                                {t('daycare_drop_times')}
+                                            </h3>
                                             {daysOfWeek.map((day) => (
-                                                <div key={day} className="mb-4">
+                                                <div key={day} className="mb-6">
                                                     <Toggle
                                                         label={`${t('no_daycare_day')} ${day}`}
                                                         checked={noDaycareDays.has(day)}
@@ -366,23 +421,25 @@ export default function BusinessSettingsPage() {
                                                             setNoDaycareDays(updated);
                                                         }}
                                                     />
+
                                                     {!noDaycareDays.has(day) && (
-                                                        <div>
+                                                        <div className="mt-2 space-y-1">
                                                             <button
                                                                 className="text-sm text-blue-600 underline"
                                                                 onClick={() =>
                                                                     setCollapsedDays((prev) => ({
                                                                         ...prev,
-                                                                        [day]: !prev[day]
+                                                                        [`${day}-daycare-drop`]: !prev[`${day}-daycare-drop`],
                                                                     }))
                                                                 }
                                                             >
-                                                                {collapsedDays[day] ? t('expand') : t('collapse')}
+                                                                {collapsedDays[`${day}-daycare-drop`] ? t('expand') : t('collapse')}
                                                             </button>
-                                                            {!collapsedDays[day] &&
-                                                                timeOptions.map((time) => (
+
+                                                            {!collapsedDays[`${day}-daycare-drop`] &&
+                                                                timeOptions.map((time, i) => (
                                                                     <Toggle
-                                                                        key={time}
+                                                                        key={`${day}-daycare-dropOff-${time}-ddo-${i}`}
                                                                         label={time}
                                                                         checked={(dropOffTimesDaycare[day] || []).includes(time)}
                                                                         onChange={() => toggleDayTime('dropOff', 'daycare', day, time)}
@@ -397,26 +454,29 @@ export default function BusinessSettingsPage() {
 
                                     {pickUpTimeRequiredDaycare && (
                                         <div className="mt-10">
-                                            <h3 className="text-lg font-semibold mb-2">{t('daycare_pickup_times')}</h3>
+                                            <h3 className="text-lg font-semibold mb-2 text-center">
+                                                {t('daycare_pickup_times')}
+                                            </h3>
                                             {daysOfWeek.map((day) => (
-                                                <div key={day} className="mb-4">
+                                                <div key={day} className="mb-6">
                                                     {!noDaycareDays.has(day) && (
-                                                        <div>
+                                                        <div className="mt-2 space-y-1">
                                                             <button
                                                                 className="text-sm text-blue-600 underline"
                                                                 onClick={() =>
                                                                     setCollapsedDays((prev) => ({
                                                                         ...prev,
-                                                                        [`${day}-pickup`]: !prev[`${day}-pickup`]
+                                                                        [`${day}-daycare-pickup`]: !prev[`${day}-daycare-pickup`],
                                                                     }))
                                                                 }
                                                             >
-                                                                {collapsedDays[`${day}-pickup`] ? t('expand') : t('collapse')}
+                                                                {collapsedDays[`${day}-daycare-pickup`] ? t('expand') : t('collapse')}
                                                             </button>
-                                                            {!collapsedDays[`${day}-pickup`] &&
-                                                                timeOptions.map((time) => (
+
+                                                            {!collapsedDays[`${day}-daycare-pickup`] &&
+                                                                timeOptions.map((time, i) => (
                                                                     <Toggle
-                                                                        key={time}
+                                                                        key={`${day}-daycare-pickUp-${time}-dpu-${i}`}
                                                                         label={time}
                                                                         checked={(pickUpTimesDaycare[day] || []).includes(time)}
                                                                         onChange={() => toggleDayTime('pickUp', 'daycare', day, time)}
@@ -446,9 +506,9 @@ export default function BusinessSettingsPage() {
 
                                     {dropOffTimeRequiredBoarding && (
                                         <div className="mt-10">
-                                            <h3 className="text-lg font-semibold mb-2">{t('boarding_drop_times')}</h3>
+                                            <h3 className="text-lg font-semibold mb-2 text-center">{t('boarding_drop_times')}</h3>
                                             {daysOfWeek.map((day) => (
-                                                <div key={day} className="mb-4">
+                                                <div key={day} className="mb-6">
                                                     <Toggle
                                                         label={`${t('no_boarding_day')} ${day}`}
                                                         checked={noBoardingDays.has(day)}
@@ -458,26 +518,31 @@ export default function BusinessSettingsPage() {
                                                             setNoBoardingDays(updated);
                                                         }}
                                                     />
+
                                                     {!noBoardingDays.has(day) && (
-                                                        <div>
+                                                        <div className="mt-2 space-y-1">
+                                                            <p className="font-semibold text-sm text-[color:var(--color-foreground)] mb-1">{day}</p>
                                                             <button
                                                                 className="text-sm text-blue-600 underline"
                                                                 onClick={() =>
                                                                     setCollapsedDays((prev) => ({
                                                                         ...prev,
-                                                                        [`${day}-boarding-drop`]: !prev[`${day}-boarding-drop`]
+                                                                        [`${day}-boarding-drop`]: !prev[`${day}-boarding-drop`],
                                                                     }))
                                                                 }
                                                             >
                                                                 {collapsedDays[`${day}-boarding-drop`] ? t('expand') : t('collapse')}
                                                             </button>
+
                                                             {!collapsedDays[`${day}-boarding-drop`] &&
-                                                                timeOptions.map((time) => (
+                                                                timeOptions.map((time, i) => (
                                                                     <Toggle
-                                                                        key={time}
+                                                                        key={`${day}-boarding-dropOff-${time}-bdo-${i}`}
                                                                         label={time}
                                                                         checked={(dropOffTimesBoarding[day] || []).includes(time)}
-                                                                        onChange={() => toggleDayTime('dropOff', 'boarding', day, time)}
+                                                                        onChange={() =>
+                                                                            toggleDayTime('dropOff', 'boarding', day, time)
+                                                                        }
                                                                     />
                                                                 ))}
                                                         </div>
@@ -489,29 +554,33 @@ export default function BusinessSettingsPage() {
 
                                     {pickUpTimeRequiredBoarding && (
                                         <div className="mt-10">
-                                            <h3 className="text-lg font-semibold mb-2">{t('boarding_pickup_times')}</h3>
+                                            <h3 className="text-lg font-semibold mb-2 text-center">{t('boarding_pickup_times')}</h3>
                                             {daysOfWeek.map((day) => (
-                                                <div key={day} className="mb-4">
+                                                <div key={day} className="mb-6">
                                                     {!noBoardingDays.has(day) && (
-                                                        <div>
+                                                        <div className="mt-2 space-y-1">
+                                                            <p className="font-semibold text-sm text-[color:var(--color-foreground)] mb-1">{day}</p>
                                                             <button
                                                                 className="text-sm text-blue-600 underline"
                                                                 onClick={() =>
                                                                     setCollapsedDays((prev) => ({
                                                                         ...prev,
-                                                                        [`${day}-boarding-pickup`]: !prev[`${day}-boarding-pickup`]
+                                                                        [`${day}-boarding-pickup`]: !prev[`${day}-boarding-pickup`],
                                                                     }))
                                                                 }
                                                             >
                                                                 {collapsedDays[`${day}-boarding-pickup`] ? t('expand') : t('collapse')}
                                                             </button>
+
                                                             {!collapsedDays[`${day}-boarding-pickup`] &&
-                                                                timeOptions.map((time) => (
+                                                                timeOptions.map((time, i) => (
                                                                     <Toggle
-                                                                        key={time}
+                                                                        key={`${day}-boarding-pickUp-${time}-bpu-${i}`}
                                                                         label={time}
                                                                         checked={(pickUpTimesBoarding[day] || []).includes(time)}
-                                                                        onChange={() => toggleDayTime('pickUp', 'boarding', day, time)}
+                                                                        onChange={() =>
+                                                                            toggleDayTime('pickUp', 'boarding', day, time)
+                                                                        }
                                                                     />
                                                                 ))}
                                                         </div>
@@ -523,7 +592,6 @@ export default function BusinessSettingsPage() {
                                 </>
                             )}
                         </div>
-
                         {/* ─────────────── Optional Feature Toggles ─────────────── */}
                         <div className="mt-10">
                             <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-4">
@@ -545,12 +613,22 @@ export default function BusinessSettingsPage() {
                                 }
                             />
                         </div>
+
+                        {/* Save Button */}
+                        <button
+                            onClick={updateSetting}
+                            disabled={saving}
+                            className="block w-full bg-[#2c4a30] text-white px-4 py-3 rounded mt-6 text-sm hover:bg-[#1e3624] transition"
+                        >
+                            {saving ? t('saving') : t('save_changes_button')}
+                        </button>
                     </div>
 
+                    {/* Save Button */}
                     <button
                         onClick={updateSetting}
                         disabled={saving}
-                        className="block w-full bg-[#2c4a30] text-white px-4 py-2 rounded mt-6"
+                        className="block w-full bg-[#2c4a30] text-white px-4 py-3 rounded mt-6 text-sm hover:bg-[#1e3624] transition"
                     >
                         {saving ? t('saving') : t('save_changes_button')}
                     </button>
@@ -570,7 +648,7 @@ function Toggle({
     onChange: (val: boolean) => void;
 }) {
     return (
-        <label className="flex items-center gap-3">
+        <label className="flex items-center gap-3 text-sm">
             <input
                 type="checkbox"
                 checked={checked}

@@ -1,0 +1,12 @@
+{
+  "book_daycare_title": "Book Daycare",
+  "default_business_name": "Selected Business",
+  "loading": "Loading...",
+  "select_date": "Select a Date",
+  "select_time": "Select a Drop-Off Time",
+  "select_pets": "Select Pets",
+  "submit": "Submit Reservation",
+  "waiver_required": "You must sign the waiver before booking.",
+  "submission_success": "Your reservation has been submitted!",
+  "back_to_select_service": "Back to Select Service"
+}

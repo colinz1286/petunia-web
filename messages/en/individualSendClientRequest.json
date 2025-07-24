@@ -1,0 +1,18 @@
+{
+  "back_to_search_businesses": "Back to Search Businesses",
+  "checking_client_status": "Checking client status...",
+  "already_approved_client": "✅ Already an approved client",
+  "request_already_sent": "📬 Request already sent!",
+  "client_request_prompt": "If you’d like to become a client of this business, click below to send your request.",
+  "send_client_request_button": "Send Client Request",
+  "confirm_send_request_title": "Send client request to this business?",
+  "yes_send_request_button": "Yes, Send Request",
+  "cancel_button": "Cancel",
+  "request_sent_alert_title": "Request Sent!",
+  "request_sent_alert_message": "Your client request has been submitted and is pending approval.",
+  "must_be_logged_in": "You must be logged in.",
+  "loading_business_info": "Loading business information...",
+  "services_offered_label": "Services Offered:",
+  "error_sending_request": "There was an error sending your request.",
+  "unknown_user": "Unknown User"
+}

@@ -34,5 +34,6 @@
   "employee_management_toggle": "Enable Employee Management",
   "state_paperwork_toggle": "Enable State Paperwork Log",
   "save_changes_button": "Save Changes",
-  "saving": "Saving..."
+  "saving": "Saving...",
+  "back_to_dashboard": "Back to Dashboard"
 }

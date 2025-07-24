@@ -159,20 +159,19 @@ export default function IndividualDashboardPage() {
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)] px-4 py-6">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold text-[color:var(--color-accent)] text-center mb-4">
+      <div className="w-full max-w-md mx-auto px-2 sm:px-4">
+        <h1 className="text-3xl font-bold text-[color:var(--color-accent)] text-center mb-4">
           {t('dashboard_welcome', { firstName })}
         </h1>
 
+        {/* Profile Image Upload */}
         <div className="flex justify-center mb-4">
           <label className="cursor-pointer">
             <input
               type="file"
               accept=".jpg,.jpeg,.png"
               className="hidden"
-              onChange={(e) =>
-                setProfileFile(e.target.files?.[0] ?? null)
-              }
+              onChange={(e) => setProfileFile(e.target.files?.[0] ?? null)}
             />
             {profileUrl ? (
               <Image
@@ -183,7 +182,7 @@ export default function IndividualDashboardPage() {
                 className="rounded-full border"
               />
             ) : (
-              <div className="w-36 h-36 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+              <div className="w-36 h-36 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-4xl">
                 +
               </div>
             )}
@@ -193,24 +192,26 @@ export default function IndividualDashboardPage() {
         {profileFile && (
           <button
             onClick={uploadProfileImage}
-            className="block w-full text-white bg-blue-600 px-4 py-2 rounded mb-4"
+            className="block w-full text-white bg-blue-600 px-4 py-2 rounded mb-4 text-sm"
           >
             {isUploading ? t('uploading_image') : t('upload_image')}
           </button>
         )}
 
-        <DashboardLink href={`/${locale}/individual-bookservices`} label={t('book_services_title')} />
-        <DashboardLink href={`/${locale}/individual-upcomingappointments`} label={t('upcoming_appointments')} />
+        {/* Main Dashboard Links */}
+        <DashboardLink href={`/${locale}/individualbookservices`} label={t('book_services_title')} />
+        <DashboardLink href={`/${locale}/individualupcomingappointments`} label={t('upcoming_appointments')} />
 
         <div className="space-y-3 mt-4">
-          <BadgeLink href={`/${locale}/individual-reminders`} label={t('reminders')} badge={reminderCount} />
-          <DotLink href={`/${locale}/individual-notifications`} label={t('notifications')} showDot={hasNewBusinessSignup} />
-          <DashboardLink href={`/${locale}/individual-searchbusinesses`} label={t('search_businesses')} />
-          <DashboardLink href={`/${locale}/individual-mypets`} label={t('my_pets')} />
+          <BadgeLink href={`/${locale}/individualreminders`} label={t('reminders')} badge={reminderCount} />
+          <DotLink href={`/${locale}/individualnotifications`} label={t('notifications')} showDot={hasNewBusinessSignup} />
+          <DashboardLink href={`/${locale}/individualsearchbusinesses`} label={t('search_businesses')} />
+          <DashboardLink href={`/${locale}/individualmypets`} label={t('my_pets')} />
         </div>
 
+        {/* Invite Banner */}
         {invite?.status === 'pending' && (
-          <div className="mt-6 bg-yellow-100 text-center p-4 rounded shadow space-y-2">
+          <div className="mt-6 bg-yellow-100 text-center p-4 rounded shadow space-y-2 text-sm">
             <p className="font-semibold">{t('invite_banner_title')}</p>
             <p>{invite.businessName}</p>
             <div className="flex justify-center gap-4">
@@ -224,13 +225,14 @@ export default function IndividualDashboardPage() {
           </div>
         )}
 
+        {/* Employee Tools */}
         {isEmployee && (
           <div className="mt-6 border-t pt-4 space-y-3">
             <h2 className="text-lg font-semibold text-center">{t('employee_tools')}</h2>
             <DashboardLink href={`/${locale}/individualemployee-upcomingreservations`} label={t('upcoming_reservations')} />
             <DashboardLink href={`/${locale}/individualemployee-dogsonproperty`} label={t('dogs_on_property')} />
             <button
-              className="block w-full bg-gray-500 text-white px-4 py-2 rounded"
+              className="block w-full bg-gray-500 text-white px-4 py-2 rounded text-sm"
               onClick={() => alert(t('feature_coming_soon'))}
             >
               {t('view_assigned_schedule')}
@@ -238,6 +240,7 @@ export default function IndividualDashboardPage() {
           </div>
         )}
 
+        {/* Edit + Logout */}
         <div className="flex justify-between mt-6 gap-4">
           <div className="w-1/2">
             <DashboardLink href={`/${locale}/individualeditprofile`} label={t('edit_profile')} />
@@ -245,7 +248,7 @@ export default function IndividualDashboardPage() {
           <div className="w-1/2">
             <button
               onClick={logout}
-              className="w-full text-white bg-red-600 px-4 py-2 rounded"
+              className="w-full text-white bg-red-600 px-4 py-2 rounded text-sm"
             >
               {t('logout')}
             </button>
@@ -280,7 +283,7 @@ function BadgeLink({
     <div className="relative">
       <DashboardLink href={href} label={label} />
       {badge > 0 && (
-        <span className="absolute top-0 right-2 bg-white text-red-600 rounded-full px-2 py-1 text-xs">
+        <span className="absolute top-0 right-1.5 sm:right-2 bg-white text-red-600 rounded-full px-2 py-0.5 min-w-[20px] text-[10px] sm:text-xs text-center leading-none">
           {badge}
         </span>
       )}

@@ -1,0 +1,13 @@
+{
+  "book_boarding_title": "Book Boarding",
+  "default_business_name": "Selected Business",
+  "drop_off_date": "Drop-Off Date",
+  "pick_up_date": "Pick-Up Date",
+  "drop_off_time": "Drop-Off Time",
+  "pick_up_time": "Pick-Up Time",
+  "select_pets": "Select Pets",
+  "submit": "Submit Reservation",
+  "waiver_required_message": "You must sign the waiver before booking.",
+  "reservation_submitted": "Your reservation has been submitted!",
+  "back_to_select_service": "Back to Select Service"
+}

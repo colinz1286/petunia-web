@@ -1,0 +1,11 @@
+{
+  "notifications_title": "Notifications",
+  "loading_notifications": "Loading notifications...",
+  "no_notifications_message": "You have no notifications.",
+  "error_loading_notifications": "Error loading notifications: {message}",
+  "back_to_dashboard": "Back to Dashboard",
+  "delete_button": "Delete",
+  "new_business_signup_alert": "New Business Signup",
+  "new_business_signup_message": "{businessName} just signed up for a business account!",
+  "default_business_name": "a new business"
+}

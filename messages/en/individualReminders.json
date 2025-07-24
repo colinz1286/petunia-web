@@ -1,0 +1,21 @@
+{
+  "reminders_title": "Reminders",
+  "loading_reminders": "Loading reminders...",
+  "no_reminders": "You have no pending reminders.",
+
+  "vaccines_section_title": "Vaccines",
+  "vaccine_expired": "Expired",
+  "vaccine_expires_in_days": "Expires in {count, plural, one {# day} other {# days}}",
+
+  "checkups_section_title": "Annual Checkups",
+  "no_checkup_data": "Please enter the date of your pet's last annual vet appointment.",
+  "checkup_due_now": "🩺 Checkup due now",
+  "checkup_in_days": "Next checkup in {count, plural, one {# day} other {# days}}",
+
+  "birthdays_section_title": "Birthdays",
+  "no_birthday_data": "Please enter your pet’s date of birth in their profile.",
+  "birthday_today": "🎉 Today is their birthday!",
+  "birthday_in_days": "In {count, plural, one {# day} other {# days}}",
+
+  "back_to_dashboard": "Back to Dashboard"
+}

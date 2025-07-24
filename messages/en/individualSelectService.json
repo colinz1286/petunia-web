@@ -1,0 +1,13 @@
+{
+  "default_business_name": "Selected Business",
+  "select_service_prompt": "Select a Service",
+  "loading_services": "Loading services...",
+  "no_services_available": "This business currently offers no bookable services.",
+  "daycare_service": "Daycare",
+  "boarding_service": "Boarding",
+  "other_services_button": "Other Services",
+  "service_not_ready_title": "Service Not Ready",
+  "service_not_ready_message": "This feature is coming soon.",
+  "ok_button": "OK",
+  "back_to_book_services": "Back to Book Services"
+}

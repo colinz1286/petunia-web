@@ -7,18 +7,39 @@ export default function ContactPage() {
   const locale = useLocale();
 
   return (
-    <main className="min-h-screen bg-[#f6efe4] text-[#2c4a30] font-sans px-6 py-20 text-center flex flex-col items-center justify-center">
-      <h1 className="text-3xl font-bold mb-6">We’d love to hear from you!</h1>
-      <p className="text-lg max-w-xl">
-        Whether you have a question, suggestion, or just want to say hello —
-        we’re here for you. Please feel free to reach out anytime at{' '}
-        <a
-          href="mailto:admin@petuniapets.com"
-          className="underline text-[#2c4a30]"
-        >
-          admin@petuniapets.com
-        </a>. We’ll get back to you as soon as we can!
-      </p>
+    <main className="min-h-screen bg-[#f6efe4] text-[#2c4a30] font-sans px-4 sm:px-6 py-20 flex flex-col items-center justify-center text-center">
+      <div className="max-w-xl space-y-6">
+
+        {/* Image */}
+        <img
+          src="/ChatGPT Image Jul 24, 2025 at 04_29_11 PM.png"
+          alt="Contact Us Visual"
+          className="mx-auto w-[90%] sm:w-[80%] md:w-[60%] rounded-lg shadow-lg mb-8"
+        />
+
+        {/* Heading */}
+        <h1 className="text-3xl sm:text-4xl font-bold">We’d love to hear from you</h1>
+
+        {/* Body Text */}
+        <p className="text-lg leading-relaxed">
+          Whether you have a question, suggestion, or just want to say hello — we’re always here.
+        </p>
+
+        <p className="text-lg leading-relaxed">
+          Feel free to reach out anytime at{' '}
+          <a
+            href="mailto:admin@petuniapets.com"
+            className="underline text-[#2c4a30] font-medium"
+          >
+            admin@petuniapets.com
+          </a>
+          . We’ll get back to you as soon as we can!
+        </p>
+
+        <p className="text-lg italic text-[#444]">
+          Thank you for being part of the Petunia community.
+        </p>
+      </div>
     </main>
   );
 }

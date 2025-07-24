@@ -69,9 +69,9 @@ export default function EditProfilePage() {
   const [alertMessage, setAlertMessage] = useState('');
 
   const US_STATES = [
-    'AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI',
-    'MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT',
-    'VT','VA','WA','WV','WI','WY'
+    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI',
+    'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT',
+    'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
   ];
 
   useEffect(() => {
@@ -165,13 +165,22 @@ export default function EditProfilePage() {
   };
 
   return (
-    <div className="min-h-screen px-4 py-8 max-w-2xl mx-auto text-[color:var(--color-foreground)] bg-[color:var(--color-background)]">
+    <div className="min-h-screen px-4 py-8 w-full max-w-md mx-auto text-[color:var(--color-foreground)] bg-[color:var(--color-background)]">
+
+      {/* Back to Dashboard Button */}
+      <button
+        onClick={() => router.push('/individualdashboard')}
+        className="mb-6 text-sm text-[color:var(--color-accent)] underline hover:text-[color:var(--color-accent)]"
+      >
+        ← {t('back_to_dashboard', { defaultValue: 'Back to Dashboard' })}
+      </button>
+
       <h1 className="text-3xl font-bold text-[color:var(--color-accent)] mb-6 text-center">
         {t('edit_profile_title')}
       </h1>
 
       {loading ? (
-        <p>{t('loading')}</p>
+        <p className="text-center text-sm text-gray-500">{t('loading')}</p>
       ) : (
         <>
           <Field label={t('first_name')} value={firstName} onChange={setFirstName} />
@@ -180,10 +189,11 @@ export default function EditProfilePage() {
           <Field label={t('phone_number')} value={phone} onChange={setPhone} />
           <Field label={t('street_address')} value={street} onChange={setStreet} />
           <Field label={t('city')} value={city} onChange={setCity} />
+
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-1">{t('state')}</label>
             <select
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border px-3 py-2 rounded text-sm"
               value={state}
               onChange={(e) => setState(e.target.value)}
             >
@@ -192,6 +202,7 @@ export default function EditProfilePage() {
               ))}
             </select>
           </div>
+
           <Field label={t('zip_code')} value={zip} onChange={setZip} />
 
           <h2 className="text-lg font-semibold text-[color:var(--color-accent)] mt-6 mb-2">
@@ -201,22 +212,25 @@ export default function EditProfilePage() {
           <Field label={t('last_name')} value={emergencyLast} onChange={setEmergencyLast} />
           <Field label={t('phone_number')} value={emergencyPhone} onChange={setEmergencyPhone} />
 
+          {/* Save Button */}
           <button
             onClick={() => setConfirmSave(true)}
-            className="block w-full bg-[#2c4a30] text-white px-4 py-2 rounded mt-6"
+            className="block w-full bg-[#2c4a30] text-white px-4 py-2 rounded mt-6 text-sm"
           >
             {t('save_changes_button')}
           </button>
 
+          {/* Delete Button */}
           <button
             onClick={() => setConfirmDelete(true)}
-            className="block w-full bg-red-600 text-white px-4 py-2 rounded mt-2"
+            className="block w-full bg-red-600 text-white px-4 py-2 rounded mt-2 text-sm"
           >
             {t('delete_account_button')}
           </button>
         </>
       )}
 
+      {/* Confirm Save Modal */}
       {confirmSave && (
         <ConfirmModal
           title={t('confirm_save_title')}
@@ -225,6 +239,7 @@ export default function EditProfilePage() {
         />
       )}
 
+      {/* Confirm Delete Modal */}
       {confirmDelete && (
         <ConfirmModal
           title={t('confirm_delete_title')}
@@ -233,6 +248,7 @@ export default function EditProfilePage() {
         />
       )}
 
+      {/* Final Confirm Delete */}
       {finalDelete && (
         <ConfirmModal
           title={t('final_delete_warning')}
@@ -241,8 +257,9 @@ export default function EditProfilePage() {
         />
       )}
 
+      {/* Alert Message */}
       {alertMessage && (
-        <div className="mt-6 bg-yellow-100 text-center p-3 rounded">
+        <div className="mt-6 bg-yellow-100 text-center p-3 rounded text-sm">
           {alertMessage}
         </div>
       )}
@@ -266,7 +283,7 @@ function Field({
       <label className="block text-sm font-semibold mb-1">{label}</label>
       <input
         type="text"
-        className="w-full border px-3 py-2 rounded disabled:bg-gray-100"
+        className="w-full border px-4 py-2 rounded text-sm disabled:bg-gray-100"
         value={value}
         disabled={disabled}
         onChange={(e) => onChange?.(e.target.value)}

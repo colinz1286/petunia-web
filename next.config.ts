@@ -1,13 +1,17 @@
+import { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
-import nextIntlConfig from './next-intl.config';
 
-const withNextIntl = createNextIntlPlugin(nextIntlConfig);
-
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
   images: {
     domains: ['firebasestorage.googleapis.com'],
   },
+  experimental: {
+    serverActions: {}
+  }
 };
+
+const withNextIntl = createNextIntlPlugin({
+  // requestConfigPath will default to './src/i18n/request.ts'
+});
 
 export default withNextIntl(nextConfig);

@@ -36,5 +36,6 @@
   "ok_button": "OK",
   "yes_button": "Yes",
   "yes_delete_button": "Yes, Delete",
-  "cancel_button": "Cancel"
+  "cancel_button": "Cancel",
+  "back_to_dashboard": "Back to Dashboard"
 }

@@ -130,17 +130,18 @@ export default function BoardingAndDaycareDashboardPage() {
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)] px-4 py-6">
-      <div className="max-w-2xl mx-auto">
+      <div className="w-full max-w-md mx-auto px-2 sm:px-4">
         <h1 className="text-4xl font-bold text-[color:var(--color-accent)] text-center mb-6">
           {t('greeting')}
         </h1>
 
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2">
+        {/* Verification & Logo Row */}
+        <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
             {isVerified ? (
-              <span className="text-green-600 font-semibold">✅ {t('verified')}</span>
+              <span className="text-green-600 font-semibold text-sm">✅ {t('verified')}</span>
             ) : (
-              <span className="text-red-600 font-semibold">❌ {t('not_verified')}</span>
+              <span className="text-red-600 font-semibold text-sm">❌ {t('not_verified')}</span>
             )}
             {!isVerified && (
               <button
@@ -172,7 +173,7 @@ export default function BoardingAndDaycareDashboardPage() {
                 className="rounded-full border"
               />
             ) : (
-              <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+              <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xl">
                 +
               </div>
             )}
@@ -182,68 +183,72 @@ export default function BoardingAndDaycareDashboardPage() {
         {logoFile && (
           <button
             onClick={handleLogoUpload}
-            className="mb-4 text-sm text-white bg-blue-600 px-4 py-2 rounded"
+            className="mb-4 text-sm text-white bg-blue-600 px-4 py-2 rounded w-full"
           >
             {isUploading ? t('uploading_logo') : t('upload_logo')}
           </button>
         )}
 
+        {/* Dashboard Links */}
         <div className="space-y-3">
-          <DashboardLink href="/app/boardinganddaycare-dogsonproperty" label={t('dogs_on_property')} disabled={!isVerified} />
-          <DashboardLink href="/app/boardinganddaycare-upcomingreservations" label={t('upcoming_reservations')} disabled={!isVerified} />
-          <DashboardLink href="/app/boardinganddaycare-pendingrequests" label={t('pending_requests')} disabled={!isVerified} />
-          <DashboardLink href="/app/boardinganddaycare-clientmanagement" label={t('client_management')} disabled={!isVerified} />
+          <DashboardLink href="/boardinganddaycare-dogsonproperty" label={t('dogs_on_property')} />
+          <DashboardLink href="/boardinganddaycare-upcomingreservations" label={t('upcoming_reservations')} />
+          <DashboardLink href="/boardinganddaycare-pendingrequests" label={t('pending_requests')} />
+          <DashboardLink href="/boardinganddaycare-clientmanagement" label={t('client_management')} />
 
           {enableEmployeeManagement && (
             <>
-              <DashboardLink href="/app/boardinganddaycare-manageemployees" label={t('manage_employees')} disabled={!isVerified} />
-              <DashboardLink href="/app/boardinganddaycare-scheduleemployees" label={t('schedule_employees')} disabled={!isVerified} />
+              <DashboardLink href="/boardinganddaycare-manageemployees" label={t('manage_employees')} />
+              <DashboardLink href="/boardinganddaycare-scheduleemployees" label={t('schedule_employees')} />
             </>
           )}
 
           {enableStatePaperwork && (
-            <DashboardLink href="/app/boardinganddaycare-statepaperworklog" label={t('state_paperwork_log')} disabled={!isVerified} />
+            <DashboardLink href="/boardinganddaycare-statepaperworklog" label={t('state_paperwork_log')} />
           )}
 
-          <DashboardLink href="/app/boardinganddaycare-businesssettings" label={t('business_settings')} disabled={!isVerified} />
+          <DashboardLink href="/boardinganddaycare-businesssettings" label={t('business_settings')} />
 
           <button
             onClick={logout}
-            className="w-full text-white bg-red-600 px-4 py-2 rounded"
+            className="w-full text-white bg-red-600 px-4 py-2 rounded text-sm"
           >
             {t('logout')}
           </button>
         </div>
 
+        {/* Verification Form */}
         {showVerifyForm && (
           <div className="mt-6 bg-white p-4 rounded shadow space-y-3">
-            <h2 className="text-xl font-bold text-[color:var(--color-accent)]">{t('verify_your_business')}</h2>
+            <h2 className="text-xl font-bold text-[color:var(--color-accent)] text-center">
+              {t('verify_your_business')}
+            </h2>
 
             <input
               type="text"
               value={licenseNumber}
               onChange={(e) => setLicenseNumber(e.target.value)}
               placeholder={t('business_license_number')}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border px-3 py-2 rounded text-sm"
             />
 
             <input
               type="file"
               accept=".jpg,.jpeg,.png"
               onChange={(e) => setLicenseFile(e.target.files?.[0] || null)}
-              className="w-full"
+              className="w-full text-sm"
             />
 
             <button
               onClick={handleVerificationSubmit}
-              className="w-full bg-green-600 text-white px-4 py-2 rounded"
+              className="w-full bg-green-600 text-white px-4 py-2 rounded text-sm"
             >
               {t('submit_for_verification')}
             </button>
 
             <button
               onClick={() => setShowVerifyForm(false)}
-              className="w-full text-gray-600 underline"
+              className="w-full text-gray-600 underline text-sm"
             >
               {t('cancel_button')}
             </button>
@@ -258,17 +263,22 @@ import Link from 'next/link';
 
 function DashboardLink({
   href,
-  label
+  label,
+  disabled
 }: {
   href: string;
   label: string;
+  disabled?: boolean;
 }) {
   return (
     <Link
-      href={href}
-      className="block w-full text-white bg-[#2c4a30] hover:opacity-90 py-2 px-4 rounded text-center"
+      href={disabled ? '#' : href}
+      className={`block w-full text-white py-2 px-4 rounded text-center ${disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#2c4a30] hover:opacity-90'
+        }`}
+      aria-disabled={disabled}
     >
       {label}
     </Link>
   );
 }
+
