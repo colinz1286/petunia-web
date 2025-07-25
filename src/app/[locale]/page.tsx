@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -26,10 +27,13 @@ export default function HomePage() {
   return (
     <main className="flex-grow flex flex-col items-center justify-start text-center px-4 mt-10">
       {/* Logo */}
-      <img
+      <Image
         src="/petunia_logo.png"
         alt="Petunia Logo"
-        className="w-64 sm:w-72 h-auto mb-6"
+        width={288} // Tailwind w-72 = 18rem = 288px
+        height={0} // Let height auto-adjust with layout
+        className="mb-6 h-auto w-64 sm:w-72"
+        priority
       />
 
       {/* Slogan */}
@@ -129,7 +133,7 @@ export default function HomePage() {
           <section className="space-y-5 w-full max-w-xl">
             <h3 className="text-2xl font-bold text-center">Pet Sitters & Dog Walkers</h3>
             <p className="text-lg text-balance">
-              This part of Petunia is coming soon! We're rolling out tools built specifically for sitters and walkers.
+              This part of Petunia is coming soon! We&apos;re rolling out tools built specifically for sitters and walkers.
             </p>
             <p className="text-lg text-balance">
               Just $10/month. No commissions, ever. Bring your existing clients and grow from there.
