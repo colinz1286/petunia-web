@@ -42,9 +42,9 @@ export default async function LocaleLayout({
 
   let messages;
   try {
-    messages = await getMessages(); // ✅ Load translation messages
-  } catch (error) {
-    notFound(); // ✅ Trigger 404 if locale not found
+    messages = await getMessages();
+  } catch {
+    notFound();
   }
 
   return (
