@@ -2,6 +2,7 @@ import '../globals.css';
 import { Geist, Geist_Mono } from 'next/font/google';
 import dynamic from 'next/dynamic';
 import { type ReactNode } from 'react';
+import type { Metadata } from 'next';
 import LayoutContent from '../../components/LayoutContent';
 
 const Header = dynamic(() => import('../../components/Header'));
@@ -14,7 +15,7 @@ export async function generateMetadata({
   params,
 }: {
   params: { locale: string };
-}) {
+}): Promise<Metadata> {
   return {
     title: `Petunia (${params.locale})`,
     description: 'All-in-one pet care platform',
@@ -25,13 +26,12 @@ export async function generateStaticParams() {
   return [{ locale: 'en' }, { locale: 'en-US' }];
 }
 
-export default function LocaleLayout({
-  children,
-  params,
-}: {
+type LocaleLayoutProps = {
   children: ReactNode;
   params: { locale: string };
-}) {
+};
+
+export default function LocaleLayout({ children, params }: LocaleLayoutProps) {
   return (
     <html lang={params.locale}>
       <body
