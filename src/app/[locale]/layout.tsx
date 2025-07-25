@@ -18,13 +18,13 @@ export const generateMetadata = async ({
   params: { locale: string };
 }): Promise<Metadata> => {
   return {
-    title: 'Petunia',
+    title: `Petunia (${params.locale})`,
     description: 'All-in-one pet care platform',
   };
 };
 
 export async function generateStaticParams() {
-  return [{ locale: 'en' }, { locale: 'en-US' }]; // Add more supported locales here if needed
+  return [{ locale: 'en' }, { locale: 'en-US' }]; // Add more supported locales if needed
 }
 
 export default async function Layout({
