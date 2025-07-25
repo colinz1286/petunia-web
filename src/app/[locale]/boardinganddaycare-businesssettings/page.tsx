@@ -540,9 +540,7 @@ export default function BusinessSettingsPage() {
                                                                         key={`${day}-boarding-dropOff-${time}-bdo-${i}`}
                                                                         label={time}
                                                                         checked={(dropOffTimesBoarding[day] || []).includes(time)}
-                                                                        onChange={() =>
-                                                                            toggleDayTime('dropOff', 'boarding', day, time)
-                                                                        }
+                                                                        onChange={() => toggleDayTime('dropOff', 'boarding', day, time)}
                                                                     />
                                                                 ))}
                                                         </div>
@@ -578,9 +576,7 @@ export default function BusinessSettingsPage() {
                                                                         key={`${day}-boarding-pickUp-${time}-bpu-${i}`}
                                                                         label={time}
                                                                         checked={(pickUpTimesBoarding[day] || []).includes(time)}
-                                                                        onChange={() =>
-                                                                            toggleDayTime('pickUp', 'boarding', day, time)
-                                                                        }
+                                                                        onChange={() => toggleDayTime('pickUp', 'boarding', day, time)}
                                                                     />
                                                                 ))}
                                                         </div>
