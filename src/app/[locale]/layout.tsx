@@ -10,25 +10,54 @@ const Footer = dynamic(() => import('../../components/Footer'));
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
-type Props = {
-  children: React.ReactNode;
-  params: { locale: string };
-};
+export function generateStaticParams() {
+  return [{ locale: 'en' }]; // Adjust based on your supported locales
+}
 
-export default async function LocaleLayout({ children, params }: Props) {
-  let messages;
+async function getMessages(locale: string) {
   try {
-    messages = (await import(`../../../messages/${params.locale}.json`)).default;
+    const messages = (await import(`../../../messages/${locale}.json`)).default;
+    return messages;
   } catch {
     notFound();
   }
+}
+
+export default function LocaleLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: { locale: string };
+}) {
+  const { locale } = params;
+
+  // NOTE: This will break because you can't await here:
+  // const messages = await getMessages(locale);
+
+  // So we need to convert the layout to a wrapper component pattern:
+  return (
+    <AsyncLayout locale={locale}>
+      {children}
+    </AsyncLayout>
+  );
+}
+
+async function AsyncLayout({
+  children,
+  locale,
+}: {
+  children: React.ReactNode;
+  locale: string;
+}) {
+  const messages = await getMessages(locale);
 
   return (
-    <html lang={params.locale}>
+    <html lang={locale}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#f6efe4] text-[#2c4a30] overflow-x-hidden`}
       >
-        <NextIntlClientProvider locale={params.locale} messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <Header />
           <main className="min-h-screen w-full max-w-screen-xl mx-auto px-4 sm:px-6">
             {children}
