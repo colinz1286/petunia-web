@@ -10,14 +10,13 @@ const Footer = dynamic(() => import('../../components/Footer'));
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
-export const generateMetadata = async (): Promise<Metadata> => {
-  return {
-    title: 'Petunia – The perfect app for your business. The perfect world for your pet.',
-    description: 'All-in-one pet care platform trusted by owners, sitters, shelters, and clinics.',
-  };
-};
+// ✅ FIXED: No longer async – now a proper static metadata export
+export const generateMetadata = (): Metadata => ({
+  title: 'Petunia – The perfect app for your business. The perfect world for your pet.',
+  description: 'All-in-one pet care platform trusted by owners, sitters, shelters, and clinics.',
+});
 
-export async function generateStaticParams() {
+export function generateStaticParams() {
   return [{ locale: 'en' }, { locale: 'en-US' }];
 }
 
