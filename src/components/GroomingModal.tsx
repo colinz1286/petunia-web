@@ -24,14 +24,14 @@ export default function GroomingModal({
     setGroomingSelections((prev) => {
       const current = prev[petId] ?? new Set();
       const updated = new Set(current);
-      updated.has(service) ? updated.delete(service) : updated.add(service);
+      if (updated.has(service)) {
+        updated.delete(service);
+      } else {
+        updated.add(service);
+      }
       return { ...prev, [petId]: updated };
     });
   };
-
-  const hasSelections = pets.some(
-    (pet) => groomingSelections[pet.id] && groomingSelections[pet.id]!.size > 0
-  );
 
   return (
     <Dialog open={isOpen} onClose={onClose} as={Fragment}>

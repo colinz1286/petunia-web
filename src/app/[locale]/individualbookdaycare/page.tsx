@@ -38,7 +38,6 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
-const rtdb = getDatabase();
 
 type Pet = {
     id: string;
@@ -113,7 +112,9 @@ export default function IndividualBookDaycarePage() {
             const options = (dropOffMap[weekday] || []).slice().sort((a: string, b: string) => {
                 const toMinutes = (time: string) => {
                     const [hourMin, period] = time.split(' ');
-                    let [hour, minute] = hourMin.split(':').map(Number);
+                    const [hourStr, minuteStr] = hourMin.split(':');
+                    let hour = Number(hourStr);
+                    const minute = Number(minuteStr);
                     if (period === 'PM' && hour !== 12) hour += 12;
                     if (period === 'AM' && hour === 12) hour = 0;
                     return hour * 60 + minute;
@@ -153,7 +154,9 @@ export default function IndividualBookDaycarePage() {
             const options = (dropOffMap[weekday] || []).slice().sort((a: string, b: string) => {
                 const toMinutes = (time: string) => {
                     const [hourMin, period] = time.split(' ');
-                    let [hour, minute] = hourMin.split(':').map(Number);
+                    const [hourStr, minuteStr] = hourMin.split(':');
+                    let hour = Number(hourStr);
+                    const minute = Number(minuteStr);
                     if (period === 'PM' && hour !== 12) hour += 12;
                     if (period === 'AM' && hour === 12) hour = 0;
                     return hour * 60 + minute;
@@ -257,7 +260,17 @@ export default function IndividualBookDaycarePage() {
 
             const groomingForReservation = serializeGroomingSelections(groomingSelections);
 
-            const reservation: Record<string, any> = {
+            const reservation: {
+                userId: string;
+                businessId: string;
+                petIds: string[];
+                date: Timestamp;
+                arrivalWindow: string;
+                status: string;
+                realtimeKey: string;
+                petStatuses: Record<string, string>;
+                groomingAddOns?: Record<string, string[]>;
+            } = {
                 userId,
                 businessId,
                 petIds: booking.petIds,
@@ -269,7 +282,7 @@ export default function IndividualBookDaycarePage() {
             };
 
             if (Object.keys(groomingForReservation).length > 0) {
-                reservation['groomingAddOns'] = groomingForReservation;
+                reservation.groomingAddOns = groomingForReservation;
             }
 
             await setDoc(doc(firestore, 'daycareReservations', reservationId), reservation);
@@ -282,7 +295,20 @@ export default function IndividualBookDaycarePage() {
                 const rtdbKey = `${realtimeKey}-${petId}`;
                 const rtdbPath = `upcomingReservations/${businessId}/${rtdbKey}`;
 
-                const rtdbEntry: any = {
+                const rtdbEntry: {
+                    dogName: string;
+                    ownerName: string;
+                    type: string;
+                    date: string;
+                    arrivalWindow: string;
+                    status: string;
+                    userId: string;
+                    realtimeKey: string;
+                    groomingAddOns?: string[];
+                    medications?: string;
+                    medicationDetails?: string;
+                    spayedNeutered?: string;
+                } = {
                     dogName: pet.name,
                     ownerName,
                     type: 'Daycare',
@@ -305,8 +331,6 @@ export default function IndividualBookDaycarePage() {
                     if (petData.medicationDetails) rtdbEntry.medicationDetails = petData.medicationDetails;
                     if (petData.spayedNeutered) rtdbEntry.spayedNeutered = petData.spayedNeutered;
                 }
-
-                await rtdbSet(ref(realtimeDB, rtdbPath), rtdbEntry);
             }
         }
     }
