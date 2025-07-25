@@ -12,11 +12,7 @@ import {
     doc,
     Timestamp,
 } from 'firebase/firestore';
-import {
-    getDatabase,
-    ref,
-    set as rtdbSet
-} from 'firebase/database';
+
 import {
     getAuth,
     onAuthStateChanged
@@ -242,7 +238,6 @@ export default function IndividualBookDaycarePage() {
         }
 
         const firestore = getFirestore();
-        const realtimeDB = getDatabase();
 
         const userSnap = await getDoc(doc(firestore, 'users', userId));
         const firstName = userSnap.data()?.firstName || 'Client';
@@ -291,9 +286,6 @@ export default function IndividualBookDaycarePage() {
             for (const petId of booking.petIds) {
                 const pet = pets.find(p => p.id === petId);
                 if (!pet) continue;
-
-                const rtdbKey = `${realtimeKey}-${petId}`;
-                const rtdbPath = `upcomingReservations/${businessId}/${rtdbKey}`;
 
                 const rtdbEntry: {
                     dogName: string;
