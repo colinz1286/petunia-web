@@ -47,9 +47,9 @@ export default function IndividualDashboardPage() {
   const t = useTranslations('individualDashboard');
   const locale = useLocale();
 
-  const [userId, setUserId] = useState('');
   const [firstName, setFirstName] = useState('');
   const [profileUrl, setProfileUrl] = useState('');
+  const [userId, setUserId] = useState('');
   const [profileFile, setProfileFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -77,7 +77,7 @@ export default function IndividualDashboardPage() {
       ]);
     });
     return () => unsub();
-  }, []);
+  }, [router, locale]);
 
   const loadProfile = async (uid: string) => {
     const docSnap = await getDoc(doc(db, 'users', uid));

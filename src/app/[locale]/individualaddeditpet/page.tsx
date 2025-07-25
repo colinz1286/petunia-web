@@ -171,9 +171,16 @@ export default function AddEditPetPage() {
             const formatDateString = (value: unknown): string => {
                 if (!value) return '';
                 if (typeof value === 'string') return value;
-                if (typeof value === 'object' && value !== null && 'toDate' in value && typeof (value as any).toDate === 'function') {
+
+                if (
+                    typeof value === 'object' &&
+                    value !== null &&
+                    'toDate' in value &&
+                    typeof (value as { toDate?: unknown }).toDate === 'function'
+                ) {
                     return (value as { toDate: () => Date }).toDate().toISOString().split('T')[0];
                 }
+
                 return '';
             };
 
