@@ -66,11 +66,10 @@ export default function IndividualBookDaycarePage() {
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
     const [dropOffOptions, setDropOffOptions] = useState<string[]>([]);
     const [selectedTime, setSelectedTime] = useState('');
-    const [drafts, setDrafts] = useState<DraftBooking[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [waiverRequired, setWaiverRequired] = useState(false);
-    const [waiverSigned, setWaiverSigned] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [waiverSigned] = useState(true);
+    const [error] = useState<string | null>(null);
 
     useEffect(() => {
         onAuthStateChanged(auth, async (user) => {
@@ -84,7 +83,7 @@ export default function IndividualBookDaycarePage() {
             await loadBusinessSettings();
             setIsLoading(false);
         });
-    }, [locale, router]);
+    }, [locale, router, loadBusinessSettings]);
 
     async function loadPets(uid: string) {
         const snap = await getDocs(collection(db, 'users', uid, 'pets'));

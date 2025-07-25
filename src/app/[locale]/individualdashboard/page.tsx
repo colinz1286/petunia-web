@@ -45,7 +45,9 @@ const storage = getStorage(app);
 type InviteData = {
   status?: 'pending' | 'accepted' | 'declined';
   businessName?: string;
-  [key: string]: any;
+  role?: string;
+  userId?: string;
+  [key: string]: unknown;
 };
 
 export default function IndividualDashboardPage() {
