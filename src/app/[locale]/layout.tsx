@@ -15,11 +15,9 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  const { locale } = await params;
-
   return {
-    title: `Petunia (${locale})`,
-    description: 'All-in-one pet care platform',
+    title: 'Petunia – The perfect app for your business. The perfect world for your pet.',
+    description: 'All-in-one pet care platform trusted by owners, sitters, shelters, and clinics.',
   };
 }
 
