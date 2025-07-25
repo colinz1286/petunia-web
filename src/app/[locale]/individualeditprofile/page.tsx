@@ -108,7 +108,7 @@ export default function EditProfilePage() {
     });
 
     return () => unsub();
-  }, []);
+  }, [router]);
 
   const loadProfile = async (uid: string) => {
     const snap = await getDoc(doc(db, 'users', uid));

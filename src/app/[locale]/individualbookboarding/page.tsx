@@ -129,24 +129,6 @@ export default function IndividualBookBoardingPage() {
         return () => unsubscribe();
     }, [router, locale, businessId]);
 
-    async function loadBusinessSettings() {
-        const snap = await getDoc(doc(db, 'businesses', businessId));
-        const data = snap.data() || {};
-        setDropOffTimeOptions(data.dropOffTimeOptionsBoarding || []);
-        setPickUpTimeOptions(data.pickUpTimeOptionsBoarding || []);
-        setDropOffRequired(data.dropOffTimeRequiredBoarding ?? false);
-        setPickUpRequired(data.pickUpTimeRequired ?? false);
-        setWaiverRequired(data.waiverRequired ?? false);
-
-        if (data.dropOffTimeOptionsBoarding?.length) {
-            setDropOffTime(data.dropOffTimeOptionsBoarding[0]);
-        }
-
-        if (data.pickUpTimeOptionsBoarding?.length) {
-            setPickUpTime(data.pickUpTimeOptionsBoarding[0]);
-        }
-    }
-
     async function handleSubmit() {
         if (!dropOffDate || !pickUpDate || selectedPetIds.length === 0) return;
         if (waiverRequired && !waiverSigned) {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
   getAuth,
   signOut,
@@ -42,6 +42,12 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
+type InviteData = {
+  status?: 'pending' | 'accepted' | 'declined';
+  businessName?: string;
+  [key: string]: any;
+};
+
 export default function IndividualDashboardPage() {
   const router = useRouter();
   const t = useTranslations('individualDashboard');
@@ -56,7 +62,7 @@ export default function IndividualDashboardPage() {
   const [reminderCount, setReminderCount] = useState(0);
   const [hasNewBusinessSignup, setHasNewBusinessSignup] = useState(false);
   const [isEmployee, setIsEmployee] = useState(false);
-  const [invite, setInvite] = useState<any | null>(null);
+  const [invite, setInvite] = useState<InviteData | null>(null);
   const [inviteDocId, setInviteDocId] = useState('');
 
   useEffect(() => {
