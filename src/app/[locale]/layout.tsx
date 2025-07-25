@@ -1,7 +1,6 @@
 import '../globals.css';
 import { Geist, Geist_Mono } from 'next/font/google';
 import dynamic from 'next/dynamic';
-import { type ReactNode } from 'react';
 import { type Metadata } from 'next';
 import LayoutContent from '../../components/LayoutContent';
 
@@ -14,10 +13,12 @@ const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin']
 export async function generateMetadata({
   params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
+  const { locale } = await params;
+
   return {
-    title: `Petunia (${params.locale})`,
+    title: `Petunia (${locale})`,
     description: 'All-in-one pet care platform',
   };
 }
@@ -26,19 +27,21 @@ export async function generateStaticParams() {
   return [{ locale: 'en' }, { locale: 'en-US' }];
 }
 
-export default function LocaleLayout({
+export default async function LocaleLayout({
   children,
   params,
 }: {
-  children: ReactNode;
-  params: { locale: string };
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
+
   return (
-    <html lang={params.locale}>
+    <html lang={locale}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#f6efe4] text-[#2c4a30] overflow-x-hidden`}
       >
-        <LayoutContent locale={params.locale}>
+        <LayoutContent locale={locale}>
           <Header />
           <main className="min-h-screen w-full max-w-screen-xl mx-auto px-4 sm:px-6">
             {children}
