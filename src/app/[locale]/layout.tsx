@@ -1,8 +1,8 @@
 import '../globals.css';
 import { Geist, Geist_Mono } from 'next/font/google';
 import dynamic from 'next/dynamic';
-import { type Metadata } from 'next';
 import { type ReactNode } from 'react';
+import { type Metadata } from 'next';
 import LayoutContent from '../../components/LayoutContent';
 
 const Header = dynamic(() => import('../../components/Header'));
@@ -26,12 +26,13 @@ export async function generateStaticParams() {
   return [{ locale: 'en' }, { locale: 'en-US' }];
 }
 
-type LocaleLayoutProps = {
+export default function LocaleLayout({
+  children,
+  params,
+}: {
   children: ReactNode;
   params: { locale: string };
-};
-
-export default function LocaleLayout({ children, params }: LocaleLayoutProps) {
+}) {
   return (
     <html lang={params.locale}>
       <body
