@@ -30,7 +30,7 @@ const auth = getAuth(app);
 
 export default function BusinessSettingsPage() {
     const t = useTranslations('boardingAndDaycareBusinessSettings');
-    const locale = useLocale();
+    const _locale = useLocale(); // eslint-disable-line @typescript-eslint/no-unused-vars
 
     const router = useRouter();
 
@@ -623,15 +623,6 @@ export default function BusinessSettingsPage() {
                             {saving ? t('saving') : t('save_changes_button')}
                         </button>
                     </div>
-
-                    {/* Save Button */}
-                    <button
-                        onClick={updateSetting}
-                        disabled={saving}
-                        className="block w-full bg-[#2c4a30] text-white px-4 py-3 rounded mt-6 text-sm hover:bg-[#1e3624] transition"
-                    >
-                        {saving ? t('saving') : t('save_changes_button')}
-                    </button>
                 </>
             )}
         </div>

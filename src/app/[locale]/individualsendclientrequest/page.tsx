@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import {
@@ -59,25 +59,7 @@ export default function IndividualSendClientRequestPage() {
     const [servicesOffered, setServicesOffered] = useState<string[]>([]);
     const [isLoadingBusinessInfo, setIsLoadingBusinessInfo] = useState(true);
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, user => {
-            if (!user) {
-                router.push(`/${locale}/loginsignup`);
-                return;
-            }
-            setUserId(user.uid);
-            checkClientStatus(user.uid);
-        });
-        return () => unsubscribe();
-    }, []);
-
-    useEffect(() => {
-        if (userId) {
-            fetchBusinessInfo();
-        }
-    }, [userId]);
-
-    const checkClientStatus = async (uid: string) => {
+    const checkClientStatus = useCallback(async (uid: string) => {
         try {
             const clientDoc = await getDoc(doc(db, 'userApprovedBusinesses', businessId, 'clients', uid));
             if (clientDoc.exists()) {
@@ -99,9 +81,9 @@ export default function IndividualSendClientRequestPage() {
         } finally {
             setIsLoadingStatus(false);
         }
-    };
+    }, [businessId, t]);
 
-    const fetchBusinessInfo = async () => {
+    const fetchBusinessInfo = useCallback(async () => {
         try {
             const docSnap = await getDoc(doc(db, 'businesses', businessId));
             const data = docSnap.data();
@@ -118,12 +100,10 @@ export default function IndividualSendClientRequestPage() {
             if (data.offersGrooming) services.push('Grooming');
             if (data.offersTraining) services.push('Training');
             setServicesOffered(services);
-        } catch (err: unknown) {
-            // optional: log or track fetch error
         } finally {
             setIsLoadingBusinessInfo(false);
         }
-    };
+    }, [businessId]);
 
     const sendClientRequest = async () => {
         try {
@@ -153,6 +133,24 @@ export default function IndividualSendClientRequestPage() {
             setErrorMessage(t('error_sending_request') + ' ' + getErrorMessage(err));
         }
     };
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, user => {
+            if (!user) {
+                router.push(`/${locale}/loginsignup`);
+                return;
+            }
+            setUserId(user.uid);
+            checkClientStatus(user.uid);
+        });
+        return () => unsubscribe();
+    }, [checkClientStatus, locale, router]);
+
+    useEffect(() => {
+        if (userId) {
+            fetchBusinessInfo();
+        }
+    }, [userId, fetchBusinessInfo]);
 
     return (
         <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)] px-4 py-6">
