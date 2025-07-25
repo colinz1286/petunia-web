@@ -14,18 +14,19 @@ import {
   where,
   getDocs,
   doc,
-  updateDoc
+  updateDoc,
 } from 'firebase/firestore';
 import {
   getStorage,
   ref,
   uploadBytes,
-  getDownloadURL
+  getDownloadURL,
 } from 'firebase/storage';
 
 import { initializeApp } from 'firebase/app';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -33,7 +34,7 @@ const firebaseConfig = {
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
@@ -41,11 +42,16 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
+type BusinessUpdatePayload = {
+  licenseNumber: string;
+  isVerified: boolean;
+  licenseImageURL?: string;
+};
+
 export default function BoardingAndDaycareDashboardPage() {
   const router = useRouter();
   const t = useTranslations('businessDashboard');
 
-  const [userId, setUserId] = useState('');
   const [businessId, setBusinessId] = useState('');
   const [isVerified, setIsVerified] = useState(false);
   const [logoUrl, setLogoUrl] = useState('');
@@ -64,11 +70,11 @@ export default function BoardingAndDaycareDashboardPage() {
         router.push('/en/loginsignup');
         return;
       }
-      setUserId(user.uid);
       await fetchBusinessInfo(user.uid);
     });
+
     return () => unsubscribe();
-  }, []);
+  }, [router]);
 
   const fetchBusinessInfo = async (uid: string) => {
     const q = query(collection(db, 'businesses'), where('ownerId', '==', uid));
@@ -97,7 +103,7 @@ export default function BoardingAndDaycareDashboardPage() {
     const url = await getDownloadURL(fileRef);
 
     await updateDoc(doc(db, 'businesses', businessId), {
-      logoURL: url
+      logoURL: url,
     });
 
     setLogoUrl(url);
@@ -107,9 +113,9 @@ export default function BoardingAndDaycareDashboardPage() {
   const handleVerificationSubmit = async () => {
     if (!businessId) return;
 
-    const update: Partial<Record<string, unknown>> = {
+    const update: BusinessUpdatePayload = {
       licenseNumber,
-      isVerified: false
+      isVerified: false,
     };
 
     if (licenseFile) {
@@ -258,8 +264,6 @@ export default function BoardingAndDaycareDashboardPage() {
     </div>
   );
 }
-
-import Link from 'next/link';
 
 function DashboardLink({
   href,

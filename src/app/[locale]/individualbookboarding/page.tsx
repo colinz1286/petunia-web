@@ -10,15 +10,12 @@ import {
     getDocs,
     collection,
     Timestamp,
-    setDoc,
-    query,
-    where
+    setDoc
 } from 'firebase/firestore';
 import {
     getDatabase,
     ref,
-    set as rtdbSet,
-    get as rtdbGet
+    set as rtdbSet
 } from 'firebase/database';
 import {
     getAuth,
@@ -84,33 +81,53 @@ export default function IndividualBookBoardingPage() {
     const [pickUpRequired, setPickUpRequired] = useState(false);
 
     const [waiverRequired, setWaiverRequired] = useState(false);
-    const [waiverSigned, setWaiverSigned] = useState(true);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [waiverSigned] = useState(true);
+    const [isSubmitting] = useState(false);
 
     useEffect(() => {
-        onAuthStateChanged(auth, async (user) => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 router.push(`/${locale}/loginsignup`);
                 return;
             }
+
             const uid = user.uid;
             setUserId(uid);
 
             const petSnap = await getDocs(collection(db, 'users', uid, 'pets'));
-            const petList: Pet[] = petSnap.docs.map(doc => {
+            const petList: Pet[] = petSnap.docs.map((doc) => {
                 const d = doc.data();
                 return {
                     id: doc.id,
                     name: d.petName || 'Unnamed',
-                    species: d.petType || ''
+                    species: d.petType || '',
                 };
             });
 
             setPets(petList);
-            setSelectedPetIds(petList.map(p => p.id));
-            await loadBusinessSettings();
+            setSelectedPetIds(petList.map((p) => p.id));
+
+            // ✅ Moved loadBusinessSettings inline
+            const snap = await getDoc(doc(db, 'businesses', businessId));
+            const data = snap.data() || {};
+
+            setDropOffTimeOptions(data.dropOffTimeOptionsBoarding || []);
+            setPickUpTimeOptions(data.pickUpTimeOptionsBoarding || []);
+            setDropOffRequired(data.dropOffTimeRequiredBoarding ?? false);
+            setPickUpRequired(data.pickUpTimeRequired ?? false);
+            setWaiverRequired(data.waiverRequired ?? false);
+
+            if (data.dropOffTimeOptionsBoarding?.length) {
+                setDropOffTime(data.dropOffTimeOptionsBoarding[0]);
+            }
+
+            if (data.pickUpTimeOptionsBoarding?.length) {
+                setPickUpTime(data.pickUpTimeOptionsBoarding[0]);
+            }
         });
-    }, []);
+
+        return () => unsubscribe();
+    }, [router, locale, businessId]);
 
     async function loadBusinessSettings() {
         const snap = await getDoc(doc(db, 'businesses', businessId));
