@@ -10,16 +10,12 @@ const Footer = dynamic(() => import('../../components/Footer'));
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
+export const generateMetadata = async (): Promise<Metadata> => {
   return {
     title: 'Petunia – The perfect app for your business. The perfect world for your pet.',
     description: 'All-in-one pet care platform trusted by owners, sitters, shelters, and clinics.',
   };
-}
+};
 
 export async function generateStaticParams() {
   return [{ locale: 'en' }, { locale: 'en-US' }];
