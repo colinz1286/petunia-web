@@ -1,5 +1,10 @@
 'use client';
 
+export const metadata = {
+  title: 'Petunia – All-in-One Pet Care for Owners, Sitters, and Businesses',
+  description: 'Create pet profiles, manage reservations, and run your pet care business from one place. Trusted by pet owners, sitters, shelters, and clinics.',
+};
+
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
