@@ -22,9 +22,7 @@ import {
 import {
     getDatabase,
     ref,
-    remove,
-    get as getRtdb,
-    child
+    remove
 } from 'firebase/database';
 import { initializeApp } from 'firebase/app';
 
@@ -58,10 +56,6 @@ type Reservation = {
     petNames: string[];
     groomingSummary: Record<string, string[]>;
 };
-
-function getErrorMessage(err: unknown): string {
-    return err instanceof Error ? err.message : 'Unknown error';
-}
 
 export default function IndividualUpcomingAppointmentsPage() {
     const t = useTranslations('individualUpcomingAppointments');
@@ -173,7 +167,7 @@ export default function IndividualUpcomingAppointmentsPage() {
         });
 
         return () => unsubscribe();
-    }, [locale, router]);
+    }, [locale, router, t]);
 
     const formatDate = (date: Date) =>
         new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(date);

@@ -79,7 +79,7 @@ export default function HomePage() {
               Our reminders keep you on top of things like annual vet visits and expiring vaccines. We’ve built everything with love, ease, and your pet’s safety in mind.
             </p>
             <p className="text-lg text-balance">
-              🐾 Whether you're a new pet parent or a seasoned pro, Petunia gives you peace of mind — and more time to enjoy the moments that matter.
+              🐾 Whether you&rsquo;re a new pet parent or a seasoned pro, Petunia gives you peace of mind — and more time to enjoy the moments that matter.
             </p>
             <p className="text-lg text-balance">
               💌 Have feedback? Would you like to see a specific feature or function added? Email us at{" "}
@@ -139,7 +139,7 @@ export default function HomePage() {
               Just $10/month. No commissions, ever. Bring your existing clients and grow from there.
             </p>
             <p className="text-lg text-balance">
-              💌 Want to shape the features and help us determine what features we roll out next? Email us at{" "}
+              💌 Want to shape the features and help us determine what features we roll out next? Email us at{' '}
               <a href="mailto:admin@petuniapets.com" className="underline text-[#2c4a30]">
                 admin@petuniapets.com
               </a>.

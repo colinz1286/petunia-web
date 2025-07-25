@@ -99,17 +99,6 @@ export default function IndividualBookDaycarePage() {
         });
     }, [locale, router, businessId]);
 
-    async function loadBusinessSettings() {
-        const snap = await getDoc(doc(db, 'businesses', businessId));
-        const data = snap.data() || {};
-        const dropOffMap = data.dropOffTimesDaycare || {};
-        const weekday = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-        const options = dropOffMap[weekday] || [];
-        setDropOffOptions(options);
-        setSelectedTime(options[0] || '');
-        setWaiverRequired(data.waiverRequired ?? false);
-    }
-
     async function submitBooking() {
         if (!selectedDate || !selectedTime || selectedPetIds.length === 0) return;
         if (waiverRequired && !waiverSigned) {
