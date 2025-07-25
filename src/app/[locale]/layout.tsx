@@ -10,14 +10,18 @@ const Footer = dynamic(() => import('../../components/Footer'));
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
-export function generateMetadata({ params }: { params: { locale: string } }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: { locale: string };
+}) {
   return {
     title: `Petunia (${params.locale})`,
     description: 'All-in-one pet care platform',
   };
 }
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   return [{ locale: 'en' }, { locale: 'en-US' }];
 }
 
