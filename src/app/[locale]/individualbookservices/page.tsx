@@ -15,7 +15,6 @@ import {
     doc
 } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
-import Link from 'next/link';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,

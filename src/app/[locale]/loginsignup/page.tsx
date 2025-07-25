@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import {
@@ -31,6 +32,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+function getFirebaseErrorCode(err: unknown): string {
+  if (
+    typeof err === 'object' &&
+    err !== null &&
+    'code' in err &&
+    typeof (err as Record<string, unknown>).code === 'string'
+  ) {
+    return (err as { code: string }).code;
+  }
+  return '';
+}
 
 export default function LoginSignupPage() {
   const locale = useLocale();
@@ -65,9 +78,12 @@ export default function LoginSignupPage() {
       }
 
       setLoginError('Account found, but no matching profile was detected.');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Login error:', error);
-      switch (error.code) {
+
+      const code: string = getFirebaseErrorCode(error);
+
+      switch (code) {
         case 'auth/user-not-found':
           setLoginError('No user found with that email.');
           break;
@@ -88,10 +104,13 @@ export default function LoginSignupPage() {
   return (
     <main className="min-h-screen bg-[#f6efe4] text-[#2c4a30] font-sans flex flex-col items-center justify-start px-4 py-10">
       <div className="w-full max-w-xs sm:max-w-md space-y-6 text-center">
-        <img
+        <Image
           src="/petunia_logo.png"
           alt="Petunia Logo"
+          width={160}
+          height={0}
           className="mx-auto w-40 h-auto"
+          priority
         />
 
         <p className="italic text-gray-600 text-lg leading-relaxed">
@@ -104,7 +123,7 @@ export default function LoginSignupPage() {
             type="email"
             placeholder="Email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
             className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm"
           />
 
@@ -112,7 +131,7 @@ export default function LoginSignupPage() {
             type="password"
             placeholder="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
             className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm"
           />
 

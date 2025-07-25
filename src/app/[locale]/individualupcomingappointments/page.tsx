@@ -59,12 +59,15 @@ type Reservation = {
     groomingSummary: Record<string, string[]>;
 };
 
+function getErrorMessage(err: unknown): string {
+    return err instanceof Error ? err.message : 'Unknown error';
+}
+
 export default function IndividualUpcomingAppointmentsPage() {
     const t = useTranslations('individualUpcomingAppointments');
     const locale = useLocale();
     const router = useRouter();
 
-    const [userId, setUserId] = useState('');
     const [reservations, setReservations] = useState<Reservation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -80,7 +83,6 @@ export default function IndividualUpcomingAppointmentsPage() {
             }
 
             const uid = user.uid;
-            setUserId(uid);
             setIsLoading(true);
 
             try {
@@ -97,8 +99,9 @@ export default function IndividualUpcomingAppointmentsPage() {
 
                     for (const docSnap of snap.docs) {
                         const data = docSnap.data();
-                        const ts = data[dateField] as Timestamp;
+                        const ts = data[dateField] as Timestamp | undefined;
                         if (!ts) continue;
+
                         const resDate = ts.toDate();
                         if (resDate < cutoff) {
                             await deleteDoc(doc(db, collectionName, docSnap.id));
@@ -141,7 +144,6 @@ export default function IndividualUpcomingAppointmentsPage() {
                         const addr = bizData.address || {};
                         res.businessAddress = `${addr.street || ''}, ${addr.city || ''}, ${addr.state || ''} ${addr.zipCode || ''}`;
 
-
                         for (const petId of res.petIds) {
                             const petSnap = await getDoc(doc(db, 'users', uid, 'pets', petId));
                             const petName = petSnap.data()?.petName || t('unknown_pet_name');
@@ -162,15 +164,16 @@ export default function IndividualUpcomingAppointmentsPage() {
 
                 results.sort((a, b) => a.date.getTime() - b.date.getTime());
                 setReservations(results);
-            } catch (err: any) {
-                setError(err.message);
+            } catch (err: unknown) {
+                const message = err instanceof Error ? err.message : 'Unknown error';
+                setError(message);
             } finally {
                 setIsLoading(false);
             }
         });
 
         return () => unsubscribe();
-    }, [locale, router, t]);
+    }, [locale, router]);
 
     const formatDate = (date: Date) =>
         new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(date);
@@ -192,7 +195,6 @@ export default function IndividualUpcomingAppointmentsPage() {
             await deleteDoc(doc(db, col, res.id));
 
             const path = ref(rtdb, `upcomingReservations/${res.businessId}/${res.realtimeKey}`);
-            const rtdbSnap = await getRtdb(child(ref(rtdb), `upcomingReservations/${res.businessId}`));
             console.log('🧹 Deleting RTDB key:', res.realtimeKey);
             await remove(path);
 
@@ -207,8 +209,8 @@ export default function IndividualUpcomingAppointmentsPage() {
             }
 
             setReservations(prev => prev.filter(r => r.id !== res.id));
-        } catch (err) {
-            console.error('❌ Cancelation failed:', err);
+        } catch (err: unknown) {
+            console.error('❌ Cancelation failed:', err instanceof Error ? err.message : 'Unknown error');
         } finally {
             setCancelingId(null);
         }

@@ -71,8 +71,12 @@ export default function IndividualNotificationsPage() {
                 const snapshot = await getDocs(notifQuery);
 
                 const loaded: Notification[] = snapshot.docs.map(docSnap => {
-                    const data = docSnap.data();
-                    const timestamp = (data.timestamp as Timestamp | undefined)?.toDate();
+                    const data = docSnap.data() as {
+                        type?: string;
+                        message?: string;
+                        timestamp?: Timestamp;
+                    };
+                    const timestamp = data.timestamp?.toDate();
                     return {
                         id: docSnap.id,
                         type: data.type ?? 'unknown',
@@ -84,6 +88,7 @@ export default function IndividualNotificationsPage() {
                 setNotifications(loaded);
                 setIsLoading(false);
 
+                // Show admin alert if it's a business signup today
                 if (
                     uid === ADMIN_USER_ID &&
                     loaded.length > 0 &&
@@ -91,12 +96,14 @@ export default function IndividualNotificationsPage() {
                     loaded[0].timestamp &&
                     new Date(loaded[0].timestamp).toDateString() === new Date().toDateString()
                 ) {
-                    const businessName = loaded[0].message.split('\n')[0] || t('default_business_name');
+                    const messageLines = loaded[0].message.split('\n');
+                    const businessName = messageLines.length > 0 ? messageLines[0] : t('default_business_name');
                     setAlertMessage(t('new_business_signup_message', { businessName }));
                     setTimeout(() => setShowAlert(true), 500);
                 }
-            } catch (err: any) {
-                setErrorMessage(t('error_loading_notifications', { message: err.message }));
+            } catch (err: unknown) {
+                const message = err instanceof Error ? err.message : 'Unknown error';
+                setErrorMessage(t('error_loading_notifications', { message }));
                 setIsLoading(false);
             }
         });
@@ -108,7 +115,7 @@ export default function IndividualNotificationsPage() {
         try {
             await deleteDoc(doc(db, 'users', userId, 'notifications', id));
             setNotifications(prev => prev.filter(n => n.id !== id));
-        } catch (err) {
+        } catch (err: unknown) {
             console.error('❌ Failed to delete notification:', err);
         }
     };

@@ -49,6 +49,18 @@ type Pet = {
     species: string;
 };
 
+type BoardingReservationPayload = {
+    userId: string;
+    businessId: string;
+    petIds: string[];
+    dropOffDate: Timestamp;
+    pickUpDate: Timestamp;
+    status: string;
+    realtimeKey: string;
+    dropOffTime?: string;
+    pickUpTime?: string;
+};
+
 export default function IndividualBookBoardingPage() {
     const t = useTranslations('individualBookBoarding');
     const locale = useLocale();
@@ -109,8 +121,13 @@ export default function IndividualBookBoardingPage() {
         setPickUpRequired(data.pickUpTimeRequired ?? false);
         setWaiverRequired(data.waiverRequired ?? false);
 
-        if (dropOffTimeOptions.length > 0) setDropOffTime(dropOffTimeOptions[0]);
-        if (pickUpTimeOptions.length > 0) setPickUpTime(pickUpTimeOptions[0]);
+        if (data.dropOffTimeOptionsBoarding?.length) {
+            setDropOffTime(data.dropOffTimeOptionsBoarding[0]);
+        }
+
+        if (data.pickUpTimeOptionsBoarding?.length) {
+            setPickUpTime(data.pickUpTimeOptionsBoarding[0]);
+        }
     }
 
     async function handleSubmit() {
@@ -122,7 +139,8 @@ export default function IndividualBookBoardingPage() {
 
         const reservationId = crypto.randomUUID();
         const docRef = doc(db, 'boardingReservations', reservationId);
-        const reservationData: any = {
+
+        const reservationData: BoardingReservationPayload = {
             userId,
             businessId,
             petIds: selectedPetIds,

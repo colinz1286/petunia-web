@@ -43,6 +43,27 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 const rtdb = getDatabase(app);
 
+type UserProfileUpdate = {
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+  };
+  emergencyContact: {
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+  };
+};
+
+function getErrorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : 'Unknown error';
+}
+
 export default function EditProfilePage() {
   const t = useTranslations('individualEditProfile');
   const router = useRouter();
@@ -113,7 +134,7 @@ export default function EditProfilePage() {
   };
 
   const handleSave = async () => {
-    const update = {
+    const update: UserProfileUpdate = {
       firstName,
       lastName,
       phoneNumber: phone,
@@ -133,8 +154,8 @@ export default function EditProfilePage() {
     try {
       await updateDoc(doc(db, 'users', userId), update);
       setAlertMessage(t('profile_update_success'));
-    } catch (err: any) {
-      setAlertMessage(`${t('profile_update_failure')} ${err.message}`);
+    } catch (err: unknown) {
+      setAlertMessage(`${t('profile_update_failure')} ${getErrorMessage(err)}`);
     }
   };
 
@@ -159,8 +180,8 @@ export default function EditProfilePage() {
 
       setAlertMessage(t('account_delete_success'));
       setTimeout(() => router.push('/en/loginsignup'), 1500);
-    } catch (err: any) {
-      setAlertMessage(`${t('account_delete_failure')} ${err.message}`);
+    } catch (err: unknown) {
+      setAlertMessage(`${t('account_delete_failure')} ${getErrorMessage(err)}`);
     }
   };
 

@@ -33,6 +33,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+function getErrorMessage(err: unknown): string {
+    return err instanceof Error ? err.message : 'Unknown error';
+}
+
 export default function IndividualSendClientRequestPage() {
     const t = useTranslations('individualSendClientRequest');
     const searchParams = useSearchParams();
@@ -90,8 +94,8 @@ export default function IndividualSendClientRequestPage() {
             );
             const snapshot = await getDocs(q);
             setHasRequestedAlready(!snapshot.empty);
-        } catch (err) {
-            setErrorMessage(t('must_be_logged_in'));
+        } catch (err: unknown) {
+            setErrorMessage(t('must_be_logged_in') + ' ' + getErrorMessage(err));
         } finally {
             setIsLoadingStatus(false);
         }
@@ -114,8 +118,8 @@ export default function IndividualSendClientRequestPage() {
             if (data.offersGrooming) services.push('Grooming');
             if (data.offersTraining) services.push('Training');
             setServicesOffered(services);
-        } catch {
-            // no-op
+        } catch (err: unknown) {
+            // optional: log or track fetch error
         } finally {
             setIsLoadingBusinessInfo(false);
         }
@@ -145,8 +149,8 @@ export default function IndividualSendClientRequestPage() {
 
             setShowSuccess(true);
             setHasRequestedAlready(true);
-        } catch (err: any) {
-            setErrorMessage(t('error_sending_request'));
+        } catch (err: unknown) {
+            setErrorMessage(t('error_sending_request') + ' ' + getErrorMessage(err));
         }
     };
 

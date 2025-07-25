@@ -108,14 +108,14 @@ export default function AddEditPetPage() {
 
                     try {
                         await loadPetData(user.uid, petId);
-                    } catch (err) {
-                        console.error("❌ Error loading pet data:", err);
+                    } catch {
+                        console.error("❌ Error loading pet data");
                     }
                 } else {
                     console.log("🆕 No petId provided. Page is in add mode.");
                 }
-            } catch (err) {
-                console.error("❌ Error during auth/init logic:", err);
+            } catch {
+                console.error("❌ Error during auth/init logic");
             } finally {
                 console.log("🎯 Setting loading to false");
                 setLoading(false);
@@ -168,10 +168,12 @@ export default function AddEditPetPage() {
             setAfraidOfAnything(data.afraidOfAnything || 'No');
             setFearDetails(data.fearDetails || '');
 
-            const formatDateString = (value: any): string => {
+            const formatDateString = (value: unknown): string => {
                 if (!value) return '';
                 if (typeof value === 'string') return value;
-                if (value.toDate) return value.toDate().toISOString().split('T')[0];
+                if (typeof value === 'object' && value !== null && 'toDate' in value && typeof (value as any).toDate === 'function') {
+                    return (value as { toDate: () => Date }).toDate().toISOString().split('T')[0];
+                }
                 return '';
             };
 
@@ -227,7 +229,7 @@ export default function AddEditPetPage() {
                         console.log(`✅ Found and loaded vaccine file: ${filePath}`);
                         fileFound = true;
                         break;
-                    } catch (err) {
+                    } catch {
                         console.warn(`⛔️ File not found or blocked: ${filePath}`);
                     }
                 }
@@ -236,13 +238,13 @@ export default function AddEditPetPage() {
                     console.warn('🚫 No valid vaccine file found for this pet.');
                     setVaccineFile(null);
                 }
-            } catch (err) {
-                console.error('🔥 Unexpected error while loading vaccine file:', err);
+            } catch {
+                console.error('🔥 Unexpected error while loading vaccine file');
                 setVaccineFile(null);
             }
 
-        } catch (err) {
-            console.error('❌ Error loading pet data:', err);
+        } catch {
+            console.error('❌ Error loading pet data');
         }
     };
 
@@ -277,8 +279,9 @@ export default function AddEditPetPage() {
                 await addDoc(petCollectionRef, payload);
             }
             router.push(`/${locale}/individualmypets`);
-        } catch (err) {
-            console.error('Failed to save:', err);
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            console.error('❌ Failed to save:', message);
             alert(t('save_error'));
         } finally {
             setSaving(false);
