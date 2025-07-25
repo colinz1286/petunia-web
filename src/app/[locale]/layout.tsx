@@ -12,11 +12,14 @@ const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin']
 const Header = dynamic(() => import('../../components/Header'));
 const Footer = dynamic(() => import('../../components/Footer'));
 
-// ✅ Static metadata (no async) – solves “Untitled” Safari bug
-export const generateMetadata = (): Metadata => ({
-  title: 'Petunia – The perfect app for your business. The perfect world for your pet.',
+// ✅ Structured metadata with fallback support
+export const metadata: Metadata = {
+  title: {
+    default: 'Petunia – The perfect app for your business. The perfect world for your pet.',
+    template: '%s | Petunia',
+  },
   description: 'All-in-one pet care platform trusted by owners, sitters, shelters, and clinics.',
-});
+};
 
 // Locales supported
 export function generateStaticParams() {

@@ -25,6 +25,11 @@ export default function HomePageClient() {
         }
     }, [selectedRole]);
 
+    // ✅ Force Safari to apply <title> post-hydration (safety net)
+    useEffect(() => {
+        document.title = 'Petunia – All-in-One Pet Care for Owners, Sitters, and Businesses';
+    }, []);
+
     return (
         <>
             <Head>
