@@ -11,7 +11,7 @@ export default function LayoutContent({
   locale: string;
   children: ReactNode;
 }) {
-  const [messages, setMessages] = useState<Record<string, any> | null>(null);
+  const [messages, setMessages] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     try {
