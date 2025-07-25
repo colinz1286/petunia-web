@@ -4,6 +4,10 @@ import dynamic from 'next/dynamic';
 import { type Metadata } from 'next';
 import LayoutContent from '../../components/LayoutContent';
 
+import { NextIntlClientProvider } from 'next-intl'; // ✅ NEW
+import { getMessages } from 'next-intl/server';      // ✅ NEW
+import { notFound } from 'next/navigation';          // ✅ NEW
+
 // Fonts
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
@@ -36,18 +40,27 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
 
+  let messages;
+  try {
+    messages = await getMessages(); // ✅ Load translation messages
+  } catch (error) {
+    notFound(); // ✅ Trigger 404 if locale not found
+  }
+
   return (
     <html lang={locale}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#f6efe4] text-[#2c4a30] overflow-x-hidden`}
       >
-        <LayoutContent locale={locale}>
-          <Header />
-          <main className="min-h-screen w-full max-w-screen-xl mx-auto px-4 sm:px-6">
-            {children}
-          </main>
-          <Footer />
-        </LayoutContent>
+        <NextIntlClientProvider locale={locale} messages={messages}> {/* ✅ FIXED */}
+          <LayoutContent locale={locale}>
+            <Header />
+            <main className="min-h-screen w-full max-w-screen-xl mx-auto px-4 sm:px-6">
+              {children}
+            </main>
+            <Footer />
+          </LayoutContent>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

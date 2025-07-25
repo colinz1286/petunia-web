@@ -31,6 +31,8 @@ const db = getFirestore(app);
 
 export default function IndividualRemindersPage() {
     const t = useTranslations('individualReminders');
+    t('reminders_title')
+
     const locale = useLocale();
     const router = useRouter();
 
