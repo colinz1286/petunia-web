@@ -24,6 +24,7 @@ import {
 import { initializeApp } from 'firebase/app';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import GroomingModal from '@/components/GroomingModal';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -44,6 +45,25 @@ type Pet = {
     name: string;
 };
 
+type DraftBooking = {
+    date: Date;
+    dropOffTime: string;
+    petIds: string[];
+    groomingAddOns?: Record<string, string[]>;
+};
+
+function serializeGroomingSelections(
+    selections: Record<string, Set<string>>
+): Record<string, string[]> {
+    const result: Record<string, string[]> = {};
+    for (const [petId, services] of Object.entries(selections)) {
+        if (services.size > 0) {
+            result[petId] = Array.from(services);
+        }
+    }
+    return result;
+}
+
 export default function IndividualBookDaycarePage() {
     const t = useTranslations('individualBookDaycare');
     const locale = useLocale();
@@ -59,10 +79,19 @@ export default function IndividualBookDaycarePage() {
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
     const [dropOffOptions, setDropOffOptions] = useState<string[]>([]);
     const [selectedTime, setSelectedTime] = useState('');
+    const [hasExistingReservation, setHasExistingReservation] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [waiverRequired, setWaiverRequired] = useState(false);
     const [waiverSigned] = useState(true);
     const [error] = useState<string | null>(null);
+    const [groomingAvailable, setGroomingAvailable] = useState(false);
+    const [groomingServices, setGroomingServices] = useState<string[]>([]);
+    const [groomingSelections, setGroomingSelections] = useState<Record<string, Set<string>>>({});
+    const [draftBookings, setDraftBookings] = useState<DraftBooking[]>([]);
+    const [showGroomingPrompt, setShowGroomingPrompt] = useState(false);
+    const [pendingDraft, setPendingDraft] = useState<DraftBooking | null>(null);
+    const [showGroomingUI, setShowGroomingUI] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     async function loadPets(uid: string) {
         const snap = await getDocs(collection(db, 'users', uid, 'pets'));
@@ -80,10 +109,23 @@ export default function IndividualBookDaycarePage() {
             const data = snap.data() || {};
             const dropOffMap = data.dropOffTimesDaycare || {};
             const weekday = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-            const options = dropOffMap[weekday] || [];
+
+            const options = (dropOffMap[weekday] || []).slice().sort((a: string, b: string) => {
+                const toMinutes = (time: string) => {
+                    const [hourMin, period] = time.split(' ');
+                    let [hour, minute] = hourMin.split(':').map(Number);
+                    if (period === 'PM' && hour !== 12) hour += 12;
+                    if (period === 'AM' && hour === 12) hour = 0;
+                    return hour * 60 + minute;
+                };
+                return toMinutes(a) - toMinutes(b);
+            });
+
             setDropOffOptions(options);
             setSelectedTime(options[0] || '');
             setWaiverRequired(data.waiverRequired ?? false);
+            setGroomingAvailable(data.groomingAvailableAsAddOnToDaycare ?? false);
+            setGroomingServices(data.groomingServices ?? []);
         }
 
         onAuthStateChanged(auth, async (user) => {
@@ -99,45 +141,174 @@ export default function IndividualBookDaycarePage() {
         });
     }, [locale, router, businessId]);
 
-    async function submitBooking() {
+    useEffect(() => {
+        if (!selectedDate) return;
+
+        async function recalculateDropOffOptions() {
+            const snap = await getDoc(doc(db, 'businesses', businessId));
+            const data = snap.data() || {};
+            const dropOffMap = data.dropOffTimesDaycare || {};
+            const weekday = selectedDate!.toLocaleDateString('en-US', { weekday: 'long' });
+
+            const options = (dropOffMap[weekday] || []).slice().sort((a: string, b: string) => {
+                const toMinutes = (time: string) => {
+                    const [hourMin, period] = time.split(' ');
+                    let [hour, minute] = hourMin.split(':').map(Number);
+                    if (period === 'PM' && hour !== 12) hour += 12;
+                    if (period === 'AM' && hour === 12) hour = 0;
+                    return hour * 60 + minute;
+                };
+                return toMinutes(a) - toMinutes(b);
+            });
+
+            setDropOffOptions(options);
+            setSelectedTime(options[0] || '');
+        }
+
+        recalculateDropOffOptions();
+    }, [selectedDate, businessId]);
+
+    async function checkForExistingReservation(date: Date, uid: string) {
+        const startOfDay = new Date(date);
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const endOfDay = new Date(date);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const snap = await getDocs(collection(db, 'daycareReservations'));
+
+        const matching = snap.docs.find(doc => {
+            const data = doc.data();
+            const resDate = data.date?.toDate?.();
+            const status = data.status;
+            return (
+                data.businessId === businessId &&
+                data.userId === uid &&
+                ['approved', 'pending'].includes(status) &&
+                resDate >= startOfDay && resDate <= endOfDay
+            );
+        });
+
+        setHasExistingReservation(!!matching);
+    }
+
+    function addBookingDraft() {
         if (!selectedDate || !selectedTime || selectedPetIds.length === 0) return;
+
+        const exists = draftBookings.some(
+            (b) =>
+                b.date.toDateString() === selectedDate.toDateString() &&
+                b.dropOffTime === selectedTime &&
+                JSON.stringify(b.petIds.sort()) === JSON.stringify(selectedPetIds.slice().sort())
+        );
+        if (exists) {
+            alert(t('duplicate_daycare_message'));
+            return;
+        }
+
+        const newDraft: DraftBooking = {
+            date: selectedDate,
+            dropOffTime: selectedTime,
+            petIds: [...selectedPetIds],
+        };
+
+        if (groomingAvailable && groomingServices.length > 0) {
+            setPendingDraft(newDraft);
+            setShowGroomingPrompt(true);
+        } else {
+            setDraftBookings((prev) => [...prev, newDraft]); // ✅ Only add draft if no grooming
+            resetFormAfterDraft();
+        }
+    }
+
+    function resetFormAfterDraft() {
+        setSelectedTime('');
+        setDropOffOptions([]);
+        setSelectedPetIds(pets.map(p => p.id));
+    }
+
+    async function submitBooking() {
+        if (draftBookings.length === 0) {
+            alert(t('no_bookings_to_submit'));
+            return;
+        }
+
         if (waiverRequired && !waiverSigned) {
             alert(t('waiver_required'));
             return;
         }
 
-        const reservationId = crypto.randomUUID();
-        const realtimeKey = reservationId;
-        const reservation = {
-            userId,
-            businessId,
-            petIds: selectedPetIds,
-            date: Timestamp.fromDate(selectedDate),
-            arrivalWindow: selectedTime,
-            status: 'approved',
-            realtimeKey
-        };
+        const firestore = getFirestore();
+        const realtimeDB = getDatabase();
 
-        await setDoc(doc(db, 'daycareReservations', reservationId), reservation);
+        const userSnap = await getDoc(doc(firestore, 'users', userId));
+        const firstName = userSnap.data()?.firstName || 'Client';
+        const lastName = userSnap.data()?.lastName || '';
+        const ownerName = `${firstName} ${lastName}`.trim();
 
-        for (const petId of selectedPetIds) {
-            const pet = pets.find(p => p.id === petId);
-            if (!pet) continue;
-            const path = `upcomingReservations/${businessId}/${realtimeKey}-${petId}`;
-            await rtdbSet(ref(rtdb, path), {
-                dogName: pet.name,
-                ownerName: 'Client',
-                type: 'Daycare',
-                date: selectedDate.toISOString().split('T')[0],
-                arrivalWindow: selectedTime,
-                status: 'approved',
-                userId,
-                realtimeKey
+        for (const booking of draftBookings) {
+            const reservationId = crypto.randomUUID();
+            const realtimeKey = reservationId;
+
+            const petStatuses: Record<string, string> = {};
+            booking.petIds.forEach(petId => {
+                petStatuses[petId] = 'pending';
             });
-        }
 
-        alert(t('submission_success'));
-        router.push(`/${locale}/individualupcomingappointments`);
+            const groomingForReservation = serializeGroomingSelections(groomingSelections);
+
+            const reservation: Record<string, any> = {
+                userId,
+                businessId,
+                petIds: booking.petIds,
+                date: Timestamp.fromDate(booking.date),
+                arrivalWindow: booking.dropOffTime,
+                status: 'approved',
+                realtimeKey,
+                petStatuses,
+            };
+
+            if (Object.keys(groomingForReservation).length > 0) {
+                reservation['groomingAddOns'] = groomingForReservation;
+            }
+
+            await setDoc(doc(firestore, 'daycareReservations', reservationId), reservation);
+
+            // Realtime DB entry per pet
+            for (const petId of booking.petIds) {
+                const pet = pets.find(p => p.id === petId);
+                if (!pet) continue;
+
+                const rtdbKey = `${realtimeKey}-${petId}`;
+                const rtdbPath = `upcomingReservations/${businessId}/${rtdbKey}`;
+
+                const rtdbEntry: any = {
+                    dogName: pet.name,
+                    ownerName,
+                    type: 'Daycare',
+                    date: booking.date.toISOString().split('T')[0],
+                    arrivalWindow: booking.dropOffTime,
+                    status: 'approved',
+                    userId,
+                    realtimeKey,
+                };
+
+                if (groomingSelections[petId] && groomingSelections[petId]!.size > 0) {
+                    rtdbEntry.groomingAddOns = Array.from(groomingSelections[petId]!);
+                }
+
+                const petSnap = await getDoc(doc(firestore, 'users', userId, 'pets', petId));
+                const petData = petSnap.data();
+
+                if (petData) {
+                    if (petData.medications) rtdbEntry.medications = petData.medications;
+                    if (petData.medicationDetails) rtdbEntry.medicationDetails = petData.medicationDetails;
+                    if (petData.spayedNeutered) rtdbEntry.spayedNeutered = petData.spayedNeutered;
+                }
+
+                await rtdbSet(ref(realtimeDB, rtdbPath), rtdbEntry);
+            }
+        }
     }
 
     return (
@@ -169,7 +340,12 @@ export default function IndividualBookDaycarePage() {
                             <label className="font-semibold text-center text-sm">{t('select_date')}</label>
                             <DatePicker
                                 selected={selectedDate}
-                                onChange={(date: Date | null) => setSelectedDate(date)}
+                                onChange={(date: Date | null) => {
+                                    setSelectedDate(date);
+                                    if (date && userId) {
+                                        checkForExistingReservation(date, userId);
+                                    }
+                                }}
                                 dateFormat="MM/dd/yyyy"
                                 className="w-full max-w-xs border p-2 rounded text-center text-sm"
                                 placeholderText="Select a date"
@@ -185,7 +361,7 @@ export default function IndividualBookDaycarePage() {
                                     value={selectedTime}
                                     onChange={(e) => setSelectedTime(e.target.value)}
                                 >
-                                    {dropOffOptions.map((opt) => (
+                                    {dropOffOptions.map((opt: string) => (
                                         <option key={opt} value={opt}>
                                             {opt}
                                         </option>
@@ -219,13 +395,171 @@ export default function IndividualBookDaycarePage() {
                             </div>
                         </div>
 
-                        {/* ✅ Submit Button */}
+                        {/* ✅ Add to Booking List */}
                         <button
-                            onClick={submitBooking}
-                            className="w-full max-w-xs bg-green-800 text-white py-3 rounded hover:bg-green-700 transition text-sm"
+                            onClick={addBookingDraft}
+                            className="w-full max-w-xs bg-blue-800 text-white py-3 rounded hover:bg-blue-700 transition text-sm"
                         >
-                            {t('submit')}
+                            {t('add_to_booking_list')}
                         </button>
+
+                        {/* ✅ Grooming Add-On Modal */}
+                        <GroomingModal
+                            isOpen={showGroomingUI}
+                            onClose={() => {
+                                setTimeout(() => {
+                                    if (pendingDraft) {
+                                        setDraftBookings((prev) => [
+                                            ...prev,
+                                            {
+                                                ...pendingDraft,
+                                                groomingAddOns: serializeGroomingSelections(groomingSelections),
+                                            },
+                                        ]);
+                                    }
+                                    resetFormAfterDraft();
+                                    setPendingDraft(null);
+                                    setShowGroomingUI(false);
+                                }, 100);
+                            }}
+                            pets={pets.filter((p) => pendingDraft?.petIds.includes(p.id))}
+                            services={groomingServices}
+                            groomingSelections={groomingSelections}
+                            setGroomingSelections={setGroomingSelections}
+                        />
+
+                        {/* ✅ Draft Bookings List */}
+                        {draftBookings.length > 0 && (
+                            <div className="w-full space-y-4">
+                                <h2 className="text-md font-semibold text-center">{t('your_bookings')}</h2>
+                                {draftBookings.map((booking, index) => {
+                                    const petNames = booking.petIds
+                                        .map((id) => pets.find((p) => p.id === id)?.name || 'Unknown')
+                                        .join(', ');
+
+                                    const hasGrooming = booking.groomingAddOns && Object.keys(booking.groomingAddOns).length > 0;
+
+                                    return (
+                                        <div key={index} className="border p-3 rounded shadow-sm">
+                                            <p><strong>📅</strong> {booking.date.toLocaleDateString()}</p>
+                                            <p><strong>⏰</strong> {booking.dropOffTime}</p>
+                                            <p><strong>🐶</strong> {petNames}</p>
+
+                                            {/* ✅ Show grooming selections from draft */}
+                                            {hasGrooming && (
+                                                <p><strong>🛁</strong>{' '}
+                                                    {booking.petIds.map((petId) => {
+                                                        const services = booking.groomingAddOns?.[petId];
+                                                        if (!services || services.length === 0) return null;
+                                                        const petName = pets.find(p => p.id === petId)?.name || 'Unknown';
+                                                        return `${petName}: ${services.join(', ')}`;
+                                                    }).filter(Boolean).join(' | ')}
+                                                </p>
+                                            )}
+
+                                            <button
+                                                onClick={() =>
+                                                    setDraftBookings(draftBookings.filter((_, i) => i !== index))
+                                                }
+                                                className="mt-2 text-red-600 text-sm underline"
+                                            >
+                                                {t('remove_booking')}
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {/* ✅ Submit Button */}
+                        {draftBookings.length > 0 && (
+                            <button
+                                onClick={async () => {
+                                    if (hasExistingReservation || isSubmitting) return;
+
+                                    setIsSubmitting(true);
+
+                                    await submitBooking();
+
+                                    // ✅ Clear UI state after successful submission
+                                    setDraftBookings([]);
+                                    setGroomingSelections({});
+                                    setSelectedTime('');
+                                    setSelectedDate(null);
+                                    setSelectedPetIds(pets.map((p) => p.id));
+
+                                    alert(t('submission_success'));
+
+                                    setIsSubmitting(false);
+                                }}
+                                className={`w-full max-w-xs text-white py-3 rounded transition text-sm ${hasExistingReservation || isSubmitting
+                                    ? 'bg-gray-400 cursor-not-allowed'
+                                    : 'bg-green-800 hover:bg-green-700'
+                                    }`}
+                                disabled={hasExistingReservation || isSubmitting}
+                            >
+                                {isSubmitting ? t('submitting_reservations') : t('submit_all')}
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {/* ✅ Yes/No Grooming Modal */}
+                {showGroomingPrompt && (
+                    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                        <div className="bg-white rounded-lg p-6 shadow-md max-w-sm w-full">
+                            <p className="text-sm mb-4">{t('grooming_prompt_message')}</p>
+                            <div className="flex justify-end gap-4">
+                                {/* ✅ YES */}
+                                <button
+                                    onClick={() => {
+                                        if (pendingDraft) {
+                                            // ensure grooming selections exist for each pet
+                                            setGroomingSelections((prev: Record<string, Set<string>>) => {
+                                                const updated = { ...prev };
+                                                pendingDraft.petIds.forEach((petId: string) => {
+                                                    if (!updated[petId]) {
+                                                        updated[petId] = new Set();
+                                                    }
+                                                });
+                                                return updated;
+                                            });
+                                            setShowGroomingUI(true); // keep draft until grooming is added
+                                        }
+                                        setShowGroomingPrompt(false);
+                                    }}
+                                    className="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded text-sm"
+                                >
+                                    {t('yes')}
+                                </button>
+
+                                {/* ✅ NO */}
+                                <button
+                                    onClick={() => {
+                                        if (pendingDraft) {
+                                            // 🧹 Clear any grooming selections for these pets
+                                            setGroomingSelections((prev) => {
+                                                const updated = { ...prev };
+                                                pendingDraft.petIds.forEach((petId) => {
+                                                    delete updated[petId];
+                                                });
+                                                return updated;
+                                            });
+
+                                            // ✅ Finalize the draft
+                                            setDraftBookings((prev) => [...prev, pendingDraft]);
+                                        }
+
+                                        resetFormAfterDraft();
+                                        setShowGroomingPrompt(false);
+                                        setPendingDraft(null);
+                                    }}
+                                    className="bg-gray-400 hover:bg-gray-300 text-black px-4 py-2 rounded text-sm"
+                                >
+                                    {t('no')}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>

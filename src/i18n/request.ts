@@ -2,7 +2,12 @@ import { getRequestConfig } from 'next-intl/server';
 import { routing } from './routing';
 
 export default getRequestConfig(async ({ locale }) => {
-  const safeLocale = (locale ?? routing.defaultLocale) as (typeof routing.locales)[number];
+  let safeLocale = (locale ?? routing.defaultLocale) as (typeof routing.locales)[number];
+
+  // ✅ Normalize English variants to 'en'
+  if (safeLocale.toLowerCase().startsWith('en')) {
+    safeLocale = 'en';
+  }
 
   if (!routing.locales.includes(safeLocale)) {
     throw new Error(`Unsupported locale: ${safeLocale}`);
@@ -23,7 +28,7 @@ export default getRequestConfig(async ({ locale }) => {
     individualBookServices: (await import(`../../messages/${safeLocale}/individualBookServices.json`)).default,
     individualSelectService: (await import(`../../messages/${safeLocale}/individualSelectService.json`)).default,
     individualBookDaycare: (await import(`../../messages/${safeLocale}/individualBookDaycare.json`)).default,
-    individualBookBoarding: (await import(`../../messages/${safeLocale}/individualBookBoarding.json`)).default // ✅ Added this line
+    individualBookBoarding: (await import(`../../messages/${safeLocale}/individualBookBoarding.json`)).default
   };
 
   return {
