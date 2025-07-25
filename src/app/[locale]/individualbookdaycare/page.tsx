@@ -44,13 +44,6 @@ type Pet = {
     name: string;
 };
 
-type DraftBooking = {
-    id: string;
-    date: string;
-    dropOffTime: string;
-    petIds: string[];
-};
-
 export default function IndividualBookDaycarePage() {
     const t = useTranslations('individualBookDaycare');
     const locale = useLocale();
@@ -71,20 +64,6 @@ export default function IndividualBookDaycarePage() {
     const [waiverSigned] = useState(true);
     const [error] = useState<string | null>(null);
 
-    useEffect(() => {
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                router.push(`/${locale}/loginsignup`);
-                return;
-            }
-
-            setUserId(user.uid);
-            await loadPets(user.uid);
-            await loadBusinessSettings();
-            setIsLoading(false);
-        });
-    }, [locale, router, loadBusinessSettings]);
-
     async function loadPets(uid: string) {
         const snap = await getDocs(collection(db, 'users', uid, 'pets'));
         const pets = snap.docs.map((d) => ({
@@ -94,6 +73,31 @@ export default function IndividualBookDaycarePage() {
         setPets(pets);
         setSelectedPetIds(pets.map(p => p.id));
     }
+
+    useEffect(() => {
+        async function loadBusinessSettingsInline() {
+            const snap = await getDoc(doc(db, 'businesses', businessId));
+            const data = snap.data() || {};
+            const dropOffMap = data.dropOffTimesDaycare || {};
+            const weekday = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+            const options = dropOffMap[weekday] || [];
+            setDropOffOptions(options);
+            setSelectedTime(options[0] || '');
+            setWaiverRequired(data.waiverRequired ?? false);
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                router.push(`/${locale}/loginsignup`);
+                return;
+            }
+
+            setUserId(user.uid);
+            await loadPets(user.uid);
+            await loadBusinessSettingsInline();
+            setIsLoading(false);
+        });
+    }, [locale, router, businessId]);
 
     async function loadBusinessSettings() {
         const snap = await getDoc(doc(db, 'businesses', businessId));

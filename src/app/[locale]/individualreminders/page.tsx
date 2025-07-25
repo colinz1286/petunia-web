@@ -10,13 +10,9 @@ import {
 import {
     getFirestore,
     collection,
-    doc,
-    getDoc,
     getDocs,
-    query,
-    where,
-    updateDoc,
-    Timestamp
+    Timestamp,
+    QueryDocumentSnapshot
 } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 
@@ -38,7 +34,7 @@ export default function IndividualRemindersPage() {
     const locale = useLocale();
     const router = useRouter();
 
-    const [userId, setUserId] = useState('');
+    const [, setUserId] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -50,8 +46,106 @@ export default function IndividualRemindersPage() {
     const [expandedCheckups, setExpandedCheckups] = useState(true);
     const [expandedBirthdays, setExpandedBirthdays] = useState(true);
 
-    // Load auth and data on mount
     useEffect(() => {
+        async function loadVaccineStatuses(uid: string) {
+            const petsSnap = await getDocs(collection(db, 'users', uid, 'pets'));
+            const statuses: VaccineStatus[] = [];
+
+            petsSnap.forEach((docSnap: QueryDocumentSnapshot) => {
+                const data = docSnap.data();
+                const petName = data.petName || 'Unnamed';
+                const records = data.vaccinationRecords || {};
+
+                Object.entries(records).forEach(([vaccineName, vaccineData]) => {
+                    if (
+                        vaccineData &&
+                        typeof vaccineData === 'object' &&
+                        'date' in vaccineData &&
+                        vaccineData.date instanceof Timestamp
+                    ) {
+                        const date = vaccineData.date.toDate();
+                        const daysLeft = Math.floor((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+
+                        statuses.push({
+                            id: `${docSnap.id}_${vaccineName}`,
+                            petName,
+                            vaccineName,
+                            daysUntilExpiration: daysLeft
+                        });
+                    }
+                });
+            });
+
+            setVaccineStatuses(statuses);
+        }
+
+        async function loadBirthdayStatuses(uid: string) {
+            const petsSnap = await getDocs(collection(db, 'users', uid, 'pets'));
+            const statuses: BirthdayStatus[] = [];
+
+            const now = new Date();
+
+            petsSnap.forEach((docSnap: QueryDocumentSnapshot) => {
+                const data = docSnap.data();
+                const petName = data.petName || 'Unnamed';
+                const dobTimestamp = data.dateOfBirth as Timestamp | undefined;
+
+                if (!dobTimestamp) return;
+
+                const dob = dobTimestamp.toDate();
+                const dobMonth = dob.getMonth();
+                const dobDay = dob.getDate();
+
+                const nextBirthday = new Date();
+                nextBirthday.setMonth(dobMonth);
+                nextBirthday.setDate(dobDay);
+                if (nextBirthday < now) nextBirthday.setFullYear(now.getFullYear() + 1);
+
+                const diff = Math.floor((nextBirthday.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+                statuses.push({
+                    id: docSnap.id,
+                    petName,
+                    birthdayDate: dob,
+                    daysUntilBirthday: diff,
+                    isWithin7Days: diff <= 7
+                });
+            });
+
+            setBirthdayStatuses(statuses);
+        }
+
+        async function loadCheckupStatuses(uid: string) {
+            const petsSnap = await getDocs(collection(db, 'users', uid, 'pets'));
+            const statuses: CheckupStatus[] = [];
+
+            const now = new Date();
+
+            petsSnap.forEach((docSnap: QueryDocumentSnapshot) => {
+                const data = docSnap.data();
+                const petName = data.petName || 'Unnamed';
+                const lastVisitTimestamp = data.lastAnnualVetVisit as Timestamp | undefined;
+
+                if (!lastVisitTimestamp) return;
+
+                const lastVisit = lastVisitTimestamp.toDate();
+                const nextCheckup = new Date(lastVisit);
+                nextCheckup.setFullYear(nextCheckup.getFullYear() + 1);
+
+                const diff = Math.floor((nextCheckup.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+                statuses.push({
+                    id: docSnap.id,
+                    petName,
+                    lastVisitDate: lastVisit,
+                    daysUntilNextCheckup: diff,
+                    isWithin30Days: diff <= 30
+                });
+            });
+
+            setCheckupStatuses(statuses);
+        }
+
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 router.push(`/${locale}/loginsignup`);
@@ -67,7 +161,7 @@ export default function IndividualRemindersPage() {
                     loadBirthdayStatuses(uid),
                     loadCheckupStatuses(uid)
                 ]);
-            } catch (error) {
+            } catch {
                 setErrorMessage('Failed to load reminders.');
             } finally {
                 setIsLoading(false);
@@ -77,98 +171,7 @@ export default function IndividualRemindersPage() {
         return () => unsubscribe();
     }, [locale, router]);
 
-    async function loadVaccineStatuses(uid: string) {
-        const petsSnap = await getDocs(collection(db, 'users', uid, 'pets'));
-        const statuses: VaccineStatus[] = [];
-
-        petsSnap.forEach(docSnap => {
-            const data = docSnap.data();
-            const petName = data.petName || 'Unnamed';
-            const records = data.vaccinationRecords || {};
-
-            Object.entries(records).forEach(([vaccineName, vaccineData]) => {
-                const date = (vaccineData as any).date as Timestamp;
-                const daysLeft = Math.floor((date.toDate().getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-
-                statuses.push({
-                    id: `${docSnap.id}_${vaccineName}`,
-                    petName,
-                    vaccineName,
-                    daysUntilExpiration: daysLeft
-                });
-            });
-        });
-
-        setVaccineStatuses(statuses);
-    }
-
-    async function loadBirthdayStatuses(uid: string) {
-        const petsSnap = await getDocs(collection(db, 'users', uid, 'pets'));
-        const statuses: BirthdayStatus[] = [];
-
-        const now = new Date();
-        const calendar = new Date();
-
-        petsSnap.forEach(docSnap => {
-            const data = docSnap.data();
-            const petName = data.petName || 'Unnamed';
-            const dobTimestamp = data.dateOfBirth as Timestamp | undefined;
-
-            if (!dobTimestamp) return;
-
-            const dob = dobTimestamp.toDate();
-            const dobMonth = dob.getMonth();
-            const dobDay = dob.getDate();
-
-            let nextBirthday = new Date();
-            nextBirthday.setMonth(dobMonth);
-            nextBirthday.setDate(dobDay);
-            if (nextBirthday < now) nextBirthday.setFullYear(now.getFullYear() + 1);
-
-            const diff = Math.floor((nextBirthday.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
-            statuses.push({
-                id: docSnap.id,
-                petName,
-                birthdayDate: dob,
-                daysUntilBirthday: diff,
-                isWithin7Days: diff <= 7
-            });
-        });
-
-        setBirthdayStatuses(statuses);
-    }
-
-    async function loadCheckupStatuses(uid: string) {
-        const petsSnap = await getDocs(collection(db, 'users', uid, 'pets'));
-        const statuses: CheckupStatus[] = [];
-
-        const now = new Date();
-
-        petsSnap.forEach(docSnap => {
-            const data = docSnap.data();
-            const petName = data.petName || 'Unnamed';
-            const lastVisitTimestamp = data.lastAnnualVetVisit as Timestamp | undefined;
-
-            if (!lastVisitTimestamp) return;
-
-            const lastVisit = lastVisitTimestamp.toDate();
-            const nextCheckup = new Date(lastVisit);
-            nextCheckup.setFullYear(nextCheckup.getFullYear() + 1);
-
-            const diff = Math.floor((nextCheckup.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
-            statuses.push({
-                id: docSnap.id,
-                petName,
-                lastVisitDate: lastVisit,
-                daysUntilNextCheckup: diff,
-                isWithin30Days: diff <= 30
-            });
-        });
-
-        setCheckupStatuses(statuses);
-    }
+    // ... (Your existing return JSX remains unchanged)
 
     type VaccineStatus = {
         id: string;

@@ -112,7 +112,7 @@ export default function HomePage() {
               💡 Free for your first 30 days — just $25/month after. No contracts. No nonsense.
             </p>
             <p className="text-lg text-balance">
-              💌 Questions or requests? Want a feature that we don't currently have? Email us at{" "}
+              💌 Questions or requests? Want a feature that we don&rsquo;t currently have? Email us at{" "}
               <a href="mailto:admin@petuniapets.com" className="underline text-[#2c4a30]">
                 admin@petuniapets.com
               </a>.
@@ -164,7 +164,7 @@ export default function HomePage() {
           <section className="space-y-5 w-full max-w-xl">
             <h3 className="text-2xl font-bold text-center">Veterinary Clinics</h3>
             <p className="text-lg text-balance">
-              Most clinic software is rigid and outdated. We're building something better — flexible, modern, and shaped around how real veterinary teams operate.
+              Most clinic software is rigid and outdated. We&rsquo;re building something better — flexible, modern, and shaped around how real veterinary teams operate.
             </p>
             <p className="text-lg text-balance">
               Stay tuned as we expand support for multi-location practices and seamless pet record syncing.
