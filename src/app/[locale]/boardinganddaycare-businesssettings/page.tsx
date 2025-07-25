@@ -524,12 +524,12 @@ export default function BusinessSettingsPage() {
                                                             <p className="font-semibold text-sm text-[color:var(--color-foreground)] mb-1">{day}</p>
                                                             <button
                                                                 className="text-sm text-blue-600 underline"
-                                                                onClick={() =>
+                                                                onClick={() => {
                                                                     setCollapsedDays((prev) => ({
                                                                         ...prev,
                                                                         [`${day}-boarding-drop`]: !prev[`${day}-boarding-drop`],
-                                                                    }))
-                                                                }
+                                                                    }));
+                                                                }}
                                                             >
                                                                 {collapsedDays[`${day}-boarding-drop`] ? t('expand') : t('collapse')}
                                                             </button>
@@ -562,12 +562,12 @@ export default function BusinessSettingsPage() {
                                                             <p className="font-semibold text-sm text-[color:var(--color-foreground)] mb-1">{day}</p>
                                                             <button
                                                                 className="text-sm text-blue-600 underline"
-                                                                onClick={() =>
+                                                                onClick={() => {
                                                                     setCollapsedDays((prev) => ({
                                                                         ...prev,
                                                                         [`${day}-boarding-pickup`]: !prev[`${day}-boarding-pickup`],
-                                                                    }))
-                                                                }
+                                                                    }));
+                                                                }}
                                                             >
                                                                 {collapsedDays[`${day}-boarding-pickup`] ? t('expand') : t('collapse')}
                                                             </button>
@@ -592,6 +592,7 @@ export default function BusinessSettingsPage() {
                                 </>
                             )}
                         </div>
+
                         {/* ─────────────── Optional Feature Toggles ─────────────── */}
                         <div className="mt-10">
                             <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-4">

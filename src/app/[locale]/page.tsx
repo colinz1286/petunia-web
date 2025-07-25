@@ -30,8 +30,8 @@ export default function HomePage() {
       <Image
         src="/petunia_logo.png"
         alt="Petunia Logo"
-        width={288} // Tailwind w-72 = 18rem = 288px
-        height={0} // Let height auto-adjust with layout
+        width={288}
+        height={0}
         className="mb-6 h-auto w-64 sm:w-72"
         priority
       />
@@ -44,7 +44,7 @@ export default function HomePage() {
 
       {/* Headline */}
       <h2 className="text-2xl font-bold mb-6 text-[#2c4a30] tracking-wide text-balance">
-        Are You a Current or Prospective...
+        Are You a Current or Prospective&hellip;
       </h2>
 
       {/* Role Buttons */}
@@ -70,13 +70,13 @@ export default function HomePage() {
           <section className="space-y-5 w-full max-w-xl">
             <h3 className="text-2xl font-bold text-center">Welcome, Pet Owners!</h3>
             <p className="text-lg text-balance">
-              Petunia is free to all pet owners! This is your all-in-one hub to manage your pet’s care — from daycare and boarding reservations to vaccination tracking and feeding instructions.
+              Petunia is free to all pet owners! This is your all-in-one hub to manage your pet&rsquo;s care — from daycare and boarding reservations to vaccination tracking and feeding instructions.
             </p>
             <p className="text-lg text-balance">
               Create personalized profiles for each of your pets, upload important records like vaccine certificates, and book services from trusted providers — all in one place.
             </p>
             <p className="text-lg text-balance">
-              Our reminders keep you on top of things like annual vet visits and expiring vaccines. We’ve built everything with love, ease, and your pet’s safety in mind.
+              Our reminders keep you on top of things like annual vet visits and expiring vaccines. We&rsquo;ve built everything with love, ease, and your pet&rsquo;s safety in mind.
             </p>
             <p className="text-lg text-balance">
               🐾 Whether you&rsquo;re a new pet parent or a seasoned pro, Petunia gives you peace of mind — and more time to enjoy the moments that matter.
@@ -106,7 +106,7 @@ export default function HomePage() {
               Petunia is here to help you streamline operations, save time, and focus on what matters most — the dogs in your care and the people who love them.
             </p>
             <p className="text-lg text-balance">
-              From check-ins and feeding notes to client management, reminders, and real-time schedule visibility — it's all right here.
+              From check-ins and feeding notes to client management, reminders, and real-time schedule visibility — it&rsquo;s all right here.
             </p>
             <p className="text-lg text-balance">
               💡 Free for your first 30 days — just $25/month after. No contracts. No nonsense.
@@ -128,6 +128,7 @@ export default function HomePage() {
             </p>
           </section>
         )}
+
         {selectedRole === 'sitterWalker' && (
           <section className="space-y-5 w-full max-w-xl">
             <h3 className="text-2xl font-bold text-center">Pet Sitters & Dog Walkers</h3>
@@ -138,7 +139,7 @@ export default function HomePage() {
               Just $10/month. No commissions, ever. Bring your existing clients and grow from there.
             </p>
             <p className="text-lg text-balance">
-              💌 Want to shape the features and help us determine what features we roll out next? Email us at{' '}
+              💌 Want to shape the features and help us determine what features we roll out next? Email us at{" "}
               <a href="mailto:admin@petuniapets.com" className="underline text-[#2c4a30]">
                 admin@petuniapets.com
               </a>.
