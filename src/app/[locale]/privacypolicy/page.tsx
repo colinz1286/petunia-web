@@ -1,4 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function PrivacyPolicyPage() {
   return (
@@ -7,10 +9,13 @@ export default function PrivacyPolicyPage() {
       <header className="w-full flex items-center justify-between px-6 py-4 bg-[#f6efe4] border-b border-[#d9cfc2]">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
-          <img
+          <Image
             src="/petunia_logo.png"
             alt="Petunia Logo"
+            width={80}
+            height={0}
             className="w-20 h-auto"
+            priority
           />
         </Link>
 

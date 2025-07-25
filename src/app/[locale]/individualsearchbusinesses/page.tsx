@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
@@ -49,22 +49,6 @@ export default function IndividualSearchBusinessesPage() {
     const [userLocation, setUserLocation] = useState<GeolocationCoordinates | null>(null);
 
     const searchRadiusMiles = 75;
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, user => {
-            if (!user) {
-                router.push('/loginsignup');
-            } else {
-                fetchBusinesses();
-                requestLocation();
-            }
-        });
-        return () => unsubscribe();
-    }, []);
-
-    useEffect(() => {
-        updateFilteredBusinesses();
-    }, [searchText, businesses, userLocation]);
 
     const fetchBusinesses = async () => {
         try {
@@ -123,7 +107,7 @@ export default function IndividualSearchBusinessesPage() {
         return R * c * 0.621371; // km to miles
     };
 
-    const updateFilteredBusinesses = () => {
+    const updateFilteredBusinesses = useCallback(() => {
         const search = searchText.toLowerCase();
 
         if (!userLocation) {
@@ -148,7 +132,23 @@ export default function IndividualSearchBusinessesPage() {
         });
 
         setFilteredBusinesses(withinRange);
-    };
+    }, [searchText, businesses, userLocation]);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, user => {
+            if (!user) {
+                router.push('/loginsignup');
+            } else {
+                fetchBusinesses();
+                requestLocation();
+            }
+        });
+        return () => unsubscribe();
+    }, [router]);
+
+    useEffect(() => {
+        updateFilteredBusinesses();
+    }, [updateFilteredBusinesses]);
 
     const handleViewProfile = (businessId: string, businessName: string) => {
         router.push(`/individualsendclientrequest?businessId=${businessId}&businessName=${encodeURIComponent(businessName)}`);

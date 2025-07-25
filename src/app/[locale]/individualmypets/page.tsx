@@ -84,7 +84,7 @@ export default function IndividualMyPetsPage() {
         });
 
         return () => unsub();
-    }, []);
+    }, [locale, router]);
 
     const fetchPets = async (uid: string) => {
         try {

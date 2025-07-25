@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import {
@@ -36,24 +36,7 @@ export default function IndividualSelectServicePage() {
     const [isLoading, setIsLoading] = useState(true);
     const [showComingSoon, setShowComingSoon] = useState(false);
 
-    useEffect(() => {
-        const unsub = onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                router.push(`/${locale}/loginsignup`);
-                return;
-            }
-
-            if (businessId) {
-                loadBusinessServices(businessId);
-            } else {
-                router.push(`/${locale}/individualdashboard`);
-            }
-        });
-
-        return () => unsub();
-    }, [businessId, locale, router]);
-
-    const loadBusinessServices = async (bizId: string) => {
+    const loadBusinessServices = useCallback(async (bizId: string) => {
         try {
             const snap = await getDoc(doc(db, 'businesses', bizId));
             const data = snap.data();
@@ -77,7 +60,24 @@ export default function IndividualSelectServicePage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [t]);
+
+    useEffect(() => {
+        const unsub = onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                router.push(`/${locale}/loginsignup`);
+                return;
+            }
+
+            if (businessId) {
+                loadBusinessServices(businessId);
+            } else {
+                router.push(`/${locale}/individualdashboard`);
+            }
+        });
+
+        return () => unsub();
+    }, [businessId, locale, router, loadBusinessServices]);
 
     const handleServiceClick = (service: string) => {
         switch (service) {

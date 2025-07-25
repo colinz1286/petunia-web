@@ -128,12 +128,11 @@ export default function HomePage() {
             </p>
           </section>
         )}
-
         {selectedRole === 'sitterWalker' && (
           <section className="space-y-5 w-full max-w-xl">
             <h3 className="text-2xl font-bold text-center">Pet Sitters & Dog Walkers</h3>
             <p className="text-lg text-balance">
-              This part of Petunia is coming soon! We&apos;re rolling out tools built specifically for sitters and walkers.
+              This part of Petunia is coming soon! We&rsquo;re rolling out tools built specifically for sitters and walkers.
             </p>
             <p className="text-lg text-balance">
               Just $10/month. No commissions, ever. Bring your existing clients and grow from there.

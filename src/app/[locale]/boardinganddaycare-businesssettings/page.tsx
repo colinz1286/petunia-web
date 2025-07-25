@@ -426,12 +426,12 @@ export default function BusinessSettingsPage() {
                                                         <div className="mt-2 space-y-1">
                                                             <button
                                                                 className="text-sm text-blue-600 underline"
-                                                                onClick={() =>
+                                                                onClick={() => {
                                                                     setCollapsedDays((prev) => ({
                                                                         ...prev,
                                                                         [`${day}-daycare-drop`]: !prev[`${day}-daycare-drop`],
-                                                                    }))
-                                                                }
+                                                                    }));
+                                                                }}
                                                             >
                                                                 {collapsedDays[`${day}-daycare-drop`] ? t('expand') : t('collapse')}
                                                             </button>
@@ -463,12 +463,12 @@ export default function BusinessSettingsPage() {
                                                         <div className="mt-2 space-y-1">
                                                             <button
                                                                 className="text-sm text-blue-600 underline"
-                                                                onClick={() =>
+                                                                onClick={() => {
                                                                     setCollapsedDays((prev) => ({
                                                                         ...prev,
                                                                         [`${day}-daycare-pickup`]: !prev[`${day}-daycare-pickup`],
-                                                                    }))
-                                                                }
+                                                                    }));
+                                                                }}
                                                             >
                                                                 {collapsedDays[`${day}-daycare-pickup`] ? t('expand') : t('collapse')}
                                                             </button>
