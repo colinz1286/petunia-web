@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
+import Image from 'next/image';
 
 export default function ContactPage() {
   const locale = useLocale();
@@ -11,10 +12,13 @@ export default function ContactPage() {
       <div className="max-w-xl space-y-6">
 
         {/* Image */}
-        <img
+        <Image
           src="/ChatGPT Image Jul 24, 2025 at 04_29_11 PM.png"
           alt="Contact Us Visual"
+          width={1200}
+          height={0}
           className="mx-auto w-[90%] sm:w-[80%] md:w-[60%] rounded-lg shadow-lg mb-8"
+          priority
         />
 
         {/* Heading */}

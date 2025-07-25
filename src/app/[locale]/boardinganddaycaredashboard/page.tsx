@@ -107,7 +107,7 @@ export default function BoardingAndDaycareDashboardPage() {
   const handleVerificationSubmit = async () => {
     if (!businessId) return;
 
-    const update: any = {
+    const update: Partial<Record<string, unknown>> = {
       licenseNumber,
       isVerified: false
     };

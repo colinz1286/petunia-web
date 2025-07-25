@@ -11,17 +11,23 @@ export default function AboutUsPage() {
     <main className="min-h-screen bg-[#f6efe4] text-[#2c4a30] px-4 sm:px-6 py-12 font-sans flex flex-col items-center">
       <div className="w-full max-w-3xl space-y-10 text-center">
         {/* Logo */}
-        <img
+        <Image
           src="/petunia_logo.png"
           alt="Petunia Logo"
+          width={160} // w-40 = 10rem = 160px
+          height={0}
           className="w-36 sm:w-40 h-auto mx-auto"
+          priority
         />
 
         {/* Milo Intro Image */}
-        <img
+        <Image
           src="/IMG_0354.jpeg"
           alt="Milo"
+          width={640} // arbitrary base width for max-w-md (28rem)
+          height={0}
           className="w-full max-w-md mx-auto rounded-lg shadow-lg"
+          priority
         />
 
         {/* Intro */}
@@ -48,10 +54,13 @@ export default function AboutUsPage() {
         </p>
 
         <div className="text-center">
-          <img
+          <Image
             src="/IMG_6110.jpeg"
             alt="Milo, Erin, and Mia"
+            width={1200} // estimated safe base width
+            height={0}
             className="mx-auto rounded-lg shadow-md w-[90%] sm:w-[80%] md:w-[60%]"
+            priority
           />
           <p className="mt-2 text-sm italic text-[#555]">
             Starting from left: Milo, Erin, and Mia on one of our final walks together.
@@ -92,10 +101,13 @@ export default function AboutUsPage() {
         </p>
 
         <div className="text-center">
-          <img
+          <Image
             src="/rachelrowland-59.jpg"
             alt="Petunia and Mia"
+            width={1200} // estimated base width for responsive layout
+            height={0}
             className="mx-auto rounded-lg shadow-md w-[90%] sm:w-[80%] md:w-[60%]"
+            priority
           />
           <p className="mt-2 text-sm italic text-[#555]">
             Petunia (left) and Mia (right) — the next generation of love.
