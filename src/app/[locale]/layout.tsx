@@ -4,22 +4,26 @@ import dynamic from 'next/dynamic';
 import { type Metadata } from 'next';
 import LayoutContent from '../../components/LayoutContent';
 
-const Header = dynamic(() => import('../../components/Header'));
-const Footer = dynamic(() => import('../../components/Footer'));
-
+// Fonts
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
-// ✅ FIXED: No longer async – now a proper static metadata export
+// Header & Footer (dynamically imported for performance)
+const Header = dynamic(() => import('../../components/Header'));
+const Footer = dynamic(() => import('../../components/Footer'));
+
+// ✅ Static metadata (no async) – solves “Untitled” Safari bug
 export const generateMetadata = (): Metadata => ({
   title: 'Petunia – The perfect app for your business. The perfect world for your pet.',
   description: 'All-in-one pet care platform trusted by owners, sitters, shelters, and clinics.',
 });
 
+// Locales supported
 export function generateStaticParams() {
   return [{ locale: 'en' }, { locale: 'en-US' }];
 }
 
+// Layout wrapper per locale
 export default async function LocaleLayout({
   children,
   params,
