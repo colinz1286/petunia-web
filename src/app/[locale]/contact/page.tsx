@@ -1,12 +1,8 @@
 'use client';
 
-import Link from 'next/link';
-import { useLocale } from 'next-intl';
 import Image from 'next/image';
 
 export default function ContactPage() {
-  const locale = useLocale();
-
   return (
     <main className="min-h-screen bg-[#f6efe4] text-[#2c4a30] font-sans px-4 sm:px-6 py-20 flex flex-col items-center justify-center text-center">
       <div className="max-w-xl space-y-6">
@@ -22,11 +18,11 @@ export default function ContactPage() {
         />
 
         {/* Heading */}
-        <h1 className="text-3xl sm:text-4xl font-bold">We’d love to hear from you</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold">We&rsquo;d love to hear from you</h1>
 
         {/* Body Text */}
         <p className="text-lg leading-relaxed">
-          Whether you have a question, suggestion, or just want to say hello — we’re always here.
+          Whether you have a question, suggestion, or just want to say hello — we&rsquo;re always here.
         </p>
 
         <p className="text-lg leading-relaxed">
@@ -37,7 +33,7 @@ export default function ContactPage() {
           >
             admin@petuniapets.com
           </a>
-          . We’ll get back to you as soon as we can!
+          . We&rsquo;ll get back to you as soon as we can!
         </p>
 
         <p className="text-lg italic text-[#444]">
