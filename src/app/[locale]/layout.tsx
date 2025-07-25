@@ -4,7 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { notFound } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { type Metadata } from 'next';
-import { type JSX } from 'react';
+import { type JSX, type ReactNode } from 'react';
 
 const Header = dynamic(() => import('../../components/Header'));
 const Footer = dynamic(() => import('../../components/Footer'));
@@ -12,11 +12,14 @@ const Footer = dynamic(() => import('../../components/Footer'));
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
+export type LocaleLayoutProps = {
+  children: ReactNode;
+  params: { locale: string };
+};
+
 export const generateMetadata = async ({
   params,
-}: {
-  params: { locale: string };
-}): Promise<Metadata> => {
+}: Pick<LocaleLayoutProps, 'params'>): Promise<Metadata> => {
   return {
     title: `Petunia (${params.locale})`,
     description: 'All-in-one pet care platform',
@@ -24,16 +27,13 @@ export const generateMetadata = async ({
 };
 
 export async function generateStaticParams() {
-  return [{ locale: 'en' }, { locale: 'en-US' }]; // Add more supported locales if needed
+  return [{ locale: 'en' }, { locale: 'en-US' }];
 }
 
 export default async function Layout({
   children,
   params,
-}: {
-  children: React.ReactNode;
-  params: { locale: string };
-}): Promise<JSX.Element> {
+}: LocaleLayoutProps): Promise<JSX.Element> {
   let messages;
   try {
     messages = (await import(`../../../messages/${params.locale}.json`)).default;
