@@ -8,6 +8,7 @@ import { useLocale } from 'next-intl';
 import {
   getAuth,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import {
   getFirestore,
@@ -16,10 +17,11 @@ import {
   where,
   getDocs,
   getDoc,
-  doc
+  doc,
 } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 
+// ✅ Inline Firebase config (consistent with AddEditPetPage and others)
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
@@ -53,24 +55,35 @@ export default function LoginSignupPage() {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [forgotMessage, setForgotMessage] = useState<string | null>(null);
 
   const handleLogin = async () => {
     setLoginError(null);
+    setForgotMessage(null);
     setIsLoggingIn(true);
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const uid = userCredential.user.uid;
+      const user = userCredential.user;
 
+      if (!user.emailVerified) {
+        setLoginError('Please verify your email before logging in.');
+        setIsLoggingIn(false);
+        return;
+      }
+
+      const uid = user.uid;
+
+      // Check if user is a business owner
       const businessSnapshot = await getDocs(
         query(collection(db, 'businesses'), where('ownerId', '==', uid))
       );
-
       if (!businessSnapshot.empty) {
         router.push(`/${locale}/boardinganddaycaredashboard`);
         return;
       }
 
+      // Check if user is an individual
       const userDoc = await getDoc(doc(db, 'users', uid));
       if (userDoc.exists()) {
         router.push(`/${locale}/individualdashboard`);
@@ -80,7 +93,6 @@ export default function LoginSignupPage() {
       setLoginError('Account found, but no matching profile was detected.');
     } catch (error: unknown) {
       console.error('❌ Login error:', error);
-
       const code: string = getFirebaseErrorCode(error);
 
       switch (code) {
@@ -99,6 +111,35 @@ export default function LoginSignupPage() {
     }
 
     setIsLoggingIn(false);
+  };
+
+  const handleForgotPassword = async () => {
+    setLoginError(null);
+    setForgotMessage(null);
+
+    if (!email.trim()) {
+      setForgotMessage('Please enter your email address first.');
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setForgotMessage('A password reset email has been sent.');
+    } catch (error: unknown) {
+      console.error('❌ Forgot Password error:', error);
+      const code: string = getFirebaseErrorCode(error);
+
+      switch (code) {
+        case 'auth/invalid-email':
+          setForgotMessage('Invalid email address.');
+          break;
+        case 'auth/user-not-found':
+          setForgotMessage('No account found with that email.');
+          break;
+        default:
+          setForgotMessage('Failed to send reset email. Please try again.');
+      }
+    }
   };
 
   return (
@@ -123,7 +164,7 @@ export default function LoginSignupPage() {
             type="email"
             placeholder="Email"
             value={email}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm"
           />
 
@@ -131,7 +172,7 @@ export default function LoginSignupPage() {
             type="password"
             placeholder="Password"
             value={password}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm"
           />
 
@@ -143,13 +184,14 @@ export default function LoginSignupPage() {
             {isLoggingIn ? 'Logging in...' : 'Log In'}
           </button>
 
-          {loginError && (
-            <p className="text-red-600 text-sm text-center">{loginError}</p>
-          )}
+          {loginError && <p className="text-red-600 text-sm text-center">{loginError}</p>}
+          {forgotMessage && <p className="text-sm text-center text-[color:var(--color-accent)]">{forgotMessage}</p>}
         </div>
 
         <div className="text-sm text-center space-y-2 pt-4">
-          <button className="text-[#2c4a30] underline">Forgot Password?</button>
+          <button onClick={handleForgotPassword} className="text-[#2c4a30] underline">
+            Forgot Password?
+          </button>
           <br />
           <Link href={`/${locale}/createnewaccount`} className="text-[#2c4a30] underline">
             Create New Account
