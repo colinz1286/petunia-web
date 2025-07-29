@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { initializeApp } from 'firebase/app';
 import {
   getAuth,
@@ -31,7 +31,6 @@ const db = getFirestore(app);
 
 export default function BusinessSignUpPage() {
   const locale = useLocale();
-  const t = useTranslations('businessSignUp');
   const router = useRouter();
 
   const [form, setForm] = useState({

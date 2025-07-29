@@ -132,12 +132,20 @@ export default function IndividualSignUpPage() {
       setSuccess('Account created! Please verify your email.');
       router.push(`/${locale}/loginsignup`);
     } catch (err) {
-      if (err instanceof Error) {
-        if ((err as any).code === 'auth/email-already-in-use') {
+      if (
+        typeof err === 'object' &&
+        err !== null &&
+        'code' in err &&
+        typeof (err as { code: unknown }).code === 'string'
+      ) {
+        const code = (err as { code: string }).code;
+        if (code === 'auth/email-already-in-use') {
           setError('An account with this email already exists. Please log in or reset your password.');
         } else {
-          setError(err.message);
+          setError('An unexpected authentication error occurred.');
         }
+      } else if (err instanceof Error) {
+        setError(err.message);
       } else {
         setError('Something went wrong.');
       }
