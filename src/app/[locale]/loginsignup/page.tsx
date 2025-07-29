@@ -116,9 +116,8 @@ export default function LoginSignupPage() {
   const handleForgotPassword = async () => {
     setLoginError(null);
     setForgotMessage(null);
-
     if (!email.trim()) {
-      setForgotMessage('Please enter your email address first.');
+      setForgotMessage('Please enter your email address into the email field above to reset your password.');
       return;
     }
 

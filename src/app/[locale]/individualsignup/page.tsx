@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl'; // ✅ Added to access current locale
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -31,6 +32,7 @@ const db = getFirestore(app);
 
 export default function IndividualSignUpPage() {
   const router = useRouter();
+  const locale = useLocale(); // ✅ Get the current locale
 
   const [form, setForm] = useState({
     firstName: '',
@@ -128,7 +130,7 @@ export default function IndividualSignUpPage() {
       await setDoc(doc(db, 'users', user.uid), userDoc);
 
       setSuccess('Account created! Please verify your email.');
-      router.push('/welcome');
+      router.push(`/${locale}/loginsignup`); // ✅ Correct redirect using locale
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
