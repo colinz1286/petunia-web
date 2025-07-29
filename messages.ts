@@ -2,6 +2,8 @@ export default {
   en: () => ({
     businessDashboard: require('./messages/en/businessDashboard.json'),
     boardingAndDaycareBusinessSettings: require('./messages/en/boardingAndDaycareBusinessSettings.json'),
+    businessSignUp: require('./messages/en/businessSignUp.json'),
+    individualSignUp: require('./messages/en/individualSignUp.json'),
     individualAddEditPet: require('./messages/en/individualAddEditPet.json'),
     individualBookBoarding: require('./messages/en/individualBookBoarding.json'),
     individualBookDaycare: require('./messages/en/individualBookDaycare.json'),
