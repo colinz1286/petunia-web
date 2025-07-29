@@ -130,10 +130,14 @@ export default function IndividualSignUpPage() {
       await setDoc(doc(db, 'users', user.uid), userDoc);
 
       setSuccess('Account created! Please verify your email.');
-      router.push(`/${locale}/loginsignup`); // ✅ Correct redirect using locale
+      router.push(`/${locale}/loginsignup`);
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message);
+        if ((err as any).code === 'auth/email-already-in-use') {
+          setError('An account with this email already exists. Please log in or reset your password.');
+        } else {
+          setError(err.message);
+        }
       } else {
         setError('Something went wrong.');
       }

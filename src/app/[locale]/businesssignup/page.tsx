@@ -1,8 +1,39 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
+import { initializeApp } from 'firebase/app';
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  sendEmailVerification
+} from 'firebase/auth';
+import {
+  getFirestore,
+  setDoc,
+  doc,
+  Timestamp
+} from 'firebase/firestore';
+
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 export default function BusinessSignUpPage() {
+  const locale = useLocale();
+  const t = useTranslations('businessSignUp');
+  const router = useRouter();
+
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -21,10 +52,12 @@ export default function BusinessSignUpPage() {
     businessZip: '',
     businessPhone: '',
     businessWebsite: '',
-    businessType: 'Boarding/Daycare'
+    businessType: 'Boarding/Daycare',
   });
 
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const businessTypes = [
     'Boarding/Daycare',
@@ -37,19 +70,20 @@ export default function BusinessSignUpPage() {
   ];
 
   const handleChange = (field: string, value: string) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const {
       firstName, lastName, email, password, confirmPassword, phoneNumber,
       streetAddress, city, state, zipCode,
-      businessName, businessStreet, businessCity, businessState, businessZip, businessPhone
+      businessName, businessStreet, businessCity, businessState, businessZip,
+      businessPhone, businessWebsite, businessType
     } = form;
 
     if (
-      !firstName || !lastName || !email || !password || !confirmPassword ||
-      !phoneNumber || !streetAddress || !city || !state || !zipCode ||
+      !firstName || !lastName || !email || !password || !confirmPassword || !phoneNumber ||
+      !streetAddress || !city || !state || !zipCode ||
       !businessName || !businessStreet || !businessCity || !businessState || !businessZip || !businessPhone
     ) {
       setError('Please fill out all required fields.');
@@ -61,8 +95,55 @@ export default function BusinessSignUpPage() {
       return;
     }
 
-    console.log('🟢 Submitting business signup form:', form);
-    setError(null);
+    try {
+      setIsSubmitting(true);
+      setError(null);
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCred.user;
+
+      await sendEmailVerification(user);
+
+      const businessDoc = {
+        ownerId: user.uid,
+        accountType: 'Business',
+        firstName,
+        lastName,
+        email: email.toLowerCase(),
+        phoneNumber,
+        personalAddress: {
+          street: streetAddress,
+          city,
+          state,
+          zipCode
+        },
+        businessDetails: {
+          name: businessName,
+          type: businessType,
+          phone: businessPhone,
+          website: businessWebsite,
+          address: {
+            street: businessStreet,
+            city: businessCity,
+            state: businessState,
+            zipCode: businessZip
+          }
+        },
+        createdAt: Timestamp.now()
+      };
+
+      await setDoc(doc(db, 'businesses', user.uid), businessDoc);
+
+      setSuccess('Account created! Please verify your email.');
+      router.push(`/${locale}/loginsignup`);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Something went wrong.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -109,8 +190,8 @@ export default function BusinessSignUpPage() {
               key={type}
               type="button"
               className={`w-full px-4 py-3 rounded border-2 text-sm ${form.businessType === type
-                  ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
-                  : 'bg-white text-[#2c4a30] border-gray-400'
+                ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
+                : 'bg-white text-[#2c4a30] border-gray-400'
                 }`}
               onClick={() => handleChange('businessType', type)}
             >
@@ -120,17 +201,18 @@ export default function BusinessSignUpPage() {
         </div>
 
         {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+        {success && <p className="text-green-600 text-sm text-center">{success}</p>}
 
         <button
           onClick={handleSubmit}
+          disabled={isSubmitting}
           className="w-full bg-[#2c4a30] text-white py-3 rounded hover:bg-[#1e3624] transition mt-6 text-sm"
         >
-          Create Account
+          {isSubmitting ? 'Submitting...' : 'Create Account'}
         </button>
       </div>
     </main>
   );
 }
 
-// ✅ Global input style
 const input = "w-full px-4 py-2 border-2 border-gray-300 rounded outline-none bg-white";
