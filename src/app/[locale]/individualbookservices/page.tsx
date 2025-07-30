@@ -39,7 +39,6 @@ export default function IndividualBookServicesPage() {
     const locale = useLocale();
     const router = useRouter();
 
-    const [userId, setUserId] = useState('');
     const [businesses, setBusinesses] = useState<Business[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -51,7 +50,7 @@ export default function IndividualBookServicesPage() {
             }
 
             const uid = user.uid;
-            setUserId(uid);
+            // setUserId(uid); ← REMOVE THIS LINE
             await fetchApprovedBusinesses(uid);
         });
 
@@ -91,27 +90,7 @@ export default function IndividualBookServicesPage() {
     };
 
     const handleBusinessClick = async (bizId: string) => {
-        const bizRef = doc(db, 'businesses', bizId);
-        const waiverRef = doc(db, 'businesses', bizId, 'settings', 'clientWaiver');
-        const clientRef = doc(db, 'userApprovedBusinesses', bizId, 'clients', userId);
-
-        const [bizSnap, waiverSnap, clientSnap] = await Promise.all([
-            getDoc(bizRef),
-            getDoc(waiverRef),
-            getDoc(clientRef)
-        ]);
-
-        const waiverRequired = bizSnap.data()?.waiverRequired ?? false;
-        const latestVersion = waiverSnap.data()?.waiverVersion ?? 1;
-        const clientData = clientSnap.data() ?? {};
-        const hasSigned = clientData.waiverSigned ?? false;
-        const signedVersion = clientData.waiverVersion ?? 0;
-
-        if (!waiverRequired || (hasSigned && signedVersion === latestVersion)) {
-            router.push(`/${locale}/individualselectservice?businessId=${bizId}`);
-        } else {
-            router.push(`/${locale}/individualwaiveragreement?businessId=${bizId}`);
-        }
+        router.push(`/${locale}/individualselectservice?businessId=${bizId}`);
     };
 
     return (

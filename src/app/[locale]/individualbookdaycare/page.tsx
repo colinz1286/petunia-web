@@ -68,6 +68,7 @@ export default function IndividualBookDaycarePage() {
     // ✅ Waiver enforcement
     const [waiverSigned, setWaiverSigned] = useState(true); // Default to true for safety
     const [showWaiverModal, setShowWaiverModal] = useState(false);
+    const [hasCheckedAgreement, setHasCheckedAgreement] = useState(false); // new
 
     const businessId = params.get('businessId') || '';
     const businessName = params.get('businessName') || t('default_business_name');
@@ -148,10 +149,9 @@ export default function IndividualBookDaycarePage() {
 
                 if (!waiverRequired) {
                     setWaiverSigned(true);
-                } else if (!waiverSignedAt) {
+                } else if (!waiverSignedAt || (waiverLastUpdated && waiverSignedAt < waiverLastUpdated)) {
                     setWaiverSigned(false);
-                } else if (waiverLastUpdated && waiverSignedAt < waiverLastUpdated) {
-                    setWaiverSigned(false);
+                    setShowWaiverModal(true); // 👈 force modal immediately
                 } else {
                     setWaiverSigned(true);
                 }
@@ -259,7 +259,7 @@ export default function IndividualBookDaycarePage() {
         }
 
         if (waiverRequired && !waiverSigned) {
-            alert(t('waiver_required'));
+            setShowWaiverModal(true);
             return;
         }
 
@@ -612,10 +612,27 @@ export default function IndividualBookDaycarePage() {
                             <h2 className="text-lg font-semibold text-center text-[color:var(--color-accent)]">
                                 {t('waiver_required_title')}
                             </h2>
+
                             <p className="text-sm text-gray-700 whitespace-pre-line">
                                 {t('waiver_required_message')}
                             </p>
-                            <div className="flex justify-end gap-3">
+
+                            {/* ✅ Checkbox agreement */}
+                            <div className="flex items-start space-x-2">
+                                <input
+                                    type="checkbox"
+                                    checked={hasCheckedAgreement}
+                                    onChange={() => setHasCheckedAgreement(!hasCheckedAgreement)}
+                                    className="mt-1"
+                                    id="waiverAgreementCheckbox"
+                                />
+                                <label htmlFor="waiverAgreementCheckbox" className="text-sm text-gray-700">
+                                    {t('waiver_checkbox_label')}
+                                </label>
+                            </div>
+
+                            {/* ✅ Confirm button only */}
+                            <div className="flex justify-end">
                                 <button
                                     onClick={async () => {
                                         try {
@@ -631,15 +648,13 @@ export default function IndividualBookDaycarePage() {
                                             alert(t('waiver_agreement_failed'));
                                         }
                                     }}
-                                    className="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded text-sm"
+                                    className={`px-4 py-2 rounded text-sm text-white ${hasCheckedAgreement
+                                            ? 'bg-green-700 hover:bg-green-600'
+                                            : 'bg-gray-400 cursor-not-allowed'
+                                        }`}
+                                    disabled={!hasCheckedAgreement}
                                 >
                                     {t('agree_button')}
-                                </button>
-                                <button
-                                    onClick={() => setShowWaiverModal(false)}
-                                    className="bg-gray-300 hover:bg-gray-200 text-black px-4 py-2 rounded text-sm"
-                                >
-                                    {t('cancel_button')}
                                 </button>
                             </div>
                         </div>

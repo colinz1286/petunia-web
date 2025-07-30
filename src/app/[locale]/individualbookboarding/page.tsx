@@ -85,6 +85,7 @@ export default function IndividualBookBoardingPage() {
     const isSubmitting = false;
     const [waiverSigned, setWaiverSigned] = useState(true); // Default to true for safety
     const [showWaiverModal, setShowWaiverModal] = useState(false);
+    const [hasCheckedAgreement, setHasCheckedAgreement] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -220,7 +221,6 @@ export default function IndividualBookBoardingPage() {
                 {waiverRequired && !waiverSigned && (
                     <p className="text-red-600 text-sm text-center">{t('waiver_required_message')}</p>
                 )}
-
                 {/* ✅ Waiver Agreement Modal */}
                 {showWaiverModal && (
                     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
@@ -228,10 +228,27 @@ export default function IndividualBookBoardingPage() {
                             <h2 className="text-lg font-semibold text-center text-[color:var(--color-accent)]">
                                 {t('waiver_required_title')}
                             </h2>
+
                             <p className="text-sm text-gray-700 whitespace-pre-line">
                                 {t('waiver_required_message')}
                             </p>
-                            <div className="flex justify-end gap-3">
+
+                            {/* ✅ Checkbox agreement */}
+                            <div className="flex items-start space-x-2">
+                                <input
+                                    type="checkbox"
+                                    checked={hasCheckedAgreement}
+                                    onChange={() => setHasCheckedAgreement(!hasCheckedAgreement)}
+                                    className="mt-1"
+                                    id="boardingWaiverCheckbox"
+                                />
+                                <label htmlFor="boardingWaiverCheckbox" className="text-sm text-gray-700">
+                                    {t('waiver_checkbox_label')}
+                                </label>
+                            </div>
+
+                            {/* ✅ Confirm button only */}
+                            <div className="flex justify-end">
                                 <button
                                     onClick={async () => {
                                         try {
@@ -247,21 +264,19 @@ export default function IndividualBookBoardingPage() {
                                             alert(t('waiver_agreement_failed'));
                                         }
                                     }}
-                                    className="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded text-sm"
+                                    className={`px-4 py-2 rounded text-sm text-white ${hasCheckedAgreement
+                                            ? 'bg-green-700 hover:bg-green-600'
+                                            : 'bg-gray-400 cursor-not-allowed'
+                                        }`}
+                                    disabled={!hasCheckedAgreement}
                                 >
                                     {t('agree_button')}
-                                </button>
-                                <button
-                                    onClick={() => setShowWaiverModal(false)}
-                                    className="bg-gray-300 hover:bg-gray-200 text-black px-4 py-2 rounded text-sm"
-                                >
-                                    {t('cancel_button')}
                                 </button>
                             </div>
                         </div>
                     </div>
                 )}
-
+                
                 {/* ✅ Form Content */}
                 <div className="flex flex-col items-center space-y-6">
                     {/* Drop-Off Date */}
