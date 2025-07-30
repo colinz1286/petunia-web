@@ -163,28 +163,31 @@ export default function IndividualUpcomingAppointmentsPage() {
         const now = new Date();
         const hoursDiff = (res.date.getTime() - now.getTime()) / (1000 * 60 * 60);
 
-        // 1. Check for late cancellation
         if (hoursDiff < 24) {
             setBusinessPhone(res.businessPhone);
             setShowLateAlert(true);
             return;
         }
 
-        // 2. Optimistically remove reservation from local state before deletion
+        // Optimistically remove from UI
         setReservations(prev => prev.filter(r => r.id !== res.id));
         setCancelingId(res.id);
 
         try {
-            // 3. Delete from Firestore
             const col = res.type === 'boarding' ? 'boardingReservations' : 'daycareReservations';
+
+            // ❌ Firestore delete
             await deleteDoc(doc(db, col, res.id));
+            console.log(`🗑️ Firestore: Deleted ${col}/${res.id}`);
 
-            // 4. Delete from Realtime Database
-            const path = ref(rtdb, `upcomingReservations/${res.businessId}/${res.realtimeKey}`);
-            console.log('🧹 Deleting RTDB key:', res.realtimeKey);
-            await remove(path);
+            // ❌ Realtime DB delete (per pet)
+            for (const petId of res.petIds) {
+                const rtdbPath = `upcomingReservations/${res.businessId}/${res.realtimeKey}-${petId}`;
+                await remove(ref(rtdb, rtdbPath));
+                console.log(`🗑️ RTDB: Deleted ${rtdbPath}`);
+            }
 
-            // 5. Notify business owner
+            // ✅ Notify business owner
             const bizSnap = await getDoc(doc(db, 'businesses', res.businessId));
             const ownerId = bizSnap.data()?.ownerId;
             if (ownerId) {
@@ -194,10 +197,17 @@ export default function IndividualUpcomingAppointmentsPage() {
                     timestamp: Timestamp.now()
                 });
             }
+
+            // ✅ Re-fetch updated reservation list
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+                await fetchReservationsForUser(currentUser.uid);
+            }
+
         } catch (err: unknown) {
             console.error('❌ Cancelation failed:', err instanceof Error ? err.message : 'Unknown error');
 
-            // 6. Optional rollback if deletion failed
+            // Roll back optimistic removal if needed
             setReservations(prev => [...prev, res]);
         } finally {
             setCancelingId(null);
