@@ -206,9 +206,7 @@ export default function IndividualUpcomingAppointmentsPage() {
 
         } catch (err: unknown) {
             console.error('❌ Cancelation failed:', err instanceof Error ? err.message : 'Unknown error');
-
-            // Roll back optimistic removal if needed
-            setReservations(prev => [...prev, res]);
+            // No rollback — reservation will only reappear if it still exists in Firestore
         } finally {
             setCancelingId(null);
         }
