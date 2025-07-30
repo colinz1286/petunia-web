@@ -1,0 +1,15 @@
+{
+  "back_to_dashboard": "Back to Dashboard",
+  "client_management_title": "Client Management",
+  "search_clients_placeholder": "Search by client name...",
+  "loading_clients_label": "Loading approved clients...",
+  "no_clients_found": "No approved clients found.",
+  "no_business_found": "No business found for this account.",
+  "error_loading_business": "Error loading business information.",
+  "client_joined_label": "Joined on: {date}",
+  "vaccines_current": "Vaccines Current",
+  "vaccines_not_current": "Vaccines Not Current",
+  "unnamed_pet": "Unnamed Pet",
+  "view_file_1": "View Vaccine File 1",
+  "view_file_2": "View Vaccine File 2"
+}
