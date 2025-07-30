@@ -45,7 +45,8 @@ interface Pet {
     petType: string;
     petName: string;
     breed: string;
-    age: string;
+    ageValue?: string;
+    ageUnit?: string;
     weight: string;
     gender: string;
     spayedNeutered: string;
@@ -156,7 +157,7 @@ export default function IndividualMyPetsPage() {
                                         <div className="pt-3 text-sm text-gray-700 space-y-2">
                                             <p>{t('type_label')}: {pet.petType}</p>
                                             <p>{t('breed_label')}: {pet.breed}</p>
-                                            <p>{t('age_label')}: {pet.age}</p>
+                                            <p>{t('age_label')}: {pet.ageValue && pet.ageUnit ? `${pet.ageValue} ${pet.ageUnit}` : ''}</p>
                                             <p>{t('weight_label')}: {pet.weight}</p>
                                             <p>{t('gender_label')}: {pet.gender}</p>
                                             <p>{t('spayed_neutered_label')}: {pet.spayedNeutered}</p>

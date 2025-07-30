@@ -144,7 +144,20 @@ export default function AddEditPetPage() {
             setGender(data.gender || 'Male');
             setSpayedNeutered(data.spayedNeutered || 'Yes');
             setBreed(data.breed || '');
-            setAge(data.ageValue || '');
+            setAge(data.ageValue ? String(data.ageValue) : ''); // ✅ Fix: always set string
+            setAgeUnit(data.ageUnit || 'Years');
+
+            const dobString = (() => {
+                const raw = data.dateOfBirth;
+                if (!raw) return '';
+                if (typeof raw === 'string') return raw;
+                if (typeof raw === 'object' && 'toDate' in raw && typeof raw.toDate === 'function') {
+                    return raw.toDate().toISOString().split('T')[0]; // convert Firestore Timestamp → 'YYYY-MM-DD'
+                }
+                return '';
+            })();
+            setDateOfBirth(dobString);
+
             setWeight(data.weight || '');
             setAllergies(data.allergies || '');
             setCurrentFood(data.currentFood || '');
@@ -171,7 +184,6 @@ export default function AddEditPetPage() {
             const formatDateString = (value: unknown): string => {
                 if (!value) return '';
                 if (typeof value === 'string') return value;
-
                 if (
                     typeof value === 'object' &&
                     value !== null &&
@@ -180,7 +192,6 @@ export default function AddEditPetPage() {
                 ) {
                     return (value as { toDate: () => Date }).toDate().toISOString().split('T')[0];
                 }
-
                 return '';
             };
 
@@ -269,6 +280,7 @@ export default function AddEditPetPage() {
             spayedNeutered,
             breed,
             ageValue: age,
+            ageUnit: ageUnit,
             weight,
             allergies,
             currentFood,
