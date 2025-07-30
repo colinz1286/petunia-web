@@ -144,15 +144,21 @@ export default function IndividualBookDaycarePage() {
             try {
                 const businessSnap = await getDoc(doc(db, 'businesses', businessId));
                 const clientSnap = await getDoc(doc(db, 'userApprovedBusinesses', businessId, 'clients', uid));
-                const waiverLastUpdated = businessSnap.data()?.waiverLastUpdated?.toDate?.();
+
+                const rawLastUpdated = businessSnap.data()?.waiverLastUpdated;
                 const rawSignedAt = clientSnap.data()?.waiverSignedAt;
+
+                const waiverLastUpdated = rawLastUpdated?.toDate ? rawLastUpdated.toDate() : rawLastUpdated;
                 const waiverSignedAt = rawSignedAt?.toDate ? rawSignedAt.toDate() : rawSignedAt;
 
                 if (!waiverRequired) {
                     setWaiverSigned(true);
-                } else if (!waiverSignedAt || (waiverLastUpdated && waiverSignedAt < waiverLastUpdated)) {
+                } else if (!waiverSignedAt) {
                     setWaiverSigned(false);
-                    setShowWaiverModal(true); // 👈 force modal immediately
+                    setShowWaiverModal(true);
+                } else if (waiverLastUpdated && waiverSignedAt < waiverLastUpdated) {
+                    setWaiverSigned(false);
+                    setShowWaiverModal(true);
                 } else {
                     setWaiverSigned(true);
                 }

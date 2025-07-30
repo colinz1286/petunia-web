@@ -127,23 +127,30 @@ export default function IndividualBookBoardingPage() {
                 setPickUpTime(data.pickUpTimeOptionsBoarding[0]);
             }
 
-            const businessSnap = await getDoc(doc(db, 'businesses', businessId));
-            const clientSnap = await getDoc(doc(db, 'userApprovedBusinesses', businessId, 'clients', uid));
+            try {
+                const businessSnap = await getDoc(doc(db, 'businesses', businessId));
+                const clientSnap = await getDoc(doc(db, 'userApprovedBusinesses', businessId, 'clients', uid));
 
-            const rawLastUpdated = businessSnap.data()?.waiverLastUpdated;
-            const rawSignedAt = clientSnap.data()?.waiverSignedAt;
+                const rawLastUpdated = businessSnap.data()?.waiverLastUpdated;
+                const rawSignedAt = clientSnap.data()?.waiverSignedAt;
 
-            const waiverLastUpdated = rawLastUpdated?.toDate ? rawLastUpdated.toDate() : rawLastUpdated;
-            const waiverSignedAt = rawSignedAt?.toDate ? rawSignedAt.toDate() : rawSignedAt;
+                const waiverLastUpdated = rawLastUpdated?.toDate ? rawLastUpdated.toDate() : rawLastUpdated;
+                const waiverSignedAt = rawSignedAt?.toDate ? rawSignedAt.toDate() : rawSignedAt;
 
-            if (!waiverRequired) {
-                setWaiverSigned(true);
-            } else if (!waiverSignedAt) {
-                setWaiverSigned(false);
-            } else if (waiverLastUpdated && waiverSignedAt < waiverLastUpdated) {
-                setWaiverSigned(false);
-            } else {
-                setWaiverSigned(true);
+                if (!waiverRequired) {
+                    setWaiverSigned(true);
+                } else if (!waiverSignedAt) {
+                    setWaiverSigned(false);
+                    setShowWaiverModal(true);
+                } else if (waiverLastUpdated && waiverSignedAt < waiverLastUpdated) {
+                    setWaiverSigned(false);
+                    setShowWaiverModal(true);
+                } else {
+                    setWaiverSigned(true);
+                }
+            } catch (err) {
+                console.error('❌ Error checking waiver status:', err);
+                setWaiverSigned(true); // Failsafe: do not block booking
             }
         });
 
