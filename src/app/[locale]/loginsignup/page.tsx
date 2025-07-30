@@ -65,13 +65,6 @@ export default function LoginSignupPage() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
-      if (!user.emailVerified) {
-        setLoginError('Please verify your email before logging in.');
-        setIsLoggingIn(false);
-        return;
-      }
-
       const uid = user.uid;
 
       // Check if user is a business owner
@@ -79,6 +72,12 @@ export default function LoginSignupPage() {
         query(collection(db, 'businesses'), where('ownerId', '==', uid))
       );
       if (!businessSnapshot.empty) {
+        if (!user.emailVerified) {
+          setLoginError('Please verify your email before logging in.');
+          setIsLoggingIn(false);
+          return;
+        }
+
         router.push(`/${locale}/boardinganddaycaredashboard`);
         return;
       }
