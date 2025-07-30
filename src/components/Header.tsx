@@ -24,6 +24,7 @@ export default function Header() {
           <Link href={`/${locale}/loginsignup`} className="hover:underline">Login / Sign Up</Link>
           <Link href={`/${locale}/aboutus`} className="hover:underline">About Us</Link>
           <Link href={`/${locale}/contact`} className="hover:underline">Contact</Link>
+          <Link href={`/${locale}/blog`} className="hover:underline">Blog</Link>
           <a href="https://www.facebook.com/profile.php?id=61575107920935" target="_blank" rel="noopener noreferrer" className="hover:underline">Facebook</a>
           <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:underline">YouTube</a>
         </nav>
