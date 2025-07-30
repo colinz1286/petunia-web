@@ -13,5 +13,6 @@
   "agree_button": "Agree",
   "cancel_button": "Cancel",
   "reservation_submitted": "Your reservation has been submitted!",
-  "back_to_select_service": "Back to Select Service"
+  "back_to_select_service": "Back to Select Service",
+  "waiver_checkbox_label": "I agree to this facility’s terms and conditions."
 }

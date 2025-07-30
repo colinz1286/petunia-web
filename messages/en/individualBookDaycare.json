@@ -26,5 +26,6 @@
   "cancel_button": "Cancel",
   "your_bookings": "Your Bookings",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "waiver_checkbox_label": "I agree to this facility’s terms and conditions."
 }

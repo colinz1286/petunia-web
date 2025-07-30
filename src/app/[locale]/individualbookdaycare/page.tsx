@@ -145,7 +145,8 @@ export default function IndividualBookDaycarePage() {
                 const businessSnap = await getDoc(doc(db, 'businesses', businessId));
                 const clientSnap = await getDoc(doc(db, 'userApprovedBusinesses', businessId, 'clients', uid));
                 const waiverLastUpdated = businessSnap.data()?.waiverLastUpdated?.toDate?.();
-                const waiverSignedAt = clientSnap.data()?.waiverSignedAt?.toDate?.();
+                const rawSignedAt = clientSnap.data()?.waiverSignedAt;
+                const waiverSignedAt = rawSignedAt?.toDate ? rawSignedAt.toDate() : rawSignedAt;
 
                 if (!waiverRequired) {
                     setWaiverSigned(true);
@@ -649,8 +650,8 @@ export default function IndividualBookDaycarePage() {
                                         }
                                     }}
                                     className={`px-4 py-2 rounded text-sm text-white ${hasCheckedAgreement
-                                            ? 'bg-green-700 hover:bg-green-600'
-                                            : 'bg-gray-400 cursor-not-allowed'
+                                        ? 'bg-green-700 hover:bg-green-600'
+                                        : 'bg-gray-400 cursor-not-allowed'
                                         }`}
                                     disabled={!hasCheckedAgreement}
                                 >

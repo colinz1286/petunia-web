@@ -130,8 +130,11 @@ export default function IndividualBookBoardingPage() {
             const businessSnap = await getDoc(doc(db, 'businesses', businessId));
             const clientSnap = await getDoc(doc(db, 'userApprovedBusinesses', businessId, 'clients', uid));
 
-            const waiverLastUpdated = businessSnap.data()?.waiverLastUpdated?.toDate?.();
-            const waiverSignedAt = clientSnap.data()?.waiverSignedAt?.toDate?.();
+            const rawLastUpdated = businessSnap.data()?.waiverLastUpdated;
+            const rawSignedAt = clientSnap.data()?.waiverSignedAt;
+
+            const waiverLastUpdated = rawLastUpdated?.toDate ? rawLastUpdated.toDate() : rawLastUpdated;
+            const waiverSignedAt = rawSignedAt?.toDate ? rawSignedAt.toDate() : rawSignedAt;
 
             if (!waiverRequired) {
                 setWaiverSigned(true);
@@ -265,8 +268,8 @@ export default function IndividualBookBoardingPage() {
                                         }
                                     }}
                                     className={`px-4 py-2 rounded text-sm text-white ${hasCheckedAgreement
-                                            ? 'bg-green-700 hover:bg-green-600'
-                                            : 'bg-gray-400 cursor-not-allowed'
+                                        ? 'bg-green-700 hover:bg-green-600'
+                                        : 'bg-gray-400 cursor-not-allowed'
                                         }`}
                                     disabled={!hasCheckedAgreement}
                                 >
@@ -276,7 +279,7 @@ export default function IndividualBookBoardingPage() {
                         </div>
                     </div>
                 )}
-                
+
                 {/* ✅ Form Content */}
                 <div className="flex flex-col items-center space-y-6">
                     {/* Drop-Off Date */}
