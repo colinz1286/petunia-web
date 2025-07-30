@@ -8,6 +8,10 @@
   "select_pets": "Select Pets",
   "submit": "Submit Reservation",
   "waiver_required_message": "You must sign the waiver before booking.",
+  "waiver_required_title": "Waiver Agreement Required",
+  "waiver_agreement_failed": "Failed to save waiver. Please try again.",
+  "agree_button": "Agree",
+  "cancel_button": "Cancel",
   "reservation_submitted": "Your reservation has been submitted!",
   "back_to_select_service": "Back to Select Service"
 }

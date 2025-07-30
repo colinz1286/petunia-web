@@ -42,7 +42,8 @@ export default function IndividualSelectServicePage() {
             const data = snap.data();
 
             if (!data) {
-                setIsLoading(false);
+                console.warn('⚠️ No business found for ID:', bizId);
+                router.push(`/${locale}/individualdashboard`);
                 return;
             }
 
@@ -57,10 +58,11 @@ export default function IndividualSelectServicePage() {
             setServicesOffered(offered);
         } catch (err) {
             console.error('❌ Error loading business:', err);
+            router.push(`/${locale}/individualdashboard`);
         } finally {
             setIsLoading(false);
         }
-    }, [t]);
+    }, [t, router, locale]);
 
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, (user) => {
@@ -70,8 +72,10 @@ export default function IndividualSelectServicePage() {
             }
 
             if (businessId) {
+                console.log('📍 Loading select service view for businessId:', businessId);
                 loadBusinessServices(businessId);
             } else {
+                console.warn('❌ Missing businessId in URL');
                 router.push(`/${locale}/individualdashboard`);
             }
         });
@@ -80,12 +84,19 @@ export default function IndividualSelectServicePage() {
     }, [businessId, locale, router, loadBusinessServices]);
 
     const handleServiceClick = (service: string) => {
+        if (!businessId) {
+            console.error('❌ Cannot route without businessId');
+            return;
+        }
+
+        const encodedName = encodeURIComponent(businessName);
+
         switch (service) {
             case 'daycare':
-                router.push(`/${locale}/individualbookdaycare?businessId=${businessId}&businessName=${encodeURIComponent(businessName)}`);
+                router.push(`/${locale}/individualbookdaycare?businessId=${businessId}&businessName=${encodedName}`);
                 break;
             case 'boarding':
-                router.push(`/${locale}/individualbookboarding?businessId=${businessId}&businessName=${encodeURIComponent(businessName)}`);
+                router.push(`/${locale}/individualbookboarding?businessId=${businessId}&businessName=${encodedName}`);
                 break;
             default:
                 setShowComingSoon(true);

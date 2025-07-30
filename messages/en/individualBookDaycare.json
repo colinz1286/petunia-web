@@ -19,6 +19,11 @@
   "submit_all": "Submit All Reservations",
   "submitting_reservations": "Submitting Reservations...",
   "waiver_required": "You must sign the waiver before booking.",
+  "waiver_required_title": "Waiver Agreement Required",
+  "waiver_required_message": "Please agree to this facility’s waiver before continuing.\n\nBy tapping Agree, you confirm you’ve read and accepted the terms.",
+  "waiver_agreement_failed": "Failed to save waiver. Please try again.",
+  "agree_button": "Agree",
+  "cancel_button": "Cancel",
   "your_bookings": "Your Bookings",
   "yes": "Yes",
   "no": "No"

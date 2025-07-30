@@ -80,9 +80,11 @@ export default function IndividualBookBoardingPage() {
     const [dropOffRequired, setDropOffRequired] = useState(false);
     const [pickUpRequired, setPickUpRequired] = useState(false);
 
+    // ✅ Waiver enforcement
     const [waiverRequired, setWaiverRequired] = useState(false);
-    const [waiverSigned] = useState(true);
-    const [isSubmitting] = useState(false);
+    const isSubmitting = false;
+    const [waiverSigned, setWaiverSigned] = useState(true); // Default to true for safety
+    const [showWaiverModal, setShowWaiverModal] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -107,7 +109,6 @@ export default function IndividualBookBoardingPage() {
             setPets(petList);
             setSelectedPetIds(petList.map((p) => p.id));
 
-            // ✅ Moved loadBusinessSettings inline
             const snap = await getDoc(doc(db, 'businesses', businessId));
             const data = snap.data() || {};
 
@@ -124,15 +125,33 @@ export default function IndividualBookBoardingPage() {
             if (data.pickUpTimeOptionsBoarding?.length) {
                 setPickUpTime(data.pickUpTimeOptionsBoarding[0]);
             }
+
+            const businessSnap = await getDoc(doc(db, 'businesses', businessId));
+            const clientSnap = await getDoc(doc(db, 'userApprovedBusinesses', businessId, 'clients', uid));
+
+            const waiverLastUpdated = businessSnap.data()?.waiverLastUpdated?.toDate?.();
+            const waiverSignedAt = clientSnap.data()?.waiverSignedAt?.toDate?.();
+
+            if (!waiverRequired) {
+                setWaiverSigned(true);
+            } else if (!waiverSignedAt) {
+                setWaiverSigned(false);
+            } else if (waiverLastUpdated && waiverSignedAt < waiverLastUpdated) {
+                setWaiverSigned(false);
+            } else {
+                setWaiverSigned(true);
+            }
         });
 
         return () => unsubscribe();
-    }, [router, locale, businessId]);
+    }, [router, locale, businessId, waiverRequired]);
 
     async function handleSubmit() {
         if (!dropOffDate || !pickUpDate || selectedPetIds.length === 0) return;
+
+        // ✅ Waiver enforcement
         if (waiverRequired && !waiverSigned) {
-            alert(t('waiver_required_message'));
+            setShowWaiverModal(true);
             return;
         }
 
@@ -200,6 +219,47 @@ export default function IndividualBookBoardingPage() {
                 {/* ✅ Waiver Warning */}
                 {waiverRequired && !waiverSigned && (
                     <p className="text-red-600 text-sm text-center">{t('waiver_required_message')}</p>
+                )}
+
+                {/* ✅ Waiver Agreement Modal */}
+                {showWaiverModal && (
+                    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+                        <div className="bg-white p-6 rounded shadow-md max-w-md w-full space-y-4">
+                            <h2 className="text-lg font-semibold text-center text-[color:var(--color-accent)]">
+                                {t('waiver_required_title')}
+                            </h2>
+                            <p className="text-sm text-gray-700 whitespace-pre-line">
+                                {t('waiver_required_message')}
+                            </p>
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            await setDoc(
+                                                doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
+                                                { waiverSignedAt: Timestamp.now() },
+                                                { merge: true }
+                                            );
+                                            setWaiverSigned(true);
+                                            setShowWaiverModal(false);
+                                        } catch (err) {
+                                            console.error('❌ Failed to record waiver:', err);
+                                            alert(t('waiver_agreement_failed'));
+                                        }
+                                    }}
+                                    className="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded text-sm"
+                                >
+                                    {t('agree_button')}
+                                </button>
+                                <button
+                                    onClick={() => setShowWaiverModal(false)}
+                                    className="bg-gray-300 hover:bg-gray-200 text-black px-4 py-2 rounded text-sm"
+                                >
+                                    {t('cancel_button')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 )}
 
                 {/* ✅ Form Content */}

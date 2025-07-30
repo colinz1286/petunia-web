@@ -65,6 +65,10 @@ export default function IndividualBookDaycarePage() {
     const router = useRouter();
     const params = useSearchParams();
 
+    // ✅ Waiver enforcement
+    const [waiverSigned, setWaiverSigned] = useState(true); // Default to true for safety
+    const [showWaiverModal, setShowWaiverModal] = useState(false);
+
     const businessId = params.get('businessId') || '';
     const businessName = params.get('businessName') || t('default_business_name');
 
@@ -77,7 +81,6 @@ export default function IndividualBookDaycarePage() {
     const [hasExistingReservation, setHasExistingReservation] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [waiverRequired, setWaiverRequired] = useState(false);
-    const [waiverSigned] = useState(true);
     const [error] = useState<string | null>(null);
     const [groomingAvailable, setGroomingAvailable] = useState(false);
     const [groomingServices, setGroomingServices] = useState<string[]>([]);
@@ -131,21 +134,44 @@ export default function IndividualBookDaycarePage() {
                 return;
             }
 
-            setUserId(user.uid);
-            await loadPets(user.uid);
+            const uid = user.uid;
+            setUserId(uid);
+
+            await loadPets(uid);
             await loadBusinessSettingsInline();
+
+            try {
+                const businessSnap = await getDoc(doc(db, 'businesses', businessId));
+                const clientSnap = await getDoc(doc(db, 'userApprovedBusinesses', businessId, 'clients', uid));
+                const waiverLastUpdated = businessSnap.data()?.waiverLastUpdated?.toDate?.();
+                const waiverSignedAt = clientSnap.data()?.waiverSignedAt?.toDate?.();
+
+                if (!waiverRequired) {
+                    setWaiverSigned(true);
+                } else if (!waiverSignedAt) {
+                    setWaiverSigned(false);
+                } else if (waiverLastUpdated && waiverSignedAt < waiverLastUpdated) {
+                    setWaiverSigned(false);
+                } else {
+                    setWaiverSigned(true);
+                }
+            } catch (err) {
+                console.error('❌ Error checking waiver status:', err);
+                setWaiverSigned(true);
+            }
+
             setIsLoading(false);
         });
-    }, [locale, router, businessId]);
+    }, [locale, router, businessId, waiverRequired]);
 
     useEffect(() => {
-        if (!selectedDate) return;
-
         async function recalculateDropOffOptions() {
+            if (!selectedDate) return;
+
             const snap = await getDoc(doc(db, 'businesses', businessId));
             const data = snap.data() || {};
             const dropOffMap = data.dropOffTimesDaycare || {};
-            const weekday = selectedDate!.toLocaleDateString('en-US', { weekday: 'long' });
+            const weekday = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
 
             const options = (dropOffMap[weekday] || []).slice().sort((a: string, b: string) => {
                 const toMinutes = (time: string) => {
@@ -573,6 +599,47 @@ export default function IndividualBookDaycarePage() {
                                     className="bg-gray-400 hover:bg-gray-300 text-black px-4 py-2 rounded text-sm"
                                 >
                                     {t('no')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ✅ Waiver Agreement Modal */}
+                {showWaiverModal && (
+                    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+                        <div className="bg-white p-6 rounded shadow-md max-w-md w-full space-y-4">
+                            <h2 className="text-lg font-semibold text-center text-[color:var(--color-accent)]">
+                                {t('waiver_required_title')}
+                            </h2>
+                            <p className="text-sm text-gray-700 whitespace-pre-line">
+                                {t('waiver_required_message')}
+                            </p>
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            await setDoc(
+                                                doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
+                                                { waiverSignedAt: Timestamp.now() },
+                                                { merge: true }
+                                            );
+                                            setWaiverSigned(true);
+                                            setShowWaiverModal(false);
+                                        } catch (err) {
+                                            console.error('❌ Failed to record waiver:', err);
+                                            alert(t('waiver_agreement_failed'));
+                                        }
+                                    }}
+                                    className="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded text-sm"
+                                >
+                                    {t('agree_button')}
+                                </button>
+                                <button
+                                    onClick={() => setShowWaiverModal(false)}
+                                    className="bg-gray-300 hover:bg-gray-200 text-black px-4 py-2 rounded text-sm"
+                                >
+                                    {t('cancel_button')}
                                 </button>
                             </div>
                         </div>
