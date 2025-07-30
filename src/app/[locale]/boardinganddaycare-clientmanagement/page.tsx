@@ -54,7 +54,7 @@ export default function ClientManagementPage() {
             try {
                 const db = getFirestore();
                 const snap = await getDocs(
-                    query(collection(db, 'businesses'), where('ownerId', '==', user.uid))
+                    query(collection(db, 'businesses'), where('ownerIds', 'array-contains', user.uid))
                 );
 
                 if (snap.empty) {
