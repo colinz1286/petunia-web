@@ -69,105 +69,94 @@ export default function IndividualUpcomingAppointmentsPage() {
     const [showLateAlert, setShowLateAlert] = useState(false);
     const [businessPhone, setBusinessPhone] = useState('');
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                router.push(`/${locale}/loginsignup`);
-                return;
-            }
+    const fetchReservationsForUser = async (uid: string) => {
+        setIsLoading(true);
 
-            const uid = user.uid;
-            setIsLoading(true);
+        try {
+            const now = new Date();
+            const cutoff = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+            const results: Reservation[] = [];
 
-            try {
-                const now = new Date();
-                const cutoff = new Date(now.getTime() - 12 * 60 * 60 * 1000);
-                const results: Reservation[] = [];
+            const fetchReservations = async (
+                collectionName: string,
+                dateField: string,
+                type: 'boarding' | 'daycare'
+            ) => {
+                const snap = await getDocs(query(collection(db, collectionName), where('userId', '==', uid)));
 
-                const fetchReservations = async (
-                    collectionName: string,
-                    dateField: string,
-                    type: 'boarding' | 'daycare'
-                ) => {
-                    const snap = await getDocs(query(collection(db, collectionName), where('userId', '==', uid)));
+                for (const docSnap of snap.docs) {
+                    const data = docSnap.data();
+                    const ts = data[dateField] as Timestamp | undefined;
+                    if (!ts) continue;
 
-                    for (const docSnap of snap.docs) {
-                        const data = docSnap.data();
-                        const ts = data[dateField] as Timestamp | undefined;
-                        if (!ts) continue;
-
-                        const resDate = ts.toDate();
-                        if (resDate < cutoff) {
-                            await deleteDoc(doc(db, collectionName, docSnap.id));
-                            continue;
-                        }
-
-                        const res: Reservation = {
-                            id: docSnap.id,
-                            type,
-                            businessId: data.businessId,
-                            realtimeKey: data.realtimeKey,
-                            arrivalWindow: data.arrivalWindow || 'N/A',
-                            petIds: data.petIds || [],
-                            groomingAddOns: data.groomingAddOns || {},
-                            date: resDate,
-                            pickUpDate: data.pickUpDate ? (data.pickUpDate as Timestamp).toDate() : undefined,
-                            businessName: '',
-                            businessPhone: '',
-                            businessAddress: '',
-                            petNames: [],
-                            groomingSummary: {}
-                        };
-
-                        const bizSnap = await getDoc(doc(db, 'businesses', res.businessId));
-                        const bizData = (bizSnap.data() || {}) as {
-                            businessName?: string;
-                            businessPhone?: string;
-                            address?: {
-                                street?: string;
-                                city?: string;
-                                state?: string;
-                                zipCode?: string;
-                            };
-                            ownerId?: string;
-                        };
-
-                        res.businessName = bizData.businessName || t('unknown_business');
-                        res.businessPhone = bizData.businessPhone || '';
-
-                        const addr = bizData.address || {};
-                        res.businessAddress = `${addr.street || ''}, ${addr.city || ''}, ${addr.state || ''} ${addr.zipCode || ''}`;
-
-                        for (const petId of res.petIds) {
-                            const petSnap = await getDoc(doc(db, 'users', uid, 'pets', petId));
-                            const petName = petSnap.data()?.petName || t('unknown_pet_name');
-                            res.petNames.push(petName);
-                            if (res.groomingAddOns[petId]) {
-                                res.groomingSummary[petName] = res.groomingAddOns[petId];
-                            }
-                        }
-
-                        results.push(res);
+                    const resDate = ts.toDate();
+                    if (resDate < cutoff) {
+                        await deleteDoc(doc(db, collectionName, docSnap.id));
+                        continue;
                     }
-                };
 
-                await Promise.all([
-                    fetchReservations('daycareReservations', 'date', 'daycare'),
-                    fetchReservations('boardingReservations', 'dropOffDate', 'boarding')
-                ]);
+                    const res: Reservation = {
+                        id: docSnap.id,
+                        type,
+                        businessId: data.businessId,
+                        realtimeKey: data.realtimeKey,
+                        arrivalWindow: data.arrivalWindow || 'N/A',
+                        petIds: data.petIds || [],
+                        groomingAddOns: data.groomingAddOns || {},
+                        date: resDate,
+                        pickUpDate: data.pickUpDate ? (data.pickUpDate as Timestamp).toDate() : undefined,
+                        businessName: '',
+                        businessPhone: '',
+                        businessAddress: '',
+                        petNames: [],
+                        groomingSummary: {}
+                    };
 
-                results.sort((a, b) => a.date.getTime() - b.date.getTime());
-                setReservations(results);
-            } catch (err: unknown) {
-                const message = err instanceof Error ? err.message : 'Unknown error';
-                setError(message);
-            } finally {
-                setIsLoading(false);
-            }
-        });
+                    const bizSnap = await getDoc(doc(db, 'businesses', res.businessId));
+                    const bizData = (bizSnap.data() || {}) as {
+                        businessName?: string;
+                        businessPhone?: string;
+                        address?: {
+                            street?: string;
+                            city?: string;
+                            state?: string;
+                            zipCode?: string;
+                        };
+                        ownerId?: string;
+                    };
 
-        return () => unsubscribe();
-    }, [locale, router, t]);
+                    res.businessName = bizData.businessName || t('unknown_business');
+                    res.businessPhone = bizData.businessPhone || '';
+                    const addr = bizData.address || {};
+                    res.businessAddress = `${addr.street || ''}, ${addr.city || ''}, ${addr.state || ''} ${addr.zipCode || ''}`;
+
+                    for (const petId of res.petIds) {
+                        const petSnap = await getDoc(doc(db, 'users', uid, 'pets', petId));
+                        const petName = petSnap.data()?.petName || t('unknown_pet_name');
+                        res.petNames.push(petName);
+                        if (res.groomingAddOns[petId]) {
+                            res.groomingSummary[petName] = res.groomingAddOns[petId];
+                        }
+                    }
+
+                    results.push(res);
+                }
+            };
+
+            await Promise.all([
+                fetchReservations('daycareReservations', 'date', 'daycare'),
+                fetchReservations('boardingReservations', 'dropOffDate', 'boarding')
+            ]);
+
+            results.sort((a, b) => a.date.getTime() - b.date.getTime());
+            setReservations(results);
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            setError(message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const formatDate = (date: Date) =>
         new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(date);
