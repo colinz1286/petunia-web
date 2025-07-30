@@ -1,12 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import {
-    getAuth,
-    onAuthStateChanged
-} from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import {
     getFirestore,
     collection,
@@ -69,9 +66,8 @@ export default function IndividualUpcomingAppointmentsPage() {
     const [showLateAlert, setShowLateAlert] = useState(false);
     const [businessPhone, setBusinessPhone] = useState('');
 
-    const fetchReservationsForUser = async (uid: string) => {
+    const fetchReservationsForUser = useCallback(async (uid: string) => {
         setIsLoading(true);
-
         try {
             const now = new Date();
             const cutoff = new Date(now.getTime() - 12 * 60 * 60 * 1000);
@@ -113,17 +109,7 @@ export default function IndividualUpcomingAppointmentsPage() {
                     };
 
                     const bizSnap = await getDoc(doc(db, 'businesses', res.businessId));
-                    const bizData = (bizSnap.data() || {}) as {
-                        businessName?: string;
-                        businessPhone?: string;
-                        address?: {
-                            street?: string;
-                            city?: string;
-                            state?: string;
-                            zipCode?: string;
-                        };
-                        ownerId?: string;
-                    };
+                    const bizData = bizSnap.data() || {};
 
                     res.businessName = bizData.businessName || t('unknown_business');
                     res.businessPhone = bizData.businessPhone || '';
@@ -156,7 +142,19 @@ export default function IndividualUpcomingAppointmentsPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [t]);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                void fetchReservationsForUser(user.uid);
+            } else {
+                router.push(`/${locale}/loginsignup`);
+            }
+        });
+
+        return () => unsubscribe();
+    }, [fetchReservationsForUser, locale, router]);
 
     const formatDate = (date: Date) =>
         new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(date);
