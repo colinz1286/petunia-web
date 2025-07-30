@@ -31,10 +31,16 @@ export default function BlogPage() {
     );
   };
 
+  // ✅ Sort by date descending
+  const sortedPosts = [...blogPosts].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  // ✅ Apply filtering after sorting
   const filteredPosts =
     selectedCategories.length === 0
-      ? blogPosts
-      : blogPosts.filter((post) =>
+      ? sortedPosts
+      : sortedPosts.filter((post) =>
           post.categories.some((cat) => selectedCategories.includes(cat))
         );
 
