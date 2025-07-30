@@ -16,6 +16,7 @@ export default getRequestConfig(async ({ locale }) => {
   const messages = {
     businessDashboard: (await import(`../../messages/${safeLocale}/businessDashboard.json`)).default,
     boardingAndDaycareBusinessSettings: (await import(`../../messages/${safeLocale}/boardingAndDaycareBusinessSettings.json`)).default,
+    boardingAndDaycarePendingRequests: (await import(`../../messages/${safeLocale}/boardingAndDaycarePendingRequests.json`)).default,
     businessSignUp: (await import(`../../messages/${safeLocale}/businessSignUp.json`)).default,
     individualSignUp: (await import(`../../messages/${safeLocale}/individualSignUp.json`)).default,
     individualDashboard: (await import(`../../messages/${safeLocale}/individualDashboard.json`)).default,

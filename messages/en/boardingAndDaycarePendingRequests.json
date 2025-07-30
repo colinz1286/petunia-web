@@ -1,0 +1,13 @@
+{
+  "pending_requests_title": "Pending Join Requests",
+  "loading": "Loading requests...",
+  "no_pending_requests": "There are no pending requests at this time.",
+  "approve_button": "Approve",
+  "decline_button": "Decline",
+  "approve_request_title": "Approve This Request?",
+  "approve_request_message": "Are you sure you want to approve this client’s request? They will gain access to your business.",
+  "decline_request_title": "Decline This Request?",
+  "decline_request_message": "Are you sure you want to decline this client’s request?",
+  "yes_button": "Yes",
+  "no_button": "No"
+}
