@@ -5,6 +5,7 @@ import { useLocale } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import Head from 'next/head';
+import { blogPosts } from './blogposts'; // ✅ Use centralized registry
 
 const CATEGORY_MAP: Record<string, string> = {
   boarding: 'Boarding & Daycare',
@@ -17,16 +18,6 @@ const CATEGORY_MAP: Record<string, string> = {
 
 const firstRow = ['boarding', 'owner', 'sitter'];
 const secondRow = ['rescue', 'vet', 'walker'];
-
-const dummyPosts = [
-  {
-    slug: 'crocs-safety-dog-daycare',
-    title: 'Are Crocs Safe to Wear at Dog Boarding & Daycare Facilities?',
-    description: 'Explore the pros and cons of wearing Crocs in a pet care facility based on real-world experience and safety insights.',
-    date: 'January 3, 2024',
-    categories: ['boarding', 'sitter', 'walker'],
-  },
-];
 
 export default function BlogPage() {
   const locale = useLocale();
@@ -42,8 +33,8 @@ export default function BlogPage() {
 
   const filteredPosts =
     selectedCategories.length === 0
-      ? dummyPosts
-      : dummyPosts.filter((post) =>
+      ? blogPosts
+      : blogPosts.filter((post) =>
           post.categories.some((cat) => selectedCategories.includes(cat))
         );
 
@@ -74,7 +65,7 @@ export default function BlogPage() {
           Advice, how-tos, and real answers for sitters, walkers, boarding facility owners, and loving pet parents.
         </p>
 
-        {/* Row 1 */}
+        {/* Filter Row 1 */}
         <div className="flex flex-wrap justify-center gap-2 mb-2 max-w-2xl">
           {firstRow.map((key) => {
             const isActive = selectedCategories.includes(key);
@@ -82,10 +73,10 @@ export default function BlogPage() {
               <button
                 key={key}
                 onClick={() => toggleCategory(key)}
-                className={`px-4 py-1.5 rounded-full text-sm font-bold transition border-[3px] border-[#2c4a30] ${
+                className={`px-4 py-1.5 rounded-full text-sm font-bold transition border-[3px] ${
                   isActive
                     ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
-                    : 'text-[#2c4a30] border-[#d9cfc2] hover:bg-[#e4dbcb]'
+                    : 'text-[#2c4a30] border-[#2c4a30] hover:bg-[#e4dbcb]'
                 }`}
               >
                 {CATEGORY_MAP[key]}
@@ -94,7 +85,7 @@ export default function BlogPage() {
           })}
         </div>
 
-        {/* Row 2 */}
+        {/* Filter Row 2 */}
         <div className="flex flex-wrap justify-center gap-2 mb-10 max-w-2xl">
           {secondRow.map((key) => {
             const isActive = selectedCategories.includes(key);
@@ -102,10 +93,10 @@ export default function BlogPage() {
               <button
                 key={key}
                 onClick={() => toggleCategory(key)}
-                className={`px-4 py-1.5 rounded-full text-sm font-bold transition border-[3px] border-[#2c4a30] ${
+                className={`px-4 py-1.5 rounded-full text-sm font-bold transition border-[3px] ${
                   isActive
                     ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
-                    : 'text-[#2c4a30] border-[#d9cfc2] hover:bg-[#e4dbcb]'
+                    : 'text-[#2c4a30] border-[#2c4a30] hover:bg-[#e4dbcb]'
                 }`}
               >
                 {CATEGORY_MAP[key]}
@@ -114,7 +105,7 @@ export default function BlogPage() {
           })}
         </div>
 
-        {/* Blog Post List */}
+        {/* Blog Card List */}
         <section className="w-full max-w-xl space-y-8">
           {filteredPosts.length === 0 ? (
             <p className="text-[#2c4a30]">No articles available for the selected categories.</p>
