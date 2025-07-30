@@ -175,12 +175,15 @@ export default function IndividualBookDaycarePage() {
         async function recalculateDropOffOptions() {
             if (!selectedDate) return;
 
+            const now = new Date();
+            const isToday = selectedDate.toDateString() === now.toDateString();
+
             const snap = await getDoc(doc(db, 'businesses', businessId));
             const data = snap.data() || {};
             const dropOffMap = data.dropOffTimesDaycare || {};
             const weekday = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
 
-            const options = (dropOffMap[weekday] || []).slice().sort((a: string, b: string) => {
+            const options: string[] = (dropOffMap[weekday] || []).slice().sort((a: string, b: string) => {
                 const toMinutes = (time: string) => {
                     const [hourMin, period] = time.split(' ');
                     const [hourStr, minuteStr] = hourMin.split(':');
@@ -193,8 +196,32 @@ export default function IndividualBookDaycarePage() {
                 return toMinutes(a) - toMinutes(b);
             });
 
-            setDropOffOptions(options);
-            setSelectedTime(options[0] || '');
+            // Filter out times that are already in the past if selectedDate is today
+            const filteredOptions = isToday
+                ? options.filter((opt) => {
+                    const [hourMin, period] = opt.split(' ');
+                    const [hourStr, minuteStr] = hourMin.split(':');
+                    let hour = Number(hourStr);
+                    const minute = Number(minuteStr);
+                    if (period === 'PM' && hour !== 12) hour += 12;
+                    if (period === 'AM' && hour === 12) hour = 0;
+
+                    const dropOffDateTime = new Date(selectedDate);
+                    dropOffDateTime.setHours(hour, minute, 0, 0);
+                    return dropOffDateTime > now;
+                })
+                : options;
+
+            // If it's today and no valid times left, automatically bump to tomorrow
+            if (isToday && filteredOptions.length === 0) {
+                const tomorrow = new Date();
+                tomorrow.setDate(now.getDate() + 1);
+                setSelectedDate(tomorrow); // Triggers useEffect again
+                return;
+            }
+
+            setDropOffOptions(filteredOptions);
+            setSelectedTime(filteredOptions[0] || '');
         }
 
         recalculateDropOffOptions();
