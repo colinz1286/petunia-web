@@ -68,9 +68,8 @@ export default function HomePageClient() {
                         <button
                             key={role.key}
                             onClick={() => setSelectedRole(role.key)}
-                            className={`py-3 px-4 rounded text-[#2c4a30] border border-[#2c4a30] hover:bg-[#e4dbcb] transition ${
-                                selectedRole === role.key ? 'bg-[#2c4a30] text-white' : ''
-                            }`}
+                            className={`py-3 px-4 rounded text-[#2c4a30] border border-[#2c4a30] hover:bg-[#e4dbcb] transition ${selectedRole === role.key ? 'bg-[#2c4a30] text-white' : ''
+                                }`}
                         >
                             {role.label}
                         </button>
@@ -125,7 +124,14 @@ export default function HomePageClient() {
                                 From check-ins and feeding notes to client management, reminders, and real-time schedule visibility — it&rsquo;s all right here.
                             </p>
                             <p className="text-lg text-balance">
-                                💡 Free for your first 30 days — just $25/month after. No contracts. No nonsense.
+                                💡 Free for your first 30 days — just $20/month after. No contracts. No nonsense.
+                            </p>
+                            <p className="text-lg text-balance">
+                                A few years ago, we were just a small facility with more heart than budget. We remember what it felt like to be priced out of software that promised to help — but didn’t feel made for us.
+                                <br /><br />
+                                So we built Petunia to be different. <strong>You shouldn&rsquo;t have to be a big operation in order to deserve something better.</strong> It’s powerful enough for a growing franchise, but priced so even a one-person operation can justify it.
+                                <br /><br />
+                                No contracts. No hidden fees. Just tools that work — for the people who do the work.
                             </p>
                             <p className="text-lg text-balance">
                                 💌 Questions or requests? Want a feature that we don&rsquo;t currently have? Email us at{" "}
@@ -152,7 +158,12 @@ export default function HomePageClient() {
                                 This part of Petunia is coming soon! We&rsquo;re rolling out tools built specifically for sitters and walkers.
                             </p>
                             <p className="text-lg text-balance">
-                                Just $10/month. No commissions, ever. Bring your existing clients and grow from there.
+                                Just $5/month. No commissions, ever. Bring your existing clients and grow from there.
+                            </p>
+                            <p className="text-lg text-balance">
+                                You’ve worked hard to build trust. Every walk, every visit, every tail wag — it all adds up to something real.
+                                <br /><br />
+                                If you have clients on other platforms, don’t leave your reputation behind. Invite them to join you here. Once they sign up and you approve them as a past client, they can write you a review — so your history doesn’t disappear, and your momentum doesn’t miss a step.
                             </p>
                             <p className="text-lg text-balance">
                                 💌 Want to shape the features and help us determine what features we roll out next? Email us at{" "}
