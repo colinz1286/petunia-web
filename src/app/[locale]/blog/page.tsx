@@ -23,7 +23,7 @@ const dummyPosts = [
     slug: 'crocs-safety-dog-daycare',
     title: 'Are Crocs Safe to Wear at Dog Boarding & Daycare Facilities?',
     description: 'Explore the pros and cons of wearing Crocs in a pet care facility based on real-world experience and safety insights.',
-    date: 'August 1, 2025',
+    date: 'January 3, 2024',
     categories: ['boarding', 'sitter', 'walker'],
   },
 ];

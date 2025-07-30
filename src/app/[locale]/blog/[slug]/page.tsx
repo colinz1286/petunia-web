@@ -11,7 +11,7 @@ export default function BlogPostPage() {
     useParams();
 
     const title = 'Are Crocs Safe to Wear at Dog Boarding & Daycare Facilities?';
-    const date = 'August 1, 2025';
+    const date = 'January 3, 2024';
 
     // 🔑 Categories this post belongs to
     const categories = ['boarding', 'sitter', 'walker'];
