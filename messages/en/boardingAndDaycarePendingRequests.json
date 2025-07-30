@@ -9,5 +9,6 @@
   "decline_request_title": "Decline This Request?",
   "decline_request_message": "Are you sure you want to decline this client’s request?",
   "yes_button": "Yes",
-  "no_button": "No"
+  "no_button": "No",
+  "back_to_dashboard": "Back to Dashboard"
 }

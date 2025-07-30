@@ -160,6 +160,13 @@ export default function BoardingAndDaycarePendingRequestsPage() {
     return (
         <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)] px-4 py-8">
             <div className="max-w-3xl mx-auto">
+                <button
+                    onClick={() => router.push(`/${locale}/boardinganddaycaredashboard`)}
+                    className="mb-6 text-sm text-[color:var(--color-accent)] underline hover:opacity-90"
+                >
+                    ← {t('back_to_dashboard')}
+                </button>
+
                 <h1 className="text-3xl font-bold text-center mb-6">
                     {t('pending_requests_title')}
                 </h1>
