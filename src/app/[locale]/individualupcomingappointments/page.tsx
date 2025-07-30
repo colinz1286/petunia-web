@@ -176,22 +176,28 @@ export default function IndividualUpcomingAppointmentsPage() {
         const now = new Date();
         const hoursDiff = (res.date.getTime() - now.getTime()) / (1000 * 60 * 60);
 
+        // 1. Check for late cancellation
         if (hoursDiff < 24) {
             setBusinessPhone(res.businessPhone);
             setShowLateAlert(true);
             return;
         }
 
-        try {
-            setCancelingId(res.id);
+        // 2. Optimistically remove reservation from local state before deletion
+        setReservations(prev => prev.filter(r => r.id !== res.id));
+        setCancelingId(res.id);
 
+        try {
+            // 3. Delete from Firestore
             const col = res.type === 'boarding' ? 'boardingReservations' : 'daycareReservations';
             await deleteDoc(doc(db, col, res.id));
 
+            // 4. Delete from Realtime Database
             const path = ref(rtdb, `upcomingReservations/${res.businessId}/${res.realtimeKey}`);
             console.log('🧹 Deleting RTDB key:', res.realtimeKey);
             await remove(path);
 
+            // 5. Notify business owner
             const bizSnap = await getDoc(doc(db, 'businesses', res.businessId));
             const ownerId = bizSnap.data()?.ownerId;
             if (ownerId) {
@@ -201,10 +207,11 @@ export default function IndividualUpcomingAppointmentsPage() {
                     timestamp: Timestamp.now()
                 });
             }
-
-            setReservations(prev => prev.filter(r => r.id !== res.id));
         } catch (err: unknown) {
             console.error('❌ Cancelation failed:', err instanceof Error ? err.message : 'Unknown error');
+
+            // 6. Optional rollback if deletion failed
+            setReservations(prev => [...prev, res]);
         } finally {
             setCancelingId(null);
         }
