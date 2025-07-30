@@ -12,7 +12,11 @@ import {
     doc,
     Timestamp,
 } from 'firebase/firestore';
-
+import {
+    getDatabase,
+    ref as rtdbRef,
+    set as rtdbSet
+} from 'firebase/database';
 import {
     getAuth,
     onAuthStateChanged
@@ -183,6 +187,7 @@ export default function IndividualBookDaycarePage() {
             const dropOffMap = data.dropOffTimesDaycare || {};
             const weekday = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
 
+            // Sort all time options into chronological order
             const options: string[] = (dropOffMap[weekday] || []).slice().sort((a: string, b: string) => {
                 const toMinutes = (time: string) => {
                     const [hourMin, period] = time.split(' ');
@@ -196,7 +201,7 @@ export default function IndividualBookDaycarePage() {
                 return toMinutes(a) - toMinutes(b);
             });
 
-            // Filter out times that are already in the past if selectedDate is today
+            // Filter out past time slots for today
             const filteredOptions = isToday
                 ? options.filter((opt) => {
                     const [hourMin, period] = opt.split(' ');
@@ -212,11 +217,11 @@ export default function IndividualBookDaycarePage() {
                 })
                 : options;
 
-            // If it's today and no valid times left, automatically bump to tomorrow
+            // If no valid drop-off times remain today, auto-advance to tomorrow
             if (isToday && filteredOptions.length === 0) {
                 const tomorrow = new Date();
                 tomorrow.setDate(now.getDate() + 1);
-                setSelectedDate(tomorrow); // Triggers useEffect again
+                setSelectedDate(tomorrow); // triggers this useEffect again
                 return;
             }
 
@@ -342,7 +347,6 @@ export default function IndividualBookDaycarePage() {
 
             await setDoc(doc(firestore, 'daycareReservations', reservationId), reservation);
 
-            // Realtime DB entry per pet
             for (const petId of booking.petIds) {
                 const pet = pets.find(p => p.id === petId);
                 if (!pet) continue;
@@ -383,6 +387,11 @@ export default function IndividualBookDaycarePage() {
                     if (petData.medicationDetails) rtdbEntry.medicationDetails = petData.medicationDetails;
                     if (petData.spayedNeutered) rtdbEntry.spayedNeutered = petData.spayedNeutered;
                 }
+
+                await rtdbSet(
+                    rtdbRef(getDatabase(), `upcomingReservations/${businessId}/${realtimeKey}-${petId}`),
+                    rtdbEntry
+                );
             }
         }
     }
