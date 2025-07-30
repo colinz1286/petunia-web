@@ -141,10 +141,10 @@ export default function IndividualBookBoardingPage() {
                     setWaiverSigned(true);
                 } else if (!waiverSignedAt) {
                     setWaiverSigned(false);
-                    setShowWaiverModal(true);
+                    setShowWaiverModal(true); // ✅ Immediately prompts
                 } else if (waiverLastUpdated && waiverSignedAt < waiverLastUpdated) {
                     setWaiverSigned(false);
-                    setShowWaiverModal(true);
+                    setShowWaiverModal(true); // ✅ Immediately prompts
                 } else {
                     setWaiverSigned(true);
                 }
