@@ -71,8 +71,17 @@ export default function LoginSignupPage() {
       const businessSnapshot = await getDocs(
         query(collection(db, 'businesses'), where('ownerId', '==', uid))
       );
+
       if (!businessSnapshot.empty) {
-        if (!user.emailVerified) {
+        const businessDoc = businessSnapshot.docs[0];
+        const businessData = businessDoc.data();
+        const createdAt = businessData.createdAt?.toDate?.();
+
+        // Define the cutoff for required email verification
+        const enforcementDate = new Date('2025-07-29');
+
+        // Enforce email verification only if created after the enforcement date
+        if (createdAt && createdAt >= enforcementDate && !user.emailVerified) {
           setLoginError('Please verify your email before logging in.');
           setIsLoggingIn(false);
           return;
