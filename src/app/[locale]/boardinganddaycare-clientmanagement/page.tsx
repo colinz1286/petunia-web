@@ -309,6 +309,11 @@ export default function ClientManagementPage() {
                                             {t('view_file_2')}
                                         </a>
                                     )}
+                                    {!pet.fileURL1 && !pet.fileURL2 && (
+                                        <div className="text-red-600 font-semibold text-xs">
+                                            No vaccine images uploaded
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
