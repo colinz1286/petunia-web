@@ -52,6 +52,7 @@ export default function DogBoardingSoftwarePage() {
         </div>
       </section>
 
+
       {/* Key Features */}
       <section className="py-8 border-t border-gray-200 text-center">
         <h2 className="text-xl sm:text-2xl font-semibold mb-6 text-[#2c4a30]">
@@ -65,8 +66,10 @@ export default function DogBoardingSoftwarePage() {
           <li><strong>Payments & Invoicing (coming soon):</strong> Accept deposits or payments online with detailed receipts and pricing flexibility.</li>
           <li><strong>Staff Scheduling (coming soon):</strong> Assign roles, track availability, and manage shift coverage with ease.</li>
           <li><strong>Mobile-Friendly Access:</strong> Manage your business on the go from any device.</li>
+          <li><strong>A Company that Listens and Responds to You:</strong> We will have a poll every 2 months to determine what features are rolled out next. You Vote, We Make it Happen.</li>
         </ul>
       </section>
+
 
       {/* Emotional Value Proposition */}
       <section className="py-8 border-t border-gray-200 text-center">
