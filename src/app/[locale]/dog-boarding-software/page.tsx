@@ -19,7 +19,7 @@ export default function DogBoardingSoftwarePage() {
       {/* What Is Dog Boarding Software? */}
       <section className="py-8 text-center">
         <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-[#2c4a30]">
-          It&#39;s Not Just Software — It&#39;s Peace of Mind
+          Tools to give you Peace of Mind
         </h2>
         <p className="text-base leading-7 text-gray-700 max-w-md mx-auto">
           Dog boarding software isn&#39;t about tech. It&#39;s about trust. It&#39;s about waking up and knowing that every reservation, every reminder, every detail about every dog is right where it needs to be — no notebooks, no guesswork, no stress.
@@ -47,7 +47,7 @@ export default function DogBoardingSoftwarePage() {
             Servers aren&#39;t expensive. Storage isn&#39;t expensive. So why are other companies charging you so much?
           </p>
           <p className="mt-4 font-semibold text-[#2c4a30]">
-            At Petunia, we charge $20 because that&#39;s what it should cost. We are charing you a price we think it should cost. Not charing you as much as we can get away with.
+            At Petunia, we charge $20 because that&#39;s what it should cost. We are charging you a price we think it should cost. Not charging you as much as we can get away with.
           </p>
         </div>
       </section>
@@ -84,7 +84,7 @@ export default function DogBoardingSoftwarePage() {
       {/* Simplicity Message */}
       <section className="py-8 border-t border-gray-200 text-center">
         <h2 className="text-xl sm:text-2xl font-semibold mb-6 text-[#2c4a30]">
-          Other Platforms Feel Like Work. Petunia Feels Like Breathing.
+          We work for you
         </h2>
         <p className="text-base leading-7 text-gray-700 mb-4 max-w-md mx-auto">
           Most software asks you to learn it. Petunia learns you. No clunky menus. Just an interface so intuitive it disappears behind what really matters — the care, the people, the dogs.
@@ -97,7 +97,7 @@ export default function DogBoardingSoftwarePage() {
       {/* How to Choose */}
       <section className="py-8 border-t border-gray-200 text-center">
         <h2 className="text-xl sm:text-2xl font-semibold mb-6 text-[#2c4a30]">
-          You&#39;re Not Choosing Software. You&#39;re Choosing a Way of Life.
+          You&#39;re Not Just Choosing Software. You&#39;re Choosing a Tool that Allows you to Live Your Life.
         </h2>
         <p className="text-base leading-7 text-gray-700 mb-4 max-w-md mx-auto">
           The right platform doesn&#39;t just manage your day. It gives it back to you. That means fewer fires to put out, fewer tasks to track, and more time doing what you actually care about.
