@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://www.petuniapets.com
+
+# Sitemaps
+Sitemap: https://www.petuniapets.com/sitemap.xml
