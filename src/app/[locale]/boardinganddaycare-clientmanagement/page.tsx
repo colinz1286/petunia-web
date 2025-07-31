@@ -28,7 +28,7 @@ initializeApp(firebaseConfig);
 interface ClientPet {
     id: string;
     name: string;
-    vaccinesCurrent: boolean;
+    vaccineDisplay: { name: string; value: string; style: 'gray' | 'red' | 'yellow' }[];
     fileURL1?: string;
     fileURL2?: string;
 }
@@ -133,13 +133,25 @@ export default function ClientManagementPage() {
                             const petData = petDoc.data();
                             const name = petData.petName ?? t('unnamed_pet');
                             const records = petData.vaccinationRecords ?? {};
-                            const now = Date.now();
 
-                            const vaccinesCurrent = ['Rabies', 'Bordetella', 'DAPP (or DHPP/DA2PP)', 'Canine Influenza'].every((vaccine: string) => {
-                                const rec = records[vaccine];
-                                if (!rec) return false;
-                                return rec.isVaccinated && rec.date?.seconds * 1000 > now;
-                            });
+                            const requiredVaccines = ['Rabies', 'Bordetella', 'DAPP (or DHPP/DA2PP)', 'Canine Influenza'];
+                            const vaccineDisplay: { name: string; value: string; style: 'gray' | 'red' | 'yellow' }[] =
+                                requiredVaccines.map((vaccine) => {
+                                    const rec = records[vaccine];
+                                    if (!rec || !rec.date || !rec.date.seconds) {
+                                        return { name: vaccine, value: 'No information entered', style: 'yellow' };
+                                    }
+
+                                    const expDate = new Date(rec.date.seconds * 1000);
+                                    const formatted = expDate.toLocaleDateString();
+                                    const isExpired = expDate.getTime() < Date.now();
+
+                                    return {
+                                        name: vaccine,
+                                        value: `Expiration: ${formatted}`,
+                                        style: isExpired ? 'red' : 'gray'
+                                    };
+                                });
 
                             const fileURL1 = await findFirstFile(userId, petDoc.id, '_1');
                             const fileURL2 = await findFirstFile(userId, petDoc.id, '_2');
@@ -147,7 +159,7 @@ export default function ClientManagementPage() {
                             return {
                                 id: petDoc.id,
                                 name,
-                                vaccinesCurrent,
+                                vaccineDisplay,
                                 fileURL1,
                                 fileURL2
                             } as ClientPet;
@@ -164,6 +176,7 @@ export default function ClientManagementPage() {
                 });
 
                 const loadedClients = await Promise.all(clientPromises);
+
                 loadedClients.sort((a, b) => {
                     const aLast = a.userLastName || a.userName.split(' ').slice(-1).join(' ');
                     const bLast = b.userLastName || b.userName.split(' ').slice(-1).join(' ');
@@ -189,7 +202,6 @@ export default function ClientManagementPage() {
     return (
         <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)] px-4 py-6">
             <div className="w-full max-w-md mx-auto space-y-6 px-2 sm:px-4">
-
                 <button
                     onClick={() => router.push(`/${locale}/boardinganddaycaredashboard`)}
                     className="text-sm text-[color:var(--color-accent)] underline hover:opacity-90"
@@ -237,7 +249,9 @@ export default function ClientManagementPage() {
                                             return `${last}, ${first}`;
                                         })()}
                                 </span>
-                                <span className={client.waiverSigned ? 'text-green-600' : 'text-red-600'}>
+                                <span
+                                    className={client.waiverSigned ? 'text-green-600' : 'text-red-600'}
+                                >
                                     {client.waiverSigned ? '✅' : '❌'}
                                 </span>
                             </div>
@@ -254,16 +268,25 @@ export default function ClientManagementPage() {
                                     key={pet.id}
                                     className="bg-gray-50 border rounded p-3 space-y-2 mt-2"
                                 >
-                                    <div className="flex justify-between items-center">
-                                        <span className="font-medium text-sm">{pet.name}</span>
-                                        <span
-                                            className={pet.vaccinesCurrent ? 'text-green-600' : 'text-red-600 text-sm'}
-                                        >
-                                            {pet.vaccinesCurrent
-                                                ? t('vaccines_current')
-                                                : t('vaccines_not_current')}
-                                        </span>
-                                    </div>
+                                    <div className="font-medium text-sm">{pet.name}</div>
+
+                                    {/* Vaccine Status List */}
+                                    {pet.vaccineDisplay?.map((vax, i) => (
+                                        <div key={i} className="text-xs text-gray-700">
+                                            <strong>{vax.name}:</strong>{' '}
+                                            <span
+                                                className={
+                                                    vax.style === 'red'
+                                                        ? 'text-red-600 font-semibold'
+                                                        : vax.style === 'yellow'
+                                                            ? 'text-yellow-500 font-semibold'
+                                                            : ''
+                                                }
+                                            >
+                                                {vax.value}
+                                            </span>
+                                        </div>
+                                    ))}
 
                                     {/* Vaccine File Links */}
                                     {pet.fileURL1 && (
