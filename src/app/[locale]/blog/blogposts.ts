@@ -28,4 +28,14 @@ export const blogPosts: BlogPostEntry[] = [
       import('./posts/manager-pay-benefits') as Promise<{ default: React.ComponentType<object> }>,
     categories: ['boarding', 'owner'],
   },
+  {
+    slug: 'back-to-school-dog-daycare',
+    title: 'Back to School Season in Dog Daycare and Boarding: What I’ve Learned and What You Can Try',
+    date: 'July 31, 2025',
+    description:
+      'Learn how one facility handles the back-to-school seasonal shift, with practical ideas for managing early September dips and preparing for fall demand.',
+    component: () =>
+      import('./posts/back-to-school-dog-daycare') as Promise<{ default: React.ComponentType<object> }>,
+    categories: ['boarding', 'owner'],
+  },
 ];
