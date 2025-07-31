@@ -1,46 +1,9 @@
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function PrivacyPolicyPage() {
   return (
     <main className="min-h-screen bg-[#f6efe4] flex flex-col justify-between">
-      {/* Navbar */}
-      <header className="w-full flex items-center justify-between px-6 py-4 bg-[#f6efe4] border-b border-[#d9cfc2]">
-        {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
-          <Image
-            src="/petunia_logo.png"
-            alt="Petunia Logo"
-            width={80}
-            height={0}
-            className="w-20 h-auto"
-            priority
-          />
-        </Link>
-
-        {/* Navbar Links */}
-        <nav className="flex gap-6 text-sm text-[#2c4a30] font-medium">
-          <Link href="/login" className="hover:underline">Login / Sign Up</Link>
-          <Link href="/about" className="hover:underline">About Us</Link>
-          <Link href="/contact" className="hover:underline">Contact</Link>
-          <a
-            href="https://www.facebook.com/profile.php?id=61575107920935"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            Facebook
-          </a>
-          <a
-            href="https://youtube.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            YouTube
-          </a>
-        </nav>
-      </header>
+      {/* ✅ DO NOT INCLUDE MANUAL HEADER HERE — Already included via shared layout */}
 
       {/* Privacy Policy Content */}
       <section className="flex-grow px-6 py-12 text-[#2c4a30]">
@@ -94,7 +57,7 @@ export default function PrivacyPolicyPage() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* ✅ Keep Footer — it’s likely shared and expected */}
       <footer className="bg-[#2c4a30] text-white py-6 mt-12">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-4 px-6 text-sm">
           <div className="text-center sm:text-left">
