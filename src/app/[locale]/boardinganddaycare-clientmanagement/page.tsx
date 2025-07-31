@@ -81,7 +81,6 @@ export default function ClientManagementPage() {
 
             try {
                 const db = getFirestore();
-                const storage = getStorage();
 
                 const bizSnap = await getDocs(
                     query(collection(db, 'businesses'), where('ownerId', '==', user.uid))
