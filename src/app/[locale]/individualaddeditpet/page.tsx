@@ -22,6 +22,8 @@ import {
     getStorage,
     ref,
     getDownloadURL,
+    deleteObject,
+    uploadBytes,
 } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -273,30 +275,63 @@ export default function AddEditPetPage() {
 
         setSaving(true);
 
-        const payload = {
-            petName,
-            petType,
-            gender,
-            spayedNeutered,
-            breed,
-            ageValue: age,
-            ageUnit: ageUnit,
-            weight,
-            allergies,
-            currentFood,
-            feedingAmount: cupsPerMeal,
-            veterinarian,
-            veterinarianPhone,
-            createdAt: Timestamp.now(),
-        };
-
         try {
+            let uploadedFileName: string | null = null;
+            const petStorageId = petId || crypto.randomUUID();
+
+            // ✅ Upload new vaccine file (if selected)
+            if (vaccineFile && vaccineFile.url.startsWith('blob:')) {
+                const fileInput = document.getElementById('vaccine-upload') as HTMLInputElement;
+                const rawFile = fileInput?.files?.[0];
+
+                if (rawFile) {
+                    const extension = rawFile.name.split('.').pop() || 'pdf';
+
+                    // 🧹 Delete all old versions before upload
+                    const oldExts = ['pdf', 'jpg', 'jpeg', 'png'];
+                    for (const ext of oldExts) {
+                        const oldRef = ref(storage, `vaccineRecords/${userId}/${petStorageId}_1.${ext}`);
+                        try {
+                            await deleteObject(oldRef);
+                            console.log(`🗑️ Deleted: ${petStorageId}_1.${ext}`);
+                        } catch {
+                            // Ignore if not found
+                        }
+                    }
+
+                    const newRef = ref(storage, `vaccineRecords/${userId}/${petStorageId}_1.${extension}`);
+                    await uploadBytes(newRef, rawFile);
+                    uploadedFileName = `${petStorageId}_1.${extension}`;
+                    console.log(`✅ Uploaded vaccine file: ${uploadedFileName}`);
+                }
+            }
+
+            const payload = {
+                petName,
+                petType,
+                gender,
+                spayedNeutered,
+                breed,
+                ageValue: age,
+                ageUnit,
+                weight,
+                allergies,
+                currentFood,
+                feedingAmount: cupsPerMeal,
+                veterinarian,
+                veterinarianPhone,
+                createdAt: Timestamp.now(),
+                vaccinationRecords, // ✅ include current vaccine status/expirations
+            };
+
             const petCollectionRef = collection(db, 'users', userId, 'pets');
+
             if (mode === 'edit' && petId) {
                 await updateDoc(doc(petCollectionRef, petId), payload);
             } else {
                 await addDoc(petCollectionRef, payload);
             }
+
             router.push(`/${locale}/individualmypets`);
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'Unknown error';
@@ -643,12 +678,13 @@ export default function AddEditPetPage() {
                         )}
                     </div>
 
-                    {/* Vaccine Upload */}
+                    {/* ✅ Vaccine Upload */}
                     <div>
                         <label className="block font-semibold mb-2 text-[color:var(--color-accent)] text-sm">
                             {t('vaccinations_section')}
                         </label>
 
+                        {/* Upload Label */}
                         <div className="mb-2">
                             <label
                                 htmlFor="vaccine-upload"
@@ -667,7 +703,7 @@ export default function AddEditPetPage() {
                                     if (file) {
                                         setVaccineFile({
                                             name: file.name,
-                                            url: URL.createObjectURL(file)
+                                            url: URL.createObjectURL(file),
                                         });
                                     }
                                 }}
@@ -675,6 +711,7 @@ export default function AddEditPetPage() {
                             />
                         </div>
 
+                        {/* File Preview + Actions */}
                         {vaccineFile && (
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-gray-100 border p-2 rounded">
                                 <span className="text-sm truncate">{vaccineFile.name}</span>
@@ -689,7 +726,22 @@ export default function AddEditPetPage() {
                                     </a>
                                     <button
                                         type="button"
-                                        onClick={() => setVaccineFile(null)}
+                                        onClick={async () => {
+                                            if (!userId || !petId || !vaccineFile?.name) {
+                                                setVaccineFile(null);
+                                                return;
+                                            }
+
+                                            const fileRef = ref(storage, `vaccineRecords/${userId}/${vaccineFile.name}`);
+                                            try {
+                                                await deleteObject(fileRef);
+                                                console.log('🗑️ Vaccine file deleted:', vaccineFile.name);
+                                            } catch (err) {
+                                                console.warn('⚠️ Could not delete vaccine file from Storage:', err);
+                                            }
+
+                                            setVaccineFile(null);
+                                        }}
                                         className="text-red-600 underline"
                                     >
                                         {t('remove_file')}
