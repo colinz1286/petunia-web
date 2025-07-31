@@ -124,7 +124,7 @@ export default function HomePageClient() {
                                 From check-ins and feeding notes to client management, reminders, and real-time schedule visibility — it&rsquo;s all right here.
                             </p>
                             <p className="text-lg text-balance">
-                                💡 Free for your first 30 days — just $20/month after. No contracts. No nonsense.
+                                💡 Free for your first 15 days — just $20/month after. No contracts. No nonsense.
                             </p>
                             <p className="text-lg text-balance">
                                 A few years ago, we were just a small facility with more heart than budget. We remember what it felt like to be priced out of software that promised to help — but didn’t feel made for us.
