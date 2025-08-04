@@ -19,6 +19,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding', 'owner'],
     },
     {
+        slug: 'why-hiring-feels-impossible-in-pet-care-and-whats-actually-worked-for-me',
+        title: 'Why Hiring Feels Impossible in Pet Care — and What’s Actually Worked for Me',
+        date: 'July 5, 2025',
+        description:
+            'Hiring feels harder than ever in pet care — but it doesn’t have to be. After 8+ years running a boarding and daycare business, here’s what’s actually worked to attract and retain great employees.',
+        component: () =>
+            import('./posts/why-hiring-feels-impossible-in-pet-care-and-whats-actually-worked-for-me') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['boarding', 'owner'],
+    },
+    {
         slug: 'should-you-offer-dog-pickup-and-drop-off-services-the-risk-vs-reward-of-transport-vans-in-pet-care',
         title: 'Should You Offer Dog Pickup and Drop-Off Services? The Risk vs. Reward of Transport Vans in Pet Care',
         date: 'July 20, 2025',
