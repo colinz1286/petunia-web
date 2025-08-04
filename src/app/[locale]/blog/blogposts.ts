@@ -11,7 +11,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'dog-daycare-packages-vs-monthly-memberships-a-balanced-look-at-two-common-pricing-models',
         title: 'Dog Daycare Packages vs. Monthly Memberships: A Balanced Look at Two Common Pricing Models',
-        date: 'August 16, 2025',
+        date: 'July 10, 2025',
         description:
             'Compare the pros and cons of daycare packages and monthly memberships, and explore the impact on cash flow, loyalty, and admin complexity.',
         component: () =>
@@ -31,7 +31,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'client-conflict-refunds-staff-protection',
         title: 'When Clients Cross the Line: How I Handle Conflict, Refunds, and Protecting My Staff',
-        date: 'July 19, 2025',
+        date: 'July 15, 2025',
         description:
             'A real-world approach to managing angry clients, issuing strategic refunds, and protecting your staff from verbal abuse — with insights from a facility owner.',
         component: () =>
