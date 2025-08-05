@@ -21,7 +21,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'how-often-should-dogs-visit-the-vet-a-guide-for-pet-care-businesses-and-owners',
         title: 'How Often Should Dogs Visit the Vet? A Guide for Pet Care Businesses and Owners',
-        date: 'August 4, 2025',
+        date: 'June 1, 2025',
         description:
             'From puppies to seniors, learn how often dogs should see the vet — with global guidelines, breed-specific advice, and tips for pet care providers from a seasoned boarding facility owner.',
         component: () =>
