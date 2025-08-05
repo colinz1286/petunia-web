@@ -26,7 +26,7 @@ export const blogPosts: BlogPostEntry[] = [
             'Learn how to say no to early pickups, last-minute changes, and chronic rule-breakers — while protecting your team, your sanity, and your reputation as a pet care business owner.',
         component: () =>
             import('./posts/setting-boundaries-without-losing-clients-what-ive-learned-running-a-pet-care-business') as Promise<{ default: React.ComponentType<object> }>,
-        categories: ['boarding', 'sitter', 'walker', 'rescue', 'vet', 'owner'],
+        categories: ['boarding', 'sitter', 'walker', 'rescue', 'vet'],
     },
     {
         slug: 'why-hiring-feels-impossible-in-pet-care-and-whats-actually-worked-for-me',
