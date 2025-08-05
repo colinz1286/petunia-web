@@ -19,6 +19,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'writing-a-waiver-for-your-dog-daycare-or-boarding-facility-what-ive-learned-after-8-years-in-business',
+        title: 'Writing a Waiver for Your Dog Daycare or Boarding Facility: What I’ve Learned After 8 Years in Business',
+        date: 'August 4, 2025',
+        description:
+            'Your waiver is more than a form — it’s your business’s legal shield. Learn what to include, what to avoid, and how to build one that protects you and sets client expectations clearly.',
+        component: () =>
+            import('./posts/writing-a-waiver-for-your-dog-daycare-or-boarding-facility-what-ive-learned-after-8-years-in-business') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['boarding', 'sitter', 'walker', 'rescue', 'vet', 'owner'],
+    },
+    {
         slug: 'is-tiktok-safe-and-useful-for-pet-care-businesses-heres-what-ive-learned',
         title: 'Is TikTok Safe — and Useful — for Pet Care Businesses? Here’s What I’ve Learned',
         date: 'June 26, 2025',
