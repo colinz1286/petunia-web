@@ -18,6 +18,7 @@ export default function HowOftenShouldDogsVisitTheVetAGuideForPetCareBusinessesA
         rescue: 'Rescues',
         vet: 'Veterinary Clinics',
         owner: 'Pet Owners',
+        breeder: 'Breeders'
     };
 
     return (
