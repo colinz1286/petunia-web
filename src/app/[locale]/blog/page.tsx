@@ -14,10 +14,12 @@ const CATEGORY_MAP: Record<string, string> = {
   rescue: 'Rescues',
   vet: 'Veterinary Clinics',
   walker: 'Dog Walkers',
+  breeder: 'Breeders', // ✅ NEW
 };
 
 const firstRow = ['boarding', 'owner', 'sitter'];
 const secondRow = ['rescue', 'vet', 'walker'];
+const thirdRow = ['breeder']; // ✅ NEW
 
 export default function BlogPage() {
   const locale = useLocale();
@@ -31,12 +33,10 @@ export default function BlogPage() {
     );
   };
 
-  // ✅ Sort by date descending
   const sortedPosts = [...blogPosts].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
-  // ✅ Apply filtering after sorting
   const filteredPosts =
     selectedCategories.length === 0
       ? sortedPosts
@@ -92,8 +92,28 @@ export default function BlogPage() {
         </div>
 
         {/* Filter Row 2 */}
-        <div className="flex flex-wrap justify-center gap-2 mb-10 max-w-2xl">
+        <div className="flex flex-wrap justify-center gap-2 mb-2 max-w-2xl">
           {secondRow.map((key) => {
+            const isActive = selectedCategories.includes(key);
+            return (
+              <button
+                key={key}
+                onClick={() => toggleCategory(key)}
+                className={`px-4 py-1.5 rounded-full text-sm font-bold transition border-[3px] ${
+                  isActive
+                    ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
+                    : 'text-[#2c4a30] border-[#2c4a30] hover:bg-[#e4dbcb]'
+                }`}
+              >
+                {CATEGORY_MAP[key]}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Filter Row 3 – Breeders */}
+        <div className="flex flex-wrap justify-center gap-2 mb-10 max-w-2xl">
+          {thirdRow.map((key) => {
             const isActive = selectedCategories.includes(key);
             return (
               <button
