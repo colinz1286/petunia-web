@@ -98,7 +98,7 @@ export default function AboutUsPage() {
 
         <div className="text-center">
           <Image
-            src="/rachelrowland-59.jpg"
+            src="/RachelRowland-59.jpg"
             alt="Petunia and Mia"
             width={1200}
             height={0}
