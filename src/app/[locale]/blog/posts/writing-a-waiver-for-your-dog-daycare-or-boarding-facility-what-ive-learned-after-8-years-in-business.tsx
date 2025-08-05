@@ -8,7 +8,7 @@ export default function WritingAWaiverForYourDogDaycareOrBoardingFacilityWhatIve
     const locale = useLocale();
 
     const title = "Writing a Waiver for Your Dog Daycare or Boarding Facility: What I’ve Learned After 8 Years in Business";
-    const date = "August 4, 2025";
+    const date = "August 5, 2025";
     const categories = ['boarding', 'owner'];
 
     const categoryLabels: Record<string, string> = {

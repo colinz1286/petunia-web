@@ -8,7 +8,7 @@ export default function HandleConflictBlog() {
     const locale = useLocale();
 
     const title = 'When Clients Cross the Line: How I Handle Conflict, Refunds, and Protecting My Staff';
-    const date = 'August 4, 2025';
+    const date = 'July 15, 2025';
     const categories = ['boarding', 'owner'];
 
     const categoryLabels: Record<string, string> = {

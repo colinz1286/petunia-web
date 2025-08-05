@@ -8,7 +8,7 @@ export default function HowIKeepDogsQuietOvernightInMyBoardingFacilityAndWhatYou
     const locale = useLocale();
 
     const title = "How I Keep Dogs Quiet Overnight in My Boarding Facility (And What You Can Try Too)";
-    const date = "August 4, 2025";
+    const date = "July 1, 2025";
     const categories = ['boarding', 'owner'];
 
     const categoryLabels: Record<string, string> = {

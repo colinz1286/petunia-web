@@ -8,7 +8,7 @@ export default function ShouldYouOfferDogPickupAndDropOffServicesTheRiskVsReward
     const locale = useLocale();
 
     const title = "Should You Offer Dog Pickup and Drop-Off Services? The Risk vs. Reward of Transport Vans in Pet Care";
-    const date = "August 4, 2025";
+    const date = "July 20, 2025";
     const categories = ['boarding', 'owner'];
 
     const categoryLabels: Record<string, string> = {

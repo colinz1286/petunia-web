@@ -8,7 +8,7 @@ export default function IsTiktokSafeAndUsefulForPetCareBusinessesHeresWhatIveLea
     const locale = useLocale();
 
     const title = "Is TikTok Safe — and Useful — for Pet Care Businesses? Here’s What I’ve Learned";
-    const date = "August 4, 2025";
+    const date = "June 26, 2025";
     const categories = ['boarding', 'owner', 'sitter', 'walker'];
 
     const categoryLabels: Record<string, string> = {

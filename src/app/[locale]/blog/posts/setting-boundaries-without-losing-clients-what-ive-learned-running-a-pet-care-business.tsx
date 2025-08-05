@@ -8,7 +8,7 @@ export default function SettingBoundariesWithoutLosingClientsWhatIveLearnedRunni
     const locale = useLocale();
 
     const title = "Setting Boundaries Without Losing Clients: What I’ve Learned Running a Pet Care Business";
-    const date = "August 4, 2025";
+    const date = "July 3, 2025";
     const categories = ['boarding', 'owner'];
 
     const categoryLabels: Record<string, string> = {

@@ -8,7 +8,7 @@ export default function WhyHiringFeelsImpossibleInPetCareAndWhatsActuallyWorkedF
     const locale = useLocale();
 
     const title = "Why Hiring Feels Impossible in Pet Care — and What’s Actually Worked for Me";
-    const date = "August 4, 2025";
+    const date = "July 5, 2025";
     const categories = ['boarding', 'owner'];
 
     const categoryLabels: Record<string, string> = {

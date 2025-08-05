@@ -8,7 +8,7 @@ export default function HowMuchDoesDogBoardingCostWhatIChargeWhatOthersChargeAnd
     const locale = useLocale();
 
     const title = "How Much Does Dog Boarding Cost? What I Charge, What Others Charge, and What I’ve Learned After 8 Years in Business";
-    const date = "August 4, 2025";
+    const date = "June 21, 2025";
     const categories = ['boarding', 'owner'];
 
     const categoryLabels: Record<string, string> = {

@@ -8,7 +8,7 @@ export default function DogDaycarePackagesVsMonthlyMembershipsABalancedLookAtTwo
     const locale = useLocale();
 
     const title = "Dog Daycare Packages vs. Monthly Memberships: A Balanced Look at Two Common Pricing Models";
-    const date = "August 4, 2025";
+    const date = "July 10, 2025";
     const categories = ['boarding', 'owner', 'sitter'];
 
     const categoryLabels: Record<string, string> = {

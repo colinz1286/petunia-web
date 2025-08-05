@@ -8,7 +8,7 @@ export default function DaycareVsBoardingVsGroomingBlog() {
     const locale = useLocale();
 
     const title = 'Should You Offer Daycare Only — or Add Boarding and Grooming?';
-    const date = 'August 1, 2025';
+    const date = 'July 26, 2025';
     const categories = ['boarding', 'owner'];
 
     const categoryLabels: Record<string, string> = {
