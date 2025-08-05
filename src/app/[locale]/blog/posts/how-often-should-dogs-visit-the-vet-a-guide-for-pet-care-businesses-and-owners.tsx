@@ -9,7 +9,7 @@ export default function HowOftenShouldDogsVisitTheVetAGuideForPetCareBusinessesA
 
     const title = "How Often Should Dogs Visit the Vet? A Guide for Pet Care Businesses and Owners";
     const date = "June 1, 2025";
-    const categories = ['boarding', 'sitter', 'walker', 'rescue', 'vet', 'owner'];
+    const categories = ['boarding', 'sitter', 'walker', 'rescue', 'vet', 'owner', 'breeder'];
 
     const categoryLabels: Record<string, string> = {
         boarding: 'Boarding & Daycare',

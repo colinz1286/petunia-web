@@ -14,12 +14,12 @@ const CATEGORY_MAP: Record<string, string> = {
   rescue: 'Rescues',
   vet: 'Veterinary Clinics',
   walker: 'Dog Walkers',
-  breeder: 'Breeders', // ✅ NEW
+  breeder: 'Breeders',
 };
 
 const firstRow = ['boarding', 'owner', 'sitter'];
 const secondRow = ['rescue', 'vet', 'walker'];
-const thirdRow = ['breeder']; // ✅ NEW
+const thirdRow = ['breeder'];
 
 export default function BlogPage() {
   const locale = useLocale();
