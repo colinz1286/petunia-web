@@ -9,7 +9,7 @@ export default function DogDaycarePackagesVsMonthlyMembershipsABalancedLookAtTwo
 
     const title = "Dog Daycare Packages vs. Monthly Memberships: A Balanced Look at Two Common Pricing Models";
     const date = "August 4, 2025";
-    const categories = ['boarding', 'owner'];
+    const categories = ['boarding', 'owner', 'sitter'];
 
     const categoryLabels: Record<string, string> = {
         boarding: 'Boarding & Daycare',

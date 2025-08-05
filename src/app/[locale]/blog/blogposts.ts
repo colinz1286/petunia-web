@@ -19,6 +19,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'is-tiktok-safe-and-useful-for-pet-care-businesses-heres-what-ive-learned',
+        title: 'Is TikTok Safe — and Useful — for Pet Care Businesses? Here’s What I’ve Learned',
+        date: 'June 26, 2025',
+        description:
+            'Does TikTok help grow a pet care business — or is it just a distraction? Learn what actually works, what the data says, and how to decide if TikTok is worth your time.',
+        component: () =>
+            import('./posts/is-tiktok-safe-and-useful-for-pet-care-businesses-heres-what-ive-learned') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['boarding', 'sitter', 'walker', 'rescue', 'vet', 'owner'],
+    },
+    {
         slug: 'how-i-keep-dogs-quiet-overnight-in-my-boarding-facility-and-what-you-can-try-too',
         title: 'How I Keep Dogs Quiet Overnight in My Boarding Facility (And What You Can Try Too)',
         date: 'July 1, 2025',
