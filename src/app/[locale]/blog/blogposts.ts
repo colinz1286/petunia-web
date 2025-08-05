@@ -19,6 +19,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-i-keep-dogs-quiet-overnight-in-my-boarding-facility-and-what-you-can-try-too',
+        title: 'How I Keep Dogs Quiet Overnight in My Boarding Facility (And What You Can Try Too)',
+        date: 'July 1, 2025',
+        description:
+            'Discover how one boarding facility owner reduced barking and built a quieter overnight system using sound, lighting, design, and client boundaries — plus what the science says works.',
+        component: () =>
+            import('./posts/how-i-keep-dogs-quiet-overnight-in-my-boarding-facility-and-what-you-can-try-too') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['boarding', 'owner'],
+    },
+    {
         slug: 'setting-boundaries-without-losing-clients-what-ive-learned-running-a-pet-care-business',
         title: 'Setting Boundaries Without Losing Clients: What I’ve Learned Running a Pet Care Business',
         date: 'July 3, 2025',
