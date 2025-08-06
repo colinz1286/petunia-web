@@ -19,6 +19,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'should-i-adopt-or-buy-a-dog',
+        title: 'Should I Adopt a Dog or Buy One from a Breeder?',
+        date: 'May 26, 2025',
+        description:
+            'A balanced, research-backed guide exploring adoption versus buying from a breeder — with emotional, financial, and behavioral insights to help you choose the best path.',
+        component: () =>
+            import('./posts/should-i-adopt-or-buy-a-dog') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'rescue', 'breeder'],
+    },
+    {
         slug: 'what-dog-breed-is-best-for-me-and-my-family',
         title: 'What Dog Breed Is Best for Me and My Family?',
         date: 'June 6, 2025',
