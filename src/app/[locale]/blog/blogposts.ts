@@ -51,7 +51,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'writing-a-waiver-for-your-dog-daycare-or-boarding-facility-what-ive-learned-after-8-years-in-business',
         title: 'Writing a Waiver for Your Dog Daycare or Boarding Facility: What I’ve Learned After 8 Years in Business',
-        date: 'August 5, 2025',
+        date: 'June 16, 2025',
         description:
             'Your waiver is more than a form — it’s your business’s legal shield. Learn what to include, what to avoid, and how to build one that protects you and sets client expectations clearly.',
         component: () =>
