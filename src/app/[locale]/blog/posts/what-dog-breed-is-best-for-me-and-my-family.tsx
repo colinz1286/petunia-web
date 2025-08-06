@@ -9,7 +9,7 @@ export default function WhatDogBreedIsBestBlog() {
 
   const title = 'What Dog Breed Is Best for Me and My Family?';
   const date = 'June 11, 2025';
-  const categories = ['owner', 'boarding'];
+  const categories = ['owner', 'breeder'];
 
   const categoryLabels: Record<string, string> = {
     boarding: 'Boarding & Daycare',

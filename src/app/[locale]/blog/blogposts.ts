@@ -26,7 +26,7 @@ export const blogPosts: BlogPostEntry[] = [
             'Use this no-nonsense guide to assess your lifestyle, budget, training ability, and household needs before choosing a dog breed — or deciding if dog ownership is right for you at all.',
         component: () =>
             import('./posts/what-dog-breed-is-best-for-me-and-my-family') as Promise<{ default: React.ComponentType<object> }>,
-        categories: ['owner', 'boarding'],
+        categories: ['owner', 'breeder'],
     },
     {
         slug: 'choose-dog-boarding-daycare',
