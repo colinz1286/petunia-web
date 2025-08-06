@@ -19,6 +19,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'what-dog-breed-is-best-for-me-and-my-family',
+        title: 'What Dog Breed Is Best for Me and My Family?',
+        date: 'June 11, 2025',
+        description:
+            'Use this no-nonsense guide to assess your lifestyle, budget, training ability, and household needs before choosing a dog breed — or deciding if dog ownership is right for you at all.',
+        component: () =>
+            import('./posts/what-dog-breed-is-best-for-me-and-my-family') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'boarding'],
+    },
+    {
         slug: 'choose-dog-boarding-daycare',
         title: 'How to Choose a Good Dog Boarding or Daycare Facility',
         date: 'June 16, 2025',
