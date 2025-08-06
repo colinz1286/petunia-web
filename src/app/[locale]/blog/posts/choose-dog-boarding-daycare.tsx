@@ -8,7 +8,7 @@ export default function ChooseDogBoardingDaycareBlog() {
   const locale = useLocale();
 
   const title = 'How to Choose a Good Dog Boarding or Daycare Facility';
-  const date = 'June 16, 2025';
+  const date = 'June 11, 2025';
   const categories = ['boarding', 'owner'];
 
   const categoryLabels: Record<string, string> = {

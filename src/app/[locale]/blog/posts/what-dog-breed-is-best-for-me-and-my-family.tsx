@@ -8,7 +8,7 @@ export default function WhatDogBreedIsBestBlog() {
   const locale = useLocale();
 
   const title = 'What Dog Breed Is Best for Me and My Family?';
-  const date = 'June 11, 2025';
+  const date = 'June 6, 2025';
   const categories = ['owner', 'breeder'];
 
   const categoryLabels: Record<string, string> = {

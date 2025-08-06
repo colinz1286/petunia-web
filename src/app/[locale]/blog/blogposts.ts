@@ -21,7 +21,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'what-dog-breed-is-best-for-me-and-my-family',
         title: 'What Dog Breed Is Best for Me and My Family?',
-        date: 'June 11, 2025',
+        date: 'June 6, 2025',
         description:
             'Use this no-nonsense guide to assess your lifestyle, budget, training ability, and household needs before choosing a dog breed — or deciding if dog ownership is right for you at all.',
         component: () =>
@@ -31,7 +31,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'choose-dog-boarding-daycare',
         title: 'How to Choose a Good Dog Boarding or Daycare Facility',
-        date: 'June 16, 2025',
+        date: 'June 11, 2025',
         description:
             'Learn how to evaluate cleanliness, staff quality, safety standards, and personalized care when choosing a daycare or boarding facility.',
         component: () =>
