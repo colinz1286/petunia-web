@@ -19,6 +19,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'choose-dog-boarding-daycare',
+        title: 'How to Choose a Good Dog Boarding or Daycare Facility',
+        date: 'June 16, 2025',
+        description:
+            'Learn how to evaluate cleanliness, staff quality, safety standards, and personalized care when choosing a daycare or boarding facility.',
+        component: () =>
+            import('./posts/choose-dog-boarding-daycare') as Promise<{ default: React.ComponentType<any> }>,
+        categories: ['boarding', 'owner'],
+    },
+    {
         slug: 'how-often-should-dogs-visit-the-vet-a-guide-for-pet-care-businesses-and-owners',
         title: 'How Often Should Dogs Visit the Vet? A Guide for Pet Care Businesses and Owners',
         date: 'June 1, 2025',
