@@ -25,7 +25,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'Learn how to evaluate cleanliness, staff quality, safety standards, and personalized care when choosing a daycare or boarding facility.',
         component: () =>
-            import('./posts/choose-dog-boarding-daycare') as Promise<{ default: React.ComponentType<any> }>,
+            import('./posts/choose-dog-boarding-daycare') as Promise<{ default: React.ComponentType<object> }>,
         categories: ['boarding', 'owner'],
     },
     {
