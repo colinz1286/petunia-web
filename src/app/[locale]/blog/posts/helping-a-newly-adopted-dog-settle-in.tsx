@@ -8,8 +8,9 @@ import { useLocale } from 'next-intl';
 export default function HelpingANewlyAdoptedDogSettleIn() {
   const locale = useLocale();
 
-  const title = "Helping a Newly Adopted Dog Settle In: A Complete Guide for the First Days, Weeks, and Months";
-  const date = "August 9, 2025";
+  const title =
+    'Helping a Newly Adopted Dog Settle In: A Complete Guide for the First Days, Weeks, and Months';
+  const date = 'August 9, 2025';
   const categories = ['owner', 'rescue'];
 
   const categoryLabels: Record<string, string> = {
@@ -27,7 +28,7 @@ export default function HelpingANewlyAdoptedDogSettleIn() {
         <title>{title} – Petunia Blog</title>
         <meta
           name="description"
-          content="A research-backed, first-person guide to helping a newly adopted dog settle in — from the first 72 hours through the first few months — with routines, bonding, training philosophy, vet care, and global adoption insights."
+          content="A research-backed, first-person guide to helping a newly adopted dog settle in — from the first 72 hours through the first few months — with routines, bonding, pet introductions, training philosophy, vet care, and global adoption insights."
         />
       </Head>
 
@@ -49,265 +50,826 @@ export default function HelpingANewlyAdoptedDogSettleIn() {
         {/* Local anchor nav for long-form reading */}
         <nav className="mb-10 text-sm">
           <ul className="flex flex-wrap gap-3">
-            <li><a href="#intro" className="underline hover:opacity-80">Intro</a></li>
-            <li><a href="#first-72" className="underline hover:opacity-80">First 72 Hours</a></li>
-            <li><a href="#routine" className="underline hover:opacity-80">Routine</a></li>
-            <li><a href="#bonding" className="underline hover:opacity-80">Bonding</a></li>
-            <li><a href="#other-pets" className="underline hover:opacity-80">Other Pets</a></li>
-            <li><a href="#mistakes" className="underline hover:opacity-80">Common Mistakes</a></li>
-            <li><a href="#training" className="underline hover:opacity-80">Training Philosophy</a></li>
-            <li><a href="#health" className="underline hover:opacity-80">Health & Vet Care</a></li>
-            <li><a href="#mindset" className="underline hover:opacity-80">Owner Mindset</a></li>
-            <li><a href="#global" className="underline hover:opacity-80">Global Insights</a></li>
-            <li><a href="#333" className="underline hover:opacity-80">The 3-3-3 Rule</a></li>
-            <li><a href="#behavior" className="underline hover:opacity-80">Behavior Challenges</a></li>
-            <li><a href="#long-term" className="underline hover:opacity-80">Long-Term Success</a></li>
-            <li><a href="#sources" className="underline hover:opacity-80">Sources</a></li>
+            <li>
+              <a href="#overview" className="underline hover:opacity-80">
+                Overview
+              </a>
+            </li>
+            <li>
+              <a href="#first-72" className="underline hover:opacity-80">
+                First 72 Hours
+              </a>
+            </li>
+            <li>
+              <a href="#routine" className="underline hover:opacity-80">
+                Routine
+              </a>
+            </li>
+            <li>
+              <a href="#bonding" className="underline hover:opacity-80">
+                Bonding
+              </a>
+            </li>
+            <li>
+              <a href="#other-pets" className="underline hover:opacity-80">
+                Other Pets
+              </a>
+            </li>
+            <li>
+              <a href="#mistakes" className="underline hover:opacity-80">
+                Common Mistakes
+              </a>
+            </li>
+            <li>
+              <a href="#training" className="underline hover:opacity-80">
+                Training Philosophy
+              </a>
+            </li>
+            <li>
+              <a href="#health" className="underline hover:opacity-80">
+                Health & Vet Care
+              </a>
+            </li>
+            <li>
+              <a href="#house-training" className="underline hover:opacity-80">
+                House-Training
+              </a>
+            </li>
+            <li>
+              <a href="#enrichment" className="underline hover:opacity-80">
+                Enrichment
+              </a>
+            </li>
+            <li>
+              <a href="#separation" className="underline hover:opacity-80">
+                Separation
+              </a>
+            </li>
+            <li>
+              <a href="#333" className="underline hover:opacity-80">
+                3-3-3 Rule
+              </a>
+            </li>
+            <li>
+              <a href="#safety" className="underline hover:opacity-80">
+                Safety & Legal
+              </a>
+            </li>
+            <li>
+              <a href="#budget" className="underline hover:opacity-80">
+                Budget
+              </a>
+            </li>
+            <li>
+              <a href="#pros" className="underline hover:opacity-80">
+                Pros to Call
+              </a>
+            </li>
+            <li>
+              <a href="#mindset" className="underline hover:opacity-80">
+                Owner Mindset
+              </a>
+            </li>
+            <li>
+              <a href="#templates" className="underline hover:opacity-80">
+                Templates
+              </a>
+            </li>
+            <li>
+              <a href="#global" className="underline hover:opacity-80">
+                Global Notes
+              </a>
+            </li>
+            <li>
+              <a href="#faq" className="underline hover:opacity-80">
+                FAQ
+              </a>
+            </li>
+            <li>
+              <a href="#wrap" className="underline hover:opacity-80">
+                Wrap-Up
+              </a>
+            </li>
+            <li>
+              <a href="#sources" className="underline hover:opacity-80">
+                Sources
+              </a>
+            </li>
           </ul>
         </nav>
 
-        {/* INTRO */}
-        <section id="intro" className="mb-12">
-          <h2 className="text-2xl font-semibold mb-3">Introduction — Why This Transition Matters</h2>
+        {/* OVERVIEW */}
+        <section id="overview" className="mb-12">
+          <h2 className="text-2xl font-semibold mb-3">
+            Overview — Why This Transition Matters
+          </h2>
           <p className="mb-4">
-            Adopting a dog is one of the most meaningful commitments you can make. You aren’t just bringing a pet into your life; you’re offering a living being a second chance — often after they’ve been abandoned, surrendered, or have lived in less-than-ideal conditions. Whether your new companion comes from a shelter, a foster program, a rescue organization, or even the streets, this transition will be one of the most important periods in your dog’s life.
+            Adopting a dog is a big deal. You’re not just taking an animal
+            home; you’re giving someone a second chance. That transition—from
+            shelter, street, foster, or previous home into your living
+            room—can be overwhelming for dogs and humans. I’ve personally been
+            lucky: I’ve never had a major issue with an adopted dog. But I’ve
+            watched many owners struggle during those first weeks. Most
+            problems come down to three things: <strong>time</strong>,{' '}
+            <strong>consistency</strong>, and <strong>realistic
+            expectations</strong>.
           </p>
           <p className="mb-4">
-            I’ve been lucky. I’ve never personally had a serious issue with an adopted dog. But running a boarding and daycare business and working with hundreds of dogs, I’ve watched plenty of new owners hit bumps — sometimes big ones. Some issues are behavioral. Others are health-related. Many are simply the stress of change. From my perspective — and from what the research supports — the difference between a smooth transition and a rocky one comes down to <strong>time, consistency, and realistic expectations</strong>.
-          </p>
-          <p className="mb-4">
-            This guide blends my on-the-ground approach with reputable, global research (U.S., Canada, U.K., Australia, Ireland, and New Zealand), so you have an actionable plan to help a newly adopted dog settle in — and thrive.
+            This guide blends my on-the-ground perspective with global best
+            practices from veterinary and animal-welfare organizations (AVMA,
+            RSPCA, Dogs Trust, Blue Cross, AAHA/WSAVA, and more). The aim:
+            help your new dog <strong>decompress</strong>, understand your{' '}
+            <strong>routine</strong>, and <strong>bond</strong> with you so
+            you can enjoy a long, healthy life together.
           </p>
         </section>
 
         {/* FIRST 72 HOURS */}
         <section id="first-72" className="mb-12">
-          <h2 className="text-2xl font-semibold mb-3">The First 72 Hours — Building the Foundation of Trust</h2>
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 1 — The First 72 Hours: Build Trust First, Do Everything Else
+            Later
+          </h2>
+          <blockquote className="italic border-l-4 border-[#d9cfc2] pl-4 mb-4 text-gray-700">
+            <strong>
+              Spend as much time as you can with your new dog for the first
+              three days and make sure that when they’re stressed or confused,
+              they can count on you.
+            </strong>
+          </blockquote>
           <p className="mb-4">
-            If you remember only one thing: <strong>spend as much time as possible with your new dog in those first three days, and make sure that when they are stressed or confused, they can count on you.</strong>
+            The first three days are not about impressive training or rapid
+            socialization. They’re about trust and decompression. Research
+            shows that dogs coming from shelter environments often have
+            elevated cortisol (stress) and that it takes days for those levels
+            to come back down after leaving the kennel environment (Hennessy
+            et al., 2001). In practice, that looks like one of two extremes:
           </p>
-          <p className="mb-4">
-            The first 72 hours aren’t for heavy training or grand social tours. They’re for establishing psychological safety. Shelter research shows dogs often have elevated cortisol (stress hormone) levels in kennels, which take days to normalize after leaving (Hennessy et&nbsp;al., 2001). In that window, many dogs either <em>shut down</em> (hiding, low appetite) or swing <em>overexcited</em> (pacing, barking). Both are normal.
-          </p>
-          <h3 className="text-xl font-semibold mt-6 mb-2">What I do in those first 3 days</h3>
           <ul className="list-disc pl-5 space-y-2 mb-4">
-            <li><strong>Be present.</strong> If possible, take time off work. Calm proximity is your fastest trust builder.</li>
-            <li><strong>Keep it quiet.</strong> Skip visitors and chaotic errands. Let the home feel stable.</li>
-            <li><strong>Provide a safe zone.</strong> A crate, quiet room, or cozy corner. Let them retreat without pressure.</li>
-            <li><strong>Start the routine immediately.</strong> Meals, potty, walks, rest — same times daily.</li>
-            <li><strong>Observe without forcing.</strong> Read body language; avoid pushing interactions.</li>
+            <li>
+              <strong>Shut-down:</strong> hiding, low appetite, low energy,
+              minimal engagement.
+            </li>
+            <li>
+              <strong>Over-amped:</strong> pacing, restlessness, vocalization,
+              hyperactivity.
+            </li>
           </ul>
-          <blockquote className="italic border-l-4 border-[#d9cfc2] pl-4 text-gray-700">
-            “In those early days, you’re not just showing them their new home — you’re showing them who you are: calm, consistent, dependable.”
+          <p className="mb-4">
+            Both are normal. Your job is to make the environment predictable
+            and safe.
+          </p>
+          <h3 className="text-xl font-semibold mt-6 mb-2">
+            What I do, step-by-step
+          </h3>
+          <ul className="list-disc pl-5 space-y-2">
+            <li>
+              <strong>Presence over everything.</strong> If possible, take a
+              few days off or work from home. Calm proximity is the fastest
+              trust-builder.
+            </li>
+            <li>
+              <strong>Keep the house boring.</strong> No welcome-home
+              parties, no crowd of neighbors, no chaotic errands.
+            </li>
+            <li>
+              <strong>Show them “their spot.”</strong> Crate, pen, quiet room,
+              or bed in a low-traffic corner. Don’t force it; let them retreat
+              when they want.
+            </li>
+            <li>
+              <strong>Start your real routine on Day 1.</strong> Feed, walk,
+              potty, and rest at the same times you intend to keep long-term.
+            </li>
+            <li>
+              <strong>Observe, don’t push.</strong> If they approach—great. If
+              they hang back—also great. You’re the safe constant either way.
+            </li>
+            <li>
+              <strong>Keep outings short and predictable.</strong> Quiet
+              streets or the yard; avoid busy dog parks or crowded pet stores
+              in the first 72 hours.
+            </li>
+          </ul>
+          <blockquote className="italic border-l-4 border-[#d9cfc2] pl-4 mt-4 text-gray-700">
+            “In those early days, you’re not just showing them a house—you’re
+            showing them who you are: calm, consistent, dependable.”
           </blockquote>
         </section>
 
         {/* ROUTINE */}
         <section id="routine" className="mb-12">
-          <h2 className="text-2xl font-semibold mb-3">Routine and Structure — The Backbone of Adjustment</h2>
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 2 — Set the Routine Early (It’s the Backbone of Adjustment)
+          </h2>
           <p className="mb-4">
-            I advocate a <strong>strict schedule</strong> in the first weeks, especially for feeding times. Put simply: get the dog onto a routine that matches your lifestyle from day one, and you won’t have to unteach habits later. Predictable events reduce anxiety (Overall, 2013), make house-training easier, and regulate energy.
+            Dogs relax when life is predictable. I’m a firm believer in a
+            <strong> strict schedule</strong> for the first weeks—especially
+            feeding times. Put the dog on a routine that matches your
+            lifestyle, not the other way around. If you establish the “forever
+            schedule” now, you won’t have to unteach anything later.
           </p>
-          <h3 className="text-xl font-semibold mt-6 mb-2">A sample first-weeks schedule</h3>
+          <h3 className="text-xl font-semibold mt-6 mb-2">
+            Sample first-weeks schedule (tweak to your household)
+          </h3>
           <ul className="list-disc pl-5 space-y-1 mb-6">
-            <li><strong>7:00 AM</strong> — Potty &amp; short walk</li>
-            <li><strong>7:30 AM</strong> — Breakfast</li>
-            <li><strong>Midday</strong> — Potty &amp; brief play</li>
-            <li><strong>5:30 PM</strong> — Dinner</li>
-            <li><strong>Evening</strong> — Training game or bonding activity</li>
-            <li><strong>Bedtime</strong> — Final potty; lights out</li>
+            <li>
+              <strong>7:00 AM</strong> — Potty & short walk
+            </li>
+            <li>
+              <strong>7:30 AM</strong> — Breakfast
+            </li>
+            <li>
+              <strong>Midday</strong> — Potty & brief play/sniff walk
+            </li>
+            <li>
+              <strong>5:30 PM</strong> — Dinner
+            </li>
+            <li>
+              <strong>Evening</strong> — Bonding game or light training
+            </li>
+            <li>
+              <strong>Bedtime</strong> — Final potty, then sleep
+            </li>
           </ul>
           <p className="mb-4">
-            Both the RSPCA and AVMA advise setting routines on day one. Structure isn’t rigidity for its own sake; it’s clarity for a brain coming down from stress.
+            Predictable events reduce anxiety and create “environmental
+            control” for the dog (Overall, 2013). Set meal windows anchor
+            house-training and GI regularity. Scheduled mental/physical outlets
+            prevent pent-up energy from showing up as “behavior problems.”
           </p>
         </section>
 
         {/* BONDING */}
         <section id="bonding" className="mb-12">
-          <h2 className="text-2xl font-semibold mb-3">Bonding the Right Way — Shared Joy &gt; Endless Cuddles</h2>
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 3 — Bonding: Shared Joy Beats Endless Cuddles
+          </h2>
           <p className="mb-4">
-            Affection matters, but for a dog still adjusting, constant cuddling isn’t always the best glue. My view: <strong>find a high-energy game or activity you both enjoy</strong> and build from there. Shared experiences produce powerful positive associations with you.
+            Affection matters—but it’s not the only language. For newly adopted
+            dogs, “too much” fuss can overwhelm them. I get the best results by
+            finding a <strong>high-energy game or activity</strong> the dog
+            genuinely loves and doing it together:
           </p>
           <ul className="list-disc pl-5 space-y-1 mb-6">
             <li>Fetch or tug with a favorite toy</li>
-            <li>Exploring a quiet new trail</li>
-            <li>Learning a fun trick together (kept short and upbeat)</li>
+            <li>Exploring a quiet trail (sniffari walks are magic)</li>
+            <li>Learning a fun, low-pressure trick with lots of success reps</li>
           </ul>
           <p className="mb-4">
-            That mix of movement, novelty, and success builds trust faster than passive closeness alone.
+            Shared success and novelty build positive associations with you
+            faster than passive closeness. The dog learns: “Good things happen
+            when I’m with this person.”
           </p>
         </section>
 
         {/* OTHER PETS */}
         <section id="other-pets" className="mb-12">
-          <h2 className="text-2xl font-semibold mb-3">Introducing Other Pets — Slow and Positive</h2>
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 4 — Other Pets: Wait, Then Make Every Early Rep Positive
+          </h2>
           <p className="mb-4">
-            I prefer to <strong>wait 3–4 weeks</strong> before intros unless necessary. Early experiences are high-stakes: one bad rep can imprint a narrative you’ll spend months undoing.
+            I wait <strong>three to four weeks</strong> before introducing new
+            dogs to resident pets unless it’s absolutely necessary. Early
+            experiences are heavy. A single ugly interaction can set your
+            timeline back months.
           </p>
-          <h3 className="text-xl font-semibold mt-6 mb-2">Best practices</h3>
+          <h3 className="text-xl font-semibold mt-6 mb-2">My rules</h3>
           <ul className="list-disc pl-5 space-y-2 mb-4">
-            <li><strong>Neutral ground.</strong> Start outside or in a driveway, not a tight hallway.</li>
-            <li><strong>Leashes, lightly held.</strong> Safety without tension.</li>
-            <li><strong>High-value rewards.</strong> Mark calm approaches and soft body language.</li>
-            <li><strong>Quit while ahead.</strong> End early on a good note; don’t “test” to failure.</li>
+            <li>
+              <strong>Neutral ground.</strong> Driveway, sidewalk, park—not a
+              tight hallway or crowded room.
+            </li>
+            <li>
+              <strong>Loose leashes.</strong> Safety without tension.
+            </li>
+            <li>
+              <strong>High-value rewards.</strong> Mark calm approaches and
+              polite breaks in attention.
+            </li>
+            <li>
+              <strong>Quit while you’re ahead.</strong> End before anyone gets
+              snappy or tired.
+            </li>
           </ul>
           <p className="mb-4">
-            Guidance from Dogs Trust and ASPCA echoes this: gradual, positive introductions reduce the risk of long-term friction.
+            For cats: slow it down further—visual exposure at distance, gated
+            doorways, scent swaps, safe vertical space, and retreats.
           </p>
         </section>
 
         {/* MISTAKES */}
         <section id="mistakes" className="mb-12">
-          <h2 className="text-2xl font-semibold mb-3">Common Mistakes New Adopters Make</h2>
-          <p className="mb-4">
-            The biggest one: <strong>expecting too much, too soon</strong>. Young dogs are toddlers. You can stack 20–40 reps, but development still takes time. Other frequent pitfalls:
-          </p>
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 5 — The Biggest Mistakes New Adopters Make
+          </h2>
           <ul className="list-disc pl-5 space-y-2 mb-6">
-            <li>Overloading the dog with novelty in the first weeks</li>
-            <li>Inconsistent rules between family members</li>
-            <li>Poor environment management (tempting items left out, unsupervised freedom)</li>
-            <li>Expecting instant affection or gratitude</li>
+            <li>
+              <strong>Expecting too much, too soon.</strong> Especially with
+              young dogs. You can stack many reps; development still takes
+              time.
+            </li>
+            <li>
+              <strong>Flooding with novelty.</strong> Ten new locations,
+              twelve new people, three new dogs—all in week one.
+            </li>
+            <li>
+              <strong>Inconsistent rules.</strong> One person invites the dog
+              on the couch; another corrects it.
+            </li>
+            <li>
+              <strong>Zero environment management.</strong> Freedom too soon,
+              shoes on the floor, trash accessible—then blaming the dog for
+              obvious opportunities.
+            </li>
+            <li>
+              <strong>Expecting instant affection.</strong> Bonding is earned
+              through experience, not assumed at intake.
+            </li>
           </ul>
           <p className="mb-4">
-            American Humane notes unrealistic expectations and weak preparation as key drivers of returns — problems often solved by education and support.
+            Most of these vanish when you slow down, manage the environment,
+            and communicate consistently.
           </p>
         </section>
 
         {/* TRAINING */}
         <section id="training" className="mb-12">
-          <h2 className="text-2xl font-semibold mb-3">Training Philosophy — Why I Wait Until 9–12 Months</h2>
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 6 — Training Philosophy: Why I Wait for Formal Work (9–12
+            Months)
+          </h2>
           <p className="mb-4">
-            Here’s where my approach is different. I don’t start <strong>formal, intensive</strong> training until 9–12 months. Before then I focus on life skills: recall, leash manners, calm public behavior, and house rules — without high-pressure drills.
+            I don’t start <strong>formal, intensive</strong> training until a
+            dog is <strong>9–12 months</strong> old. Before that I focus on
+            life skills: recall foundations, loose-lead walking, calm public
+            behavior, and household rules—kept short, fun, and
+            confidence-building.
           </p>
           <p className="mb-4">
-            I also don’t rely on constant reward-only methods. Rewards are great — but dogs benefit from <strong>clear boundaries</strong>, <strong>fair corrections</strong> when needed, and <strong>balanced feedback</strong>. The goal is clarity, not treat dependence.
+            I also don’t rely on constant reward-only protocols. Rewards are
+            important, but dogs benefit from <strong>clear boundaries</strong>,
+            <strong> fair corrections</strong> when needed, and{' '}
+            <strong>balanced feedback</strong>. The goal is clarity, not treat
+            dependence.
           </p>
           <ul className="list-disc pl-5 space-y-2">
-            <li><strong>0–8 months:</strong> confidence, exploration, short fun reps, social composure</li>
-            <li><strong>9–12 months:</strong> layer in formal structure if the dog is ready</li>
-            <li><strong>Always:</strong> short sessions, high rate of success, end on a win</li>
+            <li>
+              <strong>0–8 months:</strong> confidence, exploration, short fun
+              reps, social composure
+            </li>
+            <li>
+              <strong>9–12 months:</strong> layer in formal structure if the
+              dog is ready
+            </li>
+            <li>
+              <strong>Always:</strong> short sessions, high rate of success,
+              end on a win
+            </li>
           </ul>
+          <p className="mt-4">
+            If you need help—especially for safety issues—loop in a qualified
+            trainer or veterinary behaviorist early. The sooner you get skilled
+            eyes on a real problem, the faster and kinder the fix.
+          </p>
         </section>
 
         {/* HEALTH */}
         <section id="health" className="mb-12">
-          <h2 className="text-2xl font-semibold mb-3">Health &amp; Veterinary Care — First Steps</h2>
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 7 — Health & Veterinary Care: Lock the Plan, Then Follow It
+          </h2>
           <p className="mb-4">
-            Step one: get <strong>complete records</strong> from the adoption source. If the schedule is unclear, call your vet and follow their plan strictly.
+            First call: your adoption center or breeder. Ask for complete
+            medical records (vaccines, deworming, flea/tick/heartworm
+            prevention, spay/neuter status, any meds). If their next-step
+            guidance is vague, call your veterinarian with the records and
+            follow their schedule strictly.
           </p>
-          <h3 className="text-xl font-semibold mt-6 mb-2">Within the first week</h3>
+          <h3 className="text-xl font-semibold mt-6 mb-2">
+            “Welcome exam” (ideally within the first week)
+          </h3>
           <ul className="list-disc pl-5 space-y-2 mb-6">
-            <li>Full physical exam</li>
-            <li>Core vaccinations and boosters as needed</li>
-            <li>Parasite prevention (fleas/ticks; heartworm where relevant)</li>
-            <li>Diet review and transition guidance</li>
-            <li>Microchip check/registration</li>
+            <li>Full physical and baseline vitals</li>
+            <li>
+              Vaccine catch-up/boosters according to age & history (AAHA/WSAVA
+              guidance)
+            </li>
+            <li>Parasite screening and prevention</li>
+            <li>Nutrition assessment and safe diet transition</li>
+            <li>Microchip scan and registration/ID check</li>
+            <li>Discuss boarding/travel requirements in your region</li>
           </ul>
-          <p className="mb-4">
-            AVMA guidance supports a prompt “welcome exam” after adoption to catch issues early and set a preventive baseline.
-          </p>
         </section>
 
-        {/* MINDSET */}
-        <section id="mindset" className="mb-12">
-          <h2 className="text-2xl font-semibold mb-3">Owner Mindset — All In or Not at All</h2>
-          <p className="mb-4">
-            This is non-negotiable for me: adoption is a <strong>full commitment</strong>. Like bringing a child into your home, you work through challenges, seek help when needed, and adapt your life. If you’re not ready to be all in, wait until you are. If you are, that commitment will transform both your life and the dog’s.
-          </p>
+        {/* HOUSE-TRAINING */}
+        <section id="house-training" className="mb-12">
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 8 — House-Training & Home Habits (Fast Wins You Can Bank)
+          </h2>
+          <ul className="list-disc pl-5 space-y-2">
+            <li>
+              <strong>Confinement is kind.</strong> Crate/pen as a “nursery,”
+              not a punishment; freedom is earned.
+            </li>
+            <li>
+              <strong>Timing.</strong> Out after sleep, meals, play; every 2–3
+              hours early on.
+            </li>
+            <li>
+              <strong>Reward the act outside.</strong> Praise/treat during or
+              immediately after elimination.
+            </li>
+            <li>
+              <strong>Enzymatic cleanup.</strong> Remove “pee maps”; household
+              cleaners leave scent cues.
+            </li>
+            <li>
+              <strong>Quiet nights.</strong> Predictable bedtime; last potty,
+              then lights out.
+            </li>
+          </ul>
         </section>
 
-        {/* GLOBAL INSIGHTS */}
-        <section id="global" className="mb-12">
-          <h2 className="text-2xl font-semibold mb-3">Global Adoption Insights — Challenges &amp; Trends</h2>
+        {/* ENRICHMENT */}
+        <section id="enrichment" className="mb-12">
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 9 — Enrichment: Burn the Brain, Not Just the Legs
+          </h2>
           <p className="mb-4">
-            Context varies by country, but themes repeat: behavior is the leading reason for returns; housing and cost pressures matter; and post-pandemic routines magnified separation issues.
+            A decompressed brain makes better choices. Mix mental and sensory
+            work into your day:
           </p>
-          <ul className="list-disc pl-5 space-y-3">
+          <ul className="list-disc pl-5 space-y-2">
+            <li>Sniff-walks (let the nose lead within safe limits)</li>
+            <li>Scatter feeding or “find-it” games</li>
+            <li>Food puzzles and safe chews (rotate novelty)</li>
             <li>
-              <strong>United States:</strong> Millions of shelter intakes and adoptions annually; returns near 1 in 10. Growing share of dogs arrive with medical or behavioral needs (ASPCA).
+              Short shaping sessions (micro-tricks, targeting, calm settle on a
+              mat)
             </li>
+            <li>Calming routines (lick mats, stuffed Kongs during downtime)</li>
+          </ul>
+        </section>
+
+        {/* SEPARATION */}
+        <section id="separation" className="mb-12">
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 10 — Separation: Prevent Problems Instead of Fixing Them Later
+          </h2>
+          <ul className="list-disc pl-5 space-y-2">
+            <li>Start with micro-absences (30–90 seconds); return casually.</li>
+            <li>Pair alone-time with chews/puzzles.</li>
+            <li>Use a camera to monitor—relaxing or spiraling?</li>
             <li>
-              <strong>United Kingdom:</strong> Dogs Trust reports a majority of returns tied to behavior — with aggression to people frequently cited.
-            </li>
-            <li>
-              <strong>Canada:</strong> As work routines resumed, separation-anxiety behaviors rose; many owners report stress leaving dogs alone.
-            </li>
-            <li>
-              <strong>Australia:</strong> RSPCA Australia notes cost-of-living and rental constraints among top surrender drivers.
-            </li>
-            <li>
-              <strong>India:</strong> Rising adoptions of “indie” street dogs; special attention needed for parasite control, vaccination catch-up, and socialization.
+              If distress escalates, get help early; prevention is far kinder
+              than rehab.
             </li>
           </ul>
         </section>
 
         {/* 3-3-3 RULE */}
         <section id="333" className="mb-12">
-          <h2 className="text-2xl font-semibold mb-3">The 3-3-3 Rule — A Realistic Adjustment Timeline</h2>
-          <ul className="list-disc pl-5 space-y-2 mb-6">
-            <li><strong>3 days:</strong> decompression, overwhelm, limited appetite or restlessness</li>
-            <li><strong>3 weeks:</strong> settling in, testing boundaries, truer personality emerging</li>
-            <li><strong>3 months:</strong> secure attachment, routines solid, behavior stabilizing</li>
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 11 — The 3-3-3 Rule: A Practical Expectations Map
+          </h2>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li>
+              <strong>3 days:</strong> decompression; shut-down or amped; you
+              build safety and predictability.
+            </li>
+            <li>
+              <strong>3 weeks:</strong> routine learned; boundaries tested; be
+              consistent.
+            </li>
+            <li>
+              <strong>3 months:</strong> secure attachment; truer personality;
+              solid rhythms.
+            </li>
           </ul>
-          <p className="mb-4">
-            Many rescues use this rule of thumb to help adopters pace expectations — patience here pays dividends later.
+          <p>
+            It’s a mindset, not a law. Some dogs move faster, some slower. Zoom
+            out and measure progress in weeks and months, not days.
           </p>
         </section>
 
-        {/* BEHAVIOR */}
-        <section id="behavior" className="mb-12">
-          <h2 className="text-2xl font-semibold mb-3">Behavioral Challenges You Can Expect — and Improve</h2>
-          <p className="mb-4">
-            Common early hurdles include fear-based aggression, separation distress, house-training regression, destructive chewing/digging, and reactivity or excessive barking. Research tracking adopted dogs over months shows <strong>significant improvement with routine and consistency</strong> (Vitulová et&nbsp;al., 2018).
-          </p>
-          <h3 className="text-xl font-semibold mt-6 mb-2">Starter playbook</h3>
-          <ul className="list-disc pl-5 space-y-2 mb-6">
-            <li><strong>Safety first.</strong> Manage space; use gates/crates; protect kids and resident pets.</li>
-            <li><strong>Daily structure.</strong> Same meal/potty/walk times. Predictability calms.</li>
-            <li><strong>Enrichment.</strong> Food puzzles, chew rotation, sniff walks to drain mental energy.</li>
-            <li><strong>Short training reps.</strong> End on wins. Build confidence; avoid flooding.</li>
-            <li><strong>Phone-a-friend.</strong> Loop in your vet to rule out pain; consult a qualified trainer/behaviorist early if safety flags appear.</li>
+        {/* SAFETY & LEGAL */}
+        <section id="safety" className="mb-12">
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 12 — Safety, Legal & ID Basics (U.S., Canada, U.K., Ireland,
+            Australia, New Zealand)
+          </h2>
+          <ul className="list-disc pl-5 space-y-2">
+            <li>
+              <strong>Microchip & ID tags.</strong> Keep info current;
+              registration often required.
+            </li>
+            <li>
+              <strong>Leash laws/public rules.</strong> Check local
+              expectations; safety first.
+            </li>
+            <li>
+              <strong>Vaccination proofs.</strong> Needed for boarding/daycare
+              and often travel.
+            </li>
+            <li>
+              <strong>Insurance/liability.</strong> Common in U.K./E.U.; worth
+              exploring elsewhere.
+            </li>
+            <li>
+              <strong>Housing contracts.</strong> Know pet clauses to avoid
+              rehoming pressure later.
+            </li>
           </ul>
         </section>
 
-        {/* LONG-TERM */}
-        <section id="long-term" className="mb-12">
-          <h2 className="text-2xl font-semibold mb-3">Long-Term Success — The Ongoing Journey</h2>
+        {/* BUDGET */}
+        <section id="budget" className="mb-12">
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 13 — Money: Budget the Boring Stuff So You Can Enjoy the Fun
+            Stuff
+          </h2>
+          <ul className="list-disc pl-5 space-y-2">
+            <li>
+              <strong>One-offs:</strong> crate/pen, beds, gates, bowls, tags,
+              harness/leash, long line, chew/puzzle rotation, brush/nail tools,
+              poop bags.
+            </li>
+            <li>
+              <strong>Recurring:</strong> quality diet, preventives, insurance
+              (if used), routine vet care, training classes/consults,
+              daycare/boarding buffer for travel.
+            </li>
+          </ul>
+        </section>
+
+        {/* PRO HELP */}
+        <section id="pros" className="mb-12">
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 14 — When to Call a Professional (and Who to Call)
+          </h2>
+          <ul className="list-disc pl-5 space-y-2">
+            <li>
+              <strong>Immediate safety issues:</strong> biting, serious
+              resource guarding, attacks on other pets — call a qualified
+              trainer or a veterinary behaviorist now.
+            </li>
+            <li>
+              <strong>Medical red flags:</strong> refusal to eat &gt;24–36h,
+              persistent GI upset, lethargy, pain, sudden behavior change — call
+              your vet.
+            </li>
+            <li>
+              <strong>Severe separation distress:</strong> don’t wait months.
+              Early intervention is kinder on the dog and your life.
+            </li>
+          </ul>
+        </section>
+
+        {/* MINDSET */}
+        <section id="mindset" className="mb-12">
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 15 — Owner Mindset: All In, or Not at All
+          </h2>
           <p className="mb-4">
-            Adjustment doesn’t end at three months. Keep refining routines, expanding positive experiences, and investing in training as the dog matures. Over time, you’ll see the compounding returns of patience: calmer recoveries from stress, smoother vet visits, faster settling after guests, and a stronger, steadier bond born from shared work — and shared wins.
+            When you adopt a dog, you’re all in. If you’re not, wait until you
+            are. That means: work the plan even when it’s inconvenient; ask for
+            help instead of hoping; be consistent even when you’re tired; and
+            protect early experiences so your dog forms the right conclusions
+            about the world.
+          </p>
+          <blockquote className="italic border-l-4 border-[#d9cfc2] pl-4 text-gray-700">
+            The reward isn’t just a well-behaved pet. It’s a deep, durable bond
+            with a living being who trusts you completely.
+          </blockquote>
+        </section>
+
+        {/* TEMPLATES */}
+        <section id="templates" className="mb-12">
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 16 — Practical Templates You Can Steal
+          </h2>
+          <h3 className="text-xl font-semibold mt-4 mb-2">
+            1) First-Week Daily Card
+          </h3>
+          <p className="mb-4">
+            <strong>Morning:</strong> potty → walk (10–20 min) → breakfast →
+            calm rest
+            <br />
+            <strong>Midday:</strong> potty → brief play/enrichment (10–15 min)
+            → rest
+            <br />
+            <strong>Late afternoon:</strong> potty → walk (15–30 min)
+            <br />
+            <strong>Evening:</strong> dinner → bonding game or light training
+            (5–10 min) → chew/puzzle → bedtime potty → sleep
+          </p>
+
+          <h3 className="text-xl font-semibold mt-4 mb-2">
+            2) New-Dog House Rules (print this)
+          </h3>
+          <ul className="list-disc pl-5 space-y-1 mb-4">
+            <li>We keep the schedule even on weekends.</li>
+            <li>One cue = one outcome (no mixed messages).</li>
+            <li>Doors/gates close behind us. No free-for-alls.</li>
+            <li>We reward good choices we want repeated.</li>
+            <li>We manage the environment so the dog can win.</li>
+            <li>We end sessions before frustration shows up.</li>
+            <li>We ask for help early if we feel stuck.</li>
+          </ul>
+
+          <h3 className="text-xl font-semibold mt-4 mb-2">
+            3) Scripts for Boundary Moments
+          </h3>
+          <ul className="list-disc pl-5 space-y-2">
+            <li>
+              <strong>“Can friends come meet her tonight?”</strong> “Not
+              yet—we’re keeping things calm this week so she can decompress.”
+            </li>
+            <li>
+              <strong>“Can I bring my dog over to say hi?”</strong> “We’re
+              waiting three weeks for intros and doing them slowly on neutral
+              ground.”
+            </li>
+            <li>
+              <strong>“He keeps chewing my shoes.”</strong> “Let’s gate the
+              hallway and rotate chews; I’ll set up his crate with a stuffed
+              Kong when we’re busy.”
+            </li>
+          </ul>
+        </section>
+
+        {/* GLOBAL NOTES */}
+        <section id="global" className="mb-12">
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 17 — Global Adoption Notes (U.S., Canada, U.K., Ireland,
+            Australia, New Zealand)
+          </h2>
+          <ul className="list-disc pl-5 space-y-3">
+            <li>
+              <strong>United States:</strong> High intake and adoption numbers;
+              behavior is a common surrender reason. Many shelters require or
+              encourage microchipping and basic vaccines at intake; adopters
+              should confirm booster timelines with their vets (ASPCA; AVMA).
+            </li>
+            <li>
+              <strong>Canada:</strong> Similar patterns with municipal bylaws
+              for licensing/microchipping; alone-time issues spiked after
+              pandemic routine shifts.
+            </li>
+            <li>
+              <strong>United Kingdom & Ireland:</strong> Microchipping standard
+              or required; Dogs Trust, Blue Cross, and RSPCA publish excellent
+              adopter guides. Third-party liability insurance is common.
+            </li>
+            <li>
+              <strong>Australia:</strong> State rules vary; microchipping and
+              registration widespread; RSPCA Australia provides adoption and
+              care standards.
+            </li>
+            <li>
+              <strong>New Zealand:</strong> Registration and microchipping
+              required for most dogs; SPCA NZ publishes adopter resources.
+            </li>
+          </ul>
+        </section>
+
+        {/* FAQ */}
+        <section id="faq" className="mb-12">
+          <h2 className="text-2xl font-semibold mb-3">
+            Part 18 — Frequently Asked (But Stress-Saving) Questions
+          </h2>
+          <p className="mb-4">
+            <strong>How soon should I start any training at all?</strong>
+            <br />
+            Right away—but keep it light and confidence-building. Reinforce the
+            basics (name response, following you, calmly settling on a mat). I
+            wait for formal intensity until 9–12 months.
+          </p>
+          <p className="mb-4">
+            <strong>Is it okay to crate a newly adopted dog?</strong>
+            <br />
+            Yes—introduced gently and paired with good things (chews, food
+            puzzles, naps). Crates are tools for management and safety, not
+            punishment.
+          </p>
+          <p className="mb-4">
+            <strong>What if my dog won’t eat?</strong>
+            <br />
+            Mild appetite dips happen during decompression. Warm food slightly,
+            add a spoon of wet, or hand-feed a few pieces to kickstart interest.
+            If appetite stays low &gt;24–36 hours or your dog seems unwell,
+            call your vet.
+          </p>
+          <p className="mb-4">
+            <strong>When can I go to the dog park?</strong>
+            <br />
+            Not in the decompression window. Wait until your dog is responsive
+            to you, fully vaccinated, and enjoys neutral, low-pressure dog
+            interactions.
+          </p>
+          <p className="mb-4">
+            <strong>
+              How do I know if a behavior is “normal settling” vs. a red flag?
+            </strong>
+            <br />
+            If it’s escalating, risking safety, or not improving week-over-week,
+            get help. Sooner is kinder.
+          </p>
+        </section>
+
+        {/* WRAP */}
+        <section id="wrap" className="mb-12">
+          <h2 className="text-2xl font-semibold mb-3">Conclusion</h2>
+          <p className="mb-4">
+            Helping a newly adopted dog settle in is less about “fixing
+            behavior” and more about <strong>engineering good outcomes</strong>:
+            the right environment, the right routine, the right early
+            experiences, and the right expectations. Do that, and you’ll see
+            the dog relax into the life you’re offering—without forcing it and
+            without rushing.
+          </p>
+          <p>
+            The biggest win isn’t just a calm, confident dog. It’s the bond you
+            build by showing up the same way every day—dependable, clear, kind.
+            That bond is the foundation for everything you’ll do together for
+            the rest of their life.
           </p>
         </section>
 
         {/* SOURCES */}
         <section id="sources" className="mb-16">
-          <h2 className="text-2xl font-semibold mb-3">📚 Sources</h2>
+          <h2 className="text-2xl font-semibold mb-3">📚 Sources (APA)</h2>
           <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
             <li>
-              American Humane Association. (2020). <em>Keeping pets: Factors associated with pet retention and relinquishment</em>. Washington, DC: Author.
+              American Humane Association. (2020). <em>Keeping pets: Factors
+              associated with pet retention and relinquishment</em>.
+              Washington, DC: Author.
             </li>
             <li>
-              American Veterinary Medical Association. (2023). <em>Bringing a new dog home</em>. AVMA. https://www.avma.org/resources/pet-owners/petcare/bringing-new-dog-home
+              American Veterinary Medical Association. (2023).{' '}
+              <em>Bringing a new dog home</em>.{' '}
+              https://www.avma.org/resources/pet-owners/petcare/bringing-new-dog-home
             </li>
             <li>
-              ASPCA. (2024). <em>Pet statistics</em>. American Society for the Prevention of Cruelty to Animals. https://www.aspca.org/helping-people-pets/shelter-intake-and-surrender/pet-statistics
+              American Veterinary Society of Animal Behavior. (2019).{' '}
+              <em>AVSAB position statement: Humane dog training</em>.{' '}
+              https://avsab.org
             </li>
             <li>
-              Dogs Trust. (2023). <em>Rehoming statistics and reasons for return</em>. Dogs Trust UK. https://www.dogstrust.org.uk
+              ASPCA. (2024). <em>Pet statistics</em>. American Society for the
+              Prevention of Cruelty to Animals.{' '}
+              https://www.aspca.org/helping-people-pets/shelter-intake-and-surrender/pet-statistics
             </li>
             <li>
-              Hennessy, M. B., Davis, H. N., Williams, M. T., Mellott, C., &amp; Douglas, C. W. (2001). Plasma cortisol levels of dogs at a county animal shelter. <em>Physiology &amp; Behavior, 73</em>(1–2), 75–81. https://doi.org/10.1016/S0031-9384(01)00469-8
+              Beerda, B., Schilder, M. B. H., van Hooff, J. A. R. A. M., de
+              Vries, H. W., & Mol, J. A. (1998). Chronic stress in dogs
+              subjected to social and environmental isolation.{' '}
+              <em>Physiology & Behavior, 66</em>(2), 233–242.
             </li>
             <li>
-              Overall, K. L. (2013). <em>Manual of Clinical Behavioral Medicine for Dogs and Cats</em>. Elsevier.
+              Blue Cross. (2022). <em>Introducing dogs and cats</em>.{' '}
+              https://www.bluecross.org.uk
             </li>
             <li>
-              RSPCA. (2022). <em>Settling your new dog</em>. Royal Society for the Prevention of Cruelty to Animals. https://www.rspca.org.uk/adviceandwelfare/pets/dogs/environment/settle
+              Dogs Trust. (2023). <em>Adopting a dog: Advice & introductions</em>.{' '}
+              https://www.dogstrust.org.uk
             </li>
             <li>
-              RSPCA Australia. (2023). <em>Annual report</em>. Royal Society for the Prevention of Cruelty to Animals Australia. https://www.rspca.org.au
+              Hennessy, M. B., Davis, H. N., Williams, M. T., Mellott, C., & Douglas,
+              C. W. (2001). Plasma cortisol levels of dogs at a county animal
+              shelter. <em>Physiology & Behavior, 73</em>(1–2), 75–81.{' '}
+              https://doi.org/10.1016/S0031-9384(01)00469-8
             </li>
             <li>
-              Vitulová, E., Voslářová, E., Večerek, V., Bedáňová, I., &amp; Bozděchová, B. (2018). Behaviour of dogs adopted from an animal shelter. <em>Acta Veterinaria Brno, 87</em>(2), 155–162. https://doi.org/10.2754/avb201887020155
+              Overall, K. L. (2013). <em>Manual of Clinical Behavioral Medicine
+              for Dogs and Cats</em>. St. Louis, MO: Elsevier.
+            </li>
+            <li>
+              RSPCA. (2022). <em>Settling your new dog</em>.{' '}
+              https://www.rspca.org.uk/adviceandwelfare/pets/dogs/environment/settle
+            </li>
+            <li>
+              RSPCA Australia. (2023). <em>Annual report</em> (adoption &
+              surrender trends). https://www.rspca.org.au
+            </li>
+            <li>
+              WSAVA Vaccination Guidelines Group. (2015/2020 updates).{' '}
+              <em>WSAVA guidelines for the vaccination of dogs and cats</em>.{' '}
+              https://wsava.org
+            </li>
+            <li>
+              AAHA Canine Vaccination Task Force. (2022).{' '}
+              <em>AAHA canine vaccination guidelines</em>. https://www.aaha.org
+            </li>
+            <li>
+              SPCA New Zealand. (2023). <em>Caring for your adopted dog</em>.{' '}
+              https://www.spca.nz
+            </li>
+            <li>
+              Canadian Veterinary Medical Association. (2023).{' '}
+              <em>Pet adoption and responsible ownership</em>.{' '}
+              https://www.canadianveterinarians.net
             </li>
           </ul>
         </section>
