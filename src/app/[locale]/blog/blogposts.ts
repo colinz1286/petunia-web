@@ -21,7 +21,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'dog-daycare-and-separation-anxiety',
         title: 'Does Dog Daycare Help with Separation Anxiety? A Neutral, Evidence-Based Guide for Dog Owners',
-        date: 'May 18, 2025',
+        date: 'May 13, 2025',
         description:
             'What separation anxiety really is, where daycare helps (and where it doesn’t), how to avoid overstimulation by design, and respectful questions to ask providers—plus owner checklists.',
         component: () =>

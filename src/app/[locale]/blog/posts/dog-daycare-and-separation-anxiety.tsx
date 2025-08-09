@@ -10,7 +10,7 @@ export default function DogDaycareAndSeparationAnxiety() {
 
   const title =
     'Does Dog Daycare Help with Separation Anxiety? A Neutral, Evidence-Based Guide for Dog Owners';
-  const date = 'May 18, 2025';
+  const date = 'May 13, 2025';
   const categories = ['owner', 'boarding', 'sitter', 'walker'];
 
   const categoryLabels: Record<string, string> = {
