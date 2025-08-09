@@ -19,6 +19,26 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'dog-daycare-and-separation-anxiety',
+        title: 'Does Dog Daycare Help with Separation Anxiety? A Neutral, Evidence-Based Guide for Dog Owners',
+        date: 'May 18, 2025',
+        description:
+            'What separation anxiety really is, where daycare helps (and where it doesn’t), how to avoid overstimulation by design, and respectful questions to ask providers—plus owner checklists.',
+        component: () =>
+            import('./posts/dog-daycare-and-separation-anxiety') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner'],
+    },
+    {
+        slug: 'board-or-hire-pet-sitter',
+        title: 'Should I Board My Dog or Hire a Pet Sitter? A Complete, Neutral Guide for Dog Owners',
+        date: 'May 18, 2025',
+        description:
+            'Neutral, practical guidance to choose between boarding and hiring a pet sitter — including separation-anxiety prevention, safety risks, supervision, special cases, a decision checklist, and provider questions.',
+        component: () =>
+            import('./posts/board-or-hire-pet-sitter') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner'],
+    },
+    {
         slug: 'pricing-pet-care-services',
         title: 'Pricing Dog Boarding, Daycare, Dog Walking & Pet Sitting: A Practical, Economics-Savvy Playbook',
         date: 'May 22, 2025',
