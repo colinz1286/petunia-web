@@ -19,6 +19,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'helping-a-newly-adopted-dog-settle-in',
+        title: 'Helping a Newly Adopted Dog Settle In: A Complete Guide for the First Days, Weeks, and Months',
+        date: 'August 9, 2025',
+        description:
+            'A research-backed, first-person guide to settling a newly adopted dog — covering the first 72 hours, routine, bonding, introductions with other pets, training philosophy, vet care, and global adoption insights.',
+        component: () =>
+            import('./posts/helping-a-newly-adopted-dog-settle-in') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'rescue'],
+    },
+    {
         slug: 'should-i-adopt-or-buy-a-dog',
         title: 'Should I Adopt a Dog or Buy One from a Breeder?',
         date: 'May 26, 2025',
