@@ -19,6 +19,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'pricing-pet-care-services',
+        title: 'Pricing Dog Boarding, Daycare, Dog Walking & Pet Sitting: A Practical, Economics-Savvy Playbook',
+        date: 'May 22, 2025',
+        description:
+            'A step-by-step framework to price pet-care services using basic economics, local market data, capacity math, and clear benchmarks — with templates, examples, and professional sources.',
+        component: () =>
+            import('./posts/pricing-pet-care-services') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['boarding', 'walker', 'sitter'],
+    },
+    {
         slug: 'helping-a-newly-adopted-dog-settle-in',
         title: 'Helping a Newly Adopted Dog Settle In: A Complete Guide for the First Days, Weeks, and Months',
         date: 'August 9, 2025',
