@@ -9,7 +9,7 @@ export default function DogDaycareBoardingKPIPlaybook() {
   const locale = useLocale();
 
   const title = 'The Definitive KPI Playbook for Dog Daycare & Boarding (2025 Edition)';
-  const date = 'January 20, 2024';
+  const date = 'May 1, 2025';
   const categories = ['boarding']; // focused audience
   const categoryLabels: Record<string, string> = {
     boarding: 'Boarding & Daycare',

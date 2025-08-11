@@ -21,7 +21,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'dog-daycare-boarding-kpi-playbook',
         title: 'The Definitive KPI Playbook for Dog Daycare & Boarding (2025 Edition)',
-        date: 'January 20, 2024',
+        date: 'May 1, 2025',
         description:
             'An operator-grade, numbers-first guide for dog daycare and boarding businesses. Includes formulas, benchmarks, dashboards, capacity math, labor efficiency, safety and compliance metrics, pricing effects, and a 90-day turnaround plan.',
         component: () =>
