@@ -21,6 +21,16 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'how-will-my-dog-adjust-to-boarding',
         title: 'How Will My Dog Handle or Adjust to Being Boarded?',
+        date: 'January 15, 2024',
+        description:
+            'A warm, professional, and neutral guide for pet owners on how dogs typically adjust to boarding—what facilities like ours do to help, what you can do to prepare, and how different regulations in the U.S., Canada, the U.K./Ireland, Australia, and New Zealand shape good practice.',
+        component: () =>
+            import('./posts/how-will-my-dog-adjust-to-boarding') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['boarding', 'pet-owners'],
+    },
+    {
+        slug: 'how-will-my-dog-adjust-to-boarding',
+        title: 'How Will My Dog Handle or Adjust to Being Boarded?',
         date: 'May 5, 2025',
         description:
             'A warm, professional, and neutral guide for pet owners on how dogs typically adjust to boarding—what facilities like ours do to help, what you can do to prepare, and how different regulations in the U.S., Canada, the U.K./Ireland, Australia, and New Zealand shape good practice.',
