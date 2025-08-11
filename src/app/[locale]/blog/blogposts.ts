@@ -19,6 +19,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'choosing-boarding-daycare-software-2025',
+        title: 'Choosing Boarding & Daycare Software in 2025: A Calm, Candid Buyer’s Guide',
+        date: 'May 8, 2025',
+        description:
+            'Neutral, practical guidance for boarding and daycare owners on picking software: anonymized real-world pricing, hidden fee math, security must-haves, and a simple evaluation framework to compare vendors with confidence.',
+        component: () =>
+            import('./posts/choosing-boarding-daycare-software-2025') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'dog-daycare-and-separation-anxiety',
         title: 'Does Dog Daycare Help with Separation Anxiety? A Neutral, Evidence-Based Guide for Dog Owners',
         date: 'May 13, 2025',

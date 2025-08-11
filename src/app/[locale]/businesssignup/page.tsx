@@ -15,6 +15,7 @@ import {
   doc,
   Timestamp
 } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -28,6 +29,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const functions = getFunctions(app);
 
 export default function BusinessSignUpPage() {
   const locale = useLocale();
@@ -51,15 +53,18 @@ export default function BusinessSignUpPage() {
     businessZip: '',
     businessPhone: '',
     businessWebsite: '',
-    businessType: 'Boarding/Daycare',
+    // ⬇️ must be chosen (no default)
+    businessType: '',
   });
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Mirror iOS: enable Boarding/Daycare and Breeder
   const businessTypes = [
     'Boarding/Daycare',
+    'Breeder',
     'Pet Sitter/Dog Walker',
     'Groomer',
     'Shelter/Rescue',
@@ -67,42 +72,93 @@ export default function BusinessSignUpPage() {
     'Pet Trainer',
     'Pet Retail Store'
   ];
+  const enabledTypes = new Set(['Boarding/Daycare']);
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: string, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
+
+  // Helpers
+  const digitsOnly = (s: string) => s.replace(/\D/g, '');
+  const isValidEmail = (s: string) =>
+    /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(s);
+  const normalizeUrl = (s: string) => {
+    const t = s.trim();
+    if (!t) return '';
+    if (t.startsWith('http://') || t.startsWith('https://')) return t;
+    return `https://${t}`;
+  };
+  const mapAuthError = (code: string) => {
+    switch (code) {
+      case 'auth/email-already-in-use': return 'That email is already in use.';
+      case 'auth/invalid-email': return 'Please enter a valid email address.';
+      case 'auth/weak-password': return 'Password must be at least 6 characters.';
+      case 'auth/network-request-failed': return 'Network error. Please try again.';
+      case 'auth/too-many-requests': return 'Too many attempts. Please wait and try again.';
+      default: return 'Something went wrong. Please try again.';
+    }
   };
 
-  const handleSubmit = async () => {
+  // Submit gating (mirrors iOS checks)
+  const formIsValid = (() => {
     const {
       firstName, lastName, email, password, confirmPassword, phoneNumber,
+      streetAddress, city, state, zipCode,
+      businessName, businessStreet, businessCity, businessState, businessZip,
+      businessPhone, businessType
+    } = form;
+
+    if (
+      !firstName || !lastName || !email || !password || !confirmPassword ||
+      !streetAddress || !city || !state || !zipCode ||
+      !businessName || !businessStreet || !businessCity || !businessState || !businessZip ||
+      !businessPhone || !businessType
+    ) return false;
+
+    if (!isValidEmail(email)) return false;
+    if (password.length < 6 || password !== confirmPassword) return false;
+    if (digitsOnly(phoneNumber).length !== 10) return false;
+    if (digitsOnly(businessPhone).length !== 10) return false;
+    if (zipCode.length !== 5 || /\D/.test(zipCode)) return false;
+    if (businessZip.length !== 5 || /\D/.test(businessZip)) return false;
+
+    return true;
+  })();
+
+  const handleSubmit = async () => {
+    if (!formIsValid || isSubmitting) return;
+
+    const {
+      firstName, lastName, email, password, phoneNumber,
       streetAddress, city, state, zipCode,
       businessName, businessStreet, businessCity, businessState, businessZip,
       businessPhone, businessWebsite, businessType
     } = form;
 
-    if (
-      !firstName || !lastName || !email || !password || !confirmPassword || !phoneNumber ||
-      !streetAddress || !city || !state || !zipCode ||
-      !businessName || !businessStreet || !businessCity || !businessState || !businessZip || !businessPhone
-    ) {
-      setError('Please fill out all required fields.');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
-      return;
-    }
-
     try {
       setIsSubmitting(true);
       setError(null);
+
+      // Create auth user
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCred.user;
 
+      // Email verification
       await sendEmailVerification(user);
 
-      const businessDoc = {
+      // Resolve timezone via callable (safe fallback to "unverified")
+      let timezone = 'unverified';
+      try {
+        const address = `${businessStreet}, ${businessCity}, ${businessState} ${businessZip}`;
+        const getTZ = httpsCallable(functions, 'getTimeZoneFromAddress');
+        const res = await getTZ({ address });
+        const data = (res?.data ?? {}) as { timeZone?: string };
+        if (data.timeZone) timezone = data.timeZone;
+      } catch {
+        // swallow; keep "unverified"
+      }
+
+      // Write business doc (keep your existing schema)
+      await setDoc(doc(db, 'businesses', user.uid), {
         ownerId: user.uid,
         accountType: 'Business',
         firstName,
@@ -119,7 +175,7 @@ export default function BusinessSignUpPage() {
           name: businessName,
           type: businessType,
           phone: businessPhone,
-          website: businessWebsite,
+          website: normalizeUrl(businessWebsite),
           address: {
             street: businessStreet,
             city: businessCity,
@@ -127,19 +183,44 @@ export default function BusinessSignUpPage() {
             zipCode: businessZip
           }
         },
+        // Extra fields to align with iOS without breaking current readers
+        businessType,                        // flat copy
+        businessAddress: {                   // flat copy for iOS compatibility
+          street: businessStreet,
+          city: businessCity,
+          state: businessState,
+          zipCode: businessZip
+        },
+        businessPhone,
+        businessWebsite: normalizeUrl(businessWebsite),
+        isVerified: false,
+        timezone,
         createdAt: Timestamp.now()
-      };
+      });
 
-      await setDoc(doc(db, 'businesses', user.uid), businessDoc);
+      // Also create users/{uid} doc (used by iOS)
+      await setDoc(doc(db, 'users', user.uid), {
+        userId: user.uid,
+        accountType: 'Business',
+        firstName,
+        lastName,
+        email: email.toLowerCase(),
+        phoneNumber,
+        address: {
+          street: streetAddress,
+          city,
+          state,
+          zipCode
+        },
+        businessName,
+        createdAt: Timestamp.now()
+      });
 
-      setSuccess('Account created! Please verify your email.');
-      router.push(`/${locale}/loginsignup`);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Something went wrong.');
-      }
+      setSuccess(`Account created! We sent a verification email to ${email}.`);
+      // brief pause so user sees the message
+      setTimeout(() => router.push(`/${locale}/loginsignup`), 1600);
+    } catch (err: any) {
+      setError(mapAuthError(err?.code ?? 'unknown'));
     } finally {
       setIsSubmitting(false);
     }
@@ -184,19 +265,62 @@ export default function BusinessSignUpPage() {
         {/* Business Type */}
         <h2 className="text-lg font-semibold mt-8">Select Business Type</h2>
         <div className="space-y-3">
-          {businessTypes.map(type => (
-            <button
-              key={type}
-              type="button"
-              className={`w-full px-4 py-3 rounded border-2 text-sm ${form.businessType === type
-                ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
-                : 'bg-white text-[#2c4a30] border-gray-400'
-                }`}
-              onClick={() => handleChange('businessType', type)}
-            >
-              {type}
-            </button>
-          ))}
+          {businessTypes.map(type => {
+            const isSelected = form.businessType === type;
+            const isEnabled = enabledTypes.has(type);
+
+            // enabled idle = green; selected = blue; disabled = white
+            const base = 'w-full px-4 py-3 rounded border-2 text-sm relative transition';
+            const selectedClasses = 'bg-[#2563eb] text-white border-[#2563eb]';   // blue (selected)
+            const enabledIdleClasses = 'bg-[#3f6f49] text-white border-[#3f6f49]'; // green (idle)
+            const disabledClasses = 'bg-white text-[#2c4a30] border-gray-400';
+
+            const classes = isSelected
+              ? selectedClasses
+              : isEnabled
+                ? enabledIdleClasses
+                : disabledClasses;
+
+            return (
+              <button
+                key={type}
+                type="button"
+                className={`${base} ${classes}`}
+                onClick={() => {
+                  if (isEnabled) {
+                    handleChange('businessType', type);
+                    setError(null);
+                  } else {
+                    setError(`🚧 ${type} coming soon`);
+                  }
+                }}
+                aria-pressed={isSelected}
+              >
+                {/* centered label */}
+                <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                  {type}
+                </span>
+
+                {/* right check when selected */}
+                {isSelected && (
+                  <span className="pointer-events-none absolute right-3 inset-y-0 flex items-center">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <circle cx="10" cy="10" r="10" fill="white" opacity="0.25"/>
+                      <path d="M5 10.5l3 3 7-7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                )}
+
+                {/* keeps height */}
+                <span className="opacity-0">{type}</span>
+              </button>
+            );
+          })}
+
+          {!form.businessType && (
+            <p className="text-xs text-[#2c4a30]/70">Please choose a business type to continue.</p>
+          )}
         </div>
 
         {error && <p className="text-red-600 text-sm text-center">{error}</p>}
@@ -204,8 +328,13 @@ export default function BusinessSignUpPage() {
 
         <button
           onClick={handleSubmit}
-          disabled={isSubmitting}
-          className="w-full bg-[#2c4a30] text-white py-3 rounded hover:bg-[#1e3624] transition mt-6 text-sm"
+          disabled={!formIsValid || isSubmitting}
+          aria-disabled={!formIsValid || isSubmitting}
+          className={`w-full text-white py-3 rounded transition mt-6 text-sm
+            ${(!formIsValid || isSubmitting)
+              ? 'bg-[#9fb5a5] cursor-not-allowed'
+              : 'bg-[#2c4a30] hover:bg-[#1e3624]'}
+          `}
         >
           {isSubmitting ? 'Submitting...' : 'Create Account'}
         </button>
