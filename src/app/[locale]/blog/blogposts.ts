@@ -19,6 +19,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'dog-daycare-boarding-kpi-playbook',
+        title: 'The Definitive KPI Playbook for Dog Daycare & Boarding (2025 Edition)',
+        date: 'January 20, 2024',
+        description:
+            'An operator-grade, numbers-first guide for dog daycare and boarding businesses. Includes formulas, benchmarks, dashboards, capacity math, labor efficiency, safety and compliance metrics, pricing effects, and a 90-day turnaround plan.',
+        component: () =>
+            import('./posts/dog-daycare-boarding-kpi-playbook') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'how-will-my-dog-adjust-to-boarding',
         title: 'How Will My Dog Handle or Adjust to Being Boarded?',
         date: 'January 15, 2024',
