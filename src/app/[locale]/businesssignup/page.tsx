@@ -216,11 +216,15 @@ export default function BusinessSignUpPage() {
         createdAt: Timestamp.now()
       });
 
-      setSuccess(`Account created! We sent a verification email to ${email}.`);
+      setSuccess(`Account created! We sent a verification email to ${String(email)}.`);
+
       // brief pause so user sees the message
-      setTimeout(() => router.push(`/${locale}/loginsignup`), 1600);
-    } catch (err: any) {
-      setError(mapAuthError(err?.code ?? 'unknown'));
+      setTimeout(() => {
+        void router.push(`/${locale}/loginsignup`);
+      }, 1600);
+    } catch (err) {
+      const errorCode = (err as { code?: string })?.code ?? 'unknown';
+      setError(mapAuthError(errorCode));
     } finally {
       setIsSubmitting(false);
     }
@@ -305,9 +309,9 @@ export default function BusinessSignUpPage() {
                 {isSelected && (
                   <span className="pointer-events-none absolute right-3 inset-y-0 flex items-center">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                      <circle cx="10" cy="10" r="10" fill="white" opacity="0.25"/>
-                      <path d="M5 10.5l3 3 7-7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <circle cx="10" cy="10" r="10" fill="white" opacity="0.25" />
+                      <path d="M5 10.5l3 3 7-7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </span>
                 )}
