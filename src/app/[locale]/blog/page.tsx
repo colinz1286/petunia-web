@@ -5,10 +5,10 @@ import { useLocale } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import Head from 'next/head';
-import { blogPosts } from './blogposts'; // ✅ centralized registry
+import { blogPosts } from './blogposts';
 
 // ---- Category labels --------------------------------------------------------
-const CATEGORY_MAP: Record<string, string> = {
+const CATEGORY_MAP = {
   boarding: 'Boarding & Daycare',
   owner: 'Pet Owners',
   sitter: 'Pet Sitters',
@@ -17,34 +17,46 @@ const CATEGORY_MAP: Record<string, string> = {
   walker: 'Dog Walkers',
   breeder: 'Breeders',
   breed_specific_guides: 'Breed Specific Guides',
-};
+} as const;
 
-// (unchanged rows for button filters)
-const firstRow = ['boarding', 'owner', 'sitter'] as const;
-const secondRow = ['rescue', 'vet', 'walker'] as const;
-const thirdRow = ['breeder'] as const; // 👈 breed dropdown sits beside/under buttons
+type CategoryKey = keyof typeof CATEGORY_MAP;
+const BREED_CATEGORY_KEY: CategoryKey = 'breed_specific_guides';
+
+// (button rows)
+const firstRow: readonly CategoryKey[] = ['boarding', 'owner', 'sitter'];
+const secondRow: readonly CategoryKey[] = ['rescue', 'vet', 'walker'];
+const thirdRow: readonly CategoryKey[] = ['breeder'];
+const fourthRow: readonly CategoryKey[] = [BREED_CATEGORY_KEY]; // dropdown row
 
 // ---- Helpers ----------------------------------------------------------------
+interface BlogPostMeta {
+  breed?: string;
+  title?: string;
+  categories?: string[];
+  date: string;
+  description?: string;
+  slug?: string;
+}
+
 // Prefer an explicit `breed` field on posts; otherwise try to infer from title/slug.
-function inferBreed(post: any): string | null {
+function inferBreed(post: BlogPostMeta | null | undefined): string | null {
   if (post?.breed) return post.breed;
 
   // Try title pattern “… for <Breed> …”
   if (typeof post?.title === 'string') {
-    const t = post.title;
-    // capture words after " for " up to punctuation
     const m =
-      /(?:for|For)\s+([A-Z][A-Za-z\s\-\u2013\u2014\u2019']+?)(?:[:\-\u2013\u2014(]|$)/.exec(t) ||
-      /(?:for|For)\s+([A-Z][A-Za-z\s\-\u2019']+)$/.exec(t);
+      /(?:for|For)\s+([A-Z][A-Za-z\s\-\u2013\u2014\u2019']+?)(?:[:\-\u2013\u2014(]|$)/.exec(
+        post.title
+      ) ||
+      /(?:for|For)\s+([A-Z][A-Za-z\s\-\u2019']+)$/.exec(post.title);
     if (m?.[1]) return cleanBreed(m[1]);
   }
 
   // Fallback: try slug like "boarding-tips-for-labrador-retrievers"
   if (typeof post?.slug === 'string') {
-    const s = post.slug.replace(/-/g, ' ');
     const m =
-      /\bfor\s+([a-z][a-z\s']+?)$/.exec(s) ||
-      /\bfor\s+([a-z][a-z\s']+?)\b/.exec(s);
+      /\bfor\s+([a-z][a-z\s']+?)$/.exec(post.slug.replace(/-/g, ' ')) ||
+      /\bfor\s+([a-z][a-z\s']+?)\b/.exec(post.slug.replace(/-/g, ' '));
     if (m?.[1]) return titleCase(m[1].replace(/\b(the|a|an)\b/gi, '').trim());
   }
 
@@ -52,7 +64,6 @@ function inferBreed(post: any): string | null {
 }
 
 function cleanBreed(x: string) {
-  // remove common trailing words
   const cleaned = x.replace(/\b(dogs?|puppies|owners?)\b/gi, '').trim();
   return titleCase(cleaned.replace(/\s{2,}/g, ' '));
 }
@@ -68,10 +79,10 @@ function titleCase(s: string) {
 
 export default function BlogPage() {
   const locale = useLocale();
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedBreed, setSelectedBreed] = useState<string>(''); // 👈 NEW
+  const [selectedCategories, setSelectedCategories] = useState<CategoryKey[]>([]);
+  const [selectedBreed, setSelectedBreed] = useState<string>(''); // dropdown value
 
-  const toggleCategory = (category: string) => {
+  const toggleCategory = (category: CategoryKey) => {
     setSelectedCategories((prev) =>
       prev.includes(category)
         ? prev.filter((cat) => cat !== category)
@@ -82,8 +93,8 @@ export default function BlogPage() {
   // ---- Build breed options from registry (auto-updates as you add posts) ----
   const breedOptions = useMemo(() => {
     const breeds = new Set<string>();
-    for (const post of blogPosts) {
-      if (post?.categories?.includes('breed_specific_guides')) {
+    for (const post of blogPosts as BlogPostMeta[]) {
+      if (post?.categories?.includes(BREED_CATEGORY_KEY)) {
         const b = inferBreed(post);
         if (b) breeds.add(b);
       }
@@ -103,18 +114,16 @@ export default function BlogPage() {
   const filteredPosts = useMemo(() => {
     let list = sortedPosts;
 
-    // If any category buttons selected, filter by those
     if (selectedCategories.length > 0) {
       list = list.filter((post) =>
-        post.categories?.some((cat: string) => selectedCategories.includes(cat))
+        post.categories?.some((cat) => selectedCategories.includes(cat as CategoryKey))
       );
     }
 
-    // If a breed is selected, show only breed guides matching that breed
     if (selectedBreed) {
       list = list.filter((post) => {
-        if (!post.categories?.includes('breed_specific_guides')) return false;
-        const b = inferBreed(post);
+        if (!post.categories?.includes(BREED_CATEGORY_KEY)) return false;
+        const b = inferBreed(post as BlogPostMeta);
         return b === selectedBreed;
       });
     }
@@ -194,8 +203,8 @@ export default function BlogPage() {
           })}
         </div>
 
-        {/* Row 3: existing buttons + Breed dropdown */}
-        <div className="flex flex-wrap justify-center items-center gap-3 mb-8 max-w-2xl">
+        {/* Filter Row 3 */}
+        <div className="flex flex-wrap justify-center gap-2 mb-2 max-w-2xl">
           {thirdRow.map((key) => {
             const isActive = selectedCategories.includes(key);
             return (
@@ -212,26 +221,30 @@ export default function BlogPage() {
               </button>
             );
           })}
+        </div>
 
-          {/* Breed Specific Guides dropdown */}
-          <div className="flex items-center gap-2">
-            <label htmlFor="breedFilter" className="text-sm font-semibold text-[#2c4a30]">
-              {CATEGORY_MAP['breed_specific_guides']}:
-            </label>
-            <select
-              id="breedFilter"
-              value={selectedBreed}
-              onChange={(e) => setSelectedBreed(e.target.value)}
-              className="text-sm rounded-full border-[3px] border-[#2c4a30] bg-white px-3 py-1.5 text-[#2c4a30] hover:bg-[#e4dbcb] cursor-pointer"
-            >
-              <option value="">All Breeds</option>
-              {breedOptions.map((b) => (
-                <option key={b} value={b}>
-                  {b}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Filter Row 4 – Breed Specific Guides dropdown */}
+        <div className="flex flex-wrap justify-center items-center gap-3 mb-8 max-w-2xl">
+          {fourthRow.map(() => (
+            <div key="breed-dropdown" className="flex items-center gap-2">
+              <label htmlFor="breedFilter" className="text-sm font-semibold text-[#2c4a30]">
+                {CATEGORY_MAP[BREED_CATEGORY_KEY]}:
+              </label>
+              <select
+                id="breedFilter"
+                value={selectedBreed}
+                onChange={(e) => setSelectedBreed(e.target.value)}
+                className="text-sm rounded-full border-[3px] border-[#2c4a30] bg-white px-3 py-1.5 text-[#2c4a30] hover:bg-[#e4dbcb] cursor-pointer"
+              >
+                <option value="">All Breeds</option>
+                {breedOptions.map((b) => (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ))}
 
           {(selectedCategories.length > 0 || selectedBreed) && (
             <button
