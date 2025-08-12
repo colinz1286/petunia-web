@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'boarding-and-daycare-tips-for-french-bulldogs',
+        title: 'Boarding & Daycare Tips for French Bulldogs: A Complete Owner’s Guide',
+        date: 'April 5, 2025',
+        description:
+            'Frenchie-specific boarding/daycare playbook: pre-boarding audits, health & vaccine requirements, airway/heat safety, housing & climate, playgroup design, feeding/meds, enrichment, emergencies, and travel—plus checklists and professional sources.',
+        component: () =>
+            import('./posts/boarding-and-daycare-tips-for-french-bulldogs') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'French Bulldog',
+    },
+    {
         slug: 'are-french-bulldogs-good-with-children-and-other-pets',
         title: 'Are French Bulldogs Good with Children and Other Pets? Temperament, Training, and a Proven Home Playbook',
         date: 'April 6, 2025',
