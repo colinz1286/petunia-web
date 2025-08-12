@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'boarding-and-daycare-tips-for-golden-retrievers',
+        title: 'Boarding & Daycare Tips for Golden Retrievers: A Complete Owner’s Guide',
+        date: 'August 8, 2025',
+        description:
+            'Evidence-informed, operator-grade guidance to board or enroll a Golden Retriever in daycare safely: readiness, vaccines, ear/skin care after water, hot-spot prevention, weight & orthopedic protection, heat/water safety, rest architecture, enrichment, incident escalation, and checklists. Professional sources included.',
+        component: () =>
+            import('./posts/boarding-and-daycare-tips-for-golden-retrievers') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'boarding', 'breed_specific_guides'],
+        breed: 'Golden Retriever'
+    },
+    {
         slug: 'are-there-different-types-of-french-bulldogs',
         title: 'Are There Different Types of French Bulldogs? Colors, Coats, “Fluffies,” and What Actually Matters',
         date: 'April 4, 2025',
