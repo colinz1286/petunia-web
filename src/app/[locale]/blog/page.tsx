@@ -1,11 +1,14 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useLocale } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import Head from 'next/head';
 import { blogPosts } from './blogposts';
+
+// ---- Config -----------------------------------------------------------------
+const PAGE_SIZE = 18; // how many cards to show per batch
 
 // ---- Category labels --------------------------------------------------------
 const CATEGORY_MAP = {
@@ -20,6 +23,7 @@ const CATEGORY_MAP = {
 } as const;
 
 type CategoryKey = keyof typeof CATEGORY_MAP;
+const CATEGORY_KEYS = Object.keys(CATEGORY_MAP) as CategoryKey[];
 const BREED_CATEGORY_KEY: CategoryKey = 'breed_specific_guides';
 
 // (button rows)
@@ -36,6 +40,12 @@ interface BlogPostMeta {
   date: string;
   description?: string;
   slug?: string;
+}
+
+function normalizeCategory(cat: string): CategoryKey | null {
+  // normalize minor inconsistencies
+  if (cat === 'pet-owners') return 'owner';
+  return CATEGORY_KEYS.includes(cat as CategoryKey) ? (cat as CategoryKey) : null;
 }
 
 // Prefer an explicit `breed` field on posts; otherwise try to infer from title/slug.
@@ -81,6 +91,7 @@ export default function BlogPage() {
   const locale = useLocale();
   const [selectedCategories, setSelectedCategories] = useState<CategoryKey[]>([]);
   const [selectedBreed, setSelectedBreed] = useState<string>(''); // dropdown value
+  const [visibleCount, setVisibleCount] = useState<number>(PAGE_SIZE);
 
   const toggleCategory = (category: CategoryKey) => {
     setSelectedCategories((prev) =>
@@ -89,6 +100,11 @@ export default function BlogPage() {
         : [...prev, category]
     );
   };
+
+  // Reset pagination whenever filters change
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [selectedCategories, selectedBreed]);
 
   // ---- Build breed options from registry (auto-updates as you add posts) ----
   const breedOptions = useMemo(() => {
@@ -116,13 +132,18 @@ export default function BlogPage() {
 
     if (selectedCategories.length > 0) {
       list = list.filter((post) =>
-        post.categories?.some((cat) => selectedCategories.includes(cat as CategoryKey))
+        post.categories?.some((cat) => {
+          const key = normalizeCategory(cat);
+          return key ? selectedCategories.includes(key) : false;
+        })
       );
     }
 
     if (selectedBreed) {
       list = list.filter((post) => {
-        if (!post.categories?.includes(BREED_CATEGORY_KEY)) return false;
+        if (!post.categories?.some((c) => normalizeCategory(c) === BREED_CATEGORY_KEY)) {
+          return false;
+        }
         const b = inferBreed(post as BlogPostMeta);
         return b === selectedBreed;
       });
@@ -131,10 +152,18 @@ export default function BlogPage() {
     return list;
   }, [sortedPosts, selectedCategories, selectedBreed]);
 
+  const visiblePosts = useMemo(
+    () => filteredPosts.slice(0, visibleCount),
+    [filteredPosts, visibleCount]
+  );
+
   const clearFilters = () => {
     setSelectedCategories([]);
     setSelectedBreed('');
+    setVisibleCount(PAGE_SIZE);
   };
+
+  const canLoadMore = visibleCount < filteredPosts.length;
 
   return (
     <>
@@ -258,25 +287,43 @@ export default function BlogPage() {
 
         {/* Blog Card List */}
         <section className="w-full max-w-xl space-y-8">
-          {filteredPosts.length === 0 ? (
+          {visiblePosts.length === 0 ? (
             <p className="text-[#2c4a30]">No articles available for the selected filters.</p>
           ) : (
-            filteredPosts.map((post) => (
-              <div
-                key={post.slug}
-                className="text-left border border-[#d9cfc2] rounded-lg p-5 bg-white shadow-sm hover:shadow-md transition"
-              >
-                <h2 className="text-lg font-bold text-[#2c4a30] mb-1">{post.title}</h2>
-                <p className="text-sm text-gray-500 mb-2">{post.date}</p>
-                <p className="text-sm text-[#2c4a30] mb-3">{post.description}</p>
-                <Link
-                  href={`/${locale}/blog/${post.slug}`}
-                  className="underline text-[#2c4a30] font-medium hover:opacity-80"
+            <>
+              {visiblePosts.map((post) => (
+                <div
+                  key={post.slug}
+                  className="text-left border border-[#d9cfc2] rounded-lg p-5 bg-white shadow-sm hover:shadow-md transition"
                 >
-                  Read More →
-                </Link>
+                  <h2 className="text-lg font-bold text-[#2c4a30] mb-1">{post.title}</h2>
+                  <p className="text-sm text-gray-500 mb-2">{post.date}</p>
+                  <p className="text-sm text-[#2c4a30] mb-3">{post.description}</p>
+                  <Link
+                    href={`/${locale}/blog/${post.slug}`}
+                    className="underline text-[#2c4a30] font-medium hover:opacity-80"
+                  >
+                    Read More →
+                  </Link>
+                </div>
+              ))}
+
+              {/* Pagination Controls */}
+              <div className="flex flex-col items-center gap-3 pt-2">
+                <p className="text-xs text-[#2c4a30]/80">
+                  Showing {Math.min(visibleCount, filteredPosts.length)} of {filteredPosts.length}
+                </p>
+
+                {canLoadMore && (
+                  <button
+                    onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
+                    className="px-4 py-2 rounded-full text-sm font-bold transition border-[3px] text-white bg-[#2c4a30] border-[#2c4a30] hover:opacity-90"
+                  >
+                    Load more
+                  </button>
+                )}
               </div>
-            ))
+            </>
           )}
         </section>
       </main>
