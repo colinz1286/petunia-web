@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'types-of-labrador-retrievers-english-vs-field',
+        title: 'Types of Labrador Retrievers (English vs Field): The Complete, Vet-Informed Owner’s Guide',
+        date: 'April 13',
+        description:
+            'One Labrador breed, two common lines. Compare English (bench/show) vs Field (working): temperament, build, training needs, exercise, health, grooming, breeder questions, and family fit.',
+        component: () =>
+            import('./posts/types-of-labrador-retrievers-english-vs-field') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Labrador Retriever',
+    },
+    {
         slug: 'what-health-issues-do-labradors-have',
         title: 'What Health Issues Do Labradors Have? A Practical, Vet-Informed Guide for Families',
         date: 'April 14, 2025',
