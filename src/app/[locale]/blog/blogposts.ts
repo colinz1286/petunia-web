@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'are-labrador-retrievers-good-family-dogs',
+        title: 'Are Labrador Retrievers Good Family Dogs? An Expert, Real-World Guide',
+        date: 'April 21, 2025',
+        description:
+            'A practical, evidence-backed look at Labs in family life—temperament, training, exercise, health risks, grooming, safety with kids and pets, and decision checklists.',
+        component: () =>
+            import('./posts/are-labrador-retrievers-good-family-dogs') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Labrador Retriever',
+    },
+    {
         slug: 'boarding-tips-for-labrador-retrievers',
         title: 'Boarding & Daycare Tips for Labrador Retrievers: A Complete Owner’s Guide',
         date: 'April 27, 2025',
