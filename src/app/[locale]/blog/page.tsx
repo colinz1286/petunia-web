@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useLocale } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import Head from 'next/head';
-import { blogPosts } from './blogposts'; // ✅ Use centralized registry
+import { blogPosts } from './blogposts'; // ✅ centralized registry
 
+// ---- Category labels --------------------------------------------------------
 const CATEGORY_MAP: Record<string, string> = {
   boarding: 'Boarding & Daycare',
   owner: 'Pet Owners',
@@ -18,13 +19,57 @@ const CATEGORY_MAP: Record<string, string> = {
   breed_specific_guides: 'Breed Specific Guides',
 };
 
-const firstRow = ['boarding', 'owner', 'sitter'];
-const secondRow = ['rescue', 'vet', 'walker'];
-const thirdRow = ['breeder', 'breed_specific_guides'];
+// (unchanged rows for button filters)
+const firstRow = ['boarding', 'owner', 'sitter'] as const;
+const secondRow = ['rescue', 'vet', 'walker'] as const;
+const thirdRow = ['breeder'] as const; // 👈 breed dropdown sits beside/under buttons
+
+// ---- Helpers ----------------------------------------------------------------
+// Prefer an explicit `breed` field on posts; otherwise try to infer from title/slug.
+function inferBreed(post: any): string | null {
+  if (post?.breed) return post.breed;
+
+  // Try title pattern “… for <Breed> …”
+  if (typeof post?.title === 'string') {
+    const t = post.title;
+    // capture words after " for " up to punctuation
+    const m =
+      /(?:for|For)\s+([A-Z][A-Za-z\s\-\u2013\u2014\u2019']+?)(?:[:\-\u2013\u2014(]|$)/.exec(t) ||
+      /(?:for|For)\s+([A-Z][A-Za-z\s\-\u2019']+)$/.exec(t);
+    if (m?.[1]) return cleanBreed(m[1]);
+  }
+
+  // Fallback: try slug like "boarding-tips-for-labrador-retrievers"
+  if (typeof post?.slug === 'string') {
+    const s = post.slug.replace(/-/g, ' ');
+    const m =
+      /\bfor\s+([a-z][a-z\s']+?)$/.exec(s) ||
+      /\bfor\s+([a-z][a-z\s']+?)\b/.exec(s);
+    if (m?.[1]) return titleCase(m[1].replace(/\b(the|a|an)\b/gi, '').trim());
+  }
+
+  return null;
+}
+
+function cleanBreed(x: string) {
+  // remove common trailing words
+  const cleaned = x.replace(/\b(dogs?|puppies|owners?)\b/gi, '').trim();
+  return titleCase(cleaned.replace(/\s{2,}/g, ' '));
+}
+
+function titleCase(s: string) {
+  return s
+    .toLowerCase()
+    .split(' ')
+    .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
+    .join(' ')
+    .replace(/\b(Of|And|The|For|In|On|With)\b/g, (m) => m.toLowerCase());
+}
 
 export default function BlogPage() {
   const locale = useLocale();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedBreed, setSelectedBreed] = useState<string>(''); // 👈 NEW
 
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
@@ -34,16 +79,53 @@ export default function BlogPage() {
     );
   };
 
-  const sortedPosts = [...blogPosts].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  // ---- Build breed options from registry (auto-updates as you add posts) ----
+  const breedOptions = useMemo(() => {
+    const breeds = new Set<string>();
+    for (const post of blogPosts) {
+      if (post?.categories?.includes('breed_specific_guides')) {
+        const b = inferBreed(post);
+        if (b) breeds.add(b);
+      }
+    }
+    return Array.from(breeds).sort((a, b) => a.localeCompare(b));
+  }, []);
+
+  // ---- Sort & filter posts ---------------------------------------------------
+  const sortedPosts = useMemo(
+    () =>
+      [...blogPosts].sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      ),
+    []
   );
 
-  const filteredPosts =
-    selectedCategories.length === 0
-      ? sortedPosts
-      : sortedPosts.filter((post) =>
-          post.categories.some((cat) => selectedCategories.includes(cat))
-        );
+  const filteredPosts = useMemo(() => {
+    let list = sortedPosts;
+
+    // If any category buttons selected, filter by those
+    if (selectedCategories.length > 0) {
+      list = list.filter((post) =>
+        post.categories?.some((cat: string) => selectedCategories.includes(cat))
+      );
+    }
+
+    // If a breed is selected, show only breed guides matching that breed
+    if (selectedBreed) {
+      list = list.filter((post) => {
+        if (!post.categories?.includes('breed_specific_guides')) return false;
+        const b = inferBreed(post);
+        return b === selectedBreed;
+      });
+    }
+
+    return list;
+  }, [sortedPosts, selectedCategories, selectedBreed]);
+
+  const clearFilters = () => {
+    setSelectedCategories([]);
+    setSelectedBreed('');
+  };
 
   return (
     <>
@@ -112,8 +194,8 @@ export default function BlogPage() {
           })}
         </div>
 
-        {/* Filter Row 3 – Breeders */}
-        <div className="flex flex-wrap justify-center gap-2 mb-10 max-w-2xl">
+        {/* Row 3: existing buttons + Breed dropdown */}
+        <div className="flex flex-wrap justify-center items-center gap-3 mb-8 max-w-2xl">
           {thirdRow.map((key) => {
             const isActive = selectedCategories.includes(key);
             return (
@@ -130,12 +212,41 @@ export default function BlogPage() {
               </button>
             );
           })}
+
+          {/* Breed Specific Guides dropdown */}
+          <div className="flex items-center gap-2">
+            <label htmlFor="breedFilter" className="text-sm font-semibold text-[#2c4a30]">
+              {CATEGORY_MAP['breed_specific_guides']}:
+            </label>
+            <select
+              id="breedFilter"
+              value={selectedBreed}
+              onChange={(e) => setSelectedBreed(e.target.value)}
+              className="text-sm rounded-full border-[3px] border-[#2c4a30] bg-white px-3 py-1.5 text-[#2c4a30] hover:bg-[#e4dbcb] cursor-pointer"
+            >
+              <option value="">All Breeds</option>
+              {breedOptions.map((b) => (
+                <option key={b} value={b}>
+                  {b}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {(selectedCategories.length > 0 || selectedBreed) && (
+            <button
+              onClick={clearFilters}
+              className="ml-1 text-xs underline text-[#2c4a30] hover:opacity-80"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
 
         {/* Blog Card List */}
         <section className="w-full max-w-xl space-y-8">
           {filteredPosts.length === 0 ? (
-            <p className="text-[#2c4a30]">No articles available for the selected categories.</p>
+            <p className="text-[#2c4a30]">No articles available for the selected filters.</p>
           ) : (
             filteredPosts.map((post) => (
               <div

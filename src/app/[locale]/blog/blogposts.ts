@@ -1,10 +1,11 @@
 export type BlogPostEntry = {
     slug: string;
     title: string;
-    date: string;
+    date: string; // keep as string; we’ll parse when needed
     description: string;
-    categories: string[];
     component: () => Promise<{ default: React.ComponentType<object> }>;
+    categories: string[];
+    breed?: string; // 👈 NEW (only for breed_specific_guides)
 };
 
 export const blogPosts: BlogPostEntry[] = [
@@ -21,12 +22,13 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'boarding-tips-for-labrador-retrievers',
         title: 'Boarding & Daycare Tips for Labrador Retrievers: A Complete Owner’s Guide',
-        date: 'April 27, 2025',
+        date: '2025-04-27', // ✅ ISO date parses reliably
         description:
             'Health-first, operator-ready guidance for safe, low-stress boarding and daycare with Labs—vaccines, facility standards, play-style management, heat/water safety, packing lists, and post-stay recovery.',
         component: () =>
             import('./posts/boarding-tips-for-labrador-retrievers') as Promise<{ default: React.ComponentType<object> }>,
-        categories: ['owner', 'boarding', 'breed-guides'],
+        categories: ['owner', 'boarding', 'breed_specific_guides'],
+        breed: 'Labrador Retriever', // 👈 NEW: used by the dropdown
     },
     {
         slug: 'dog-daycare-boarding-kpi-playbook',
