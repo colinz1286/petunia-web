@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-many-puppies-do-french-bulldogs-have',
+        title: 'How Many Puppies Do French Bulldogs Have? Typical Litter Size, Risks, and a Responsible Care Playbook',
+        date: 'April 8, 2025',
+        description:
+            'Most French Bulldogs have small litters—often 2–4 pups—with higher-than-average assisted delivery rates. This evidence-informed guide covers litter size drivers, timing, whelping vs. planned C-section, neonatal care, and practical checklists.',
+        component: () =>
+            import('./posts/how-many-puppies-do-french-bulldogs-have') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'breeder', 'breed_specific_guides'],
+        breed: 'French Bulldog',
+    },
+    {
         slug: 'do-french-bulldogs-shed',
         title: 'Do French Bulldogs Shed? Shedding Levels, Seasonality & Practical Coat Care',
         date: 'April 10, 2025',
