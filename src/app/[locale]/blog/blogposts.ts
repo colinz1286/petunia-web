@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'french-bulldog-life-expectancy-and-lifespan',
+        title: 'French Bulldog Life Expectancy & Lifespan: Add Healthy Years with Smart Daily Systems',
+        date: 'April 11, 2025',
+        description:
+            'How long do French Bulldogs live? Evidence-informed life expectancy and a practical plan—weight, BOAS care, heat safety, spine/knee protection, skin/ear/eye hygiene, nutrition, preventive vet work, and senior comfort.',
+        component: () =>
+            import('./posts/french-bulldog-life-expectancy-and-lifespan') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'French Bulldog',
+    },
+    {
         slug: 'labrador-retriever-life-expectancy-and-lifespan',
         title: 'Labrador Retriever Life Expectancy & Lifespan: How to Maximize Your Lab’s Healthy Years',
         date: 'April 12, 2025',
