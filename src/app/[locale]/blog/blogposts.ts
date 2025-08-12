@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'are-there-different-types-of-french-bulldogs',
+        title: 'Are There Different Types of French Bulldogs? Colors, Coats, “Fluffies,” and What Actually Matters',
+        date: 'April 4, 2025',
+        description:
+            'One breed, many looks: recognized colors/patterns (brindle, fawn, pied), non-standard “exotics” (blue, merle), long-haired “fluffies,” size labels, and what’s similar across all Frenchies—plus health notes and an evidence-based buyer’s checklist.',
+        component: () =>
+            import('./posts/are-there-different-types-of-french-bulldogs') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'French Bulldog',
+    },
+    {
         slug: 'boarding-and-daycare-tips-for-french-bulldogs',
         title: 'Boarding & Daycare Tips for French Bulldogs: A Complete Owner’s Guide',
         date: 'April 5, 2025',
@@ -27,7 +38,7 @@ export const blogPosts: BlogPostEntry[] = [
             'Frenchie-specific boarding/daycare playbook: pre-boarding audits, health & vaccine requirements, airway/heat safety, housing & climate, playgroup design, feeding/meds, enrichment, emergencies, and travel—plus checklists and professional sources.',
         component: () =>
             import('./posts/boarding-and-daycare-tips-for-french-bulldogs') as Promise<{ default: React.ComponentType<object> }>,
-        categories: ['owner', 'breed_specific_guides'],
+        categories: ['owner', 'boarding', 'breed_specific_guides'],
         breed: 'French Bulldog',
     },
     {

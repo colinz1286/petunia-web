@@ -10,7 +10,7 @@ export default function BoardingAndDaycareTipsForFrenchBulldogs() {
   const title =
     'Boarding & Daycare Tips for French Bulldogs: A Complete Owner’s Guide';
   const date = 'April 5, 2025';
-  const categories = ['owner', 'breed_specific_guides'] as const;
+  const categories = ['owner', 'boarding', 'breed_specific_guides'] as const;
 
   const categoryLabels: Record<string, string> = {
     owner: 'Pet Owners',
