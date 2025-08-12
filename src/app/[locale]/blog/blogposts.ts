@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'do-labrador-retrievers-shed-a-lot',
+        title: 'Do Labrador Retrievers Shed a Lot? The Complete Owner’s Guide to Shedding, Allergies, and Coat Care',
+        date: 'April 17, 2025',
+        description:
+            'Yes—Labs shed. Here’s exactly how much and what to do about it: coat biology, seasonal blowouts, allergy realities, grooming tools and routines, diet and skin health, home hair management, and red flags for veterinary care.',
+        component: () =>
+            import('./posts/do-labrador-retrievers-shed-a-lot') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Labrador Retriever',
+    },
+    {
         slug: 'are-labrador-retrievers-good-family-dogs',
         title: 'Are Labrador Retrievers Good Family Dogs? An Expert, Real-World Guide',
         date: 'April 21, 2025',
