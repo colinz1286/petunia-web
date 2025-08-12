@@ -20,6 +20,20 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'golden-retriever-puppy-training-complete-guide-8-weeks-to-18-months',
+        title:
+            'Golden Retriever Puppy Training: The Complete Guide from 8 Weeks to 18 Months',
+        date: 'August 12, 2025',
+        description:
+            'A complete, evidence-informed training playbook for Golden Retriever puppies from 8 weeks to 18 months. Covers socialization, house/crate training, leash skills, recall, bite-inhibition, alone-time training, enrichment, adolescence, safety red flags, and operator-grade checklists and templates—with veterinary-sourced citations.',
+        component: () =>
+            import(
+                './posts/golden-retriever-puppy-training-complete-guide-8-weeks-to-18-months'
+            ),
+        categories: ['owner', 'breed_specific_guides'] as const,
+        breed: 'Golden Retriever',
+    },
+    {
         slug: 'boarding-and-daycare-tips-for-golden-retrievers',
         title: 'Boarding & Daycare Tips for Golden Retrievers: A Complete Owner’s Guide',
         date: 'August 8, 2025',
