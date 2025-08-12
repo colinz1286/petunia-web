@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'common-health-problems-in-french-bulldogs',
+        title: 'Common Health Problems in French Bulldogs: Early Signs, Prevention, and Operator-Grade Care Systems',
+        date: 'April 7, 2025',
+        description:
+            'A practical, evidence-informed guide to French Bulldog health: airway (BOAS), heat risk, skin/ear disease, eyes, spine & knees, GI, dental, and more—plus early signs, home systems, boarding/daycare protocols, and veterinarian-approved checklists.',
+        component: () =>
+            import('./posts/common-health-problems-in-french-bulldogs') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'French Bulldog',
+    },
+    {
         slug: 'how-many-puppies-do-french-bulldogs-have',
         title: 'How Many Puppies Do French Bulldogs Have? Typical Litter Size, Risks, and a Responsible Care Playbook',
         date: 'April 8, 2025',
