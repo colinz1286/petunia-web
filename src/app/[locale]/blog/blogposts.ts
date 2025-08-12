@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'what-health-issues-do-labradors-have',
+        title: 'What Health Issues Do Labradors Have? A Practical, Vet-Informed Guide for Families',
+        date: 'April 14, 2025',
+        description:
+            'The most common Labrador Retriever health problems—hips, elbows, cruciate tears, obesity, ear/skin disease, EIC, PRA, cancers, hypothyroidism—plus prevention plans, life-stage checklists, and boarding/daycare notes.',
+        component: () =>
+            import('./posts/what-health-issues-do-labradors-have') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Labrador Retriever',
+    },
+    {
         slug: 'do-labrador-retrievers-shed-a-lot',
         title: 'Do Labrador Retrievers Shed a Lot? The Complete Owner’s Guide to Shedding, Allergies, and Coat Care',
         date: 'April 17, 2025',
