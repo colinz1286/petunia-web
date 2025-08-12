@@ -19,6 +19,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'boarding-tips-for-labrador-retrievers',
+        title: 'Boarding & Daycare Tips for Labrador Retrievers: A Complete Owner’s Guide',
+        date: 'April 27, 2025',
+        description:
+            'Health-first, operator-ready guidance for safe, low-stress boarding and daycare with Labs—vaccines, facility standards, play-style management, heat/water safety, packing lists, and post-stay recovery.',
+        component: () =>
+            import('./posts/boarding-tips-for-labrador-retrievers') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'boarding', 'breed-guides'],
+    },
+    {
         slug: 'dog-daycare-boarding-kpi-playbook',
         title: 'The Definitive KPI Playbook for Dog Daycare & Boarding (2025 Edition)',
         date: 'May 1, 2025',

@@ -15,11 +15,12 @@ const CATEGORY_MAP: Record<string, string> = {
   vet: 'Veterinary Clinics',
   walker: 'Dog Walkers',
   breeder: 'Breeders',
+  breed_specific_guides: 'Breed Specific Guides',
 };
 
 const firstRow = ['boarding', 'owner', 'sitter'];
 const secondRow = ['rescue', 'vet', 'walker'];
-const thirdRow = ['breeder'];
+const thirdRow = ['breeder', 'breed_specific_guides'];
 
 export default function BlogPage() {
   const locale = useLocale();
