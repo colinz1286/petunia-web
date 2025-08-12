@@ -9,7 +9,7 @@ export default function HowMuchDoFrenchBulldogsCost() {
 
   const title =
     'How Much Do French Bulldogs Cost? Realistic First-Year, Annual & Lifetime Budgets';
-  const date = 'April 11, 2025';
+  const date = 'April 9, 2025';
   const categories = ['owner', 'breed_specific_guides'] as const;
 
   const categoryLabels: Record<string, string> = {

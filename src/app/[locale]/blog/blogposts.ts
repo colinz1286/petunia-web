@@ -33,7 +33,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'how-much-do-french-bulldogs-cost',
         title: 'How Much Do French Bulldogs Cost? Realistic First-Year, Annual & Lifetime Budgets',
-        date: 'April 11, 2025',
+        date: 'April 9, 2025',
         description:
             'Purchase vs. adoption fees, first-year setup, ongoing annual costs (vet, food, insurance), lifetime totals, and “Frenchie factors” like BOAS and IVDD—plus money-saving systems and professional sources.',
         component: () =>

@@ -9,7 +9,7 @@ export default function DoFrenchBulldogsShed() {
 
   const title =
     'Do French Bulldogs Shed? Shedding Levels, Seasonality & Practical Coat Care';
-  const date = 'August 12, 2025';
+  const date = 'April 10, 2025';
   const categories = ['owner', 'breed_specific_guides'] as const;
 
   const categoryLabels: Record<string, string> = {
