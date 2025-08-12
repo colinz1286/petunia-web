@@ -20,6 +20,28 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'do-french-bulldogs-shed',
+        title: 'Do French Bulldogs Shed? Shedding Levels, Seasonality & Practical Coat Care',
+        date: 'April 10, 2025',
+        description:
+            'Yes—French Bulldogs shed lightly to moderately. What to expect by season and age, plus evidence-based grooming, skin/ear support, nutrition, allergy tips, and home routines (HEPA, lint control) to manage hair and dander.',
+        component: () =>
+            import('./posts/do-french-bulldogs-shed') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'French Bulldog',
+    },
+    {
+        slug: 'how-much-do-french-bulldogs-cost',
+        title: 'How Much Do French Bulldogs Cost? Realistic First-Year, Annual & Lifetime Budgets',
+        date: 'April 11, 2025',
+        description:
+            'Purchase vs. adoption fees, first-year setup, ongoing annual costs (vet, food, insurance), lifetime totals, and “Frenchie factors” like BOAS and IVDD—plus money-saving systems and professional sources.',
+        component: () =>
+            import('./posts/how-much-do-french-bulldogs-cost') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'French Bulldog',
+    },
+    {
         slug: 'french-bulldog-life-expectancy-and-lifespan',
         title: 'French Bulldog Life Expectancy & Lifespan: Add Healthy Years with Smart Daily Systems',
         date: 'April 11, 2025',
