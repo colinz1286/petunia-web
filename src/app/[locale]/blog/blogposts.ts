@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'types-of-golden-retrievers',
+        title: 'Are There Different Types of Golden Retrievers? Types, Similarities & Differences (Owner’s Guide)',
+        date: 'August 13, 2025',
+        description:
+            'Do Golden Retrievers come in different types? Regional styles (American, British, Canadian), field vs. show lines, the “English cream” myth, similarities, differences, and how to choose the right fit—plus checklists.',
+        component: () => import('./posts/types-of-golden-retrievers'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Golden Retriever'
+    },
+    {
         slug: 'what-health-issues-do-golden-retrievers-have',
         title: 'What Health Issues Do Golden Retrievers Have? A Practical, Vet-Informed Guide for Families',
         date: 'August 7, 2025',
