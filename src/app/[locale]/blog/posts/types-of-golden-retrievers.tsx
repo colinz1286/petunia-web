@@ -10,7 +10,7 @@ export default function AreThereDifferentTypesOfGoldenRetrievers() {
   // --- Metadata ---------------------------------------------------------------
   const title =
     'Are There Different Types of Golden Retrievers? Types, Similarities & Differences (Owner’s Guide)';
-  const date = 'August 6, 2025';
+  const date = 'August 13, 2025';
   const categories = ['owner', 'breed_specific_guides'] as const;
 
   // Keep keys/labels EXACTLY as used in prior posts

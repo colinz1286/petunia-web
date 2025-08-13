@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'what-houseplants-are-safe-for-pets',
+        title: 'What Houseplants Are Safe for Pets? An Evidence-Informed Owner’s Guide',
+        date: 'August 6, 2025',
+        description:
+            'Vet-informed, practical list of pet-safe houseplants (with Latin names), risky look-alikes to avoid, room-by-room checklists, and an emergency playbook for multi-pet homes.',
+        component: () => import('./posts/what-houseplants-are-safe-for-pets'),
+        categories: ['owner']
+    },
+    {
         slug: 'types-of-golden-retrievers',
         title: 'Are There Different Types of Golden Retrievers? Types, Similarities & Differences (Owner’s Guide)',
         date: 'August 13, 2025',
