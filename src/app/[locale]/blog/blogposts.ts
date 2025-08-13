@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'are-golden-retrievers-good-family-dogs',
+        title: 'Are Golden Retrievers Good Family Dogs? An Expert, Real-World Guide',
+        date: 'August 11, 2025',
+        description:
+            'An evidence-informed, real-world guide to whether Golden Retrievers are good family dogs: temperament, kid-safety systems, training/enrichment, exercise needs, grooming/shedding, health focus, budgeting, adoption vs. breeder, travel/boarding policies, and checklists.',
+        component: () =>
+            import('./posts/are-golden-retrievers-good-family-dogs') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Golden Retriever'
+    },
+    {
         slug: 'golden-retriever-puppy-training-complete-guide-8-weeks-to-18-months',
         title:
             'Golden Retriever Puppy Training: The Complete Guide from 8 Weeks to 18 Months',

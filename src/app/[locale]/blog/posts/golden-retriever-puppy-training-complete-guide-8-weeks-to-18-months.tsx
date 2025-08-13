@@ -9,7 +9,7 @@ export default function GoldenRetrieverPuppyTrainingCompleteGuide() {
 
   const title =
     'Golden Retriever Puppy Training: The Complete Guide from 8 Weeks to 18 Months';
-  const date = 'August 7, 2025';
+  const date = 'August 12, 2025';
   const categories = ['owner', 'breed_specific_guides'] as const;
 
   // Use the exact labels object from prior posts (unchanged keys/labels)
