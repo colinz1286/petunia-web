@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'do-golden-retrievers-shed-a-lot',
+        title: 'Do Golden Retrievers Shed a Lot? The Complete Owner’s Guide to Shedding, Allergies, and Coat Care',
+        date: 'August 10, 2025',
+        description:
+            'Yes—Golden Retrievers shed. This expert guide covers coat biology, seasonal “coat blow,” allergy realities and home allergen control, grooming tools and weekly SOPs, bath/condition/dry protocols, nutrition for skin/coat, medical red flags, and copy/paste checklists to keep hair under control.',
+        component: () =>
+            import('./posts/do-golden-retrievers-shed-a-lot') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Golden Retriever'
+    },
+    {
         slug: 'are-golden-retrievers-good-family-dogs',
         title: 'Are Golden Retrievers Good Family Dogs? An Expert, Real-World Guide',
         date: 'August 11, 2025',
