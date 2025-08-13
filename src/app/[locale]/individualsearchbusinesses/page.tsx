@@ -164,7 +164,7 @@ export default function IndividualSearchBusinessesPage() {
         }
 
         // With location: include within radius; include items w/ missing coords if they match type/query
-        const results = businesses.filter(b => {
+        const results = businesses.filter((b) => {
             if (!matchesType(b) || !matchesQuery(b)) return false;
 
             const hasCoords =
@@ -180,12 +180,6 @@ export default function IndividualSearchBusinessesPage() {
                 userLocation.longitude,
                 b.latitude,
                 b.longitude
-            );
-
-            // Verbose parity log
-            // eslint-disable-next-line no-console
-            console.debug(
-                `📍 Checking '${b.name}' [${b.latitude}, ${b.longitude}] — distance: ${distanceMiles.toFixed(2)} miles`
             );
 
             return distanceMiles <= SEARCH_RADIUS_MILES;
@@ -284,8 +278,8 @@ export default function IndividualSearchBusinessesPage() {
                                     aria-selected={selected}
                                     onClick={() => setSelectedType(key)}
                                     className={`px-3 py-2 rounded border w-full sm:w-auto ${selected
-                                            ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
-                                            : 'bg-white text-[#2c4a30] border-[#2c4a30] hover:bg-[#e4dbcb]'
+                                        ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
+                                        : 'bg-white text-[#2c4a30] border-[#2c4a30] hover:bg-[#e4dbcb]'
                                         } transition`}
                                 >
                                     {label}
