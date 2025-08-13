@@ -1,7 +1,13 @@
 {
   "title": "Search Businesses",
-  "search_placeholder": "Search for businesses...",
+  "search_placeholder": "Search for businesses…",
+  "filter_type_label": "Type",
+  "type_all": "All",
+  "type_boarding_daycare": "Boarding/Daycare",
+  "type_breeder": "Breeder",
   "no_results": "No businesses found.",
   "view_profile": "View Profile",
-  "back_to_dashboard": "Back to Dashboard"
+  "back_to_dashboard": "Back to Dashboard",
+  "unknown_label": "Unknown",
+  "unspecified_label": "Unspecified"
 }
