@@ -116,6 +116,14 @@ export default function AddEditPetPage() {
     const [currentFood, setCurrentFood] = useState<string>('');
     const [cupsPerMeal, setCupsPerMeal] = useState<string>('1');
 
+    // 👇 ADD THESE TWO LINES HERE
+    const [veterinarian, setVeterinarian] = useState<string>('');
+    const [veterinarianPhone, setVeterinarianPhone] = useState<string>('');
+
+    // Track which key names this document actually uses
+    const [vetNameKey, setVetNameKey] = useState<'veterinarian' | 'veterinarianName' | 'vetName'>('veterinarian');
+    const [vetPhoneKey, setVetPhoneKey] = useState<'veterinarianPhone' | 'veterinarianPhoneNumber' | 'vetPhone'>('veterinarianPhone');
+
     // Feeding schedule + frequency (iOS keeps frequency string in payload)
     const [feedingFrequency, setFeedingFrequency] = useState<string>('2');
     const [receivesBreakfast, setReceivesBreakfast] = useState<boolean>(false);
@@ -240,6 +248,17 @@ export default function AddEditPetPage() {
         setCupsPerMeal(data.feedingAmount || '1');
         setFeedingFrequency(data.feedingFrequency || '2');
 
+        // ---- Veterinarian fields (robust to schema differences) ----
+        const nameKey = (['veterinarian', 'veterinarianName', 'vetName'] as const)
+            .find(k => typeof (data as Record<string, unknown>)[k] !== 'undefined') ?? 'veterinarian';
+        setVetNameKey(nameKey);
+        setVeterinarian(String((data as Record<string, unknown>)[nameKey] ?? ''));
+
+        const phoneKey = (['veterinarianPhone', 'veterinarianPhoneNumber', 'vetPhone'] as const)
+            .find(k => typeof (data as Record<string, unknown>)[k] !== 'undefined') ?? 'veterinarianPhone';
+        setVetPhoneKey(phoneKey);
+        setVeterinarianPhone(String((data as Record<string, unknown>)[phoneKey] ?? ''));
+
         // Feeding schedule
         if (data.feedingSchedule) {
             const fs = data.feedingSchedule;
@@ -313,23 +332,22 @@ export default function AddEditPetPage() {
     // ---------- Auth + initial load ----------
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, async (user) => {
-            try {
-                if (!user) {
-                    router.push(`/${locale}/loginsignup`);
-                    return;
-                }
-
-                setUserId(user.uid);
-
-                if (petId) {
-                    setMode('edit');
-                    await loadPetData(user.uid, petId);
-                } else {
-                    setMode('add');
-                }
-            } finally {
-                setLoading(false);
+            if (!user) {
+                router.push(`/${locale}/loginsignup`);
+                return;
             }
+
+            setUserId(user.uid);
+
+            if (petId) {
+                setMode('edit');
+                await loadPetData(user.uid, petId);
+            } else {
+                setMode('add');
+            }
+
+            // ✅ Only set loading to false after data is ready
+            setLoading(false);
         });
 
         return () => unsub();
@@ -460,8 +478,8 @@ export default function AddEditPetPage() {
                 feedingAmount: cupsPerMeal,
                 feedingFrequency, // iOS includes this string
                 feedingSchedule: buildFeedingSchedule(),
-                veterinarian: '',
-                veterinarianPhone: '',
+                veterinarian: veterinarian.trim(),
+                veterinarianPhone: veterinarianPhone.trim(),
                 medications,
                 medicationDetails,
                 boardingExperience,
@@ -473,10 +491,6 @@ export default function AddEditPetPage() {
                 lastAnnualVetVisit: toTimestampOrNull(lastAnnualVetVisit) ?? null,
                 createdAt: Timestamp.now(),
             };
-
-            // Fill vet fields from state (kept separate for clarity)
-            payload.veterinarian = (payload.veterinarian as string) || '';
-            payload.veterinarianPhone = (payload.veterinarianPhone as string) || '';
 
             // Write Firestore doc
             const petCollectionRef = collection(db, 'users', userId, 'pets');
@@ -772,9 +786,10 @@ export default function AddEditPetPage() {
                         <label className={LABEL}>{t('veterinarian', { defaultValue: 'Veterinarian Name' })}</label>
                         <input
                             type="text"
+                            autoComplete="off"
                             className={INPUT}
-                            value={''}
-                            onChange={() => { /* kept for parity; optional UI wiring */ }}
+                            value={veterinarian}
+                            onChange={(e) => setVeterinarian(e.target.value)}
                             placeholder={t('veterinarian', { defaultValue: 'Veterinarian Name' })}
                         />
                     </div>
@@ -784,9 +799,11 @@ export default function AddEditPetPage() {
                         <label className={LABEL}>{t('veterinarian_phone', { defaultValue: 'Veterinarian Phone' })}</label>
                         <input
                             type="text"
+                            autoComplete="off"
                             className={INPUT}
-                            value={''}
-                            onChange={() => { /* kept for parity; optional UI wiring */ }}
+                            value={veterinarianPhone}
+                            onChange={(e) => setVeterinarianPhone(e.target.value)}
+                            placeholder={t('veterinarian_phone', { defaultValue: 'Veterinarian Phone' })}
                         />
                     </div>
 
