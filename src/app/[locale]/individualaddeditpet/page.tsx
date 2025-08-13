@@ -120,10 +120,6 @@ export default function AddEditPetPage() {
     const [veterinarian, setVeterinarian] = useState<string>('');
     const [veterinarianPhone, setVeterinarianPhone] = useState<string>('');
 
-    // Track which key names this document actually uses
-    const [vetNameKey, setVetNameKey] = useState<'veterinarian' | 'veterinarianName' | 'vetName'>('veterinarian');
-    const [vetPhoneKey, setVetPhoneKey] = useState<'veterinarianPhone' | 'veterinarianPhoneNumber' | 'vetPhone'>('veterinarianPhone');
-
     // Feeding schedule + frequency (iOS keeps frequency string in payload)
     const [feedingFrequency, setFeedingFrequency] = useState<string>('2');
     const [receivesBreakfast, setReceivesBreakfast] = useState<boolean>(false);
