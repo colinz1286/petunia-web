@@ -183,7 +183,8 @@ export default function IndividualSendClientRequestPage() {
                         <p>{t('client_request_prompt')}</p>
                         <button
                             onClick={() => setShowConfirmation(true)}
-                            className="w-full bg-[color:var(--color-accent)] text-white py-2 rounded text-sm"
+                            disabled={isLoadingStatus || isApprovedClient || hasRequestedAlready}
+                            className="w-full bg-[#2c4a30] text-white font-semibold py-3 rounded-md shadow-md hover:bg-[#243d28] focus:outline-none focus:ring-2 focus:ring-[#2c4a30] focus:ring-offset-2 transition-colors duration-200 disabled:bg-[#2c4a30] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {t('send_client_request_button')}
                         </button>
