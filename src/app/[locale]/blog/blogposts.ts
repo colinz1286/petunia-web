@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'what-health-issues-do-golden-retrievers-have',
+        title: 'What Health Issues Do Golden Retrievers Have? A Practical, Vet-Informed Guide for Families',
+        date: 'August 7, 2025',
+        description:
+            'Common Golden Retriever health problems—cancer risks, skin & ear disease, orthopedic issues, eyes (GRPU, cataracts), heart screening, hypothyroidism, ichthyosis, GI emergencies—plus operator-grade checklists and life-stage care.',
+        component: () => import('./posts/what-health-issues-do-golden-retrievers-have'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Golden Retriever'
+    },
+    {
         slug: 'do-golden-retrievers-shed-a-lot',
         title: 'Do Golden Retrievers Shed a Lot? The Complete Owner’s Guide to Shedding, Allergies, and Coat Care',
         date: 'August 10, 2025',
