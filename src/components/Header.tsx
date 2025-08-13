@@ -33,7 +33,7 @@ export default function Header() {
             className="hover:underline"
           >
             Facebook
-          </a>s
+          </a>
           <a
             href="https://youtube.com"
             target="_blank"
