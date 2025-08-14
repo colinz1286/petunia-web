@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'do-labrador-retrievers-make-good-therapy-dogs',
+        title: 'Do Labrador Retrievers Make Good Therapy Dogs? An Evidence-Informed Guide for Owners, Handlers & Facilities',
+        date: 'August 3, 2025',
+        description:
+            'Labs are friendly, biddable, and people-focused—excellent candidates for therapy work when paired with the right temperament, solid training (CGC → registry), and welfare-first infection control. This guide covers settings where Labs shine, breed-specific watch-outs, handler/facility SOPs, insurance, ethics, and copy-paste checklists.',
+        component: () => import('./posts/do-labrador-retrievers-make-good-therapy-dogs'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Labrador Retriever',
+    },
+    {
         slug: 'how-much-does-it-cost-to-own-a-golden-retriever',
         title: 'How Much Does It Cost to Own a Golden Retriever? A Full, Evidence-Informed Budget Guide',
         date: 'August 5, 2025',
