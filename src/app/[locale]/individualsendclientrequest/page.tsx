@@ -153,19 +153,19 @@ export default function IndividualSendClientRequestPage() {
     }, [userId, fetchBusinessInfo]);
 
     return (
-        <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)] px-4 py-6">
+        <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-foreground)] px-4 py-6">
             <div className="w-full max-w-md mx-auto space-y-6 px-2 sm:px-4">
 
                 {/* Back to Search Businesses */}
                 <button
                     onClick={() => router.push(`/${locale}/individualsearchbusinesses`)}
-                    className="text-sm text-[color:var(--color-accent)] underline hover:text-[color:var(--color-accent)]"
+                    className="text-sm text-[var(--color-accent)] underline hover:text-[var(--color-accent)]"
                 >
                     ← {t('back_to_search_businesses', { defaultValue: 'Back to Search Businesses' })}
                 </button>
 
                 {/* Business Name */}
-                <h1 className="text-3xl font-bold text-center text-[color:var(--color-accent)] mb-2">
+                <h1 className="text-3xl font-bold text-center text-[var(--color-accent)] mb-2">
                     {businessName}
                 </h1>
 
@@ -220,9 +220,9 @@ export default function IndividualSendClientRequestPage() {
                         <div className="flex justify-between gap-3">
                             <button
                                 onClick={() => sendClientRequest()}
-                                className="bg-[color:var(--color-accent)] text-white px-4 py-2 rounded text-sm"
+                                className="bg-[#2c4a30] bg-[var(--color-accent)] text-white px-4 py-2 rounded text-sm"
                             >
-                                {t('yes_send_request_button')}
+                                {t('yes_send_request_button', { defaultValue: 'Yes, send request' })}
                             </button>
                             <button
                                 onClick={() => setShowConfirmation(false)}
