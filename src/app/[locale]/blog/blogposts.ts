@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-much-does-it-cost-to-own-a-golden-retriever',
+        title: 'How Much Does It Cost to Own a Golden Retriever? A Full, Evidence-Informed Budget Guide',
+        date: 'August 5, 2025',
+        description:
+            'Realistic first-year and annual costs to own a Golden Retriever—food math, veterinary care, vaccines, preventives, grooming, training, insurance, boarding/daycare, and emergency planning—plus low/median/high budget templates you can copy-paste. Sources included.',
+        component: () => import('./posts/how-much-does-it-cost-to-own-a-golden-retriever'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Golden Retriever',
+    },
+    {
         slug: 'golden-retriever-life-expectancy',
         title: 'What Is the Life Expectancy of Golden Retrievers? An Evidence-Based Owner’s Guide',
         date: 'August 14, 2025',
