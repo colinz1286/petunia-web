@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'golden-retriever-life-expectancy',
+        title: 'What Is the Life Expectancy of Golden Retrievers? An Evidence-Based Owner’s Guide',
+        date: 'August 14, 2025',
+        description:
+            'Most Golden Retrievers live 10–12 years. This operator-grade guide explains what “life expectancy” means, why cancer looms large for the breed, and the concrete levers—genetics, weight, preventive care, and environment—that can add healthy months to years. Includes checklists, owner SOPs, and vetted sources.',
+        component: () => import('./posts/golden-retriever-life-expectancy'),
+        categories: ['owner', 'breed_specific_guides'],
+    },
+    {
         slug: 'what-houseplants-are-safe-for-pets',
         title: 'What Houseplants Are Safe for Pets? An Evidence-Informed Owner’s Guide',
         date: 'August 6, 2025',
