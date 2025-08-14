@@ -244,16 +244,9 @@ export default function AddEditPetPage() {
         setCupsPerMeal(data.feedingAmount || '1');
         setFeedingFrequency(data.feedingFrequency || '2');
 
-        // ---- Veterinarian fields (robust to schema differences) ----
-        const nameKey = (['veterinarian', 'veterinarianName', 'vetName'] as const)
-            .find(k => typeof (data as Record<string, unknown>)[k] !== 'undefined') ?? 'veterinarian';
-        setVetNameKey(nameKey);
-        setVeterinarian(String((data as Record<string, unknown>)[nameKey] ?? ''));
-
-        const phoneKey = (['veterinarianPhone', 'veterinarianPhoneNumber', 'vetPhone'] as const)
-            .find(k => typeof (data as Record<string, unknown>)[k] !== 'undefined') ?? 'veterinarianPhone';
-        setVetPhoneKey(phoneKey);
-        setVeterinarianPhone(String((data as Record<string, unknown>)[phoneKey] ?? ''));
+        // ---- Veterinarian fields ----
+        setVeterinarian((data.veterinarian as string) ?? '');
+        setVeterinarianPhone((data.veterinarianPhone as string) ?? '');
 
         // Feeding schedule
         if (data.feedingSchedule) {
