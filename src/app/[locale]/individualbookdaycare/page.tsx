@@ -39,10 +39,8 @@ initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
 
-type Pet = {
-    id: string;
-    name: string;
-};
+// ---------- Types ----------
+type Pet = { id: string; name: string };
 
 type DraftBooking = {
     date: Date;
@@ -51,14 +49,17 @@ type DraftBooking = {
     groomingAddOns?: Record<string, string[]>;
 };
 
+// ---------- Small helpers to keep UI in sync with Firestore ----------
+const uniq = <T,>(arr: T[]) => Array.from(new Set(arr));
+const uniqueById = <T extends { id: string }>(items: T[]) =>
+    Array.from(new Map(items.map((i) => [i.id, i])).values());
+
 function serializeGroomingSelections(
     selections: Record<string, Set<string>>
 ): Record<string, string[]> {
     const result: Record<string, string[]> = {};
     for (const [petId, services] of Object.entries(selections)) {
-        if (services.size > 0) {
-            result[petId] = Array.from(services);
-        }
+        if (services.size > 0) result[petId] = Array.from(services);
     }
     return result;
 }
@@ -70,9 +71,9 @@ export default function IndividualBookDaycarePage() {
     const params = useSearchParams();
 
     // ✅ Waiver enforcement
-    const [waiverSigned, setWaiverSigned] = useState(true); // Default to true for safety
+    const [waiverSigned, setWaiverSigned] = useState(true); // default true until proven otherwise
     const [showWaiverModal, setShowWaiverModal] = useState(false);
-    const [hasCheckedAgreement, setHasCheckedAgreement] = useState(false); // new
+    const [hasCheckedAgreement, setHasCheckedAgreement] = useState(false);
 
     const businessId = params.get('businessId') || '';
     const businessName = params.get('businessName') || t('default_business_name');
@@ -98,12 +99,13 @@ export default function IndividualBookDaycarePage() {
 
     async function loadPets(uid: string) {
         const snap = await getDocs(collection(db, 'users', uid, 'pets'));
-        const pets = snap.docs.map((d) => ({
+        const raw = snap.docs.map((d) => ({
             id: d.id,
             name: d.data().petName || 'Unnamed',
         }));
-        setPets(pets);
-        setSelectedPetIds(pets.map(p => p.id));
+        const unique = uniqueById(raw);                 // ✅ mirror Firestore exactly (no duplicates)
+        setPets(unique);
+        setSelectedPetIds(unique.map(p => p.id));       // ✅ default to all pets in Firestore
     }
 
     useEffect(() => {
@@ -113,7 +115,8 @@ export default function IndividualBookDaycarePage() {
             const dropOffMap = data.dropOffTimesDaycare || {};
             const weekday = new Date().toLocaleDateString('en-US', { weekday: 'long' });
 
-            const options = (dropOffMap[weekday] || []).slice().sort((a: string, b: string) => {
+            // ✅ mirror Firestore times but de-dup UI list
+            const options = uniq<string>(dropOffMap[weekday] || []).slice().sort((a: string, b: string) => {
                 const toMinutes = (time: string) => {
                     const [hourMin, period] = time.split(' ');
                     const [hourStr, minuteStr] = hourMin.split(':');
@@ -174,7 +177,6 @@ export default function IndividualBookDaycarePage() {
             setIsLoading(false);
         });
     }, [locale, router, businessId, waiverRequired]);
-
     useEffect(() => {
         async function recalculateDropOffOptions() {
             if (!selectedDate) return;
@@ -187,8 +189,8 @@ export default function IndividualBookDaycarePage() {
             const dropOffMap = data.dropOffTimesDaycare || {};
             const weekday = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
 
-            // Sort all time options into chronological order
-            const options: string[] = (dropOffMap[weekday] || []).slice().sort((a: string, b: string) => {
+            // ✅ de-dup & sort times for UI (mirrors Firestore content)
+            const options: string[] = uniq<string>(dropOffMap[weekday] || []).slice().sort((a: string, b: string) => {
                 const toMinutes = (time: string) => {
                     const [hourMin, period] = time.split(' ');
                     const [hourStr, minuteStr] = hourMin.split(':');
@@ -263,7 +265,7 @@ export default function IndividualBookDaycarePage() {
             (b) =>
                 b.date.toDateString() === selectedDate.toDateString() &&
                 b.dropOffTime === selectedTime &&
-                JSON.stringify(b.petIds.sort()) === JSON.stringify(selectedPetIds.slice().sort())
+                JSON.stringify(b.petIds.slice().sort()) === JSON.stringify(selectedPetIds.slice().sort())
         );
         if (exists) {
             alert(t('duplicate_daycare_message'));
@@ -280,7 +282,7 @@ export default function IndividualBookDaycarePage() {
             setPendingDraft(newDraft);
             setShowGroomingPrompt(true);
         } else {
-            setDraftBookings((prev) => [...prev, newDraft]); // ✅ Only add draft if no grooming
+            setDraftBookings((prev) => [...prev, newDraft]);
             resetFormAfterDraft();
         }
     }
@@ -288,7 +290,7 @@ export default function IndividualBookDaycarePage() {
     function resetFormAfterDraft() {
         setSelectedTime('');
         setDropOffOptions([]);
-        setSelectedPetIds(pets.map(p => p.id));
+        setSelectedPetIds(pets.map(p => p.id)); // ✅ mirror Firestore (all pets selected)
     }
 
     async function submitBooking() {
@@ -314,9 +316,7 @@ export default function IndividualBookDaycarePage() {
             const realtimeKey = reservationId;
 
             const petStatuses: Record<string, string> = {};
-            booking.petIds.forEach(petId => {
-                petStatuses[petId] = 'pending';
-            });
+            booking.petIds.forEach(petId => { petStatuses[petId] = 'pending'; });
 
             const groomingForReservation = serializeGroomingSelections(groomingSelections);
 
@@ -395,7 +395,6 @@ export default function IndividualBookDaycarePage() {
             }
         }
     }
-
     return (
         <div className="min-h-screen bg-[color:var(--color-background)] px-4 py-6 text-[color:var(--color-foreground)]">
             <div className="w-full max-w-xl mx-auto space-y-6">
@@ -427,9 +426,7 @@ export default function IndividualBookDaycarePage() {
                                 selected={selectedDate}
                                 onChange={(date: Date | null) => {
                                     setSelectedDate(date);
-                                    if (date && userId) {
-                                        checkForExistingReservation(date, userId);
-                                    }
+                                    if (date && userId) checkForExistingReservation(date, userId);
                                 }}
                                 dateFormat="MM/dd/yyyy"
                                 className="w-full max-w-xs border p-2 rounded text-center text-sm"
@@ -455,7 +452,7 @@ export default function IndividualBookDaycarePage() {
                             </div>
                         )}
 
-                        {/* ✅ Pet Selection */}
+                        {/* ✅ Pet Selection (UI mirrors Firestore via uniqueById) */}
                         <div className="flex flex-col items-start space-y-2 w-full max-w-xs">
                             <label className="font-semibold w-full text-center text-sm">{t('select_pets')}</label>
                             <div className="flex flex-col space-y-2 w-full">
@@ -466,11 +463,9 @@ export default function IndividualBookDaycarePage() {
                                             checked={selectedPetIds.includes(pet.id)}
                                             onChange={(e) => {
                                                 if (e.target.checked) {
-                                                    setSelectedPetIds((prev) => [...prev, pet.id]);
+                                                    setSelectedPetIds((prev) => uniq([...prev, pet.id]));
                                                 } else {
-                                                    setSelectedPetIds((prev) =>
-                                                        prev.filter((id) => id !== pet.id)
-                                                    );
+                                                    setSelectedPetIds((prev) => prev.filter((id) => id !== pet.id));
                                                 }
                                             }}
                                         />
@@ -530,7 +525,6 @@ export default function IndividualBookDaycarePage() {
                                             <p><strong>⏰</strong> {booking.dropOffTime}</p>
                                             <p><strong>🐶</strong> {petNames}</p>
 
-                                            {/* ✅ Show grooming selections from draft */}
                                             {hasGrooming && (
                                                 <p><strong>🛁</strong>{' '}
                                                     {booking.petIds.map((petId) => {
@@ -563,7 +557,6 @@ export default function IndividualBookDaycarePage() {
                                     if (hasExistingReservation || isSubmitting) return;
 
                                     setIsSubmitting(true);
-
                                     await submitBooking();
 
                                     // ✅ Clear UI state after successful submission
@@ -574,7 +567,6 @@ export default function IndividualBookDaycarePage() {
                                     setSelectedPetIds(pets.map((p) => p.id));
 
                                     alert(t('submission_success'));
-
                                     setIsSubmitting(false);
                                 }}
                                 className={`w-full max-w-xs text-white py-3 rounded transition text-sm ${hasExistingReservation || isSubmitting
@@ -595,21 +587,18 @@ export default function IndividualBookDaycarePage() {
                         <div className="bg-white rounded-lg p-6 shadow-md max-w-sm w-full">
                             <p className="text-sm mb-4">{t('grooming_prompt_message')}</p>
                             <div className="flex justify-end gap-4">
-                                {/* ✅ YES */}
+                                {/* YES */}
                                 <button
                                     onClick={() => {
                                         if (pendingDraft) {
-                                            // ensure grooming selections exist for each pet
                                             setGroomingSelections((prev: Record<string, Set<string>>) => {
                                                 const updated = { ...prev };
                                                 pendingDraft.petIds.forEach((petId: string) => {
-                                                    if (!updated[petId]) {
-                                                        updated[petId] = new Set();
-                                                    }
+                                                    if (!updated[petId]) updated[petId] = new Set();
                                                 });
                                                 return updated;
                                             });
-                                            setShowGroomingUI(true); // keep draft until grooming is added
+                                            setShowGroomingUI(true);
                                         }
                                         setShowGroomingPrompt(false);
                                     }}
@@ -618,23 +607,17 @@ export default function IndividualBookDaycarePage() {
                                     {t('yes')}
                                 </button>
 
-                                {/* ✅ NO */}
+                                {/* NO */}
                                 <button
                                     onClick={() => {
                                         if (pendingDraft) {
-                                            // 🧹 Clear any grooming selections for these pets
                                             setGroomingSelections((prev) => {
                                                 const updated = { ...prev };
-                                                pendingDraft.petIds.forEach((petId) => {
-                                                    delete updated[petId];
-                                                });
+                                                pendingDraft.petIds.forEach((petId) => { delete updated[petId]; });
                                                 return updated;
                                             });
-
-                                            // ✅ Finalize the draft
                                             setDraftBookings((prev) => [...prev, pendingDraft]);
                                         }
-
                                         resetFormAfterDraft();
                                         setShowGroomingPrompt(false);
                                         setPendingDraft(null);
@@ -660,7 +643,6 @@ export default function IndividualBookDaycarePage() {
                                 {t('waiver_required_message')}
                             </p>
 
-                            {/* ✅ Checkbox agreement */}
                             <div className="flex items-start space-x-2">
                                 <input
                                     type="checkbox"
@@ -674,7 +656,6 @@ export default function IndividualBookDaycarePage() {
                                 </label>
                             </div>
 
-                            {/* ✅ Confirm button only */}
                             <div className="flex justify-end">
                                 <button
                                     onClick={async () => {
