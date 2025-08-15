@@ -10,7 +10,7 @@ export default function DogFoodIngredientsToAvoid() {
     const title =
         'Dog Food Ingredients To Avoid: A Practical, Evidence-Informed Guide for Pet Owners';
     const date = 'August 2, 2025';
-    const categories = ['owner', 'vet'] as const;
+    const categories = ['owner', 'vet', 'food'] as const;
 
     // Use the exact labels object from prior posts (unchanged keys/labels)
     const categoryLabels: Record<string, string> = {

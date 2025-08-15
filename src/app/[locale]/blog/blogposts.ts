@@ -26,7 +26,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'Complete, fully cited guide to decoding dog-food labels and avoiding problem ingredients—covering regulations, processing effects, life-stage specifics, DCM context, packaging exposures, and a printable label-audit checklist.',
         component: () => import('./posts/dog-food-ingredients-to-avoid'),
-        categories: ['owner', 'vet'],
+        categories: ['owner', 'vet', 'food'],
     },
     {
         slug: 'do-labrador-retrievers-make-good-therapy-dogs',
