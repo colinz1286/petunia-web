@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'dog-food-ingredients-to-avoid',
+        title: 'Dog Food Ingredients to Avoid: An Evidence-Based Checklist',
+        date: 'August 2, 2025',
+        description:
+            'Complete, fully cited guide to decoding dog-food labels and avoiding problem ingredients—covering regulations, processing effects, life-stage specifics, DCM context, packaging exposures, and a printable label-audit checklist.',
+        component: () => import('./posts/dog-food-ingredients-to-avoid'),
+        categories: ['owner', 'vet'],
+    },
+    {
         slug: 'do-labrador-retrievers-make-good-therapy-dogs',
         title: 'Do Labrador Retrievers Make Good Therapy Dogs? An Evidence-Informed Guide for Owners, Handlers & Facilities',
         date: 'August 3, 2025',
