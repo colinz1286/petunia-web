@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'dog-daycare-incident-reports',
+        title: 'Dog Daycare Incident Reports: Read, Respond, and Resolve (Templates Inside)',
+        date: 'July 23, 2025',
+        description:
+            'A calm, step-wise guide to reading daycare incident reports, triaging injuries, communicating with the facility, documenting expenses, and choosing a resolution path—plus copy/paste templates and a vet-visit decision flow.',
+        component: () => import('./posts/dog-daycare-incident-reports'),
+        categories: ['owner', 'daycare'],
+    },
+    {
         slug: 'how-many-dogs-per-attendant',
         title: 'How Many Dogs per Attendant? Daycare Ratios, Supervision & a Tour Checklist',
         date: 'July 24, 2025',
