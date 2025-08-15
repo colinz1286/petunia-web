@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'do-kennels-accept-titer-tests',
+        title: 'Do Kennels Accept Titer Tests? State Rules, Facility Policies & What to Ask',
+        date: 'July 30, 2025',
+        description:
+            'Plain-language guide to using antibody titer tests for boarding/daycare: what titers actually show, U.S. rabies-law realities, when facilities say yes/no, examples from state and city rules, how to ask your kennel, and printable checklists.',
+        component: () => import('./posts/do-kennels-accept-titer-tests'),
+        categories: ['owner', 'boarding'],
+    },
+    {
         slug: 'dog-daycare-and-boarding-laws-by-state-2025',
         title: 'Dog Daycare & Boarding Laws by State (2025 Owner’s Guide)',
         date: 'August 1, 2025',
