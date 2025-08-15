@@ -9,7 +9,7 @@ export default function CanIntactDogsGoToDaycare() {
 
   const title =
     'Can Intact Dogs Go to Daycare? Policies, Behavior Risks & Alternatives';
-  const date = 'July 26, 2025';
+  const date = 'July 25, 2025';
   const categories = ['owner', 'daycare'] as const;
 
   const categoryLabels: Record<string, string> = {

@@ -20,9 +20,18 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-many-dogs-per-attendant',
+        title: 'How Many Dogs per Attendant? Daycare Ratios, Supervision & a Tour Checklist',
+        date: 'July 24, 2025',
+        description:
+            'What “ratio” really means (and what it doesn’t): staff-to-dog ratios, line-of-sight supervision, risk variables, training standards, laws & guidance, a conditions-based comparison table, and a 15-question owner tour checklist.',
+        component: () => import('./posts/how-many-dogs-per-attendant'),
+        categories: ['owner', 'daycare'],
+    },
+    {
         slug: 'can-intact-dogs-go-to-daycare',
         title: 'Can Intact Dogs Go to Daycare? Policies, Behavior Risks & Alternatives',
-        date: 'July 26, 2025',
+        date: 'July 25, 2025',
         description:
             'Respectful, evidence-informed guidance for families with intact dogs: why many daycares restrict admission, behavior and hormonal realities, estrus safety, insurance/operations drivers, better alternatives, planning around heat cycles, and a practical weekly enrichment plan.',
         component: () => import('./posts/can-intact-dogs-go-to-daycare'),
