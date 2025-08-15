@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'boarding-when-your-dog-has-special-needs-reactivity-seizures-diabetes',
+        title: 'Boarding When Your Dog Has Special Needs (Reactivity, Seizures, Diabetes)',
+        date: 'July 27, 2025',
+        description:
+            'Evidence-informed boarding plan for behaviorally or medically complex dogs—reactivity/anxiety, seizure disorders, diabetes, cardiac/renal disease, allergies, mobility, seniors. Includes decision trees, packing lists, staff scripts, and printable logs.',
+        component: () => import('./posts/boarding-when-your-dog-has-special-needs-reactivity-seizures-diabetes'),
+        categories: ['owner', 'boarding'],
+    },
+    {
         slug: 'quiet-nights-in-boarding-noise-lighting-and-rest',
         title: 'Quiet Nights in Boarding: Noise, Lighting & Rest—What the Research Says',
         date: 'July 28, 2025',
