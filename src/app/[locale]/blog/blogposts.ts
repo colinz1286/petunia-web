@@ -22,7 +22,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'can-intact-dogs-go-to-daycare',
         title: 'Can Intact Dogs Go to Daycare? Policies, Behavior Risks & Alternatives',
-        date: 'July 27, 2025',
+        date: 'July 26, 2025',
         description:
             'Respectful, evidence-informed guidance for families with intact dogs: why many daycares restrict admission, behavior and hormonal realities, estrus safety, insurance/operations drivers, better alternatives, planning around heat cycles, and a practical weekly enrichment plan.',
         component: () => import('./posts/can-intact-dogs-go-to-daycare'),
