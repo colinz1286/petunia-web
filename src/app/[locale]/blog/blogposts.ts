@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'dog-daycare-and-boarding-laws-by-state-2025',
+        title: 'Dog Daycare & Boarding Laws by State (2025 Owner’s Guide)',
+        date: 'August 1, 2025',
+        description:
+            'Plain-English, owner-first guide to how U.S. daycare and boarding rules work, how to verify licenses fast, what waivers and consumer notices mean, what inspections usually cover, and where to find official state or city links (with examples).',
+        component: () => import('./posts/dog-daycare-and-boarding-laws-by-state-2025'),
+        categories: ['owner', 'boarding'],
+    },
+    {
         slug: 'dog-food-ingredients-to-avoid',
         title: 'Dog Food Ingredients to Avoid: An Evidence-Based Checklist',
         date: 'August 2, 2025',
