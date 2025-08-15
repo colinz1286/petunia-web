@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'quiet-nights-in-boarding-noise-lighting-and-rest',
+        title: 'Quiet Nights in Boarding: Noise, Lighting & Rest—What the Research Says',
+        date: 'July 28, 2025',
+        description:
+            'Evidence-based overnight blueprint for kennels: realistic decibel ranges, lighting/circadian guidance, quiet-hour protocols, enrichment for sleep, measurement plans, and safety notes for staff and dogs.',
+        component: () => import('./posts/quiet-nights-in-boarding-noise-lighting-and-rest'),
+        categories: ['owner', 'boarding'],
+    },
+    {
         slug: 'dog-daycare-and-boarding-waivers-explained',
         title: 'Dog Daycare & Boarding Waivers Explained: Real Scenarios, Your Rights & Smart Next Steps',
         date: 'July 29, 2025',
