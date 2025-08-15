@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'dog-daycare-and-boarding-waivers-explained',
+        title: 'Dog Daycare & Boarding Waivers Explained: Real Scenarios, Your Rights & Smart Next Steps',
+        date: 'July 29, 2025',
+        description:
+            'Plain-English deep dive into pet-care waivers—what you’re signing, common clauses decoded, negligence vs. gross negligence, state consumer-notice rules, and stepwise owner templates for calm, effective resolution after an incident.',
+        component: () => import('./posts/dog-daycare-and-boarding-waivers-explained'),
+        categories: ['owner', 'boarding'],
+    },
+    {
         slug: 'do-kennels-accept-titer-tests',
         title: 'Do Kennels Accept Titer Tests? State Rules, Facility Policies & What to Ask',
         date: 'July 30, 2025',
