@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'do-german-shepherds-shed-a-lot',
+        title: 'Do German Shepherds Shed a Lot? Coat Science, Grooming Plans, and Real-World Home Strategies',
+        date: 'August 16, 2025',
+        description:
+            'A practical, evidence-informed guide to German Shepherd shedding: double-coat basics, seasonal coat blows, step-by-step grooming (slicker/rake/HV-dry), bathing cadence, skin/coat nutrition, allergy-friendly home routines, vet red flags, and printable checklists.',
+        component: () => import('./posts/do-german-shepherds-shed-a-lot'),
+        categories: ['owner', 'breed_specific_guides'],
+    },
+    {
         slug: 'dog-daycare-incident-reports',
         title: 'Dog Daycare Incident Reports: Read, Respond, and Resolve (Templates Inside)',
         date: 'July 23, 2025',
