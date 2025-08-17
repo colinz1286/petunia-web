@@ -22,7 +22,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'how-much-does-a-german-shepherd-cost',
         title: 'How Much Does a German Shepherd Cost? Real Purchase Prices, Regional Costs, and the True Cost of Ownership',
-        date: 'August 16, 2025',
+        date: 'July 22, 2025',
         description:
             'A German Shepherd’s purchase price is the smallest line on a much bigger budget. This evidence-informed guide breaks down acquisition costs, first-year setup, food and medical care, insurance, training, grooming, dog-walking/daycare/boarding fees, and regional price differences across the U.S. (plus UK/Canada/Australia). Includes realistic monthly/annual budgets, lifetime scenarios, and cost-control tactics—without cutting corners on health or welfare.',
         component: () => import('./posts/how-much-does-a-german-shepherd-cost'),
@@ -31,7 +31,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'how-long-do-german-shepherds-live',
         title: 'How Long Do German Shepherds Live? Longevity, Healthspan, and a Practical Owner Playbook',
-        date: 'August 15, 2025',
+        date: 'August 14, 2025',
         description:
             'A data-informed lifespan guide for German Shepherd Dogs: averages and ranges, what shortens life, and what extends healthspan—weight control, nutrition, exercise, dental care, parasite prevention, GDV risk, genetics (hips, elbows, DM, EPI), and senior plans—with checklists and sources.',
         component: () => import('./posts/how-long-do-german-shepherds-live'),
