@@ -20,16 +20,6 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
-        slug: 'how-much-does-a-german-shepherd-cost',
-        title: 'How Much Does a German Shepherd Cost? Real Purchase Prices, Regional Costs, and the True Cost of Ownership',
-        date: 'July 22, 2025',
-        description:
-            'A German Shepherd’s purchase price is the smallest line on a much bigger budget. This evidence-informed guide breaks down acquisition costs, first-year setup, food and medical care, insurance, training, grooming, dog-walking/daycare/boarding fees, and regional price differences across the U.S. (plus UK/Canada/Australia). Includes realistic monthly/annual budgets, lifetime scenarios, and cost-control tactics—without cutting corners on health or welfare.',
-        component: () =>
-            import('./posts/how-much-does-a-german-shepherd-cost').then(m => ({ default: m.default })),
-        categories: ['owner', 'breed_specific_guides'],
-    },
-    {
         slug: 'how-long-do-german-shepherds-live',
         title: 'How Long Do German Shepherds Live? Longevity, Healthspan, and a Practical Owner Playbook',
         date: 'August 14, 2025',
