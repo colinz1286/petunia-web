@@ -22,7 +22,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'how-long-do-german-shepherds-live',
         title: 'How Long Do German Shepherds Live? Longevity, Healthspan, and a Practical Owner Playbook',
-        date: 'August 14, 2025',
+        date: 'August 15, 2025',
         description:
             'A data-informed lifespan guide for German Shepherd Dogs: averages and ranges, what shortens life, and what extends healthspan—weight control, nutrition, exercise, dental care, parasite prevention, GDV risk, genetics (hips, elbows, DM, EPI), and senior plans—with checklists and sources.',
         component: () => import('./posts/how-long-do-german-shepherds-live'),
