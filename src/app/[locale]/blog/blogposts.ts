@@ -27,6 +27,7 @@ export const blogPosts: BlogPostEntry[] = [
             'A data-informed lifespan guide for German Shepherd Dogs: averages and ranges, what shortens life, and what extends healthspan—weight control, nutrition, exercise, dental care, parasite prevention, GDV risk, genetics (hips, elbows, DM, EPI), and senior plans—with checklists and sources.',
         component: () => import('./posts/how-long-do-german-shepherds-live'),
         categories: ['owner', 'breed_specific_guides'],
+         breed: 'German Shepherd',
     },
     {
         slug: 'do-german-shepherds-shed-a-lot',
@@ -36,6 +37,7 @@ export const blogPosts: BlogPostEntry[] = [
             'A practical, evidence-informed guide to German Shepherd shedding: double-coat basics, seasonal coat blows, step-by-step grooming (slicker/rake/HV-dry), bathing cadence, skin/coat nutrition, allergy-friendly home routines, vet red flags, and printable checklists.',
         component: () => import('./posts/do-german-shepherds-shed-a-lot'),
         categories: ['owner', 'breed_specific_guides'],
+        breed: 'German Shepherd',
     },
     {
         slug: 'dog-daycare-incident-reports',
