@@ -116,7 +116,7 @@ export default function WhatHealthProblemsAreCommonInGermanShepherds() {
             Shepherds are built to work. Their bodies and brains thrive with <strong>structured exercise, training,
             and lean body condition</strong>. The same drive and athleticism, however, magnify the consequences of
             poor socialization, excessive jump/impact while growth plates are open, or unrecognized genetic
-            predispositions. Your job is not to memorize every disease—it's to <em>run a system</em>:
+            predispositions. Your job is not to memorize every disease—it&rsquo;s to <em>run a system</em>:
           </p>
           <ul className="list-disc pl-5 space-y-1 mb-3">
             <li><strong>Front-load selection:</strong> For puppies, favor lines with documented <em>hips/elbows</em> (OFA/PennHIP &amp; OFA elbows), and discuss <em>DM</em> genotyping policy. For adults or rescues, get a thorough orthopedic and general baseline exam.</li>
