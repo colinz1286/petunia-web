@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'are-german-shepherds-aggressive-or-dangerous',
+        title: 'Are German Shepherds Aggressive or Dangerous? A Data-Informed Owner’s Guide to Temperament, Risk, and Real-World Management',
+        date: 'July 21, 2025',
+        description:
+            'A balanced, evidence-informed look at German Shepherd temperament and bite risk—what the data do and do not say; how genetics, early socialization, training methods, health, and management shape behavior; line differences; scenario-based prevention; operator-grade checklists; and when to seek professional help.',
+        component: () => import('./posts/are-german-shepherds-aggressive-or-dangerous'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'German Shepherd',
+    },
+    {
         slug: 'how-much-does-a-german-shepherd-cost',
         title: 'How Much Does a German Shepherd Cost? Real Purchase Prices, Regional Costs, and the True Cost of Ownership',
         date: 'July 22, 2025',
@@ -27,6 +37,7 @@ export const blogPosts: BlogPostEntry[] = [
             'A German Shepherd’s purchase price is the smallest line on a much bigger budget. This evidence-informed guide breaks down acquisition costs, first-year setup, food and medical care, insurance, training, grooming, dog-walking/daycare/boarding fees, and regional price differences across the U.S. (plus UK/Canada/Australia). Includes realistic monthly/annual budgets, lifetime scenarios, and cost-control tactics—without cutting corners on health or welfare.',
         component: () => import('./posts/how-much-does-a-german-shepherd-cost'),
         categories: ['owner', 'breed_specific_guides'],
+        breed: 'German Shepherd',
     },
     {
         slug: 'what-type-of-dog-is-best-for-me',
