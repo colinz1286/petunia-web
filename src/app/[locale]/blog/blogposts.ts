@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'what-type-of-dog-is-best-for-me',
+        title: 'What Type of Dog Is Best for Me? A Practical, Evidence-Informed Owner Guide',
+        date: 'August 17, 2025',
+        description:
+            'A step-by-step framework to choose a dog that truly fits your life—time, space, energy, grooming, health risks, and budget—with lifestyle archetypes, printable checklists, and vetted sources.',
+        component: () => import('./posts/what-type-of-dog-is-best-for-me'),
+        categories: ['owner'],
+    },
+    {
         slug: 'how-long-do-german-shepherds-live',
         title: 'How Long Do German Shepherds Live? Longevity, Healthspan, and a Practical Owner Playbook',
         date: 'August 15, 2025',
