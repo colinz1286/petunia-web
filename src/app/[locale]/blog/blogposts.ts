@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'what-health-problems-are-common-in-german-shepherds',
+        title:
+            'What Health Problems Are Common in German Shepherds? A Practical, Evidence-Informed Owner’s Guide (Screens, Prevention & When to See the Vet)',
+        date: 'July 18, 2025',
+        description:
+            'A deep, owner-friendly dive into common GSD health issues—hips/elbows, spine (lumbosacral stenosis), degenerative myelopathy, GI diseases (EPI, IBD, megaesophagus), bloat/GDV, skin & immune disease (atopy, pyoderma, perianal fistulas), eye disease (pannus), cancers (e.g., hemangiosarcoma), and rarer conditions (pituitary dwarfism)—plus prevention, screening timelines, and red-flag checklists.',
+        component: () => import('./posts/what-health-problems-are-common-in-german-shepherds'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'German Shepherd',
+    },
+    {
         slug: 'are-german-shepherds-good-with-kids',
         title: 'Are German Shepherds Good Family Dogs—and Good with Kids? A Practical, Evidence-Informed Owner Guide',
         date: 'July 19, 2025',
