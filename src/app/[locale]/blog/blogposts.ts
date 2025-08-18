@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-much-does-a-german-shepherd-cost-to-buy-and-own',
+        title: 'How Much Does a German Shepherd Cost to Buy and Own? A Full, Evidence-Informed Budget Guide',
+        date: 'August 17, 2025',
+        description:
+            'Purchase vs. adoption costs, first-year setup, realistic monthly food + preventives, vet/dental/orthopedic realities, insurance, daycare/boarding, lifetime budgets, and cost-control tactics.',
+        component: () =>
+            import('./posts/how-much-does-a-german-shepherd-cost-to-buy-and-own') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'German Shepherd',
+    },
+    {
         slug: 'how-long-do-german-shepherds-live',
         title: 'How Long Do German Shepherds Live? Longevity, Healthspan, and a Practical Owner Playbook',
         date: 'August 15, 2025',
@@ -27,7 +38,7 @@ export const blogPosts: BlogPostEntry[] = [
             'A data-informed lifespan guide for German Shepherd Dogs: averages and ranges, what shortens life, and what extends healthspan—weight control, nutrition, exercise, dental care, parasite prevention, GDV risk, genetics (hips, elbows, DM, EPI), and senior plans—with checklists and sources.',
         component: () => import('./posts/how-long-do-german-shepherds-live'),
         categories: ['owner', 'breed_specific_guides'],
-         breed: 'German Shepherd',
+        breed: 'German Shepherd',
     },
     {
         slug: 'do-german-shepherds-shed-a-lot',
