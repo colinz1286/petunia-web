@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'are-german-shepherds-good-with-kids',
+        title: 'Are German Shepherds Good Family Dogs—and Good with Kids? A Practical, Evidence-Informed Owner Guide',
+        date: 'July 19, 2025',
+        description:
+            'A calm, step-by-step framework to decide whether a German Shepherd fits a family with children—temperament, age choices, socialization, home setup (zones, gates, gear), training plans, play rules, visitor SOPs, red flags, and printable checklists.',
+        component: () => import('./posts/are-german-shepherds-good-with-kids'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'German Shepherd',
+    },
+    {
         slug: 'are-german-shepherds-aggressive-or-dangerous',
         title: 'Are German Shepherds Aggressive or Dangerous? A Data-Informed Owner’s Guide to Temperament, Risk, and Real-World Management',
         date: 'July 21, 2025',
