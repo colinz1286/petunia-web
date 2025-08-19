@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'good-housekeeping-dog-food-roundup-analysis-2025',
+        title: 'Does Good Housekeeping\'s "9 Best Dog Food Brands" Use Real Science? A Factual Review and Owner\'s Guide (Updated Aug 2025)',
+        date: 'August 19, 2025',
+        description:
+            'Source-backed analysis of Good Housekeeping’s 2025 “9 Best Dog Food Brands” roundup: what their methodology includes (and doesn’t), what counts as science in pet nutrition, AAFCO/WSAVA context, and an owner workflow for evidence-based diet selection.',
+        component: () => import('./posts/good-housekeeping-dog-food-roundup-analysis-2025'),
+        categories: ['owner', 'food'],
+    },
+    {
         slug: 'fda-raw-pet-food-advisory-july-2025',
         title: 'FDA Advises: Do Not Feed Certain Darwin’s Raw Dog Food Lots; FDA Warning Letter to Answers Pet Food — A Practical Owner’s Guide to Risks, Symptoms, Cleanup, Reporting & Refunds',
         date: 'August 19, 2025',
