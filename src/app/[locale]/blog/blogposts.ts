@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'where-do-rescue-dogs-come-from',
+        title:
+            'Where Do Rescue Dogs Come From? A Data-Only, U.S.-Focused Overview of Intake Sources (Strays, Owner Surrenders, Transfers, Seizures, and More)',
+        date: 'July 7, 2025',
+        description:
+            'Factual, source-backed origins of U.S. rescue dogs: strays, owner surrenders, transfers, confiscations/hoarding, born-in-care, and imports; methods and limitations included.',
+        component: () => import('./posts/where-do-rescue-dogs-come-from'),
+        categories: ['rescue', 'owner', 'breeder'],
+    },
+    {
         slug: 'breeder-questions-responsible-answers',
         title: 'Questions Responsible Breeders Should Be Ready to Answer (and Prove): A Practical, Evidence-Informed Foundation for Puppy Buyers',
         date: 'June 12, 2025',
