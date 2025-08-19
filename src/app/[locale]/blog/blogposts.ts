@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'breeder-questions-responsible-answers',
+        title: 'Questions Responsible Breeders Should Be Ready to Answer (and Prove): A Practical, Evidence-Informed Foundation for Puppy Buyers',
+        date: 'June 12, 2025',
+        description:
+            'Source-backed foundation for breeders: multi-modal health testing (OFA/CHIC, BVA, PennHIP), Brucella canis screening, pregnancy/whelping/neo care, early socialization and temperament matching, vaccination/deworming/microchip records, contracts & pet-purchase laws, genetic diversity (COI/EBV), and lifetime support.',
+        component: () => import('./posts/breeder-questions-responsible-answers'),
+        categories: ['breeder', 'owner'],
+    },
+    {
         slug: 'fun-facts-about-german-shepherds',
         title: 'Fun Facts About German Shepherds: History, Jobs, Coats, Training, and Everyday Life (With Sources)',
         date: 'August 19, 2025',
