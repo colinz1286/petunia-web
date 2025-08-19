@@ -20,8 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'bringing-home-a-new-puppy-first-two-weeks',
+        title: 'Bringing Home a New Puppy: A Practical, Evidence-Informed Guide to the First Two Weeks',
+        date: 'August 19, 2025',
+        description:
+            'A step-by-step, vet-aligned plan for the first 14 days: potty training, crate & sleep routines, safe early socialization before full vaccinations, leash basics, alone-time skills, and health checklists.',
+        component: () => import('./posts/bringing-home-a-new-puppy-first-two-weeks'),
+        categories: ['owner', 'train'],
+    },
+    {
         slug: 'good-housekeeping-dog-food-roundup-analysis-2025',
-        title: 'Does Good Housekeeping\'s "9 Best Dog Food Brands" Use Real Science? A Factual Review and Owner\'s Guide (Updated Aug 2025)',
+        title: 'Does Good Housekeeping\'s "9 Best Dog Food Brands" Use Real Science? A Factual Review and Owner\'s Guide',
         date: 'August 19, 2025',
         description:
             'Source-backed analysis of Good Housekeeping’s 2025 “9 Best Dog Food Brands” roundup: what their methodology includes (and doesn’t), what counts as science in pet nutrition, AAFCO/WSAVA context, and an owner workflow for evidence-based diet selection.',
