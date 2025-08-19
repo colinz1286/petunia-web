@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'fun-facts-about-german-shepherds',
+        title: 'Fun Facts About German Shepherds: History, Jobs, Coats, Training, and Everyday Life (With Sources)',
+        date: 'August 19, 2025',
+        description:
+            'Long-form, source-backed fun facts about the German Shepherd Dog: origins (von Stephanitz), work roles (guide, SAR, detection), coat types and colors, Panda/KIT genetics, training and exercise needs, health awareness (hips/elbows/DM), and practical life tips.',
+        component: () => import('./posts/fun-facts-about-german-shepherds'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'German Shepherd',
+    },
+    {
         slug: 'bringing-home-a-new-puppy-first-two-weeks',
         title: 'Bringing Home a New Puppy: A Practical, Evidence-Informed Guide to the First Two Weeks',
         date: 'August 19, 2025',
