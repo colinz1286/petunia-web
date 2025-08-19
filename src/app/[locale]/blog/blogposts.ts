@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-to-choose-the-right-dog-food',
+        title: 'How to Choose the Right Dog Food',
+        date: 'July 14, 2025',
+        description:
+            'A complete, evidence-informed owner’s guide to label literacy, portion math, sensitivities and elimination trials, exercise fueling, grain vs. grain-free context, storage/recalls, and operator-grade checklists.',
+        component: () => import('./posts/how-to-choose-the-right-dog-food'),
+        categories: ['owner', 'food'],
+    },
+    {
         slug: 'how-to-train-a-dog',
         title:
             'How to Train a Dog: A Humane, Evidence-Informed Playbook (Foundation Skills, Real-World Routines, and Behavior Change that Lasts)',
