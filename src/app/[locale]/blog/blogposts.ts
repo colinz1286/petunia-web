@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'fda-raw-pet-food-advisory-july-2025',
+        title: 'FDA Advises: Do Not Feed Certain Darwin’s Raw Dog Food Lots; FDA Warning Letter to Answers Pet Food — A Practical Owner’s Guide to Risks, Symptoms, Cleanup, Reporting & Refunds',
+        date: 'August 19, 2025',
+        description:
+            'Evidence-based summary of FDA’s July 2025 Darwin’s advisory (E. coli O157:H7 and Salmonella) and FDA Warning Letter to Answers Pet Food, plus human/pet symptoms, safe cleanup, reporting steps, and refund/return guidance.',
+        component: () => import('./posts/fda-raw-pet-food-advisory-july-2025'),
+        categories: ['owner', 'food'],
+    },
+    {
         slug: 'how-to-choose-the-right-dog-food',
         title: 'How to Choose the Right Dog Food',
         date: 'July 14, 2025',
