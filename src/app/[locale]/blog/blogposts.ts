@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-to-select-a-dog-to-adopt',
+        title:
+            'How to Select a Dog to Adopt: A Practical, Evidence-Informed Playbook (Lifestyle Fit, Behavior, Health, and a 30-Day Success Plan)',
+        date: 'August 18, 2025',
+        description:
+            'Step-by-step adoption guide covering lifestyle fit, temperament evaluation, health and age trade-offs, a structured meet-and-greet, and a 30-day onboarding plan with checklists.',
+        component: () => import('./posts/how-to-select-a-dog-to-adopt'),
+        categories: ['owner', 'rescue'],
+    },
+    {
         slug: 'what-health-problems-are-common-in-german-shepherds',
         title:
             'What Health Problems Are Common in German Shepherds? A Practical, Evidence-Informed Owner’s Guide (Screens, Prevention & When to See the Vet)',
