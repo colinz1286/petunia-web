@@ -59,6 +59,8 @@ export default function IndividualSendClientRequestPage() {
     const [servicesOffered, setServicesOffered] = useState<string[]>([]);
     const [isLoadingBusinessInfo, setIsLoadingBusinessInfo] = useState(true);
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const checkClientStatus = useCallback(async (uid: string) => {
         try {
             const clientDoc = await getDoc(doc(db, 'userApprovedBusinesses', businessId, 'clients', uid));
@@ -106,6 +108,7 @@ export default function IndividualSendClientRequestPage() {
     }, [businessId]);
 
     const sendClientRequest = async () => {
+        setIsSubmitting(true);
         try {
             const businessSnap = await getDoc(doc(db, 'businesses', businessId));
             const ownerId = businessSnap.data()?.ownerId ?? '';
@@ -129,8 +132,11 @@ export default function IndividualSendClientRequestPage() {
 
             setShowSuccess(true);
             setHasRequestedAlready(true);
+            setShowConfirmation(false); // ✅ close the modal after success
         } catch (err: unknown) {
             setErrorMessage(t('error_sending_request') + ' ' + getErrorMessage(err));
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -212,24 +218,35 @@ export default function IndividualSendClientRequestPage() {
                         )}
                     </div>
                 )}
-
-                {/* Confirmation Dialog */}
+                {/* Confirmation Dialog (modal, mobile-safe) */}
                 {showConfirmation && (
-                    <div className="bg-white p-4 rounded shadow space-y-4 border">
-                        <p className="font-medium text-sm">{t('confirm_send_request_title')}</p>
-                        <div className="flex justify-between gap-3">
-                            <button
-                                onClick={() => sendClientRequest()}
-                                className="bg-[#2c4a30] bg-[var(--color-accent)] text-white px-4 py-2 rounded text-sm"
-                            >
-                                {t('yes_send_request_button', { defaultValue: 'Yes, send request' })}
-                            </button>
-                            <button
-                                onClick={() => setShowConfirmation(false)}
-                                className="text-red-600 underline text-sm"
-                            >
-                                {t('cancel_button')}
-                            </button>
+                    <div
+                        role="dialog"
+                        aria-modal="true"
+                        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]"
+                    >
+                        <div className="w-full max-w-md rounded-lg bg-white dark:bg-neutral-900 p-4 shadow-xl border">
+                            <p className="font-medium text-base mb-4">
+                                {t('confirm_send_request_title')}
+                            </p>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <button
+                                    onClick={sendClientRequest}
+                                    disabled={isSubmitting}
+                                    className="w-full px-4 py-2 rounded-md text-white font-semibold bg-[var(--color-accent)] hover:opacity-90 disabled:opacity-60"
+                                >
+                                    {isSubmitting ? t('sending', { defaultValue: 'Sending…' }) : t('yes_send_request_button', { defaultValue: 'Yes, Send Request' })}
+                                </button>
+
+                                <button
+                                    onClick={() => setShowConfirmation(false)}
+                                    disabled={isSubmitting}
+                                    className="w-full px-4 py-2 rounded-md border border-red-600 text-red-700 hover:bg-red-50 disabled:opacity-60"
+                                >
+                                    {t('cancel_button')}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}

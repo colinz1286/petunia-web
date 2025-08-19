@@ -14,5 +14,6 @@
   "loading_business_info": "Loading business information...",
   "services_offered_label": "Services Offered:",
   "error_sending_request": "There was an error sending your request.",
-  "unknown_user": "Unknown User"
+  "unknown_user": "Unknown User",
+  "sending": "Sending…"
 }
