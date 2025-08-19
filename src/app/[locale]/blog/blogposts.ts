@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'why-do-dogs-eat-grass',
+        title:
+            'Why Do Dogs Eat Grass? A Vet-Informed, Owner-Friendly Guide (Myths, What’s Normal vs Concerning, Risks, and What to Do)',
+        date: 'July 17, 2025',
+        description:
+            'Dogs grazing on grass is common and usually normal. This post explains the evidence, what’s normal vs concerning, real risks (chemicals, parasites, toxic plants), and a practical checklist-driven plan to manage it safely.',
+        component: () => import('./posts/why-do-dogs-eat-grass'),
+        categories: ['owner'],
+    },
+    {
         slug: 'how-to-select-a-dog-to-adopt',
         title:
             'How to Select a Dog to Adopt: A Practical, Evidence-Informed Playbook (Lifestyle Fit, Behavior, Health, and a 30-Day Success Plan)',
