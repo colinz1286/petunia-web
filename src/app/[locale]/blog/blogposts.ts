@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-to-train-a-dog',
+        title:
+            'How to Train a Dog: A Humane, Evidence-Informed Playbook (Foundation Skills, Real-World Routines, and Behavior Change that Lasts)',
+        date: 'July 16, 2025',
+        description:
+            'A complete, owner-friendly training system grounded in modern learning science and welfare: setup checklists, marker training, reinforcement strategy, leash skills, recall, impulse control, cooperative care, socialization, enrichment, and behavior first-aid.',
+        component: () => import('./posts/how-to-train-a-dog'),
+        categories: ['owner', 'train'],
+    },
+    {
         slug: 'why-do-dogs-eat-grass',
         title:
             'Why Do Dogs Eat Grass? A Vet-Informed, Owner-Friendly Guide (Myths, What’s Normal vs Concerning, Risks, and What to Do)',

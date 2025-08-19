@@ -20,7 +20,8 @@ const CATEGORY_MAP = {
   walker: 'Dog Walkers',
   breeder: 'Breeders',
   breed_specific_guides: 'Breed Specific Guides',
-  food: 'Food Guide'
+  food: 'Food Guide',
+  train: 'Training',
 } as const;
 
 type CategoryKey = keyof typeof CATEGORY_MAP;
@@ -30,7 +31,7 @@ const BREED_CATEGORY_KEY: CategoryKey = 'breed_specific_guides';
 // (button rows)
 const firstRow: readonly CategoryKey[] = ['boarding', 'owner', 'sitter'];
 const secondRow: readonly CategoryKey[] = ['rescue', 'vet', 'walker'];
-const thirdRow: readonly CategoryKey[] = ['breeder', 'food'];
+const thirdRow: readonly CategoryKey[] = ['breeder', 'food', 'train'];
 const fourthRow: readonly CategoryKey[] = [BREED_CATEGORY_KEY]; // dropdown row
 
 // ---- Helpers ----------------------------------------------------------------
