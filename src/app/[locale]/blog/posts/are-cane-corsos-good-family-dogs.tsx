@@ -254,7 +254,7 @@ export default function AreCaneCorsosGoodFamilyDogs() {
         <section id="socialization" className="mb-10">
           <h2 className="text-2xl font-semibold mb-3">Socialization &amp; Neutrality: The Right Kind of Exposure</h2>
           <p className="mb-3">
-            For a guardian breed, socialization does not mean greeting every person and dog. It means <strong>calm exposure without obligation</strong>. Puppy's first
+            For a guardian breed, socialization does not mean greeting every person and dog. It means <strong>calm exposure without obligation</strong>. Puppy&#39;s first
             year is time to show what everyday life looks like: strollers, wheelchairs, delivery drivers, kids playing ball, men with beards, umbrellas,
             lawn equipment, and polite ignoring of strangers. The puppy learns that these are background events, not problems to solve.
           </p>

@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'do-cane-corsos-have-health-issues',
+        title: 'Do Cane Corsos Have Health Issues? A Life-Stage Guide to Risks, Prevention, Realistic Costs, and Insurance Decisions',
+        date: 'August 10, 2025',
+        description:
+            'Life-stage health guide for Cane Corsos: growth and joints, skin/ears, eyes, cardiac, GI and bloat awareness, neurology, endocrine, dental, parasites, weight and nutrition, exercise programming, owner screening timeline, realistic U.S. cost ranges, and an insurance decision framework.',
+        component: () => import('./posts/do-cane-corsos-have-health-issues'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Cane Corso',
+    },
+    {
         slug: 'are-cane-corsos-good-family-dogs',
         title: 'Are Cane Corsos Good Family Dogs? A Practical, Evidence-Informed Guide by Life Stage, Household Type, and Training Commitment',
         date: 'August 20, 2025',
