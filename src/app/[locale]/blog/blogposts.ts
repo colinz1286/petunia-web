@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'do-dogs-only-see-black-and-white',
+        title: 'Do Dogs Only See Black and White? The Science of Canine Color, Motion, and Low-Light Vision',
+        date: 'July 19, 2025',
+        description:
+            'Evidence-informed deep dive into canine vision: dogs are blue–yellow dichromats (not black-and-white only), with rod-heavy retinas, tapetal reflection, fast motion/flicker perception, and different acuity. Practical guidance for toys, training, agility, home design, and senior support—plus sources.',
+        component: () => import('./posts/do-dogs-only-see-black-and-white'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'All Breeds (Vision)',
+    },
+    {
         slug: 'what-does-hypoallergenic-mean',
         title: 'What Does Hypoallergenic Mean? Myths, Allergens, and Picking the Right Dog',
         date: 'August 7, 2025',
