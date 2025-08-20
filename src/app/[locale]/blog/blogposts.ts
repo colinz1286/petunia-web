@@ -20,6 +20,26 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-much-does-a-cane-corso-cost-to-own',
+        title: 'How Much Does a Cane Corso Cost to Own? Purchase vs Adoption, Food by Life Stage, Healthcare, Insurance Math, Boarding/Daycare, Gear, and Lifetime Total',
+        date: 'July 15, 2025',
+        description:
+            'Numbers-driven ownership costs: purchase vs adoption, food by life stage, preventive care, parasite prevention, dental, emergencies and big surgeries, insurance vs self-insure, daycare and boarding, training and gear, plus a lifetime total with sample budgets.',
+        component: () => import('./posts/how-much-does-a-cane-corso-cost-to-own'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Cane Corso',
+    },
+    {
+        slug: 'how-big-are-cane-corsos',
+        title: 'How Big Are Cane Corsos? Realistic Weights by Age, Feeding Amounts, Gear Sizes, and True Cost of Care',
+        date: 'July 25, 2025',
+        description:
+            'Complete size and cost guide: height and weight by life stage, growth curves, daily food needs and budgets, bed and crate sizing, harness and leash choices, travel and home space planning, and realistic vet and surgery costs for large dogs.',
+        component: () => import('./posts/how-big-are-cane-corsos'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Cane Corso',
+    },
+    {
         slug: 'are-cane-corsos-an-active-breed',
         title: 'Are Cane Corsos an Active Breed? Exercise, Mental Work, Joint Health, Diet, and Socialization by Life Stage',
         date: 'August 5, 2025',
