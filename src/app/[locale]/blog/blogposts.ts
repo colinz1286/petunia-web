@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'why-do-dogs-wag-their-tails',
+        title: 'Why Do Dogs Wag Their Tails? What Wags Really Mean (and Don’t), How to Read Context, and Practical Safety/Training Tips for Every Age',
+        date: 'July 7, 2025',
+        description:
+            'Evidence-informed guide to tail language: why wags happen, left–right asymmetry, speed/height/stiffness variables, breed and tail-shape caveats, life-stage nuances, safety with kids, training applications, daycare/boarding context, and health issues like “limber tail.”',
+        component: () => import('./posts/why-do-dogs-wag-their-tails'),
+        categories: ['owner', 'breed_specific_guides'],
+    },
+    {
         slug: 'how-much-does-a-cane-corso-cost-to-own',
         title: 'How Much Does a Cane Corso Cost to Own? Purchase vs Adoption, Food by Life Stage, Healthcare, Insurance Math, Boarding/Daycare, Gear, and Lifetime Total',
         date: 'July 15, 2025',
