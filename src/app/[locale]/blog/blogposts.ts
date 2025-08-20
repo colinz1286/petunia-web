@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-long-are-dogs-pregnant',
+        title:
+            'How Long Are Dogs Pregnant? Gestation Timeline, Week-by-Week Development, Signs, Red Flags, Whelping, and Postpartum Care (With Vet-Backed Sources)',
+        date: 'August 20, 2025',
+        description:
+            'Evidence-informed guide to canine pregnancy: true gestation length (from ovulation vs breeding), diagnostics (relaxin, ultrasound, radiographs), week-by-week fetal development, trimester nutrition and exercise, whelping prep, labor stages and red flags, C-section planning, and postpartum care—plus printable checklists.',
+        component: () => import('./posts/how-long-are-dogs-pregnant'),
+        categories: ['breeder'],
+    },
+    {
         slug: 'why-do-dogs-wag-their-tails',
         title: 'Why Do Dogs Wag Their Tails? What Wags Really Mean (and Don’t), How to Read Context, and Practical Safety/Training Tips for Every Age',
         date: 'July 7, 2025',
