@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'are-cane-corsos-an-active-breed',
+        title: 'Are Cane Corsos an Active Breed? Exercise, Mental Work, Joint Health, Diet, and Socialization by Life Stage',
+        date: 'August 5, 2025',
+        description:
+            'Life-stage activity guide for Cane Corsos: daily exercise targets, enrichment and mental work, joint health and supplements, diet and body condition, socialization and public neutrality, safety in heat and cold, sample weekly plans, and a first-90-days program.',
+        component: () => import('./posts/are-cane-corsos-an-active-breed'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Cane Corso',
+    },
+    {
         slug: 'do-cane-corsos-have-health-issues',
         title: 'Do Cane Corsos Have Health Issues? A Life-Stage Guide to Risks, Prevention, Realistic Costs, and Insurance Decisions',
         date: 'August 10, 2025',
