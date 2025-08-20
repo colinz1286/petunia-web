@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'understanding-dog-body-language',
+        title: 'Understanding Dog Body Language: A Practical, Evidence-Informed Guide for Everyday Life',
+        date: 'August 6, 2025',
+        description:
+            'Read your dog’s signals with confidence—happy wiggles, play bows, and early stress cues (lip-licks, yawns, whale eye). Evidence-informed guidance using AAHA/AVSAB standards, DogFACS insights, ladder-of-aggression context, and step-by-step scenarios for greetings, play, grooming, vet visits, and more.',
+        component: () => import('./posts/understanding-dog-body-language'),
+        categories: ['owner'],
+        breed: 'All Breeds (Behavior)',
+    },
+    {
         slug: 'do-dogs-only-see-black-and-white',
         title: 'Do Dogs Only See Black and White? The Science of Canine Color, Motion, and Low-Light Vision',
         date: 'July 19, 2025',
