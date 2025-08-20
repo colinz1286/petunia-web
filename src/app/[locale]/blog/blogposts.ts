@@ -20,9 +20,19 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'what-does-hypoallergenic-mean',
+        title: 'What Does Hypoallergenic Mean? Myths, Allergens, and Picking the Right Dog',
+        date: 'August 7, 2025',
+        description:
+            'Clear, evidence-informed definition of “hypoallergenic,” why no dog is truly allergen-free, how Can f proteins work, and how coat genetics (RSPO2/KRT71/FGF5 + shedding signals) shape real-world variability. Includes breed profiles often recommended for allergy-aware homes, a buyer checklist, and a layered home allergy plan.',
+        component: () => import('./posts/what-does-hypoallergenic-mean'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'All Breeds (Allergy & Coat Science)',
+    },
+    {
         slug: 'do-doodles-shed-fact-or-fiction',
         title: 'Do Doodles Shed? Fact or Fiction — Science, Genetics, and Buying Smart',
-        date: 'August 19, 2025',
+        date: 'August 3, 2025',
         description:
             'Evidence-informed deep dive on doodle shedding: allergy biology (Can f allergens), why “hypoallergenic” claims are misleading, and how RSPO2 furnishings + MC5R shedding genotypes shape outcomes. Includes buyer checklist, grooming cadence, and allergen-management strategies with sources.',
         component: () => import('./posts/do-doodles-shed-fact-or-fiction'),
