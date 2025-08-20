@@ -118,20 +118,21 @@ export default function HomePageClient() {
                         <section className="space-y-5 w-full max-w-xl">
                             <h3 className="text-2xl font-bold text-center">For Boarding & Daycare Facilities</h3>
                             <p className="text-lg text-balance">
-                                Petunia is here to help you streamline operations, save time, and focus on what matters most — the dogs in your care and the people who love them.
-                            </p>
-                            <p className="text-lg text-balance">
-                                From check-ins and feeding notes to client management, reminders, and real-time schedule visibility — it&rsquo;s all right here.
-                            </p>
-                            <p className="text-lg text-balance">
-                                💡 Free for your first 15 days — just $20/month after. No contracts. No nonsense.
-                            </p>
-                            <p className="text-lg text-balance">
-                                A few years ago, we were just a small facility with more heart than budget. We remember what it felt like to be priced out of software that promised to help — but didn’t feel made for us.
+                                💡 Free for your first 15 days — just $3/month after. No contracts. No nonsense.
                                 <br /><br />
-                                So we built Petunia to be different. <strong>You shouldn&rsquo;t have to be a big operation in order to deserve something better.</strong> It’s powerful enough for a growing franchise, but priced so even a one-person operation can justify it.
+                                <strong>PLEASE CONTINUE READING — we’ll explain exactly why our price is so low, and why it doesn’t come at the cost of quality.</strong>
+                            </p>
+                            <p className="text-lg text-balance">
+                                The creators of Petunia are also owners of a boarding and daycare facility — that’s how we got our start in this industry back in 2017. We know the daily challenges firsthand, because we’ve lived them.
+                            </p>
+                            <p className="text-lg text-balance">
+                                People who stay in this industry only stay for one reason: they love the animals. They sacrifice weekends, sleep, and margins of comfort to make life better for the dogs in their care. Your software should never punish that. You shouldn’t have to watch hard-earned money leak out of your pocket just to manage the basics. We don’t make you pay for our rent — we simply have our priorities straight. We wanted to build a software company that actually cared about the customer… and their wallets (important to not forget that last part!).
                                 <br /><br />
-                                No contracts. No hidden fees. Just tools that work — for the people who do the work.
+                                Caring doesn’t mean overcharging; it means delivering the features that make your life easier, at a price that respects the work you do and the sacrifices you make. While families go away, they trust you to take care of their dog while they’re on vacation. That doesn’t mean you shouldn’t be able to afford a nice vacation as well!
+                                <br /><br />
+                                An incredibly small in-home boarding and daycare facility should not have to sacrifice features simply because they can’t afford them. And a large facility should not have to give up the fine-tuned features that smaller software packages offer. Right now, everyone on both sides of the fence is forced to compromise. We’re going to eliminate that.
+                                <br /><br />
+                                Today, Petunia already packs more features than most of the competition. Within the next 6–12 months, we will have enough features to exceed our competition. And as other companies continue to raise prices, we will be aiming to lower ours. Yes, that’s not a typo. The only question left that you have to ask yourself is: which company do you want to work with long-term?
                             </p>
                             <p className="text-lg text-balance">
                                 💌 Questions or requests? Want a feature that we don&rsquo;t currently have? Email us at{" "}
