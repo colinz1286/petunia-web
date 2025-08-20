@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'are-cane-corsos-good-family-dogs',
+        title: 'Are Cane Corsos Good Family Dogs? A Practical, Evidence-Informed Guide by Life Stage, Household Type, and Training Commitment',
+        date: 'August 20, 2025',
+        description:
+            'Evidence-informed guide covering temperament, babies through older adults, busy families, training difficulty, socialization and neutrality, home management, multi-pet tips, boarding/daycare fit, health basics, insurance/legal considerations, a decision framework, and a first-90-days plan.',
+        component: () => import('./posts/are-cane-corsos-good-family-dogs'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Cane Corso',
+    },
+    {
         slug: 'understanding-dog-body-language',
         title: 'Understanding Dog Body Language: A Practical, Evidence-Informed Guide for Everyday Life',
         date: 'August 6, 2025',
