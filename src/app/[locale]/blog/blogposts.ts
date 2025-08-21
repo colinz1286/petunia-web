@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-to-choose-the-right-dog-breed',
+        title:
+            'How to Choose the Right Dog Breed: A Clear, Practical Owner’s Guide to Time, Lifestyle, Budget, Training, Socialization, Size, and Real-World Constraints',
+        date: 'August 21, 2025',
+        description:
+            'Evidence-aligned framework to pick a breed that fits real life: time to train, lifestyle, disposable income and total cost of ownership, socialization effort, size/space, housing or insurance restrictions, grooming and health needs, ethical sourcing, and a first-year success plan.',
+        component: () => import('./posts/how-to-choose-the-right-dog-breed'),
+        categories: ['owner'],
+    },
+    {
         slug: 'tracking-medications-in-dog-boarding-software',
         title:
             'Tracking Medications in Dog Boarding Software: Multi-Day Safety, Overnight Protocols, and Petunia’s Real-Time Workflow from Pre-Arrival to Check-Out',
