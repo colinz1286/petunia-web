@@ -20,6 +20,26 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'tracking-medications-in-dog-boarding-software',
+        title:
+            'Tracking Medications in Dog Boarding Software: Multi-Day Safety, Overnight Protocols, and Petunia’s Real-Time Workflow from Pre-Arrival to Check-Out',
+        date: 'August 12, 2025',
+        description:
+            'Boarding-focused med safety: owner-built profiles surface pre-arrival in Upcoming Reservations and persist in Dogs on Property, with real-time admin logs, appetite-dependent dosing rules, insulin co-signs, seizure plans, chain-of-custody counts, and shift-proof overnight routines.',
+        component: () => import('./posts/tracking-medications-in-dog-boarding-software'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'tracking-medications-in-dog-daycare-software',
+        title:
+            'Tracking Medications in Dog Daycare Software: Real-Time Safety, Clear Protocols, and the Petunia Workflow from Check-In to Check-Out',
+        date: 'August 21, 2025',
+        description:
+            'How Petunia centralizes owner-entered meds and surfaces them in Client Management, Upcoming Appointments, and Dogs on Property—plus practical guardrails for diabetic and seizure-prone dogs, SOP checklists, and real-time logs powered by a Realtime Database.',
+        component: () => import('./posts/tracking-medications-in-dog-daycare-software'),
+        categories: ['boarding'],
+    },
+    {
         slug: 'how-long-are-dogs-pregnant',
         title:
             'How Long Are Dogs Pregnant? Gestation Timeline, Week-by-Week Development, Signs, Red Flags, Whelping, and Postpartum Care (With Vet-Backed Sources)',
