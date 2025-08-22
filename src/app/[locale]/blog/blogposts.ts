@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'should-a-dogs-nose-be-wet-or-dry',
+        title:
+            'Should a Dog’s Nose Be Wet or Dry? A Clear Owner’s Guide to What’s Normal, What’s Not, and How to Care for Dry, Cracked, or Sunburned Noses',
+        date: 'August 2, 2025',
+        description:
+            'Wet vs. dry isn’t a health test. Learn what nose moisture actually means, when dryness and cracking signal disease, how climate and breed affect the nasal planum, and which dog-safe products protect and heal—plus red flags that warrant a vet visit.',
+        component: () => import('./posts/should-a-dogs-nose-be-wet-or-dry'),
+        categories: ['owner'],
+    },
+    {
         slug: 'how-to-choose-the-right-dog-breed',
         title:
             'How to Choose the Right Dog Breed: A Clear, Practical Owner’s Guide to Time, Lifestyle, Budget, Training, Socialization, Size, and Real-World Constraints',
