@@ -18,6 +18,16 @@ export const blogPosts: BlogPostEntry[] = [
         component: () =>
             import('./posts/dog-daycare-packages-vs-monthly-memberships-a-balanced-look-at-two-common-pricing-models') as Promise<{ default: React.ComponentType<object> }>,
         categories: ['boarding'],
+    }, {
+        slug: 'kennel-cough-guide-pittsburgh-boarding-daycare-2025',
+        title:
+            'Kennel Cough (CIRDC) in Pittsburgh: A Practical, Evidence-Informed Guide for Owners and Boarding & Daycare Facilities',
+        date: 'August 22, 2025',
+        description:
+            'Pittsburgh-aware guide to kennel cough (CIRDC): what it is, how it spreads, life-stage treatment (puppies, adults, seniors), realistic prevention beyond staying home, vaccine roles (Bordetella/CPIV, CIV), isolation/return-to-daycare timelines, and protecting seniors when younger dogs attend daycare or boarding.',
+        component: () =>
+            import('./posts/kennel-cough-guide-pittsburgh-boarding-daycare-2025') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'boarding'],
     },
     {
         slug: 'does-my-dog-need-teeth-cleaning',
