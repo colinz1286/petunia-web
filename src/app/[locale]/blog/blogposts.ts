@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'does-my-dog-need-teeth-cleaning',
+        title:
+            'Does My Dog Need Teeth Cleaning? A Complete Owner\u2019s Guide to Dental Health, Costs, Insurance, Chews, and Senior Anesthesia Decisions',
+        date: 'August 22, 2025',
+        description:
+            'Evidence-aligned guide to canine dental care: when cleanings are needed, what a COHAT includes, typical costs, insurance coverage, VOHC-accepted chews, and safe anesthesia for seniors.',
+        component: () =>
+            import('./posts/does-my-dog-need-teeth-cleaning') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'vet'],
+    },
+    {
         slug: 'what-vaccines-should-you-give-to-elderly-dogs',
         title:
             'What Vaccines Should You Give to Elderly Dogs? Lifespan Schedules, Senior-Specific Adjustments, Side Effects, Geography, and Multi-Dog Household Strategy',
