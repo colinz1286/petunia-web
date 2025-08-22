@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'does-my-dog-need-the-influenza-shot',
+        title:
+            'Does My Dog Need the Influenza Shot? History, Risk-Based Decisions, Side Effects, Facility Requirements, and a Practical Owner Checklist',
+        date: 'August 22, 2025',
+        description:
+            'Owner-focused guide to the canine influenza (dog flu) vaccine: how H3N2/H3N8 emerged, what bivalent vaccines do, who truly needs it (risk-based, noncore), how to time the 2-dose series before boarding/daycare, common side effects, why some facilities require it and others do not, and a quick decision tool to use with your veterinarian.',
+        component: () => import('./posts/does-my-dog-need-the-influenza-shot'),
+        categories: ['owner', 'boarding', 'vet'],
+    },
+    {
         slug: 'grooming-tips-for-labrador-retrievers',
         title:
             'Grooming Tips for Labrador Retrievers: Real-World Shedding Control, Bathing, Tools, Costs, Nutrition for a Healthy Coat, and Owner Checklists',
