@@ -39,6 +39,7 @@ export default function DogBoardingSoftwarePage() {
           <p>Competitor &ndash; $99.99/mo</p>
           <p>Competitor &ndash; $79.99/mo</p>
           <p>Competitor &ndash; $55/mo</p>
+          <p>Competitor &ndash; $40/mo</p>
           <p className="font-bold text-green-700 text-lg pt-2">Petunia &ndash; $3/mo</p>
         </div>
         <div className="mt-6 max-w-md mx-auto text-base text-gray-700">
