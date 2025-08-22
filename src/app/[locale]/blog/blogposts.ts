@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'grooming-tips-for-labrador-retrievers',
+        title:
+            'Grooming Tips for Labrador Retrievers: Real-World Shedding Control, Bathing, Tools, Costs, Nutrition for a Healthy Coat, and Owner Checklists',
+        date: 'August 22, 2025',
+        description:
+            'A comprehensive, owner-tested grooming guide for Labrador Retrievers. Learn how to control shedding, set a weekly and seasonal routine, choose the right brushes and dryers, pick safe shampoos and conditioners, understand groomer costs, and support a glossy coat with nutrition and supplements.',
+        component: () => import('./posts/grooming-tips-for-labrador-retrievers'),
+        categories: ['owner', 'food'],
+    },
+    {
         slug: 'what-tick-borne-illnesses-can-dogs-get',
         title:
             'What Tick-Borne Illnesses Can Dogs Get? The 7 Big Ones (Vectors, Regions, Signs, Treatment, and Which Dogs Are at Higher Risk)',
