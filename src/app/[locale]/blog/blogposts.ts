@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'what-tick-borne-illnesses-can-dogs-get',
+        title:
+            'What Tick-Borne Illnesses Can Dogs Get? The 7 Big Ones (Vectors, Regions, Signs, Treatment, and Which Dogs Are at Higher Risk)',
+        date: 'August 21, 2025',
+        description:
+            'Clear, evidence-aligned guide to seven major tick-borne diseases in dogs—Lyme disease, Ehrlichiosis, Anaplasmosis, Babesiosis, Rocky Mountain spotted fever, Bartonellosis, and Hepatozoonosis—including the tick species that transmit each, regional patterns, hallmark signs, typical veterinary treatments, co-infection notes, and prevention you can put into practice today.',
+        component: () => import('./posts/what-tick-borne-illnesses-can-dogs-get'),
+        categories: ['owner'],
+    },
+    {
         slug: 'should-a-dogs-nose-be-wet-or-dry',
         title:
             'Should a Dog’s Nose Be Wet or Dry? A Clear Owner’s Guide to What’s Normal, What’s Not, and How to Care for Dry, Cracked, or Sunburned Noses',
