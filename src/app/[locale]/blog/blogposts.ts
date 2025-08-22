@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'what-vaccines-should-you-give-to-elderly-dogs',
+        title:
+            'What Vaccines Should You Give to Elderly Dogs? Lifespan Schedules, Senior-Specific Adjustments, Side Effects, Geography, and Multi-Dog Household Strategy',
+        date: 'August 22, 2025',
+        description:
+            'A practical, evidence-aligned guide to vaccinating senior dogs: what stays the same from puppyhood through middle age, what changes with immunosenescence, which vaccines matter most by region and lifestyle, how to minimize side effects in small-breed and high-risk seniors, and how younger housemates affect decisions.',
+        component: () => import('./posts/what-vaccines-should-you-give-to-elderly-dogs'),
+        categories: ['owner', 'boarding', 'vet'] as const,
+    },
+    {
         slug: 'does-my-dog-need-the-influenza-shot',
         title:
             'Does My Dog Need the Influenza Shot? History, Risk-Based Decisions, Side Effects, Facility Requirements, and a Practical Owner Checklist',
