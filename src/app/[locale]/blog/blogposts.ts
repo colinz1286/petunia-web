@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'comprehensive-pet-client-profiles-boarding-daycare-software',
+        title:
+            'Comprehensive Pet & Client Profiles in Dog Boarding Software and Dog Daycare Software',
+        date: 'August 23, 2025',
+        description:
+            'Why deep, structured pet and client profiles power safety, speed, and trust: eligibility checks, meds/feeding, vaccine & waiver snapshots, permissions, automation, KPIs, and multi-location.',
+        component: () =>
+            import('./posts/comprehensive-pet-client-profiles-boarding-daycare-software') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'realtime-reservations-online-booking-dog-boarding-daycare-software',
         title:
             'Real-Time Reservations & Online Booking in Dog Boarding Software and Dog Daycare Software',
