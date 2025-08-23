@@ -20,6 +20,19 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'behavior-temperament-notes-dog-boarding-daycare-software',
+        title:
+            'Behavior & Temperament Notes in Dog Boarding Software & Dog Daycare Software: Safety, Group Play, Staff Matching, and Incident Prevention',
+        date: 'August 23, 2025',
+        description:
+            'A practical, SEO-focused deep dive into behavior & temperament notes: standardized tags, assessments, staff matching, group play design, incident logging, and KPIs—why it matters and how software makes it reliable.',
+        component: () =>
+            import('./posts/behavior-temperament-notes-dog-boarding-daycare-software') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'medication-administration-tracking-dog-boarding-daycare-software',
         title:
             'Medication Administration Tracking in Dog Boarding Software & Dog Daycare Software: Safety, Workflow Design, Compliance, and Real-World ROI',
