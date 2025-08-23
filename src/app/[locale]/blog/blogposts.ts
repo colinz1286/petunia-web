@@ -20,6 +20,19 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'medication-administration-tracking-dog-boarding-daycare-software',
+        title:
+            'Medication Administration Tracking in Dog Boarding Software & Dog Daycare Software: Safety, Workflow Design, Compliance, and Real-World ROI',
+        date: 'August 23, 2025',
+        description:
+            'A practical, SEO-focused deep dive into medication administration tracking: structured intake, MAR logs, double-check protocols, controlled substances, incident reporting, owner communication, and KPIs—why it matters and how software makes it reliable.',
+        component: () =>
+            import('./posts/medication-administration-tracking-dog-boarding-daycare-software') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'feeding-schedule-management-dog-boarding-daycare-software',
         title:
             'Feeding Schedule Management in Dog Boarding Software & Dog Daycare Software: Safety, Kitchen SOPs, Automation, and Real-World ROI',
