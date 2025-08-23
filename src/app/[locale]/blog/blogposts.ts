@@ -20,6 +20,19 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'vaccination-tracking-alerts-dog-boarding-daycare-software',
+        title:
+            'Vaccination Tracking & Alerts for Dog Boarding & Dog Daycare Software: Safety, Compliance, Automation & Real-World ROI',
+        date: 'August 23, 2025',
+        description:
+            'Why vaccination tracking and automated alerts are mission-critical in dog boarding & dog daycare software. Learn core vs non-core vaccines, regional nuance, airtight policy design, booking enforcement, owner uploads, audit-ready reporting, and the KPIs that move occupancy, safety, and trust.',
+        component: () =>
+            import('./posts/vaccination-tracking-alerts-dog-boarding-daycare-software') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'allergy-diet-tracking-dog-boarding-daycare-software',
         title:
             'Allergy & Diet Tracking in Dog Boarding Software and Dog Daycare Software',
