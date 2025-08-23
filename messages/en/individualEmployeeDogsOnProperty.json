@@ -1,0 +1,14 @@
+{
+  "title": "Dogs on Property",
+  "subtitle": "Live view for employees.",
+  "filter_daycare": "Daycare",
+  "filter_boarding": "Boarding",
+  "filter_grooming": "Grooming",
+  "loading": "Loading…",
+  "empty_state": "No dogs on property.",
+  "check_out_button": "Check Out",
+  "view_assessment_button": "View Assessment",
+  "show_more": "Show more",
+  "show_less": "Show less",
+  "load_more_dates": "Load more dates"
+}

@@ -55,6 +55,9 @@ export default function IndividualDashboardPage() {
   const t = useTranslations('individualDashboard');
   const locale = useLocale();
 
+  // Route constants (prevents path typos)
+  const ROUTE_EMPLOYEE_DOGS_ON_PROPERTY = `/${locale}/individualemployeedogsonproperty`;
+
   const [firstName, setFirstName] = useState('');
   const [profileUrl, setProfileUrl] = useState('');
   const [userId, setUserId] = useState('');
@@ -122,7 +125,7 @@ export default function IndividualDashboardPage() {
     if (snapshot.empty) return;
 
     const docSnap = snapshot.docs[0];
-    const data = docSnap.data();
+    const data = docSnap.data() as InviteData;
     setInviteDocId(docSnap.id);
     setInvite(data);
     setIsEmployee(data.status === 'accepted');
@@ -149,7 +152,7 @@ export default function IndividualDashboardPage() {
       role: 'default',
     });
     setIsEmployee(true);
-    setInvite({ ...invite, status: 'accepted' });
+    setInvite((prev) => (prev ? { ...prev, status: 'accepted' } : { status: 'accepted' }));
   };
 
   const declineInvite = async () => {
@@ -157,7 +160,7 @@ export default function IndividualDashboardPage() {
     await updateDoc(doc(db, 'employeeInvites', inviteDocId), {
       status: 'declined',
     });
-    setInvite({ ...invite, status: 'declined' });
+    setInvite((prev) => (prev ? { ...prev, status: 'declined' } : { status: 'declined' }));
   };
 
   const logout = async () => {
@@ -199,6 +202,7 @@ export default function IndividualDashboardPage() {
 
         {profileFile && (
           <button
+            type="button"
             onClick={uploadProfileImage}
             className="block w-full text-white bg-blue-600 px-4 py-2 rounded mb-4 text-sm"
           >
@@ -223,10 +227,10 @@ export default function IndividualDashboardPage() {
             <p className="font-semibold">{t('invite_banner_title')}</p>
             <p>{invite.businessName}</p>
             <div className="flex justify-center gap-4">
-              <button onClick={acceptInvite} className="bg-green-600 text-white px-3 py-1 rounded">
+              <button type="button" onClick={acceptInvite} className="bg-green-600 text-white px-3 py-1 rounded">
                 {t('accept')}
               </button>
-              <button onClick={declineInvite} className="text-red-600 underline">
+              <button type="button" onClick={declineInvite} className="text-red-600 underline">
                 {t('decline')}
               </button>
             </div>
@@ -237,9 +241,19 @@ export default function IndividualDashboardPage() {
         {isEmployee && (
           <div className="mt-6 border-t pt-4 space-y-3">
             <h2 className="text-lg font-semibold text-center">{t('employee_tools')}</h2>
-            <DashboardLink href={`/${locale}/individualemployee-upcomingreservations`} label={t('upcoming_reservations')} />
-            <DashboardLink href={`/${locale}/individualemployee-dogsonproperty`} label={t('dogs_on_property')} />
+
+            <DashboardLink
+              href={`/${locale}/individualemployee-upcomingreservations`}
+              label={t('upcoming_reservations')}
+            />
+
+            <DashboardLink
+              href={ROUTE_EMPLOYEE_DOGS_ON_PROPERTY}
+              label={t('dogs_on_property')}
+            />
+
             <button
+              type="button"
               className="block w-full bg-gray-500 text-white px-4 py-2 rounded text-sm"
               onClick={() => alert(t('feature_coming_soon'))}
             >
@@ -255,6 +269,7 @@ export default function IndividualDashboardPage() {
           </div>
           <div className="w-1/2">
             <button
+              type="button"
               onClick={logout}
               className="w-full text-white bg-red-600 px-4 py-2 rounded text-sm"
             >

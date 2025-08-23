@@ -1,3 +1,5 @@
+import IndividualEmployeeDogsOnPropertyPage from "@/app/[locale]/individualemployeedogsonproperty/page";
+
 export default {
   en: () => ({
     businessDashboard: require('./messages/en/businessDashboard.json'),
@@ -18,6 +20,7 @@ export default {
     individualSearchBusinesses: require('./messages/en/individualSearchBusinesses.json'),
     individualSelectService: require('./messages/en/individualSelectService.json'),
     individualSendClientRequest: require('./messages/en/individualSendClientRequest.json'),
-    individualUpcomingAppointments: require('./messages/en/individualUpcomingAppointments.json')
+    individualUpcomingAppointments: require('./messages/en/individualUpcomingAppointments.json'),
+    individualEmployeeDogsOnProperty: require('./messages/en/individualEmployeeDogsOnProperty.json')
   })
 };
