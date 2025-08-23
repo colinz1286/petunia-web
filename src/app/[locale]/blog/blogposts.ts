@@ -18,7 +18,19 @@ export const blogPosts: BlogPostEntry[] = [
         component: () =>
             import('./posts/dog-daycare-packages-vs-monthly-memberships-a-balanced-look-at-two-common-pricing-models') as Promise<{ default: React.ComponentType<object> }>,
         categories: ['boarding'],
-    }, {
+    },
+    {
+        slug: 'kennel-cough-cirdc-global-guide-owners-boarding-daycare-2025',
+        title:
+            'Kennel Cough (CIRDC): The 2025 Global Guide for Owners and Boarding & Daycare Facilities (U.S., Canada, U.K., Ireland, Australia & New Zealand)',
+        date: 'August 22, 2025',
+        description:
+            'International, evidence-aligned guide to kennel cough (CIRDC): what it is, how it spreads, life-stage treatment (puppies, adults, seniors), prevention beyond staying home, vaccine roles (Bordetella/CPIV, canine influenza), isolation timelines, and protecting seniors when younger dogs attend daycare or boarding.',
+        component: () =>
+            import('./posts/kennel-cough-cirdc-global-guide-owners-boarding-daycare-2025') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'boarding', 'daycare'],
+    },
+    {
         slug: 'kennel-cough-guide-pittsburgh-boarding-daycare-2025',
         title:
             'Kennel Cough (CIRDC) in Pittsburgh: A Practical, Evidence-Informed Guide for Owners and Boarding & Daycare Facilities',
