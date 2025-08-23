@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'allergy-diet-tracking-dog-boarding-daycare-software',
+        title:
+            'Allergy & Diet Tracking in Dog Boarding Software and Dog Daycare Software',
+        date: 'August 23, 2025',
+        description:
+            'Why precise allergy and diet tracking matters: structured profiles, kitchen SOPs, cross-contact controls, automation, and KPIs that reduce GI upsets and build client trust.',
+        component: () =>
+            import('./posts/allergy-diet-tracking-dog-boarding-daycare-software') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'comprehensive-pet-client-profiles-boarding-daycare-software',
         title:
             'Comprehensive Pet & Client Profiles in Dog Boarding Software and Dog Daycare Software',
