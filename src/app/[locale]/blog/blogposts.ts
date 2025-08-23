@@ -20,6 +20,19 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'feeding-schedule-management-dog-boarding-daycare-software',
+        title:
+            'Feeding Schedule Management in Dog Boarding Software & Dog Daycare Software: Safety, Kitchen SOPs, Automation, and Real-World ROI',
+        date: 'August 23, 2025',
+        description:
+            'A practical, SEO-focused deep dive into feeding schedule management for boarding and daycare: precise intake, kitchen SOPs, cross-contact controls, automation, shift handoffs, reporting, and KPIs—why it matters and how software makes it effortless.',
+        component: () =>
+            import('./posts/feeding-schedule-management-dog-boarding-daycare-software') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'vaccination-tracking-alerts-dog-boarding-daycare-software',
         title:
             'Vaccination Tracking & Alerts for Dog Boarding & Dog Daycare Software: Safety, Compliance, Automation & Real-World ROI',
