@@ -20,6 +20,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'realtime-reservations-online-booking-dog-boarding-daycare-software',
+        title:
+            'Real-Time Reservations & Online Booking in Dog Boarding Software and Dog Daycare Software',
+        date: 'August 23, 2025',
+        description:
+            'How live availability, deposits, capacity rules, vaccine/waiver gates, and waitlists raise occupancy and cut admin in dog boarding software and dog daycare software.',
+        component: () =>
+            import('./posts/realtime-reservations-online-booking-dog-boarding-daycare-software') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'kennel-cough-cirdc-global-guide-owners-boarding-daycare-2025',
         title:
             'Kennel Cough (CIRDC): The 2025 Global Guide for Owners and Boarding & Daycare Facilities (U.S., Canada, U.K., Ireland, Australia & New Zealand)',
@@ -28,7 +39,7 @@ export const blogPosts: BlogPostEntry[] = [
             'International, evidence-aligned guide to kennel cough (CIRDC): what it is, how it spreads, life-stage treatment (puppies, adults, seniors), prevention beyond staying home, vaccine roles (Bordetella/CPIV, canine influenza), isolation timelines, and protecting seniors when younger dogs attend daycare or boarding.',
         component: () =>
             import('./posts/kennel-cough-cirdc-global-guide-owners-boarding-daycare-2025') as Promise<{ default: React.ComponentType<object> }>,
-        categories: ['owner', 'boarding', 'daycare'],
+        categories: ['owner', 'boarding'],
     },
     {
         slug: 'kennel-cough-guide-pittsburgh-boarding-daycare-2025',
