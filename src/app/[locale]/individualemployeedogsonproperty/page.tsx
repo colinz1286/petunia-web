@@ -22,7 +22,7 @@ import {
     DatabaseReference,
     DataSnapshot,
 } from 'firebase/database';
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 
 // Ensure a default Firebase app exists on this route (fixes "app/no-app")
 const firebaseConfig = {
@@ -33,7 +33,7 @@ const firebaseConfig = {
     messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
-const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
+if (!getApps().length) initializeApp(firebaseConfig);
 
 type FilterKey = 'daycare' | 'boarding' | 'grooming';
 
@@ -67,7 +67,6 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
     const [error, setError] = useState<string | null>(null);
 
     const [userId, setUserId] = useState<string | null>(null);
-    const [businessId, setBusinessId] = useState<string | null>(null);
     const [sanitizedBusinessId, setSanitizedBusinessId] = useState<string | null>(null);
     const [businessTimeZone, setBusinessTimeZone] = useState<string>(DEFAULT_TZ);
 
@@ -155,7 +154,6 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                 setIsBootstrapping(false);
                 return;
             }
-            setBusinessId(bId);
 
             // 2) Resolve business time zone (for displaying check-in times)
             let tz = DEFAULT_TZ;
