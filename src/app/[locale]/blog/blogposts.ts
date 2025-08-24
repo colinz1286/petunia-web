@@ -20,6 +20,19 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'best-dog-boarding-and-daycare-software-buyer-guide',
+        title:
+            'The Best Dog Boarding & Daycare Software? A No-Nonsense Buyer’s Guide (Frameworks, Checklists, Cost Math & Red Flags)',
+        date: 'August 24, 2025',
+        description:
+            'A vendor-neutral evaluation playbook: feature checklists, TCO math, payment strategy trade-offs, data-portability, security, rollout plans, and negotiation tips.',
+        component: () =>
+            import('./posts/best-dog-boarding-and-daycare-software-buyer-guide') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'how-to-train-my-dog-to-sit',
         title:
             'How to Train My Dog to Sit: Gentle Methods, Age Readiness, Household Consistency, Breed Tips, Training Aids, and Troubleshooting',
