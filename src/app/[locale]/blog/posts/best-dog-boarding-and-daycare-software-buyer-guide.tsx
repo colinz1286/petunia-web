@@ -27,8 +27,6 @@ export default function BestDogBoardingAndDaycareSoftwareBuyerGuide() {
     software_buying: 'Software Buying Guides',
   };
 
-  const canonicalSlug = 'best-dog-boarding-and-daycare-software-buyer-guide';
-
   return (
     <>
       <Head>
