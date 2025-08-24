@@ -20,6 +20,32 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-to-train-my-dog-to-sit',
+        title:
+            'How to Train My Dog to Sit: Gentle Methods, Age Readiness, Household Consistency, Breed Tips, Training Aids, and Troubleshooting',
+        date: 'August 23, 2025',
+        description:
+            'A step-by-step, owner-focused sit guide: readiness checks by age and comfort, lure vs. shaping, adding cues and hand signals, proofing with the 3 D’s, multi-person consistency, breed notes, training aids, a 14-day plan, and gentle troubleshooting.',
+        component: () =>
+            import('./posts/how-to-train-my-dog-to-sit') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'train'],
+    },
+    {
+        slug: 'why-do-dogs-lick',
+        title:
+            'Why Do Dogs Lick? Self-Grooming, Affection, Communication, Health Signals, and When to Call the Vet',
+        date: 'August 23, 2025',
+        description:
+            'Owner-focused guide to licking: what is normal vs. excessive, how to read body language, medical causes (allergies, skin infection, pain, nausea), and practical steps—decision tree, training plans, and home-care do’s and don’ts.',
+        component: () =>
+            import('./posts/why-do-dogs-lick') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner'],
+    },
+    {
         slug: 'digital-marketing-social-media-dog-boarding-daycare',
         title:
             'Digital Marketing & Social Media Strategies for Dog Boarding & Dog Daycare Businesses',
