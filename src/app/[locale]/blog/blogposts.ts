@@ -20,6 +20,19 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'digital-marketing-social-media-dog-boarding-daycare',
+        title:
+            'Digital Marketing & Social Media Strategies for Dog Boarding & Dog Daycare Businesses',
+        date: 'August 23, 2025',
+        description:
+            'Full-funnel, local-first marketing playbook for boarding and daycare: positioning, website & SEO, Google Business Profile, reviews, organic Facebook/Instagram, short-form video, lightweight ads, email/SMS, partnerships, seasonal promos, KPIs, and copy-and-paste templates.',
+        component: () =>
+            import('./posts/digital-marketing-social-media-dog-boarding-daycare') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'ollies-law-kennel-safety-2025',
         title:
             '“Ollie’s Law” (2025): What It Is, How It Happened, Where It Applies, and What It Means for Dog Boarding & Daycare — With Global Context and Operator Playbooks',
