@@ -1,0 +1,29 @@
+{
+  "business_dashboard_greeting": "Welcome, {firstName}!",
+  "business_id_resolved": "Business connected.",
+  "resolving_business_id": "Resolving your business…",
+
+  "upload_logo": "Upload Logo",
+  "uploading_logo": "Uploading...",
+
+  "current_litters": "Current Litters",
+  "my_dogs": "My Dogs",
+  "applications_contracts": "Applications & Contracts",
+  "client_management": "Client Management",
+  "pending_requests": "Pending Requests",
+  "upcoming_appointments": "Upcoming Appointments",
+  "reminders": "Reminders",
+  "business_settings": "Business Settings",
+  "logout": "Log Out",
+
+  "_future_verification_strings": "Not used in v1 but included for parity with iOS",
+  "verified": "Verified",
+  "not_verified": "Not Verified",
+  "verify_now": "Verify Now",
+  "verify_your_business": "Verify Your Business",
+  "business_license_number": "Business License Number",
+  "upload_license_image": "Upload License Image",
+  "image_selected": "Image Selected ✅",
+  "submit_for_verification": "Submit for Verification",
+  "cancel_button": "Cancel"
+}

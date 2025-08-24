@@ -14,6 +14,10 @@ export default getRequestConfig(async ({ locale }) => {
   }
 
   const messages = {
+    // 🔹 NEW: Breeder dashboard namespace
+    breederDashboard: (await import(`../../messages/${safeLocale}/breederDashboard.json`)).default,
+
+    // Existing namespaces
     businessDashboard: (await import(`../../messages/${safeLocale}/businessDashboard.json`)).default,
     boardingAndDaycareBusinessSettings: (await import(`../../messages/${safeLocale}/boardingAndDaycareBusinessSettings.json`)).default,
     boardingAndDaycarePendingRequests: (await import(`../../messages/${safeLocale}/boardingAndDaycarePendingRequests.json`)).default,
@@ -34,7 +38,7 @@ export default getRequestConfig(async ({ locale }) => {
     individualBookDaycare: (await import(`../../messages/${safeLocale}/individualBookDaycare.json`)).default,
     individualBookBoarding: (await import(`../../messages/${safeLocale}/individualBookBoarding.json`)).default,
     individualEmployeeDogsOnProperty: (await import(`../../messages/${safeLocale}/individualEmployeeDogsOnProperty.json`)).default
-  };
+  } as const;
 
   return {
     locale: safeLocale,

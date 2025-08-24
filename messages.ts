@@ -21,6 +21,7 @@ export default {
     individualSelectService: require('./messages/en/individualSelectService.json'),
     individualSendClientRequest: require('./messages/en/individualSendClientRequest.json'),
     individualUpcomingAppointments: require('./messages/en/individualUpcomingAppointments.json'),
-    individualEmployeeDogsOnProperty: require('./messages/en/individualEmployeeDogsOnProperty.json')
+    individualEmployeeDogsOnProperty: require('./messages/en/individualEmployeeDogsOnProperty.json'),
+     breederDashboard: require('./messages/en/breederDashboard.json')
   })
 };

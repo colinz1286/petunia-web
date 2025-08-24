@@ -65,14 +65,14 @@ export default function BusinessSignUpPage() {
   const businessTypes = [
     'Boarding/Daycare',
     'Breeder',
-    'Pet Sitter/Dog Walker',
-    'Groomer',
-    'Shelter/Rescue',
-    'Veterinary Clinic',
-    'Pet Trainer',
-    'Pet Retail Store'
+    'Pet Sitter/Dog Walker (Coming Soon!)',
+    'Groomer (Coming Soon!)',
+    'Shelter/Rescue (Coming Soon!)',
+    'Veterinary Clinic (Coming Soon!)',
+    'Pet Trainer (Coming Soon!)',
+    'Pet Retail Store (Coming Soon!)'
   ];
-  const enabledTypes = new Set(['Boarding/Daycare']);
+  const enabledTypes = new Set(['Boarding/Daycare', 'Breeder']);
 
   const handleChange = (field: string, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));

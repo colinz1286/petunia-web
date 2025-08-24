@@ -21,7 +21,7 @@ import {
 } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 
-// ✅ Inline Firebase config (consistent with AddEditPetPage and others)
+// ✅ Inline Firebase config
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
@@ -47,6 +47,40 @@ function getFirebaseErrorCode(err: unknown): string {
   return '';
 }
 
+// Normalize business type from either flat or nested field
+function normalizeBusinessType(data: Record<string, unknown>): string {
+  const flat = (data.businessType as string | undefined) ?? '';
+  const nested = ((data.businessDetails as { type?: string } | undefined)?.type) ?? '';
+  return (flat || nested).toString().trim().toLowerCase();
+}
+
+// Find a business owned by this user; prefer one whose type is "breeder"
+async function findOwnersBusiness(
+  uid: string
+): Promise<{ id: string; data: () => Record<string, unknown> } | null> {
+  const colRef = collection(db, 'businesses');
+
+  // Collect matches from both ownership models and de-duplicate by id
+  const docs: { id: string; data: () => Record<string, unknown> }[] = [];
+
+  const r1 = await getDocs(query(colRef, where('ownerIds', 'array-contains', uid)));
+  r1.forEach((d) => {
+    docs.push({ id: d.id, data: () => d.data() as Record<string, unknown> });
+  });
+
+  const r2 = await getDocs(query(colRef, where('ownerId', '==', uid)));
+  r2.forEach((d) => {
+    if (!docs.find((x) => x.id === d.id)) {
+      docs.push({ id: d.id, data: () => d.data() as Record<string, unknown> });
+    }
+  });
+
+  if (docs.length === 0) return null;
+
+  const breederDoc = docs.find((d) => normalizeBusinessType(d.data()) === 'breeder');
+  return breederDoc ?? docs[0];
+}
+
 export default function LoginSignupPage() {
   const locale = useLocale();
   const router = useRouter();
@@ -67,31 +101,34 @@ export default function LoginSignupPage() {
       const user = userCredential.user;
       const uid = user.uid;
 
-      // Check if user is a business owner
-      const businessSnapshot = await getDocs(
-        query(collection(db, 'businesses'), where('ownerId', '==', uid))
-      );
-
-      if (!businessSnapshot.empty) {
-        const businessDoc = businessSnapshot.docs[0];
+      // Find business this user owns (supports ownerIds + legacy ownerId)
+      const businessDoc = await findOwnersBusiness(uid);
+      if (businessDoc) {
         const businessData = businessDoc.data();
-        const createdAt = businessData.createdAt?.toDate?.();
+        const createdAtLike = businessData.createdAt as { toDate?: () => Date } | Date | undefined;
+        const createdAt =
+          createdAtLike instanceof Date
+            ? createdAtLike
+            : createdAtLike?.toDate?.();
 
-        // Define the cutoff for required email verification
+        // Enforce email verification only for businesses created on/after this date
         const enforcementDate = new Date('2025-07-29');
-
-        // Enforce email verification only if created after the enforcement date
         if (createdAt && createdAt >= enforcementDate && !user.emailVerified) {
           setLoginError('Please verify your email before logging in.');
           setIsLoggingIn(false);
           return;
         }
 
-        router.push(`/${locale}/boardinganddaycaredashboard`);
+        const type = normalizeBusinessType(businessData);
+        if (type === 'breeder') {
+          router.push(`/${locale}/breederdashboard`);
+        } else {
+          router.push(`/${locale}/boardinganddaycaredashboard`);
+        }
         return;
       }
 
-      // Check if user is an individual
+      // Otherwise, route individuals
       const userDoc = await getDoc(doc(db, 'users', uid));
       if (userDoc.exists()) {
         router.push(`/${locale}/individualdashboard`);
@@ -175,7 +212,7 @@ export default function LoginSignupPage() {
             className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm"
           />
 
-          <input
+        <input
             type="password"
             placeholder="Password"
             value={password}
