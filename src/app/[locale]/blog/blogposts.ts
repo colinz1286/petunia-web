@@ -20,6 +20,19 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'ollies-law-kennel-safety-2025',
+        title:
+            '“Ollie’s Law” (2025): What It Is, How It Happened, Where It Applies, and What It Means for Dog Boarding & Daycare — With Global Context and Operator Playbooks',
+        date: 'August 23, 2025',
+        description:
+            'Comprehensive, operator-focused guide to Massachusetts’ “Ollie’s Law”: origins, what the statute does, the 2024–2026 rollout timeline, global analogs (Iowa, UK, ACT Australia, NZ councils, Canadian cities), and how ratios, injury reporting, inspections, and training standards change economics. Includes cost modeling and practical playbooks.',
+        component: () =>
+            import('./posts/ollies-law-kennel-safety-2025') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'behavior-temperament-notes-dog-boarding-daycare-software',
         title:
             'Behavior & Temperament Notes in Dog Boarding Software & Dog Daycare Software: Safety, Group Play, Staff Matching, and Incident Prevention',
