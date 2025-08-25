@@ -22,7 +22,7 @@ import {
   set as rtdbSet,
   get as rtdbGet,
 } from 'firebase/database';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -39,7 +39,7 @@ const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
-initializeApp(firebaseConfig);
+if (!getApps().length) initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
 const rtdb = getDatabase();
@@ -314,14 +314,14 @@ export default function IndividualBookDaycarePage() {
       }).format(new Date());
       const nowMins = sortTimeStrings([nowLabel, nowLabel]).length
         ? (() => {
-            const m = nowLabel.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i)!;
-            let h = parseInt(m[1], 10);
-            const mm = parseInt(m[2], 10);
-            const ap = m[3].toUpperCase();
-            if (ap === 'PM' && h !== 12) h += 12;
-            if (ap === 'AM' && h === 12) h = 0;
-            return h * 60 + mm;
-          })()
+          const m = nowLabel.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i)!;
+          let h = parseInt(m[1], 10);
+          const mm = parseInt(m[2], 10);
+          const ap = m[3].toUpperCase();
+          if (ap === 'PM' && h !== 12) h += 12;
+          if (ap === 'AM' && h === 12) h = 0;
+          return h * 60 + mm;
+        })()
         : 0;
 
       const todayKey = ymdKey(new Date(), bizTZ);
@@ -345,7 +345,7 @@ export default function IndividualBookDaycarePage() {
       });
 
       setDropOffOptions(filtered);
-      setSelectedTime(filtered[0] || '');
+      setSelectedTime((prev) => (prev && filtered.includes(prev) ? prev : (filtered[0] || '')));
     },
     [businessId, includePendingInCapacity, maxPerTimeSlot, bizTZ],
   );
@@ -503,18 +503,25 @@ export default function IndividualBookDaycarePage() {
       const uid = user.uid;
       setUserId(uid);
 
-      // Owner name for RTDB
+      // Owner name
       const usnap = await getDoc(doc(db, 'users', uid)).catch(() => null);
       const fn = (usnap?.data()?.firstName as string) || '';
       const ln = (usnap?.data()?.lastName as string) || '';
       const on = `${fn} ${ln}`.trim();
       if (on) setOwnerName(on);
 
-      await Promise.all([loadUserPets(uid), fetchBusinessSettings(businessId), checkWaiverStatus(businessId, uid)]);
+      // Do the initial loads
+      await Promise.all([
+        loadUserPets(uid),
+        fetchBusinessSettings(businessId),
+        checkWaiverStatus(businessId, uid),
+      ]);
+
       setIsLoading(false);
     });
     return () => unsub();
-  }, [router, locale, businessId, loadUserPets, fetchBusinessSettings, checkWaiverStatus]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, locale, businessId]);
 
   /* =========================
      Time options & capacity filtering (on date change)
@@ -869,9 +876,8 @@ export default function IndividualBookDaycarePage() {
             {/* Add to booking list */}
             <button
               onClick={addBookingDraft}
-              className={`w-full max-w-xs py-3 rounded text-white text-sm ${
-                hasExistingReservation ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-800 hover:bg-blue-700'
-              }`}
+              className={`w-full max-w-xs py-3 rounded text-white text-sm ${hasExistingReservation ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-800 hover:bg-blue-700'
+                }`}
               disabled={hasExistingReservation}
             >
               {t('add_to_booking_list')}
@@ -953,9 +959,8 @@ export default function IndividualBookDaycarePage() {
             {draftBookings.length > 0 && (
               <button
                 onClick={submitAllReservations}
-                className={`w-full max-w-xs text-white py-3 rounded transition text-sm ${
-                  isSubmitting ? 'bg-gray-400 cursor-wait' : 'bg-green-800 hover:bg-green-700'
-                }`}
+                className={`w-full max-w-xs text-white py-3 rounded transition text-sm ${isSubmitting ? 'bg-gray-400 cursor-wait' : 'bg-green-800 hover:bg-green-700'
+                  }`}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? t('submitting_reservations') : t('submit_all')}
@@ -1058,9 +1063,8 @@ export default function IndividualBookDaycarePage() {
                     }
                   }}
                   disabled={!hasCheckedAgreement}
-                  className={`px-4 py-2 rounded text-sm text-white ${
-                    hasCheckedAgreement ? 'bg-green-700 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'
-                  }`}
+                  className={`px-4 py-2 rounded text-sm text-white ${hasCheckedAgreement ? 'bg-green-700 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'
+                    }`}
                 >
                   {t('agree_button')}
                 </button>
