@@ -118,7 +118,7 @@ export default function HomePageClient() {
                         <section className="space-y-5 w-full max-w-xl">
                             <h3 className="text-2xl font-bold text-center">For Boarding & Daycare Facilities</h3>
                             <p className="text-lg text-balance">
-                                💡 Free for your first 15 days — just $3/month after. No contracts. No nonsense.
+                                💡 Free for your first 30 days — just $13/month after. No contracts. No nonsense.
                                 <br /><br />
                                 <strong>PLEASE CONTINUE READING — we’ll explain exactly why our price is so low, and why it doesn’t come at the cost of quality.</strong>
                             </p>
