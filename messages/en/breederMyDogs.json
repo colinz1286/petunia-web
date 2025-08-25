@@ -1,0 +1,43 @@
+{
+  "back_to_dashboard": "Back to Dashboard",
+
+  "title": "Breeding Dogs",
+  "loading": "Loading…",
+  "empty_state": "No breeding dogs added yet.",
+  "section_males_title": "Males",
+  "section_females_title": "Females",
+
+  "add_new_dog_button": "Add New Dog",
+  "edit_button": "Edit",
+
+  "modal_add_title": "Add New Dog",
+  "modal_edit_title": "Edit Dog",
+
+  "field_dog_name_label": "Dog Name",
+  "field_dog_name_placeholder": "Enter name",
+  "field_dob_label": "Date of Birth",
+  "field_breed_label": "Breed",
+  "field_breed_placeholder": "Select a breed",
+  "field_gender_label": "Gender",
+  "field_status_label": "Status",
+  "field_microchip_label": "Microchip Number (max 60)",
+  "field_microchip_placeholder": "Enter microchip",
+  "field_weight_label": "Body Weight (lb)",
+  "field_weight_placeholder": "e.g., 62.5",
+  "weight_last_updated_prefix": "last updated on",
+
+  "cancel_button": "Cancel",
+  "save_button": "Save",
+  "saving_label": "Saving…",
+
+  "gender_male": "Male",
+  "gender_female": "Female",
+
+  "status_active": "Active",
+  "status_retired": "Retired",
+  "status_rehomed": "Rehomed",
+  "status_deceased": "Deceased",
+
+  "error_no_breeder_found": "We could not find a breeder account for this login.",
+  "error_loading_dogs_generic": "Unable to load dogs. Please try again."
+}

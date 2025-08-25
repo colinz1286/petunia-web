@@ -1,0 +1,19 @@
+{
+  "back_to_dashboard": "Back to Dashboard",
+
+  "title": "Client Management",
+
+  "search_last_name_label": "Search by Last Name",
+  "search_last_name_placeholder": "Start typing a last name…",
+
+  "loading_clients_label": "Loading clients…",
+  "no_clients_found": "No clients found.",
+
+  "unknown_user_name": "Unknown Name",
+  "unknown_user_email": "Unknown Email",
+  "unknown_phone": "Unknown Phone",
+  "unknown_address": "Unknown Address",
+
+  "error_business_not_found": "Business not found for this account.",
+  "error_loading_clients_generic": "Error loading clients."
+}

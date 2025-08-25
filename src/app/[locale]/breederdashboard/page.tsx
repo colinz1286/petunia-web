@@ -194,11 +194,10 @@ export default function BreederDashboardPage() {
               type="button"
               onClick={uploadLogo}
               disabled={isUploading || !isBusinessResolved}
-              className={`mt-3 w-full text-white py-2 rounded text-sm ${
-                isUploading || !isBusinessResolved
+              className={`mt-3 w-full text-white py-2 rounded text-sm ${isUploading || !isBusinessResolved
                   ? 'bg-[#9fb5a5] cursor-not-allowed'
                   : 'bg-[#2c4a30] hover:opacity-90'
-              }`}
+                }`}
             >
               {isUploading ? t('uploading_logo') : t('upload_logo')}
             </button>
@@ -210,14 +209,22 @@ export default function BreederDashboardPage() {
         {/* Navigation buttons */}
         <div className="space-y-3">
           <DashLink disabled href={ROUTES.currentLitters} label={cs(t('current_litters'))} />
-          <DashLink disabled href={ROUTES.myDogs} label={cs(t('my_dogs'))} />
+          
+          {/* Make My Dogs ACTIVE */}
+          <DashLink href={ROUTES.myDogs} label={t('my_dogs')} />
+
           <DashLink disabled href={ROUTES.applicationsContracts} label={cs(t('applications_contracts'))} />
-          <DashLink disabled href={ROUTES.clientManagement} label={cs(t('client_management'))} />
-          <DashLink disabled href={ROUTES.pendingRequests} label={cs(t('pending_requests'))} />
+
+          {/* Make Pending Requests ACTIVE */}
+           <DashLink href={ROUTES.clientManagement} label={t('client_management')} />
+
+          {/* Make Pending Requests ACTIVE */}
+          <DashLink href={ROUTES.pendingRequests} label={t('pending_requests')} />
+
           <DashLink disabled href={ROUTES.upcomingAppointments} label={cs(t('upcoming_appointments'))} />
           <DashLink disabled href={ROUTES.reminders} label={cs(t('reminders'))} />
 
-          {/* Make THIS one active */}
+          {/* Keep Business Settings active */}
           <DashLink href={ROUTES.businessSettings} label={t('business_settings')} />
         </div>
 

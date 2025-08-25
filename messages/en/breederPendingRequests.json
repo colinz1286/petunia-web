@@ -1,0 +1,27 @@
+{
+  "back_to_dashboard": "Back to Dashboard",
+  "pending_requests_title": "Pending Client Requests",
+  "loading": "Loading…",
+  "no_pending_requests": "No pending requests.",
+
+  "approve_button": "Approve",
+  "decline_button": "Decline",
+
+  "approve_request_title": "Approve Request",
+  "decline_request_title": "Decline Request",
+  "approve_request_message": "Are you sure you want to approve this request?",
+  "decline_request_message": "Are you sure you want to decline this request?",
+
+  "no_button": "No",
+  "yes_button": "Yes",
+
+  "unknown_user_name": "Unknown Name",
+  "unknown_user_email": "Unknown Email",
+
+  "error_loading_requests_generic": "Failed to load requests.",
+  "error_no_business_found": "No breeder business found for this account.",
+  "error_action_failed": "Something went wrong. Please try again.",
+
+  "notification_approved": "Your request has been approved!",
+  "notification_declined": "Your request has been declined."
+}
