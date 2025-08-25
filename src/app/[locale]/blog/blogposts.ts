@@ -20,6 +20,19 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'fall-seasonal-allergies-in-dogs-usa',
+        title:
+            'Fall Seasonal Allergies in Dogs (U.S.): Causes, Timing by Region, Signs, Treatments, and a Practical Owner & Boarding Guide',
+        date: 'August 24, 2025',
+        description:
+            'A U.S.-focused fall guide to canine allergies: ragweed and mold triggers, regional timing, paw/skin signs, at-home care, and veterinarian-directed treatments and immunotherapy.',
+        component: () =>
+            import('./posts/fall-seasonal-allergies-in-dogs-usa') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'allergy'],
+    },
+    {
         slug: 'best-dog-boarding-and-daycare-software-buyer-guide',
         title:
             'The Best Dog Boarding & Daycare Software? A No-Nonsense Buyer’s Guide (Frameworks, Checklists, Cost Math & Red Flags)',
