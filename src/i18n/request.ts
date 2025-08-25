@@ -22,6 +22,7 @@ export default getRequestConfig(async ({ locale }) => {
     boardingAndDaycareClientManagement: (await import(`../../messages/${safeLocale}/boardingAndDaycareClientManagement.json`)).default,
     boardingAndDaycareDogsOnProperty: (await import(`../../messages/${safeLocale}/boardingAndDaycareDogsOnProperty.json`)).default,
     boardingAndDaycareUpcomingReservations: (await import(`../../messages/${safeLocale}/boardingAndDaycareUpcomingReservations.json`)).default,
+    breederBusinessSettings: (await import(`../../messages/${safeLocale}/breederBusinessSettings.json`)).default,
     breederDashboard: (await import(`../../messages/${safeLocale}/breederDashboard.json`)).default,
     businessSignUp: (await import(`../../messages/${safeLocale}/businessSignUp.json`)).default,
     individualSignUp: (await import(`../../messages/${safeLocale}/individualSignUp.json`)).default,

@@ -9,6 +9,7 @@ export default {
     boardingAndDaycareDogsOnProperty: require('./messages/en/boardingAndDaycareDogsOnProperty.json'),
     boardingAndDaycareUpcomingReservations: require('./messages/en/boardingAndDaycareUpcomingReservations.json'),
     businessSignUp: require('./messages/en/businessSignUp.json'),
+    breederBusinessSettings: require('./messages/en/breederBusinessSettings.json'),
     breederDashboard: require('./messages/en/breederDashboard.json'),
     individualSignUp: require('./messages/en/individualSignUp.json'),
     individualAddEditPet: require('./messages/en/individualAddEditPet.json'),

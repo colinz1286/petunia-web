@@ -1,0 +1,55 @@
+{
+  "title": "Breeder Business Settings",
+  "back_button": "Back",
+  "save_button": "Save",
+  "loading": "Loading…",
+
+  "alert_login_required": "Please log in to view your breeder settings.",
+  "alert_no_business": "No business found for this user.",
+  "alert_load_failed": "Failed to load settings.",
+  "alert_save_failed": "Failed to save settings.",
+
+  "general_header": "General Information",
+  "business_name_label": "Business Name",
+  "business_phone_label": "Business Phone",
+  "business_address_label": "Business Address",
+
+  "offerings_header": "Offerings",
+  "offers_stud_services_toggle": "Offer stud services",
+  "breeds_offered_label": "Breeds Offered",
+  "search_breeds_placeholder": "Search breeds…",
+  "no_breeds_found": "No breeds found",
+  "aria_remove_breed": "Remove {breed}",
+
+  "applications_header": "Applications",
+  "accepts_applications_toggle": "Accept puppy applications",
+  "custom_questions_hint": "Custom questions (max 25)",
+  "add_question_button": "+ Add question",
+  "remove_question_button": "Remove",
+  "questions_count_footer": "{count} of {max}",
+  "question_placeholder": "Question {num}",
+
+  "contract_header": "Buyer Contract",
+  "uses_contract_toggle": "Use a purchase contract",
+  "contract_version_label": "Version {version}",
+  "contract_text_placeholder": "Enter contract text…",
+
+  "deposits_pricing_header": "Deposits & Pricing",
+  "deposit_required_toggle": "Deposit required",
+  "deposit_amount_placeholder": "Deposit amount (e.g. $300)",
+  "deposit_policy_label": "Deposit policy (free text)",
+  "base_puppy_price_placeholder": "Base puppy price (e.g. $1800)",
+
+  "operating_hours_header": "Operating Hours",
+  "by_appointment_only_toggle": "By appointment only",
+  "closed_on_this_day_toggle": "Closed on this day",
+  "open_label": "Open",
+  "close_label": "Close",
+
+  "toast_settings_saved": "Settings saved",
+
+  "save_changes_title": "Save changes?",
+  "save_changes_message": "You have unsaved changes. Would you like to save before leaving?",
+  "cancel_button": "Cancel",
+  "discard_button": "Discard"
+}

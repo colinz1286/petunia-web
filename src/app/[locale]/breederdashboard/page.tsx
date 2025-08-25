@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -52,45 +52,24 @@ export default function BreederDashboardPage() {
 
   const isBusinessResolved = businessId.trim().length > 0;
 
-  // Routes (kept for future activation)
-  const ROUTES = {
-    currentLitters: `/${locale}/breedercurrentlitters`,
-    myDogs: `/${locale}/breedermydogs`,
-    applicationsContracts: `/${locale}/breederapplicationscontracts`,
-    clientManagement: `/${locale}/breederclientmanagement`,
-    pendingRequests: `/${locale}/breederpendingrequests`,
-    upcomingAppointments: `/${locale}/breederupcomingappointments`,
-    reminders: `/${locale}/breederreminders`,
-    businessSettings: `/${locale}/breederbusinesssettings`,
-    loginSignup: `/${locale}/loginsignup`,
-  } as const;
+  // Routes
+  const ROUTES = useMemo(
+    () => ({
+      currentLitters: `/${locale}/breedercurrentlitters`,
+      myDogs: `/${locale}/breedermydogs`,
+      applicationsContracts: `/${locale}/breederapplicationscontracts`,
+      clientManagement: `/${locale}/breederclientmanagement`,
+      pendingRequests: `/${locale}/breederpendingrequests`,
+      upcomingAppointments: `/${locale}/breederupcomingappointments`,
+      reminders: `/${locale}/breederreminders`,
+      businessSettings: `/${locale}/breederbusinesssettings`,
+      loginSignup: `/${locale}/loginsignup`,
+    }),
+    [locale]
+  );
 
-  // --- Auth + initial load ---------------------------------------------------
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (u) => {
-      if (!u) {
-        router.push(ROUTES.loginSignup);
-        return;
-      }
-
-      // Greeting
-      try {
-        const snap = await getDoc(doc(db, 'users', u.uid));
-        const data = snap.data();
-        setFirstName((data?.firstName as string) || '');
-      } catch {
-        // ignore
-      }
-
-      // Resolve business: ownerIds (array) -> legacy ownerId
-      await resolveBusiness(u.uid);
-    });
-
-    return () => unsub();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router, locale]);
-
-  const resolveBusiness = async (uid: string) => {
+  // --- Business resolver -----------------------------------------------------
+  const resolveBusiness = useCallback(async (uid: string) => {
     const col = collection(db, 'businesses');
 
     // 1) New model: ownerIds contains uid
@@ -111,10 +90,33 @@ export default function BreederDashboardPage() {
       setBusinessId(d.id.trim());
       setLogoUrl((d.data()?.logoURL as string) || '');
     }
-  };
+  }, []);
+
+  // --- Auth + initial load ---------------------------------------------------
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => {
+      if (!u) {
+        router.push(ROUTES.loginSignup);
+        return;
+      }
+
+      (async () => {
+        try {
+          const snap = await getDoc(doc(db, 'users', u.uid));
+          const data = snap.data();
+          setFirstName((data?.firstName as string) || '');
+        } catch {
+          // ignore errors reading user profile
+        }
+        await resolveBusiness(u.uid);
+      })();
+    });
+
+    return () => unsub();
+  }, [resolveBusiness, router, ROUTES.loginSignup]);
 
   // --- Logo upload (simple & direct) ----------------------------------------
-  const uploadLogo = async () => {
+  const uploadLogo = useCallback(async () => {
     if (!logoFile || !isBusinessResolved) return;
 
     setIsUploading(true);
@@ -125,21 +127,20 @@ export default function BreederDashboardPage() {
       const url = await getDownloadURL(fileRef);
 
       await updateDoc(doc(db, 'businesses', businessId), { logoURL: url });
-
       setLogoUrl(url);
       setLogoFile(null);
     } finally {
       setIsUploading(false);
     }
-  };
+  }, [logoFile, isBusinessResolved, businessId]);
 
-  const onLogout = async () => {
+  const onLogout = useCallback(async () => {
     await signOut(auth);
     router.push(ROUTES.loginSignup);
-  };
+  }, [router, ROUTES.loginSignup]);
 
   // Helper to append “(Coming Soon)” to labels
-  const cs = (label: string) => `${label} (Coming Soon)`;
+  const cs = useCallback((label: string) => `${label} (Coming Soon)`, []);
 
   return (
     <main className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)] px-4 py-8">
@@ -169,7 +170,9 @@ export default function BreederDashboardPage() {
                 unoptimized
               />
             ) : (
-              <span className="text-gray-500 text-xl">+</span>
+              <span className="text-gray-500 text-xl" aria-hidden>
+                +
+              </span>
             )}
           </div>
         </div>
@@ -204,7 +207,7 @@ export default function BreederDashboardPage() {
 
         <hr className="my-6 border-gray-300" />
 
-        {/* Navigation buttons: ALL disabled with "(Coming Soon)" */}
+        {/* Navigation buttons */}
         <div className="space-y-3">
           <DashLink disabled href={ROUTES.currentLitters} label={cs(t('current_litters'))} />
           <DashLink disabled href={ROUTES.myDogs} label={cs(t('my_dogs'))} />
@@ -213,10 +216,12 @@ export default function BreederDashboardPage() {
           <DashLink disabled href={ROUTES.pendingRequests} label={cs(t('pending_requests'))} />
           <DashLink disabled href={ROUTES.upcomingAppointments} label={cs(t('upcoming_appointments'))} />
           <DashLink disabled href={ROUTES.reminders} label={cs(t('reminders'))} />
-          <DashLink disabled href={ROUTES.businessSettings} label={cs(t('business_settings'))} />
+
+          {/* Make THIS one active */}
+          <DashLink href={ROUTES.businessSettings} label={t('business_settings')} />
         </div>
 
-        {/* Logout (only active button) */}
+        {/* Logout (only other active button) */}
         <button
           type="button"
           onClick={onLogout}
