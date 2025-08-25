@@ -14,14 +14,15 @@ export default getRequestConfig(async ({ locale }) => {
   }
 
   const messages = {
-    // 🔹 NEW: Breeder dashboard namespace
-    breederDashboard: (await import(`../../messages/${safeLocale}/breederDashboard.json`)).default,
-
+ 
     // Existing namespaces
     businessDashboard: (await import(`../../messages/${safeLocale}/businessDashboard.json`)).default,
     boardingAndDaycareBusinessSettings: (await import(`../../messages/${safeLocale}/boardingAndDaycareBusinessSettings.json`)).default,
     boardingAndDaycarePendingRequests: (await import(`../../messages/${safeLocale}/boardingAndDaycarePendingRequests.json`)).default,
     boardingAndDaycareClientManagement: (await import(`../../messages/${safeLocale}/boardingAndDaycareClientManagement.json`)).default,
+    boardingAndDaycareDogsOnProperty: (await import(`../../messages/${safeLocale}/boardingAndDaycareDogsOnProperty.json`)).default,
+    boardingAndDaycareUpcomingReservations: (await import(`../../messages/${safeLocale}/boardingAndDaycareUpcomingReservations.json`)).default,
+    breederDashboard: (await import(`../../messages/${safeLocale}/breederDashboard.json`)).default,
     businessSignUp: (await import(`../../messages/${safeLocale}/businessSignUp.json`)).default,
     individualSignUp: (await import(`../../messages/${safeLocale}/individualSignUp.json`)).default,
     individualDashboard: (await import(`../../messages/${safeLocale}/individualDashboard.json`)).default,
@@ -37,7 +38,8 @@ export default getRequestConfig(async ({ locale }) => {
     individualSelectService: (await import(`../../messages/${safeLocale}/individualSelectService.json`)).default,
     individualBookDaycare: (await import(`../../messages/${safeLocale}/individualBookDaycare.json`)).default,
     individualBookBoarding: (await import(`../../messages/${safeLocale}/individualBookBoarding.json`)).default,
-    individualEmployeeDogsOnProperty: (await import(`../../messages/${safeLocale}/individualEmployeeDogsOnProperty.json`)).default
+    individualEmployeeDogsOnProperty: (await import(`../../messages/${safeLocale}/individualEmployeeDogsOnProperty.json`)).default,
+    individualEmployeeUpcomingReservations: (await import(`../../messages/${safeLocale}/individualEmployeeUpcomingReservations.json`)).default
   } as const;
 
   return {

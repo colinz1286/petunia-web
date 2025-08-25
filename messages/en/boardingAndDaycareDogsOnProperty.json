@@ -1,0 +1,35 @@
+{
+  "dogs_on_property": "Dogs on Property",
+
+  "loading": "Loading...",
+  "error_business_not_found": "No business record was found for this account.",
+  "error_invalid_business_id": "Invalid business identifier.",
+  "error_parse_data": "We couldn’t parse the current check-in list.",
+
+  "daycare": "Daycare",
+  "boarding": "Boarding",
+  "grooming": "Grooming",
+
+  "no_daycare_dogs": "No daycare dogs are currently checked in.",
+  "no_boarding_dogs": "No boarding dogs are currently checked in.",
+  "no_grooming_dogs": "No dogs with grooming services are currently checked in.",
+
+  "unknown_dog": "Unknown Dog",
+  "unknown_owner": "Unknown Owner",
+
+  "intact_label": "INTACT",
+  "assessment_badge_short": "ASSESSMENT",
+  "assessment_label": "Assessment",
+
+  "owner_label": "Owner",
+  "type_label": "Type",
+  "checked_in_label": "Checked in",
+  "allergies_label": "Allergies",
+  "medications_label": "Medications",
+  "medications_yes": "Yes",
+  "pickup_date_label": "Pick-Up Date",
+  "grooming_services_label": "Grooming Services",
+
+  "view_assessment_button": "View Assessment",
+  "check_out_button": "Check Out"
+}

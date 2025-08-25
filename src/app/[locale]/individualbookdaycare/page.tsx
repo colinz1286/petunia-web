@@ -1,31 +1,40 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
+
+import {
+    getAuth,
+    onAuthStateChanged
+} from 'firebase/auth';
 import {
     getFirestore,
     collection,
     getDocs,
     getDoc,
     setDoc,
+    addDoc,
     doc,
-    Timestamp,
+    query,
+    where,
+    Timestamp
 } from 'firebase/firestore';
 import {
     getDatabase,
     ref as rtdbRef,
-    set as rtdbSet
+    set as rtdbSet,
+    get as rtdbGet
 } from 'firebase/database';
-import {
-    getAuth,
-    onAuthStateChanged
-} from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
+
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import GroomingModal from '@/components/GroomingModal';
 
+/* =========================
+   Firebase init (once)
+   ========================= */
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
@@ -34,657 +43,905 @@ const firebaseConfig = {
     messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
-
 initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
+const rtdb = getDatabase();
 
-// ---------- Types ----------
+/* =========================
+   Types & small utils
+   ========================= */
 type Pet = { id: string; name: string };
 
 type DraftBooking = {
     date: Date;
     dropOffTime: string;
     petIds: string[];
+    isAssessment: boolean;
     groomingAddOns?: Record<string, string[]>;
 };
 
-// ---------- Small helpers to keep UI in sync with Firestore ----------
+type FSMap = Record<string, unknown>;
+type WeekdayMap = Record<string, string[]>;
+
+type VaccineKey = 'Rabies' | 'Bordetella' | 'Canine Influenza' | 'Distemper';
+type PetVaccineRecord = { expiresAt: Date | null; isVaccinated: boolean };
+type PetVaccineMap = Record<string, Record<VaccineKey, PetVaccineRecord>>;
+
 const uniq = <T,>(arr: T[]) => Array.from(new Set(arr));
 const uniqueById = <T extends { id: string }>(items: T[]) =>
     Array.from(new Map(items.map((i) => [i.id, i])).values());
 
-function serializeGroomingSelections(
-    selections: Record<string, Set<string>>
-): Record<string, string[]> {
-    const result: Record<string, string[]> = {};
-    for (const [petId, services] of Object.entries(selections)) {
-        if (services.size > 0) result[petId] = Array.from(services);
+const serializeGroomingSelections = (selections: Record<string, Set<string>>): Record<string, string[]> => {
+    const out: Record<string, string[]> = {};
+    for (const [petId, set] of Object.entries(selections)) {
+        if (set && set.size) out[petId] = Array.from(set);
     }
-    return result;
-}
+    return out;
+};
 
+const weekdayName = (d: Date, tz: string) =>
+    new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'long' }).format(d); // "Monday"
+
+const ymdKey = (d: Date, tz: string) =>
+    new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d); // YYYY-MM-DD
+
+const sortTimeStrings = (arr: string[]) => {
+    const toMin = (s: string) => {
+        const m = s.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+        if (!m) return Number.POSITIVE_INFINITY;
+        let h = parseInt(m[1], 10);
+        const mm = parseInt(m[2], 10);
+        const ap = m[3].toUpperCase();
+        if (ap === 'PM' && h !== 12) h += 12;
+        if (ap === 'AM' && h === 12) h = 0;
+        return h * 60 + mm;
+    };
+    return [...arr].map(s => s.trim()).filter(Boolean).sort((a, b) => toMin(a) - toMin(b));
+};
+
+const isValidFirebaseKey = (s: string) => s !== '' && !/[/.#$\[\]#]/.test(s);
+
+/* =========================
+   Page
+   ========================= */
 export default function IndividualBookDaycarePage() {
     const t = useTranslations('individualBookDaycare');
     const locale = useLocale();
     const router = useRouter();
     const params = useSearchParams();
 
-    // ✅ Waiver enforcement
-    const [waiverSigned, setWaiverSigned] = useState(true); // default true until proven otherwise
-    const [showWaiverModal, setShowWaiverModal] = useState(false);
-    const [hasCheckedAgreement, setHasCheckedAgreement] = useState(false);
-
     const businessId = params.get('businessId') || '';
     const businessName = params.get('businessName') || t('default_business_name');
 
+    // Auth/user
     const [userId, setUserId] = useState('');
+    const [ownerName, setOwnerName] = useState('Client');
+
+    // Pets
     const [pets, setPets] = useState<Pet[]>([]);
     const [selectedPetIds, setSelectedPetIds] = useState<string[]>([]);
+
+    // Booking inputs
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
     const [dropOffOptions, setDropOffOptions] = useState<string[]>([]);
     const [selectedTime, setSelectedTime] = useState('');
-    const [hasExistingReservation, setHasExistingReservation] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+
+    // Business settings / features
+    const [businessTimeZoneId, setBusinessTimeZoneId] = useState<string | null>(null);
+    const [dropOffTimeRequired, setDropOffTimeRequired] = useState(false);
+    const [dropOffTimesByWeekday, setDropOffTimesByWeekday] = useState<WeekdayMap>({});
+    const [maxPerTimeSlot, setMaxPerTimeSlot] = useState<number>(3);
+    const [includePendingInCapacity, setIncludePendingInCapacity] = useState(false);
+    const [clientWritesRTDB, setClientWritesRTDB] = useState(true);
+    const [enforceWaiverVersion, setEnforceWaiverVersion] = useState(false);
+    const [temperamentTestRequired, setTemperamentTestRequired] = useState(false);
+    const [isAssessment, setIsAssessment] = useState(false);
+
+    // Waiver
     const [waiverRequired, setWaiverRequired] = useState(false);
-    const [error] = useState<string | null>(null);
+    const [waiverSigned, setWaiverSigned] = useState(true);
+    const [showWaiverModal, setShowWaiverModal] = useState(false);
+    const [hasCheckedAgreement, setHasCheckedAgreement] = useState(false);
+
+    // Drafts & grooming
+    const [draftBookings, setDraftBookings] = useState<DraftBooking[]>([]);
     const [groomingAvailable, setGroomingAvailable] = useState(false);
     const [groomingServices, setGroomingServices] = useState<string[]>([]);
     const [groomingSelections, setGroomingSelections] = useState<Record<string, Set<string>>>({});
-    const [draftBookings, setDraftBookings] = useState<DraftBooking[]>([]);
     const [showGroomingPrompt, setShowGroomingPrompt] = useState(false);
     const [pendingDraft, setPendingDraft] = useState<DraftBooking | null>(null);
     const [showGroomingUI, setShowGroomingUI] = useState(false);
+
+    // Duplicate prevention
+    const [hasExistingReservation, setHasExistingReservation] = useState(false);
+
+    // Vaccine alerts (read-only step 1)
+    const [requiredVaccines, setRequiredVaccines] = useState<Set<VaccineKey>>(new Set());
+    const [petVaccineData, setPetVaccineData] = useState<PetVaccineMap>({});
+    const [alertsByPet, setAlertsByPet] = useState<Record<string, string[]>>({});
+    const [isLoadingAlerts, setIsLoadingAlerts] = useState(false);
+
+    // UI flow
+    const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error] = useState<string | null>(null);
 
-    async function loadPets(uid: string) {
-        const snap = await getDocs(collection(db, 'users', uid, 'pets'));
-        const raw = snap.docs.map((d) => ({
-            id: d.id,
-            name: d.data().petName || 'Unnamed',
-        }));
-        const unique = uniqueById(raw);                 // ✅ mirror Firestore exactly (no duplicates)
-        setPets(unique);
-        setSelectedPetIds(unique.map(p => p.id));       // ✅ default to all pets in Firestore
-    }
+    const bizTZ = businessTimeZoneId || Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const shouldShowAlertsSection = useMemo(() => {
+        if (isLoadingAlerts || selectedPetIds.length === 0) return true;
+        const problems = selectedPetIds.some(pid => (alertsByPet[pid] || []).length > 0);
+        return problems;
+    }, [isLoadingAlerts, selectedPetIds, alertsByPet]);
 
+    /* =========================
+   Auth + initial load
+   ========================= */
     useEffect(() => {
-        async function loadBusinessSettingsInline() {
-            const snap = await getDoc(doc(db, 'businesses', businessId));
-            const data = snap.data() || {};
-            const dropOffMap = data.dropOffTimesDaycare || {};
-            const weekday = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-
-            // ✅ mirror Firestore times but de-dup UI list
-            const options = uniq<string>(dropOffMap[weekday] || []).slice().sort((a: string, b: string) => {
-                const toMinutes = (time: string) => {
-                    const [hourMin, period] = time.split(' ');
-                    const [hourStr, minuteStr] = hourMin.split(':');
-                    let hour = Number(hourStr);
-                    const minute = Number(minuteStr);
-                    if (period === 'PM' && hour !== 12) hour += 12;
-                    if (period === 'AM' && hour === 12) hour = 0;
-                    return hour * 60 + minute;
-                };
-                return toMinutes(a) - toMinutes(b);
-            });
-
-            setDropOffOptions(options);
-            setSelectedTime(options[0] || '');
-            setWaiverRequired(data.waiverRequired ?? false);
-            setGroomingAvailable(data.groomingAvailableAsAddOnToDaycare ?? false);
-            setGroomingServices(data.groomingServices ?? []);
-        }
-
-        onAuthStateChanged(auth, async (user) => {
+        const unsub = onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 router.push(`/${locale}/loginsignup`);
                 return;
             }
-
             const uid = user.uid;
             setUserId(uid);
 
-            await loadPets(uid);
-            await loadBusinessSettingsInline();
+            // Owner name for RTDB
+            const usnap = await getDoc(doc(db, 'users', uid)).catch(() => null);
+            const fn = (usnap?.data()?.firstName as string) || '';
+            const ln = (usnap?.data()?.lastName as string) || '';
+            const on = `${fn} ${ln}`.trim();
+            if (on) setOwnerName(on);
 
-            try {
-                const businessSnap = await getDoc(doc(db, 'businesses', businessId));
-                const clientSnap = await getDoc(doc(db, 'userApprovedBusinesses', businessId, 'clients', uid));
-
-                const rawLastUpdated = businessSnap.data()?.waiverLastUpdated;
-                const rawSignedAt = clientSnap.data()?.waiverSignedAt;
-
-                const waiverLastUpdated = rawLastUpdated?.toDate ? rawLastUpdated.toDate() : rawLastUpdated;
-                const waiverSignedAt = rawSignedAt?.toDate ? rawSignedAt.toDate() : rawSignedAt;
-
-                if (!waiverRequired) {
-                    setWaiverSigned(true);
-                } else if (!waiverSignedAt) {
-                    setWaiverSigned(false);
-                    setShowWaiverModal(true);
-                } else if (waiverLastUpdated && waiverSignedAt < waiverLastUpdated) {
-                    setWaiverSigned(false);
-                    setShowWaiverModal(true);
-                } else {
-                    setWaiverSigned(true);
-                }
-            } catch (err) {
-                console.error('❌ Error checking waiver status:', err);
-                setWaiverSigned(true);
-            }
-
+            await Promise.all([loadUserPets(uid), fetchBusinessSettings(businessId), checkWaiverStatus(businessId, uid)]);
             setIsLoading(false);
         });
-    }, [locale, router, businessId, waiverRequired]);
-    useEffect(() => {
-        async function recalculateDropOffOptions() {
-            if (!selectedDate) return;
+        return () => unsub();
+    }, [router, locale, businessId]);
 
-            const now = new Date();
-            const isToday = selectedDate.toDateString() === now.toDateString();
+    /* =========================
+       Fetch business settings
+       ========================= */
+    const fetchBusinessSettings = useCallback(async (bizId: string) => {
+        const bsnap = await getDoc(doc(db, 'businesses', bizId));
+        const data = (bsnap.data() || {}) as FSMap;
 
-            const snap = await getDoc(doc(db, 'businesses', businessId));
-            const data = snap.data() || {};
-            const dropOffMap = data.dropOffTimesDaycare || {};
-            const weekday = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+        // Core toggles
+        setDropOffTimeRequired(!!(data['dropOffTimeRequiredDaycare'] as boolean));
+        setWaiverRequired(!!(data['waiverRequired'] as boolean));
+        setTemperamentTestRequired(!!(data['temperamentTestRequired'] as boolean));
 
-            // ✅ de-dup & sort times for UI (mirrors Firestore content)
-            const options: string[] = uniq<string>(dropOffMap[weekday] || []).slice().sort((a: string, b: string) => {
-                const toMinutes = (time: string) => {
-                    const [hourMin, period] = time.split(' ');
-                    const [hourStr, minuteStr] = hourMin.split(':');
-                    let hour = Number(hourStr);
-                    const minute = Number(minuteStr);
-                    if (period === 'PM' && hour !== 12) hour += 12;
-                    if (period === 'AM' && hour === 12) hour = 0;
-                    return hour * 60 + minute;
-                };
-                return toMinutes(a) - toMinutes(b);
-            });
+        // TZ + features
+        setBusinessTimeZoneId((data['timeZoneId'] as string) || (data['timezone'] as string) || null);
+        const features = (data['features'] as FSMap) || {};
+        setIncludePendingInCapacity(!!features['countPendingInCapacity']);
+        setClientWritesRTDB(features['clientWritesRTDB'] !== false);
+        setEnforceWaiverVersion(!!features['enforceWaiverVersion']);
 
-            // Filter out past time slots for today
-            const filteredOptions = isToday
-                ? options.filter((opt) => {
-                    const [hourMin, period] = opt.split(' ');
-                    const [hourStr, minuteStr] = hourMin.split(':');
-                    let hour = Number(hourStr);
-                    const minute = Number(minuteStr);
-                    if (period === 'PM' && hour !== 12) hour += 12;
-                    if (period === 'AM' && hour === 12) hour = 0;
+        // Grooming
+        setGroomingAvailable(!!(data['groomingAvailableAsAddOnToDaycare'] as boolean));
+        setGroomingServices(((data['groomingServices'] as string[]) || []).map(s => (s || '').trim()).filter(Boolean));
 
-                    const dropOffDateTime = new Date(selectedDate);
-                    dropOffDateTime.setHours(hour, minute, 0, 0);
-                    return dropOffDateTime > now;
-                })
-                : options;
+        // Times map
+        const map = (data['dropOffTimesDaycare'] as WeekdayMap) || {};
+        setDropOffTimesByWeekday(map);
 
-            // If no valid drop-off times remain today, auto-advance to tomorrow
-            if (isToday && filteredOptions.length === 0) {
-                const tomorrow = new Date();
-                tomorrow.setDate(now.getDate() + 1);
-                setSelectedDate(tomorrow); // triggers this useEffect again
-                return;
+        // Booking limits
+        const limits = (data['bookingLimits'] as FSMap) || {};
+        setMaxPerTimeSlot(typeof limits['maxPerTimeSlot'] === 'number' ? (limits['maxPerTimeSlot'] as number) : 3);
+
+        // Required vaccines (keys may vary → normalize)
+        const reqRaw = (data['requiredVaccinations'] as FSMap) || {};
+        const reqSet: Set<VaccineKey> = new Set();
+        Object.keys(reqRaw).forEach(k => {
+            if (reqRaw[k] === true) {
+                const v = policyKeyToEnum(k);
+                if (v) reqSet.add(v);
             }
+        });
+        setRequiredVaccines(reqSet);
 
-            setDropOffOptions(filteredOptions);
-            setSelectedTime(filteredOptions[0] || '');
+        // Seed options for selected date
+        if (selectedDate) {
+            const weekday = weekdayName(selectedDate, bizTZ);
+            const sorted = sortTimeStrings(map[weekday] || []);
+            setDropOffOptions(sorted);
+            setSelectedTime(sorted[0] || '');
+            await filterUnavailableTimes(selectedDate, sorted);
+            await checkForExistingReservation(selectedDate, userId);
         }
+    }, [selectedDate, userId, bizTZ]);
 
-        recalculateDropOffOptions();
-    }, [selectedDate, businessId]);
+    /* =========================
+       Waiver (version-aware)
+       ========================= */
+    const checkWaiverStatus = useCallback(async (bizId: string, uid: string) => {
+        try {
+            const bizRef = doc(db, 'businesses', bizId);
+            const waiverRef = doc(db, 'businesses', bizId, 'settings', 'clientWaiver');
+            const clientRef = doc(db, 'userApprovedBusinesses', bizId, 'clients', uid);
 
-    async function checkForExistingReservation(date: Date, uid: string) {
-        const startOfDay = new Date(date);
-        startOfDay.setHours(0, 0, 0, 0);
+            const [bizSnap, wSnap, cSnap] = await Promise.all([getDoc(bizRef), getDoc(waiverRef), getDoc(clientRef)]);
+            const b = (bizSnap.data() || {}) as FSMap;
+            const w = (wSnap.data() || {}) as FSMap;
+            const c = (cSnap.data() || {}) as FSMap;
 
-        const endOfDay = new Date(date);
-        endOfDay.setHours(23, 59, 59, 999);
+            const enforce = !!(((b['features'] as FSMap) || {})['enforceWaiverVersion'] as boolean);
+            const version = (w['waiverVersion'] as number | undefined);
+            const subUpdated = (w['lastUpdated'] as Timestamp | undefined)?.toDate();
+            const rootUpdated = (b['waiverLastUpdated'] as Timestamp | undefined)?.toDate();
+            const lastUpdated = subUpdated || rootUpdated || null;
 
-        const snap = await getDocs(collection(db, 'daycareReservations'));
+            const versionSigned = (c['waiverVersionSigned'] as number | undefined) ?? 0;
+            const signedAt = (c['waiverSignedAt'] as Timestamp | undefined)?.toDate() || null;
+            const legacy = (c['waiverSigned'] as boolean | undefined) ?? false;
 
-        const matching = snap.docs.find(doc => {
-            const data = doc.data();
-            const resDate = data.date?.toDate?.();
-            const status = data.status;
-            return (
-                data.businessId === businessId &&
-                data.userId === uid &&
-                ['approved', 'pending'].includes(status) &&
-                resDate >= startOfDay && resDate <= endOfDay
-            );
+            setWaiverRequired(!!(b['waiverRequired'] as boolean));
+
+            let signed = true;
+            if (!b['waiverRequired']) signed = true;
+            else if (enforce && typeof version === 'number') signed = versionSigned >= version;
+            else if (lastUpdated && signedAt) signed = signedAt >= lastUpdated;
+            else signed = legacy;
+
+            setWaiverSigned(signed);
+            if (b['waiverRequired'] && !signed) setShowWaiverModal(true);
+        } catch (e) {
+            console.warn('⚠️ Waiver check failed (non-fatal):', e);
+            setWaiverSigned(true);
+        }
+    }, []);
+
+    /* =========================
+       Pets + vaccine data
+       ========================= */
+    const loadUserPets = useCallback(async (uid: string) => {
+        const ps = await getDocs(collection(db, 'users', uid, 'pets'));
+        const raw = ps.docs.map(d => ({ id: d.id, name: (d.data().petName as string) || 'Unnamed' }));
+        const unique = uniqueById(raw);
+        setPets(unique);
+        setSelectedPetIds(unique.map(p => p.id));
+
+        // Preload vaccine data for selected pets
+        await loadVaccineData(uid, new Set(unique.map(p => p.id)));
+    }, []);
+
+    const policyKeyToEnum = (raw: string): VaccineKey | null => {
+        const s = raw.toLowerCase();
+        if (s.includes('rabies')) return 'Rabies';
+        if (s.includes('bordetella')) return 'Bordetella';
+        if (s.includes('influenza') || s.includes('civ')) return 'Canine Influenza';
+        if (s.includes('distemper') || s.includes('dhpp') || s.includes('da2pp') || s.includes('dapp')) return 'Distemper';
+        return null;
+    };
+
+    const isExpired = (expiresAt: Date | null): boolean => {
+        if (!expiresAt) return true;
+        const today = new Date(new Intl.DateTimeFormat('en-CA', { timeZone: bizTZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()));
+        const expDay = new Date(new Intl.DateTimeFormat('en-CA', { timeZone: bizTZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(expiresAt));
+        return expDay.getTime() < today.getTime();
+    };
+
+    const loadVaccineData = useCallback(async (uid: string, petIds: Set<string>) => {
+        setIsLoadingAlerts(true);
+        const base = collection(db, 'users', uid, 'pets');
+        const next: PetVaccineMap = { ...petVaccineData };
+
+        await Promise.all(
+            Array.from(petIds).map(async (pid) => {
+                const snap = await getDoc(doc(base, pid)).catch(() => null);
+                const data = (snap?.data() || {}) as FSMap;
+                const records = (data['vaccinationRecords'] as FSMap) || {};
+                const map: Record<VaccineKey, PetVaccineRecord> = {} as any;
+
+                Object.entries(records).forEach(([rawKey, rec]) => {
+                    const key = policyKeyToEnum(rawKey);
+                    if (!key) return;
+                    if (typeof rec === 'object' && rec) {
+                        const obj = rec as FSMap;
+                        const date = (obj['date'] as Timestamp | undefined)?.toDate() || null;
+                        const isVacc = !!(obj['isVaccinated'] as boolean);
+                        map[key] = { expiresAt: date, isVaccinated: isVacc };
+                    }
+                });
+                next[pid] = map;
+            })
+        );
+
+        setPetVaccineData(next);
+        setIsLoadingAlerts(false);
+        recomputeVaccineAlerts(next);
+    }, [petVaccineData, bizTZ]);
+
+    const recomputeVaccineAlerts = (source: PetVaccineMap = petVaccineData) => {
+        const df = new Intl.DateTimeFormat('en-CA', { timeZone: bizTZ, year: 'numeric', month: '2-digit', day: '2-digit' });
+        const alerts: Record<string, string[]> = {};
+        selectedPetIds.forEach((pid) => {
+            const vmap = source[pid] || {};
+            const msgs: string[] = [];
+            requiredVaccines.forEach((k) => {
+                const rec = vmap[k];
+                if (rec?.isVaccinated) {
+                    if (isExpired(rec.expiresAt)) {
+                        const when = rec.expiresAt ? ` ${df.format(rec.expiresAt)}` : '';
+                        msgs.push(`${k}: Expired${when}`);
+                    }
+                } else {
+                    msgs.push(`${k}: Not on file`);
+                }
+            });
+            alerts[pid] = msgs;
+        });
+        setAlertsByPet(alerts);
+    };
+
+    /* =========================
+       Time options & capacity filtering
+       ========================= */
+    useEffect(() => {
+        (async () => {
+            if (!selectedDate) return;
+            const weekday = weekdayName(selectedDate, bizTZ);
+            const raw = sortTimeStrings(dropOffTimesByWeekday[weekday] || []);
+            setDropOffOptions(raw);
+            setSelectedTime(raw[0] || '');
+            await filterUnavailableTimes(selectedDate, raw);
+            if (userId) await checkForExistingReservation(selectedDate, userId);
+        })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedDate, dropOffTimesByWeekday, bizTZ]);
+
+    const filterUnavailableTimes = useCallback(async (date: Date, options: string[]) => {
+        if (!businessId || !isValidFirebaseKey(businessId)) return;
+
+        const dayKeyBiz = ymdKey(date, bizTZ);
+        const dayKeyDevice = ymdKey(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
+
+        const snap = await rtdbGet(rtdbRef(rtdb, `upcomingReservations/${businessId}`)).catch(() => null);
+        const val = (snap?.val() as Record<string, FSMap>) || {};
+
+        const counts: Record<string, number> = {};
+        Object.values(val).forEach((row: any) => {
+            const window = (row?.arrivalWindow as string) || '';
+            const status = (row?.status as string) || '';
+            const d1 = (row?.date as string) || '';
+            const dBiz = (row?.dateBusinessTZ as string) || '';
+
+            const sameDay = dBiz === dayKeyBiz || d1 === dayKeyBiz || d1 === dayKeyDevice;
+            const countable = status === 'approved' || (includePendingInCapacity && status === 'pending');
+            if (sameDay && countable && window) counts[window] = (counts[window] ?? 0) + 1;
         });
 
-        setHasExistingReservation(!!matching);
-    }
+        // Hide past times in business TZ for today
+        const nowLabel = new Intl.DateTimeFormat('en-US', { timeZone: bizTZ, hour12: true, hour: 'numeric', minute: '2-digit' }).format(new Date());
+        const nowMins = sortTimeStrings([nowLabel, nowLabel]).length ? (() => {
+            const m = nowLabel.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i)!;
+            let h = parseInt(m[1], 10), mm = parseInt(m[2], 10), ap = m[3].toUpperCase();
+            if (ap === 'PM' && h !== 12) h += 12;
+            if (ap === 'AM' && h === 12) h = 0;
+            return h * 60 + mm;
+        })() : 0;
 
-    function addBookingDraft() {
-        if (!selectedDate || !selectedTime || selectedPetIds.length === 0) return;
+        const todayKey = ymdKey(new Date(), bizTZ);
+        const isTodayBiz = todayKey === dayKeyBiz;
 
-        const exists = draftBookings.some(
-            (b) =>
-                b.date.toDateString() === selectedDate.toDateString() &&
-                b.dropOffTime === selectedTime &&
-                JSON.stringify(b.petIds.slice().sort()) === JSON.stringify(selectedPetIds.slice().sort())
-        );
-        if (exists) {
-            alert(t('duplicate_daycare_message'));
-            return;
-        }
-
-        const newDraft: DraftBooking = {
-            date: selectedDate,
-            dropOffTime: selectedTime,
-            petIds: [...selectedPetIds],
+        const toMin = (s: string) => {
+            const m = s.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+            if (!m) return 0;
+            let h = parseInt(m[1], 10), mm = parseInt(m[2], 10); const ap = m[3].toUpperCase();
+            if (ap === 'PM' && h !== 12) h += 12;
+            if (ap === 'AM' && h === 12) h = 0;
+            return h * 60 + mm;
         };
 
-        if (groomingAvailable && groomingServices.length > 0) {
-            setPendingDraft(newDraft);
-            setShowGroomingPrompt(true);
-        } else {
-            setDraftBookings((prev) => [...prev, newDraft]);
-            resetFormAfterDraft();
-        }
+        const filtered = options.filter(opt => {
+            const underCap = (counts[opt] ?? 0) < maxPerTimeSlot;
+            if (!isTodayBiz) return underCap;
+            return underCap && toMin(opt) > nowMins;
+        });
+
+        setDropOffOptions(filtered);
+        setSelectedTime(filtered[0] || '');
+    }, [businessId, includePendingInCapacity, maxPerTimeSlot, bizTZ]);
+
+    /* =========================
+       Duplicate daycare prevention (biz TZ)
+       ========================= */
+    const checkForExistingReservation = useCallback(async (d: Date, uid: string) => {
+        const bizKey = ymdKey(d, bizTZ);
+        const qref = query(
+            collection(db, 'daycareReservations'),
+            where('userId', '==', uid),
+            where('businessId', '==', businessId),
+            where('status', 'in', ['pending', 'approved'])
+        );
+        const snap = await getDocs(qref);
+        const exists = snap.docs.some(docSnap => {
+            const data = docSnap.data() as FSMap;
+            const ts = (data['date'] as Timestamp | undefined)?.toDate();
+            const keyField = (data['dateBusinessTZ'] as string | undefined) || (ts ? ymdKey(ts, bizTZ) : '');
+            return keyField === bizKey;
+        });
+        setHasExistingReservation(exists);
+    }, [businessId, bizTZ]);
+
+    /* =========================
+       Selected pets → refresh alerts
+       ========================= */
+    useEffect(() => {
+        recomputeVaccineAlerts();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedPetIds]);
+
+      /* =========================
+     Add booking draft (with Assessment flag)
+     ========================= */
+  const addBookingDraft = useCallback(() => {
+    if (!selectedDate || (dropOffTimeRequired && !selectedTime) || selectedPetIds.length === 0) return;
+
+    // prevent same-day duplicate draft
+    const exists = draftBookings.some(
+      (b) =>
+        ymdKey(b.date, bizTZ) === ymdKey(selectedDate, bizTZ) &&
+        b.dropOffTime === selectedTime &&
+        JSON.stringify([...b.petIds].sort()) === JSON.stringify([...selectedPetIds].sort())
+    );
+    if (exists) {
+      alert(t('duplicate_daycare_message'));
+      return;
     }
 
-    function resetFormAfterDraft() {
-        setSelectedTime('');
-        setDropOffOptions([]);
-        setSelectedPetIds(pets.map(p => p.id)); // ✅ mirror Firestore (all pets selected)
+    const newDraft: DraftBooking = {
+      date: selectedDate,
+      dropOffTime: selectedTime,
+      petIds: [...selectedPetIds],
+      isAssessment
+    };
+
+    if (groomingAvailable && groomingServices.length > 0) {
+      setPendingDraft(newDraft);
+      setShowGroomingPrompt(true);
+    } else {
+      setDraftBookings((prev) => [...prev, newDraft]);
+      resetFormAfterDraft();
     }
+  }, [
+    selectedDate, selectedTime, selectedPetIds, draftBookings,
+    dropOffTimeRequired, groomingAvailable, groomingServices, isAssessment, t, bizTZ
+  ]);
 
-    async function submitBooking() {
-        if (draftBookings.length === 0) {
-            alert(t('no_bookings_to_submit'));
-            return;
-        }
+  const resetFormAfterDraft = () => {
+    setSelectedTime('');
+    setDropOffOptions([]);
+    setSelectedPetIds(pets.map(p => p.id));
+  };
 
-        if (waiverRequired && !waiverSigned) {
-            setShowWaiverModal(true);
-            return;
-        }
+  /* =========================
+     Submit all drafts (Firestore + optional RTDB)
+     ========================= */
+  const submitAllReservations = useCallback(async () => {
+    if (draftBookings.length === 0) { alert(t('no_bookings_to_submit')); return; }
+    if (waiverRequired && !waiverSigned) { setShowWaiverModal(true); return; }
 
-        const firestore = getFirestore();
+    setIsSubmitting(true);
 
-        const userSnap = await getDoc(doc(firestore, 'users', userId));
-        const firstName = userSnap.data()?.firstName || 'Client';
-        const lastName = userSnap.data()?.lastName || '';
-        const ownerName = `${firstName} ${lastName}`.trim();
+    try {
+      const userSnap = await getDoc(doc(db, 'users', userId));
+      const firstName = (userSnap.data()?.firstName as string) || 'Client';
+      const lastName  = (userSnap.data()?.lastName  as string) || '';
+      const owner = `${firstName} ${lastName}`.trim() || ownerName;
 
-        for (const booking of draftBookings) {
-            const reservationId = crypto.randomUUID();
-            const realtimeKey = reservationId;
+      // latest waiver version for backfill
+      const wSnap = await getDoc(doc(db, 'businesses', businessId, 'settings', 'clientWaiver'));
+      const waiverVersionLatest = (wSnap.data()?.waiverVersion as number) ?? 1;
 
-            const petStatuses: Record<string, string> = {};
-            booking.petIds.forEach(petId => { petStatuses[petId] = 'pending'; });
+      for (const booking of draftBookings) {
+        const reservationId = crypto.randomUUID();
+        const realtimeKey = reservationId;
 
-            const groomingForReservation = serializeGroomingSelections(groomingSelections);
+        const petStatuses: Record<string, string> = {};
+        booking.petIds.forEach(pid => petStatuses[pid] = 'pending');
 
-            const reservation: {
-                userId: string;
-                businessId: string;
-                petIds: string[];
-                date: Timestamp;
-                arrivalWindow: string;
-                status: string;
-                realtimeKey: string;
-                petStatuses: Record<string, string>;
-                groomingAddOns?: Record<string, string[]>;
-            } = {
-                userId,
-                businessId,
-                petIds: booking.petIds,
-                date: Timestamp.fromDate(booking.date),
+        const dateBizKey = ymdKey(booking.date, bizTZ);
+
+        const reservation: FSMap = {
+          userId,
+          businessId,
+          petIds: booking.petIds,
+          petStatuses,
+          date: Timestamp.fromDate(booking.date),   // legacy timestamp
+          dateBusinessTZ: dateBizKey,               // new string key in biz TZ
+          arrivalWindow: booking.dropOffTime,
+          status: 'approved',
+          realtimeKey
+        };
+        if (booking.isAssessment) reservation['isAssessment'] = true;
+
+        const groomForReservation = serializeGroomingSelections(groomingSelections);
+        if (Object.keys(groomForReservation).length) reservation['groomingAddOns'] = groomForReservation;
+
+        // Firestore
+        await setDoc(doc(db, 'daycareReservations', reservationId), reservation);
+
+        // Optional RTDB mirrors (per pet)
+        if (clientWritesRTDB) {
+          await Promise.all(
+            booking.petIds.map(async (petId) => {
+              const pet = pets.find(p => p.id === petId);
+              if (!pet) return;
+
+              const rtdbKey = `${realtimeKey}-${petId}`;
+              const entry: FSMap = {
+                dogName: pet.name,
+                ownerName: owner,
+                type: 'Daycare',
+                date: ymdKey(booking.date, Intl.DateTimeFormat().resolvedOptions().timeZone), // device legacy
+                dateBusinessTZ: dateBizKey,  // new
                 arrivalWindow: booking.dropOffTime,
                 status: 'approved',
-                realtimeKey,
-                petStatuses,
-            };
+                userId,
+                realtimeKey
+              };
+              if (booking.isAssessment) entry['isAssessment'] = true;
 
-            if (Object.keys(groomingForReservation).length > 0) {
-                reservation.groomingAddOns = groomingForReservation;
-            }
+              const perPet = groomingSelections[petId];
+              if (perPet && perPet.size) entry['groomingAddOns'] = Array.from(perPet);
 
-            await setDoc(doc(firestore, 'daycareReservations', reservationId), reservation);
+              // enrich from pet doc
+              const ps = await getDoc(doc(db, 'users', userId, 'pets', petId)).catch(() => null);
+              const pdata = ps?.data() || {};
+              if (pdata['medications'])       entry['medications']       = pdata['medications'];
+              if (pdata['medicationDetails']) entry['medicationDetails'] = pdata['medicationDetails'];
+              if (pdata['spayedNeutered'])    entry['spayedNeutered']    = pdata['spayedNeutered'];
 
-            for (const petId of booking.petIds) {
-                const pet = pets.find(p => p.id === petId);
-                if (!pet) continue;
-
-                const rtdbEntry: {
-                    dogName: string;
-                    ownerName: string;
-                    type: string;
-                    date: string;
-                    arrivalWindow: string;
-                    status: string;
-                    userId: string;
-                    realtimeKey: string;
-                    groomingAddOns?: string[];
-                    medications?: string;
-                    medicationDetails?: string;
-                    spayedNeutered?: string;
-                } = {
-                    dogName: pet.name,
-                    ownerName,
-                    type: 'Daycare',
-                    date: booking.date.toISOString().split('T')[0],
-                    arrivalWindow: booking.dropOffTime,
-                    status: 'approved',
-                    userId,
-                    realtimeKey,
-                };
-
-                if (groomingSelections[petId] && groomingSelections[petId]!.size > 0) {
-                    rtdbEntry.groomingAddOns = Array.from(groomingSelections[petId]!);
-                }
-
-                const petSnap = await getDoc(doc(firestore, 'users', userId, 'pets', petId));
-                const petData = petSnap.data();
-
-                if (petData) {
-                    if (petData.medications) rtdbEntry.medications = petData.medications;
-                    if (petData.medicationDetails) rtdbEntry.medicationDetails = petData.medicationDetails;
-                    if (petData.spayedNeutered) rtdbEntry.spayedNeutered = petData.spayedNeutered;
-                }
-
-                await rtdbSet(
-                    rtdbRef(getDatabase(), `upcomingReservations/${businessId}/${realtimeKey}-${petId}`),
-                    rtdbEntry
-                );
-            }
+              await rtdbSet(rtdbRef(rtdb, `upcomingReservations/${businessId}/${rtdbKey}`), entry);
+            })
+          );
         }
+      }
+
+      // Waiver version backfill (non-breaking)
+      if (waiverRequired) {
+        await setDoc(
+          doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
+          { waiverVersionSigned: waiverVersionLatest, waiverSignedAt: Timestamp.now() },
+          { merge: true }
+        );
+      }
+
+      // Success UI reset
+      setDraftBookings([]);
+      setGroomingSelections({});
+      setSelectedTime('');
+      setSelectedDate(null);
+      setSelectedPetIds(pets.map(p => p.id));
+      alert(t('submission_success'));
+    } catch (e) {
+      console.error('❌ submitAllReservations failed:', e);
+      alert(t('submission_error') || 'There was an error submitting your bookings.');
+    } finally {
+      setIsSubmitting(false);
     }
-    return (
-        <div className="min-h-screen bg-[color:var(--color-background)] px-4 py-6 text-[color:var(--color-foreground)]">
-            <div className="w-full max-w-xl mx-auto space-y-6">
-                {/* ✅ Back Button */}
-                <button
-                    onClick={() =>
-                        router.push(`/${locale}/individualselectservice?businessId=${businessId}`)
-                    }
-                    className="mb-4 text-sm text-[color:var(--color-accent)] underline hover:opacity-90"
-                >
-                    ← {t('back_to_select_service')}
-                </button>
+  }, [
+    draftBookings, waiverRequired, waiverSigned, groomingSelections,
+    userId, ownerName, pets, businessId, clientWritesRTDB, bizTZ, t
+  ]);
 
-                <h1 className="text-3xl font-bold text-center text-[color:var(--color-accent)]">
-                    {t('book_daycare_title')}
-                    <br />
-                    <span className="text-lg font-normal text-gray-600">{businessName}</span>
-                </h1>
+  /* =========================
+     Render
+     ========================= */
+  return (
+    <div className="min-h-screen bg-[color:var(--color-background)] px-4 py-6 text-[color:var(--color-foreground)]">
+      <div className="w-full max-w-xl mx-auto space-y-6">
+        {/* Back */}
+        <button
+          onClick={() => router.push(`/${locale}/individualselectservice?businessId=${businessId}`)}
+          className="mb-4 text-sm text-[color:var(--color-accent)] underline hover:opacity-90"
+        >
+          ← {t('back_to_select_service')}
+        </button>
 
-                {error && <p className="text-red-600 text-center text-sm">{error}</p>}
-                {isLoading ? (
-                    <p className="text-center text-gray-500 text-sm">{t('loading')}</p>
-                ) : (
-                    <div className="flex flex-col items-center space-y-6">
-                        {/* ✅ Select a Date */}
-                        <div className="flex flex-col items-center space-y-1 w-full">
-                            <label className="font-semibold text-center text-sm">{t('select_date')}</label>
-                            <DatePicker
-                                selected={selectedDate}
-                                onChange={(date: Date | null) => {
-                                    setSelectedDate(date);
-                                    if (date && userId) checkForExistingReservation(date, userId);
-                                }}
-                                dateFormat="MM/dd/yyyy"
-                                className="w-full max-w-xs border p-2 rounded text-center text-sm"
-                                placeholderText="Select a date"
-                            />
-                        </div>
+        {/* Heading */}
+        <h1 className="text-3xl font-bold text-center text-[color:var(--color-accent)]">
+          {t('book_daycare_title')}
+          <br />
+          <span className="text-lg font-normal text-gray-600">{businessName}</span>
+        </h1>
 
-                        {/* ✅ Drop-Off Time Selector */}
-                        {dropOffOptions.length > 0 && (
-                            <div className="flex flex-col items-center space-y-1 w-full">
-                                <label className="font-semibold text-center text-sm">{t('select_time')}</label>
-                                <select
-                                    className="w-full max-w-xs border p-2 rounded text-sm"
-                                    value={selectedTime}
-                                    onChange={(e) => setSelectedTime(e.target.value)}
-                                >
-                                    {dropOffOptions.map((opt: string) => (
-                                        <option key={opt} value={opt}>
-                                            {opt}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        )}
+        {error && <p className="text-red-600 text-center text-sm">{error}</p>}
 
-                        {/* ✅ Pet Selection (UI mirrors Firestore via uniqueById) */}
-                        <div className="flex flex-col items-start space-y-2 w-full max-w-xs">
-                            <label className="font-semibold w-full text-center text-sm">{t('select_pets')}</label>
-                            <div className="flex flex-col space-y-2 w-full">
-                                {pets.map((pet) => (
-                                    <label key={pet.id} className="flex items-center gap-2 text-sm">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedPetIds.includes(pet.id)}
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setSelectedPetIds((prev) => uniq([...prev, pet.id]));
-                                                } else {
-                                                    setSelectedPetIds((prev) => prev.filter((id) => id !== pet.id));
-                                                }
-                                            }}
-                                        />
-                                        <span>{pet.name}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* ✅ Add to Booking List */}
-                        <button
-                            onClick={addBookingDraft}
-                            className="w-full max-w-xs bg-blue-800 text-white py-3 rounded hover:bg-blue-700 transition text-sm"
-                        >
-                            {t('add_to_booking_list')}
-                        </button>
-
-                        {/* ✅ Grooming Add-On Modal */}
-                        <GroomingModal
-                            isOpen={showGroomingUI}
-                            onClose={() => {
-                                setTimeout(() => {
-                                    if (pendingDraft) {
-                                        setDraftBookings((prev) => [
-                                            ...prev,
-                                            {
-                                                ...pendingDraft,
-                                                groomingAddOns: serializeGroomingSelections(groomingSelections),
-                                            },
-                                        ]);
-                                    }
-                                    resetFormAfterDraft();
-                                    setPendingDraft(null);
-                                    setShowGroomingUI(false);
-                                }, 100);
-                            }}
-                            pets={pets.filter((p) => pendingDraft?.petIds.includes(p.id))}
-                            services={groomingServices}
-                            groomingSelections={groomingSelections}
-                            setGroomingSelections={setGroomingSelections}
-                        />
-
-                        {/* ✅ Draft Bookings List */}
-                        {draftBookings.length > 0 && (
-                            <div className="w-full space-y-4">
-                                <h2 className="text-md font-semibold text-center">{t('your_bookings')}</h2>
-                                {draftBookings.map((booking, index) => {
-                                    const petNames = booking.petIds
-                                        .map((id) => pets.find((p) => p.id === id)?.name || 'Unknown')
-                                        .join(', ');
-
-                                    const hasGrooming = booking.groomingAddOns && Object.keys(booking.groomingAddOns).length > 0;
-
-                                    return (
-                                        <div key={index} className="border p-3 rounded shadow-sm">
-                                            <p><strong>📅</strong> {booking.date.toLocaleDateString()}</p>
-                                            <p><strong>⏰</strong> {booking.dropOffTime}</p>
-                                            <p><strong>🐶</strong> {petNames}</p>
-
-                                            {hasGrooming && (
-                                                <p><strong>🛁</strong>{' '}
-                                                    {booking.petIds.map((petId) => {
-                                                        const services = booking.groomingAddOns?.[petId];
-                                                        if (!services || services.length === 0) return null;
-                                                        const petName = pets.find(p => p.id === petId)?.name || 'Unknown';
-                                                        return `${petName}: ${services.join(', ')}`;
-                                                    }).filter(Boolean).join(' | ')}
-                                                </p>
-                                            )}
-
-                                            <button
-                                                onClick={() =>
-                                                    setDraftBookings(draftBookings.filter((_, i) => i !== index))
-                                                }
-                                                className="mt-2 text-red-600 text-sm underline"
-                                            >
-                                                {t('remove_booking')}
-                                            </button>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
-
-                        {/* ✅ Submit Button */}
-                        {draftBookings.length > 0 && (
-                            <button
-                                onClick={async () => {
-                                    if (hasExistingReservation || isSubmitting) return;
-
-                                    setIsSubmitting(true);
-                                    await submitBooking();
-
-                                    // ✅ Clear UI state after successful submission
-                                    setDraftBookings([]);
-                                    setGroomingSelections({});
-                                    setSelectedTime('');
-                                    setSelectedDate(null);
-                                    setSelectedPetIds(pets.map((p) => p.id));
-
-                                    alert(t('submission_success'));
-                                    setIsSubmitting(false);
-                                }}
-                                className={`w-full max-w-xs text-white py-3 rounded transition text-sm ${hasExistingReservation || isSubmitting
-                                    ? 'bg-gray-400 cursor-not-allowed'
-                                    : 'bg-green-800 hover:bg-green-700'
-                                    }`}
-                                disabled={hasExistingReservation || isSubmitting}
-                            >
-                                {isSubmitting ? t('submitting_reservations') : t('submit_all')}
-                            </button>
-                        )}
-                    </div>
-                )}
-
-                {/* ✅ Yes/No Grooming Modal */}
-                {showGroomingPrompt && (
-                    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg p-6 shadow-md max-w-sm w-full">
-                            <p className="text-sm mb-4">{t('grooming_prompt_message')}</p>
-                            <div className="flex justify-end gap-4">
-                                {/* YES */}
-                                <button
-                                    onClick={() => {
-                                        if (pendingDraft) {
-                                            setGroomingSelections((prev: Record<string, Set<string>>) => {
-                                                const updated = { ...prev };
-                                                pendingDraft.petIds.forEach((petId: string) => {
-                                                    if (!updated[petId]) updated[petId] = new Set();
-                                                });
-                                                return updated;
-                                            });
-                                            setShowGroomingUI(true);
-                                        }
-                                        setShowGroomingPrompt(false);
-                                    }}
-                                    className="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded text-sm"
-                                >
-                                    {t('yes')}
-                                </button>
-
-                                {/* NO */}
-                                <button
-                                    onClick={() => {
-                                        if (pendingDraft) {
-                                            setGroomingSelections((prev) => {
-                                                const updated = { ...prev };
-                                                pendingDraft.petIds.forEach((petId) => { delete updated[petId]; });
-                                                return updated;
-                                            });
-                                            setDraftBookings((prev) => [...prev, pendingDraft]);
-                                        }
-                                        resetFormAfterDraft();
-                                        setShowGroomingPrompt(false);
-                                        setPendingDraft(null);
-                                    }}
-                                    className="bg-gray-400 hover:bg-gray-300 text-black px-4 py-2 rounded text-sm"
-                                >
-                                    {t('no')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* ✅ Waiver Agreement Modal */}
-                {showWaiverModal && (
-                    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-                        <div className="bg-white p-6 rounded shadow-md max-w-md w-full space-y-4">
-                            <h2 className="text-lg font-semibold text-center text-[color:var(--color-accent)]">
-                                {t('waiver_required_title')}
-                            </h2>
-
-                            <p className="text-sm text-gray-700 whitespace-pre-line">
-                                {t('waiver_required_message')}
-                            </p>
-
-                            <div className="flex items-start space-x-2">
-                                <input
-                                    type="checkbox"
-                                    checked={hasCheckedAgreement}
-                                    onChange={() => setHasCheckedAgreement(!hasCheckedAgreement)}
-                                    className="mt-1"
-                                    id="waiverAgreementCheckbox"
-                                />
-                                <label htmlFor="waiverAgreementCheckbox" className="text-sm text-gray-700">
-                                    {t('waiver_checkbox_label')}
-                                </label>
-                            </div>
-
-                            <div className="flex justify-end">
-                                <button
-                                    onClick={async () => {
-                                        try {
-                                            await setDoc(
-                                                doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
-                                                { waiverSignedAt: Timestamp.now() },
-                                                { merge: true }
-                                            );
-                                            setWaiverSigned(true);
-                                            setShowWaiverModal(false);
-                                        } catch (err) {
-                                            console.error('❌ Failed to record waiver:', err);
-                                            alert(t('waiver_agreement_failed'));
-                                        }
-                                    }}
-                                    className={`px-4 py-2 rounded text-sm text-white ${hasCheckedAgreement
-                                        ? 'bg-green-700 hover:bg-green-600'
-                                        : 'bg-gray-400 cursor-not-allowed'
-                                        }`}
-                                    disabled={!hasCheckedAgreement}
-                                >
-                                    {t('agree_button')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
+        {isLoading ? (
+          <p className="text-center text-gray-500 text-sm">{t('loading')}</p>
+        ) : (
+          <div className="flex flex-col items-center space-y-6">
+            {/* Date */}
+            <div className="flex flex-col items-center space-y-1 w-full">
+              <label className="font-semibold text-center text-sm">{t('select_date')}</label>
+              <DatePicker
+                selected={selectedDate}
+                onChange={async (date: Date | null) => {
+                  setSelectedDate(date);
+                  if (date && userId) {
+                    const weekday = weekdayName(date, bizTZ);
+                    const raw = sortTimeStrings(dropOffTimesByWeekday[weekday] || []);
+                    setDropOffOptions(raw);
+                    setSelectedTime(raw[0] || '');
+                    await filterUnavailableTimes(date, raw);
+                    await checkForExistingReservation(date, userId);
+                  }
+                }}
+                dateFormat="MM/dd/yyyy"
+                className="w-full max-w-xs border p-2 rounded text-center text-sm"
+                placeholderText="Select a date"
+              />
             </div>
-        </div>
-    );
+
+            {/* Time */}
+            {dropOffOptions.length > 0 && (
+              <div className="flex flex-col items-center space-y-1 w-full">
+                <label className="font-semibold text-center text-sm">{t('select_time')}</label>
+                <select
+                  className="w-full max-w-xs border p-2 rounded text-sm"
+                  value={selectedTime}
+                  onChange={(e) => setSelectedTime(e.target.value)}
+                >
+                  {dropOffOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                </select>
+              </div>
+            )}
+
+            {/* Pets */}
+            <div className="flex flex-col items-start space-y-2 w-full max-w-xs">
+              <label className="font-semibold w-full text-center text-sm">{t('select_pets')}</label>
+              <div className="flex flex-col space-y-2 w-full">
+                {pets.map((pet) => (
+                  <label key={pet.id} className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={selectedPetIds.includes(pet.id)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedPetIds(prev => uniq([...prev, pet.id]));
+                        } else {
+                          setSelectedPetIds(prev => prev.filter(id => id !== pet.id));
+                        }
+                      }}
+                    />
+                    <span>{pet.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Assessment toggle (if business requires temperament tests) */}
+            {temperamentTestRequired && (
+              <label className="flex items-center gap-2 w-full max-w-xs text-sm">
+                <input
+                  type="checkbox"
+                  checked={isAssessment}
+                  onChange={() => setIsAssessment(v => !v)}
+                />
+                <span><em>Assessment day</em></span>
+              </label>
+            )}
+
+            {/* Vaccine Alerts (read-only UI, step 1) */}
+            {shouldShowAlertsSection && (
+              <div className="w-full max-w-xl px-3 py-3 rounded-lg bg-white/70 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-orange-600">⚠️</span>
+                  <span className="font-semibold text-sm">
+                    Vaccine Alerts — pets without current vaccines will be flagged.
+                  </span>
+                </div>
+
+                {isLoadingAlerts ? (
+                  <div className="text-sm text-gray-700 flex items-center gap-2">
+                    <span className="animate-pulse">●</span> Checking vaccine status…
+                  </div>
+                ) : selectedPetIds.length === 0 ? (
+                  <div className="text-sm text-gray-600">Select at least one pet to check alerts.</div>
+                ) : (
+                  <div className="space-y-2">
+                    {selectedPetIds.map(pid => {
+                      const pet = pets.find(p => p.id === pid);
+                      const issues = alertsByPet[pid] || [];
+                      if (!issues.length) return null;
+                      return (
+                        <div key={pid} className="border rounded p-2">
+                          <div className="text-sm font-semibold">{pet?.name || 'Pet'}</div>
+                          <ul className="list-disc list-inside text-sm">
+                            {issues.map(msg => (
+                              <li key={msg} className={/Expired|Not on file/i.test(msg) ? 'text-red-600' : ''}>
+                                {msg}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Add to booking list */}
+            <button
+              onClick={addBookingDraft}
+              className={`w-full max-w-xs py-3 rounded text-white text-sm ${hasExistingReservation ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-800 hover:bg-blue-700'}`}
+              disabled={hasExistingReservation}
+            >
+              {t('add_to_booking_list')}
+            </button>
+
+            {/* Grooming add-ons modal (per-pet) */}
+            <GroomingModal
+              isOpen={showGroomingUI}
+              onClose={() => {
+                setTimeout(() => {
+                  if (pendingDraft) {
+                    setDraftBookings((prev) => [
+                      ...prev,
+                      { ...pendingDraft, groomingAddOns: serializeGroomingSelections(groomingSelections) }
+                    ]);
+                  }
+                  resetFormAfterDraft();
+                  setPendingDraft(null);
+                  setShowGroomingUI(false);
+                }, 100);
+              }}
+              pets={pets.filter((p) => pendingDraft?.petIds.includes(p.id))}
+              services={groomingServices}
+              groomingSelections={groomingSelections}
+              setGroomingSelections={setGroomingSelections}
+            />
+
+            {/* Draft list */}
+            {draftBookings.length > 0 && (
+              <div className="w-full space-y-4">
+                <h2 className="text-md font-semibold text-center">{t('your_bookings')}</h2>
+                {draftBookings.map((b, idx) => {
+                  const petNames = b.petIds.map(id => pets.find(p => p.id === id)?.name || 'Unknown').join(', ');
+                  const hasGroom = b.groomingAddOns && Object.keys(b.groomingAddOns).length > 0;
+                  return (
+                    <div key={`${b.date.toISOString()}-${idx}`} className="border p-3 rounded shadow-sm">
+                      <p><strong>📅</strong> {b.date.toLocaleDateString()}</p>
+                      <p><strong>⏰</strong> {b.dropOffTime}</p>
+                      <p><strong>🐶</strong> {petNames}</p>
+                      {b.isAssessment && <p className="italic text-gray-600 mt-1">Assessment</p>}
+                      {hasGroom && (
+                        <p className="mt-1">
+                          <strong>🛁</strong>{' '}
+                          {b.petIds.map((pid) => {
+                            const svcs = b.groomingAddOns?.[pid];
+                            if (!svcs?.length) return null;
+                            const name = pets.find(p => p.id === pid)?.name || 'Unknown';
+                            return `${name}: ${svcs.join(', ')}`;
+                          }).filter(Boolean).join(' | ')}
+                        </p>
+                      )}
+                      <button
+                        onClick={() => setDraftBookings(prev => prev.filter((_, i) => i !== idx))}
+                        className="mt-2 text-red-600 text-sm underline"
+                      >
+                        {t('remove_booking')}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Submit */}
+            {draftBookings.length > 0 && (
+              <button
+                onClick={submitAllReservations}
+                className={`w-full max-w-xs text-white py-3 rounded transition text-sm ${
+                  isSubmitting ? 'bg-gray-400 cursor-wait' : 'bg-green-800 hover:bg-green-700'
+                }`}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? t('submitting_reservations') : t('submit_all')}
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Grooming Yes/No prompt */}
+        {showGroomingPrompt && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 shadow-md max-w-sm w-full">
+              <p className="text-sm mb-4">{t('grooming_prompt_message')}</p>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => {
+                    if (pendingDraft) {
+                      setGroomingSelections(prev => {
+                        const cp = { ...prev };
+                        pendingDraft.petIds.forEach(pid => { if (!cp[pid]) cp[pid] = new Set(); });
+                        return cp;
+                      });
+                      setShowGroomingUI(true);
+                    }
+                    setShowGroomingPrompt(false);
+                  }}
+                  className="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded text-sm"
+                >
+                  {t('yes')}
+                </button>
+                <button
+                  onClick={() => {
+                    if (pendingDraft) {
+                      setGroomingSelections(prev => {
+                        const cp = { ...prev };
+                        pendingDraft.petIds.forEach(pid => { delete cp[pid]; });
+                        return cp;
+                      });
+                      setDraftBookings(prev => [...prev, pendingDraft]);
+                    }
+                    resetFormAfterDraft();
+                    setShowGroomingPrompt(false);
+                    setPendingDraft(null);
+                  }}
+                  className="bg-gray-400 hover:bg-gray-300 text-black px-4 py-2 rounded text-sm"
+                >
+                  {t('no')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Waiver modal */}
+        {showWaiverModal && (
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+            <div className="bg-white p-6 rounded shadow-md max-w-md w-full space-y-4">
+              <h2 className="text-lg font-semibold text-center text-[color:var(--color-accent)]">
+                {t('waiver_required_title')}
+              </h2>
+              <p className="text-sm text-gray-700 whitespace-pre-line">{t('waiver_required_message')}</p>
+              <label className="flex items-start gap-2 text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={hasCheckedAgreement}
+                  onChange={() => setHasCheckedAgreement(v => !v)}
+                  className="mt-1"
+                />
+                <span>{t('waiver_checkbox_label')}</span>
+              </label>
+              <div className="flex justify-end">
+                <button
+                  onClick={async () => {
+                    try {
+                      // If version enforcement is on, also backfill version now
+                      if (enforceWaiverVersion) {
+                        const w = await getDoc(doc(db, 'businesses', businessId, 'settings', 'clientWaiver'));
+                        const version = (w.data()?.waiverVersion as number) ?? 1;
+                        await setDoc(doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
+                          { waiverVersionSigned: version, waiverSignedAt: Timestamp.now() }, { merge: true });
+                      } else {
+                        await setDoc(doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
+                          { waiverSignedAt: Timestamp.now() }, { merge: true });
+                      }
+                      setWaiverSigned(true);
+                      setShowWaiverModal(false);
+                    } catch (err) {
+                      console.error('❌ Failed to record waiver:', err);
+                      alert(t('waiver_agreement_failed'));
+                    }
+                  }}
+                  disabled={!hasCheckedAgreement}
+                  className={`px-4 py-2 rounded text-sm text-white ${
+                    hasCheckedAgreement ? 'bg-green-700 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  {t('agree_button')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }

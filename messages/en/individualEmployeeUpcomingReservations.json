@@ -1,0 +1,40 @@
+{
+  "upcoming_reservations_title": "Upcoming Reservations",
+  "loading": "Loading...",
+  "no_upcoming_reservations": "No upcoming reservations.",
+
+  "reservation_options_title": "Reservation Options",
+  "pickup_options_title": "Pickup Options",
+  "check_in_button": "Check In",
+  "mark_no_show_button": "Mark as No Show",
+  "check_out_button": "Check Out",
+  "cancel_button": "Cancel",
+
+  "check_in_alert_title": "Check in this dog?",
+  "no_show_alert_title": "Mark this dog as a No Show?",
+  "check_out_alert_title": "Check out this dog?",
+  "yes_button": "Yes",
+  "no_button": "No",
+
+  "unknown_dog": "Unknown Dog",
+  "unknown_owner": "Unknown Owner",
+
+  "owner_label": "Owner",
+  "type_label": "Type",
+  "check_in_label": "Check-In",
+  "check_out_label": "Check-Out",
+  "nights_label": "Nights",
+  "arrival_label": "Arrival Window",
+  "grooming_label": "Grooming",
+  "medications_label": "Medications",
+  "status_label": "Status",
+  "intact_label": "INTACT",
+  "assessment_badge_short": "ASSESSMENT",
+
+  "default_dog_name": "Dog",
+
+  "no_accepted_invite_error": "No accepted employee invite was found for this user.",
+  "error_invalid_business_id": "Invalid business identifier.",
+  "failed_fetch_invite_error": "Failed to fetch accepted employee invite.",
+  "error_parse_snapshot": "We couldn’t parse reservation data."
+}

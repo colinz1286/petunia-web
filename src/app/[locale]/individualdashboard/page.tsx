@@ -243,7 +243,7 @@ export default function IndividualDashboardPage() {
             <h2 className="text-lg font-semibold text-center">{t('employee_tools')}</h2>
 
             <DashboardLink
-              href={`/${locale}/individualemployee-upcomingreservations`}
+              href={`/${locale}/individualemployeeupcomingreservations`}
               label={t('upcoming_reservations')}
             />
 

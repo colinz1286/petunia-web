@@ -1,18 +1,45 @@
 {
   "book_boarding_title": "Book Boarding",
   "default_business_name": "Selected Business",
+  "back_to_select_service": "Back to Select Service",
+
+  "select_checkin_date": "Select Check-In Date",
+  "select_checkout_date": "Select Check-Out Date",
+  "select_date_placeholder": "Select a date",
+  "select_checkin_time": "Select Check-In Time",
+  "select_checkout_time": "Select Check-Out Time",
+
+  "select_pets": "Select Pets",
+
+  "select_grooming_addons": "Select Grooming Add-Ons",
+  "grooming_addons_title": "Grooming Add-Ons",
+  "grooming_for_pet": "Grooming add-ons for {name}",
+  "no_services_available": "No services available.",
+  "done_button": "Done",
+
+  "submit_boarding_reservation": "Submit Boarding Reservation",
+  "saving": "Saving…",
+  "reservation_submitted": "Your reservation has been submitted!",
+  "error_submitting_reservation": "There was an error submitting your reservation.",
+
+  "waiver_required_title": "Waiver Agreement Required",
+  "waiver_required_message": "You must sign the waiver before booking.",
+  "waiver_required_warning": "A signed waiver is required before you can book.",
+  "waiver_checkbox_label": "I agree to this facility’s terms and conditions.",
+  "agree_button": "Agree",
+  "cancel_button": "Cancel",
+  "waiver_agreement_failed": "Failed to save waiver. Please try again.",
+
+  "duplicate_boarding_title": "Duplicate/Overlapping Reservation",
+  "duplicate_boarding_message": "One or more of your selected pets already has a reservation that overlaps these dates for this business.",
+
+  "capacity_block_title": "Capacity Reached",
+  "capacity_block_message": "This business can host up to {capacity} pets per night. The following nights would exceed capacity: {dates}.",
+
+  "ok_button": "OK",
+
   "drop_off_date": "Drop-Off Date",
   "pick_up_date": "Pick-Up Date",
   "drop_off_time": "Drop-Off Time",
-  "pick_up_time": "Pick-Up Time",
-  "select_pets": "Select Pets",
-  "submit": "Submit Reservation",
-  "waiver_required_message": "You must sign the waiver before booking.",
-  "waiver_required_title": "Waiver Agreement Required",
-  "waiver_agreement_failed": "Failed to save waiver. Please try again.",
-  "agree_button": "Agree",
-  "cancel_button": "Cancel",
-  "reservation_submitted": "Your reservation has been submitted!",
-  "back_to_select_service": "Back to Select Service",
-  "waiver_checkbox_label": "I agree to this facility’s terms and conditions."
+  "pick_up_time": "Pick-Up Time"
 }

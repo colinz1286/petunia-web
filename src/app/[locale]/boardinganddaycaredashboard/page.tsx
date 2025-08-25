@@ -197,8 +197,13 @@ export default function BoardingAndDaycareDashboardPage() {
 
         {/* Dashboard Links */}
         <div className="space-y-3">
-          <DashboardLink href="/boardinganddaycare-dogsonproperty" label={t('dogs_on_property')} />
-          <DashboardLink href="/boardinganddaycare-upcomingreservations" label={t('upcoming_reservations')} />
+          <DashboardLink href="/boardinganddaycaredogsonproperty" label={t('dogs_on_property')} />
+          {/* Upcoming Reservations */}
+          <DashboardLink
+            href="/boardinganddaycareupcomingreservations"
+            label={t('upcoming_reservations')}
+          />
+
           <DashboardLink href="/boardinganddaycare-pendingrequests" label={t('pending_requests')} />
           <DashboardLink href="/boardinganddaycare-clientmanagement" label={t('client_management')} />
 

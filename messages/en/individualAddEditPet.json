@@ -37,7 +37,7 @@
   "fear_question": "Afraid of Anything?",
   "fear_placeholder": "Describe Fears (max 250 characters)",
 
-  "vaccinations_section": "Vaccinations",
+  "vaccinations_section": "Vaccinations - Entering False Information or Uploading Fake Vaccine Documents is Considered Forgery and/or Tampering. All Information Entered Must Be Accurate",
   "choose_file_default": "Upload Vaccine File(s) (Image or PDF)",
   "upload_note_two_files": "Up to two files are saved. If more are selected, only the first two are used.",
   "remove_file": "Remove",

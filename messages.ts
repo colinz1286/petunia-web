@@ -6,7 +6,10 @@ export default {
     boardingAndDaycareBusinessSettings: require('./messages/en/boardingAndDaycareBusinessSettings.json'),
     boardingAndDaycarePendingRequests: require('./messages/en/boardingAndDaycarePendingRequests.json'),
     boardingAndDaycareClientManagement: require('./messages/en/boardingAndDaycareClientManagement.json'),
+    boardingAndDaycareDogsOnProperty: require('./messages/en/boardingAndDaycareDogsOnProperty.json'),
+    boardingAndDaycareUpcomingReservations: require('./messages/en/boardingAndDaycareUpcomingReservations.json'),
     businessSignUp: require('./messages/en/businessSignUp.json'),
+    breederDashboard: require('./messages/en/breederDashboard.json'),
     individualSignUp: require('./messages/en/individualSignUp.json'),
     individualAddEditPet: require('./messages/en/individualAddEditPet.json'),
     individualBookBoarding: require('./messages/en/individualBookBoarding.json'),
@@ -22,6 +25,6 @@ export default {
     individualSendClientRequest: require('./messages/en/individualSendClientRequest.json'),
     individualUpcomingAppointments: require('./messages/en/individualUpcomingAppointments.json'),
     individualEmployeeDogsOnProperty: require('./messages/en/individualEmployeeDogsOnProperty.json'),
-     breederDashboard: require('./messages/en/breederDashboard.json')
+    individualEmployeeUpcomingReservations: require('./messages/en/individualEmployeeUpcomingReservations.json')
   })
 };

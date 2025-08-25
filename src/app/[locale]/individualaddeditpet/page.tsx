@@ -754,7 +754,7 @@ export default function AddEditPetPage() {
                     {/* Vaccinations Section */}
                     <div>
                         <label className="block font-semibold mb-2 text-sm text-[#2c4a30]">
-                            {t('vaccinations_section', { defaultValue: 'Vaccinations' })}
+                            {t('vaccinations_section', { defaultValue: 'Vaccinations - Entering False Information or Uploading Fake Vaccine Documents is Considered Forgery and/or Tampering. All Information Entered Must Be Accurate' })}
                         </label>
 
                         {/* Upload control */}
