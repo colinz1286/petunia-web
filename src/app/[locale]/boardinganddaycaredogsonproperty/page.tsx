@@ -12,6 +12,10 @@ import {
   query,
   where,
   getDocs,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
 } from 'firebase/firestore';
 import {
   getDatabase,
@@ -102,11 +106,21 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
   const [filter, setFilter] = useState<FilterType>('Daycare');
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
-  const [businessId, setBusinessId] = useState<string>('');
+  // RTDB needs sanitized; Firestore assessments need RAW doc id
+  const [businessIdSanitized, setBusinessIdSanitized] = useState<string>('');
+  const [businessIdRaw, setBusinessIdRaw] = useState<string>('');
 
   // RTDB listener refs (so we can clean up precisely)
   const rRef = useRef<ReturnType<typeof rtdbRef> | null>(null);
   const rCb = useRef<((snap: DataSnapshot) => void) | null>(null);
+
+  /** -------- Assessment Modal State -------- */
+  const [showAssessmentModal, setShowAssessmentModal] = useState(false);
+  const [assessmentDog, setAssessmentDog] = useState<Dog | null>(null);
+  const [assessmentNotes, setAssessmentNotes] = useState('');
+  const [assessmentLoading, setAssessmentLoading] = useState(false);
+  const [assessmentError, setAssessmentError] = useState<string | null>(null);
+  const [assessmentSaveMsg, setAssessmentSaveMsg] = useState<string | null>(null);
 
   /** Auth + businessId resolution */
   useEffect(() => {
@@ -125,14 +139,15 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
           setIsLoading(false);
           return;
         }
-        const rawId = first.id;
-        const sanitized = sanitizeFirebaseKey(rawId);
+        const rawId = first.id;                          // Firestore doc id (RAW)
+        const sanitized = sanitizeFirebaseKey(rawId);    // For RTDB paths
         if (!isValidFirebaseKey(sanitized)) {
           setErrorMsg(t('error_invalid_business_id'));
           setIsLoading(false);
           return;
         }
-        setBusinessId(sanitized);
+        setBusinessIdRaw(rawId);
+        setBusinessIdSanitized(sanitized);
       } catch (e) {
         console.error('❌ Business lookup failed:', e);
         setErrorMsg(t('error_business_not_found'));
@@ -144,7 +159,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
 
   /** Start/stop listener when businessId is ready */
   useEffect(() => {
-    if (!businessId) return;
+    if (!businessIdSanitized) return;
 
     // Clean up any existing listener
     if (rRef.current && rCb.current) {
@@ -153,8 +168,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
       rCb.current = null;
     }
 
-    // iOS does a one-time read; we’ll do a live listener (better UX). You can swap to rtdbGet for one-shot if desired.
-    const ref = rtdbRef(rtdb, `checkIns/${businessId}`);
+    const ref = rtdbRef(rtdb, `checkIns/${businessIdSanitized}`);
     const cb = (snap: DataSnapshot) => {
       try {
         const list: Dog[] = [];
@@ -204,7 +218,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
         rCb.current = null;
       }
     };
-  }, [businessId, t]);
+  }, [businessIdSanitized, t]);
 
   /** Filtering */
   const filteredDogs = useMemo(() => {
@@ -214,7 +228,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
     return dogs.filter((d) => hasGrooming(d));
   }, [dogs, filter]);
 
-  /** Actions */
+  /** Expand/collapse */
   const toggleExpand = (id: string) => {
     setExpanded((prev) => {
       const next = new Set(prev);
@@ -224,11 +238,11 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
     });
   };
 
+  /** Check-out */
   const checkOutDog = useCallback(async (dog: Dog) => {
-    if (!businessId || !isValidFirebaseKey(businessId)) return;
+    if (!businessIdSanitized || !isValidFirebaseKey(businessIdSanitized)) return;
     try {
-      // Find the date bucket that contains this dog.id, then remove it
-      const root = rtdbRef(rtdb, `checkIns/${businessId}`);
+      const root = rtdbRef(rtdb, `checkIns/${businessIdSanitized}`);
       const snap = await rtdbGet(root);
       if (!snap.exists()) return;
 
@@ -237,12 +251,12 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
         const dateKey = dateNode.key!;
         if (!isValidFirebaseKey(dateKey)) return;
         if (dateNode.hasChild(dog.id)) {
-          const rm = rtdbRemove(rtdbRef(rtdb, `checkIns/${businessId}/${dateKey}/${dog.id}`));
+          const rm = rtdbRemove(rtdbRef(rtdb, `checkIns/${businessIdSanitized}/${dateKey}/${dog.id}`));
           removals.push(rm);
         }
       });
       await Promise.all(removals);
-      // Optimistic UI: local prune
+      // Optimistic UI
       setDogs((prev) => prev.filter((d) => d.id !== dog.id));
       setExpanded((prev) => {
         const next = new Set(prev);
@@ -252,7 +266,74 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
     } catch (e) {
       console.error('❌ checkOutDog failed:', e);
     }
-  }, [businessId]);
+  }, [businessIdSanitized]);
+
+  /** -------- Assessment Modal actions -------- */
+  const openAssessment = useCallback(async (dog: Dog) => {
+    try {
+      if (!auth.currentUser) {
+        router.push(`/${locale}/loginsignup`);
+        return;
+      }
+      if (!businessIdRaw) return;
+
+      setAssessmentDog(dog);
+      setAssessmentNotes('');
+      setAssessmentError(null);
+      setAssessmentSaveMsg(null);
+      setAssessmentLoading(true);
+      setShowAssessmentModal(true);
+
+      // Load (if exists)
+      const ref = doc(db, 'dogAssessments', dog.id, 'businesses', businessIdRaw);
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        const data = snap.data();
+        setAssessmentNotes((data?.notes as string) || '');
+      } else {
+        setAssessmentNotes('');
+      }
+    } catch (e) {
+      console.error('❌ load assessment failed:', e);
+      setAssessmentError('Failed to load assessment.');
+    } finally {
+      setAssessmentLoading(false);
+    }
+  }, [businessIdRaw, router, locale]);
+
+  const closeAssessment = useCallback(() => {
+    setShowAssessmentModal(false);
+    setAssessmentDog(null);
+    setAssessmentNotes('');
+    setAssessmentError(null);
+    setAssessmentSaveMsg(null);
+  }, []);
+
+  const saveAssessment = useCallback(async () => {
+    try {
+      if (!auth.currentUser) {
+        setAssessmentError('Not authenticated.');
+        return;
+      }
+      if (!assessmentDog || !businessIdRaw) return;
+
+      const trimmed = assessmentNotes.slice(0, 2000);
+      const ref = doc(db, 'dogAssessments', assessmentDog.id, 'businesses', businessIdRaw);
+      const payload: Record<string, unknown> = {
+        notes: trimmed,
+        lastUpdated: serverTimestamp(),
+      };
+      if (auth.currentUser.email) payload.updatedBy = auth.currentUser.email;
+
+      await setDoc(ref, payload, { merge: true });
+      setAssessmentSaveMsg('✅ Saved.');
+      setAssessmentError(null);
+    } catch (e) {
+      console.error('❌ save assessment failed:', e);
+      setAssessmentError('Failed to save.');
+      setAssessmentSaveMsg(null);
+    }
+  }, [assessmentDog, assessmentNotes, businessIdRaw]);
 
   /** UI */
   return (
@@ -376,17 +457,13 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
                       </div>
 
                       <div className="mt-3 flex gap-2">
-                        {/* View Assessment (only if flagged). You can point this to your assessment detail page when ready. */}
-                        {dog.isAssessment && (
-                          <a
-                            href={`/${locale}/boardinganddaycaredogassessment?dogId=${encodeURIComponent(
-                              dog.id
-                            )}&dogName=${encodeURIComponent(dog.name)}`}
-                            className="px-3 py-2 rounded border border-blue-600 text-blue-700 text-sm hover:bg-blue-50"
-                          >
-                            {t('view_assessment_button')}
-                          </a>
-                        )}
+                        {/* ✅ Always-visible View Assessment button -> opens modal */}
+                        <button
+                          onClick={() => void openAssessment(dog)}
+                          className="px-3 py-2 rounded border border-blue-600 text-blue-700 text-sm hover:bg-blue-50"
+                        >
+                          {t('view_assessment_button')}
+                        </button>
 
                         {/* Check Out */}
                         <button
@@ -405,6 +482,77 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
           </div>
         )}
       </main>
+
+      {/* -------- Assessment Modal -------- */}
+      {showAssessmentModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={closeAssessment}
+            aria-hidden="true"
+          />
+          {/* Modal */}
+          <div className="relative z-10 w-full max-w-xl mx-4 rounded-xl bg-white shadow-xl border border-gray-200">
+            <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-lg font-semibold">
+                {assessmentDog ? `${t('assessment_for_dog') || 'Assessment for'} ${assessmentDog.name}` : t('view_assessment_button')}
+              </h2>
+              <button
+                onClick={closeAssessment}
+                className="text-gray-600 hover:text-gray-800"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="px-5 py-4">
+              {assessmentLoading ? (
+                <p className="text-sm text-gray-600">{t('loading')}</p>
+              ) : (
+                <>
+                  {assessmentError && (
+                    <p className="text-sm text-red-600 mb-2">❌ {assessmentError}</p>
+                  )}
+
+                  <textarea
+                    value={assessmentNotes}
+                    onChange={(e) => {
+                      const next = e.target.value.slice(0, 2000);
+                      setAssessmentNotes(next);
+                    }}
+                    className="w-full min-h-[180px] rounded-lg border border-gray-300 p-3 text-sm outline-none focus:ring-2 focus:ring-blue-200"
+                    placeholder="Write assessment notes..."
+                  />
+
+                  <div className="mt-1 text-xs text-gray-500">{assessmentNotes.length} / 2000</div>
+
+                  {assessmentSaveMsg && (
+                    <div className="mt-2 text-sm text-green-700">{assessmentSaveMsg}</div>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div className="px-5 py-3 border-t border-gray-200 flex items-center justify-end gap-2">
+              <button
+                onClick={closeAssessment}
+                className="px-3 py-2 rounded border border-gray-300 text-gray-700 text-sm hover:bg-gray-50"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => void saveAssessment()}
+                disabled={assessmentLoading || assessmentNotes.trim().length === 0}
+                className={`px-3 py-2 rounded text-sm text-white ${assessmentLoading || assessmentNotes.trim().length === 0 ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'}`}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

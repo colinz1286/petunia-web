@@ -12,6 +12,8 @@ import {
     limit,
     doc,
     getDoc,
+    setDoc,
+    serverTimestamp,
 } from 'firebase/firestore';
 import {
     getDatabase,
@@ -68,6 +70,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
 
     const [userId, setUserId] = useState<string | null>(null);
     const [sanitizedBusinessId, setSanitizedBusinessId] = useState<string | null>(null);
+    const [businessIdRaw, setBusinessIdRaw] = useState<string | null>(null); // for Firestore assessments
     const [businessTimeZone, setBusinessTimeZone] = useState<string>(DEFAULT_TZ);
 
     const [filter, setFilter] = useState<FilterKey>('daycare');
@@ -77,6 +80,14 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
     const listenerRef = useRef<{ ref: DatabaseReference; cb: (snap: DataSnapshot) => void } | null>(
         null
     );
+
+    // -------- Assessment modal state --------
+    const [showAssessmentModal, setShowAssessmentModal] = useState(false);
+    const [assessmentDog, setAssessmentDog] = useState<CheckedInDogLive | null>(null);
+    const [assessmentNotes, setAssessmentNotes] = useState('');
+    const [assessmentLoading, setAssessmentLoading] = useState(false);
+    const [assessmentError, setAssessmentError] = useState<string | null>(null);
+    const [assessmentSaveMsg, setAssessmentSaveMsg] = useState<string | null>(null);
 
     // ---------------------------------------------------------------------------
     // Utilities
@@ -108,8 +119,8 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
         d.type === 'Daycare' && Boolean(d.isAssessment);
 
     const parseCheckInTime = (iso: string): number => {
-        const t = Date.parse(iso);
-        return Number.isNaN(t) ? 0 : t;
+        const tms = Date.parse(iso);
+        return Number.isNaN(tms) ? 0 : tms;
     };
 
     // ---------------------------------------------------------------------------
@@ -154,6 +165,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                 setIsBootstrapping(false);
                 return;
             }
+            setBusinessIdRaw(bId);
 
             // 2) Resolve business time zone (for displaying check-in times)
             let tz = DEFAULT_TZ;
@@ -287,8 +299,66 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
         }
     };
 
+    // -------- Assessment modal actions --------
+    const openAssessment = useCallback(async (dog: CheckedInDogLive) => {
+        if (!businessIdRaw) return;
+        setAssessmentDog(dog);
+        setAssessmentNotes('');
+        setAssessmentError(null);
+        setAssessmentSaveMsg(null);
+        setAssessmentLoading(true);
+        setShowAssessmentModal(true);
+
+        try {
+            const fs = getFirestore();
+            const ref = doc(fs, 'dogAssessments', dog.id, 'businesses', businessIdRaw);
+            const snap = await getDoc(ref);
+            if (snap.exists()) {
+                const data = snap.data();
+                setAssessmentNotes((data?.notes as string) ?? '');
+            } else {
+                setAssessmentNotes('');
+            }
+        } catch (e) {
+            console.error('❌ load assessment failed:', e);
+            setAssessmentError('Failed to load assessment.');
+        } finally {
+            setAssessmentLoading(false);
+        }
+    }, [businessIdRaw]);
+
+    const closeAssessment = useCallback(() => {
+        setShowAssessmentModal(false);
+        setAssessmentDog(null);
+        setAssessmentNotes('');
+        setAssessmentError(null);
+        setAssessmentSaveMsg(null);
+    }, []);
+
+    const saveAssessment = useCallback(async () => {
+        try {
+            if (!assessmentDog || !businessIdRaw) return;
+            const fs = getFirestore();
+            const trimmed = assessmentNotes.slice(0, 2000);
+            const ref = doc(fs, 'dogAssessments', assessmentDog.id, 'businesses', businessIdRaw);
+            const payload: Record<string, unknown> = {
+                notes: trimmed,
+                lastUpdated: serverTimestamp(),
+            };
+            const auth = getAuth();
+            if (auth.currentUser?.email) payload.updatedBy = auth.currentUser.email;
+            await setDoc(ref, payload, { merge: true });
+            setAssessmentSaveMsg('✅ Saved.');
+            setAssessmentError(null);
+        } catch (e) {
+            console.error('❌ save assessment failed:', e);
+            setAssessmentError('Failed to save.');
+            setAssessmentSaveMsg(null);
+        }
+    }, [assessmentDog, assessmentNotes, businessIdRaw]);
+
     // ---------------------------------------------------------------------------
-    // UI
+    // UI Bits
     // ---------------------------------------------------------------------------
     const SegmentedControl = () => {
         const base = 'px-3 py-2 text-sm font-medium rounded-xl border transition-colors select-none';
@@ -332,7 +402,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
         const allergies = hasAllergies(dog);
         const grooming = hasGrooming(dog);
         const intact = isIntact(dog);
-        const showAssessment = isAssessmentDaycare(dog);
+        const showAssessmentBadge = isAssessmentDaycare(dog);
 
         return (
             <div className="rounded-2xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
@@ -349,7 +419,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                             {allergies ? <span aria-label="allergies">⚠️</span> : null}
                             {grooming ? <span aria-label="grooming">✂️</span> : null}
                             {intact ? <span className="ml-1 text-xs font-bold text-red-600">INTACT</span> : null}
-                            {showAssessment ? (
+                            {showAssessmentBadge ? (
                                 <span className="ml-1 text-[10px] font-bold px-2 py-1 rounded-md bg-orange-200/60 text-orange-700">
                                     Assessment
                                 </span>
@@ -389,18 +459,16 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                             Checked in:&nbsp;{formatDateTimeMediumShort(dog.checkInTime, businessTimeZone)}
                         </div>
 
-                        {showAssessment ? (
-                            <div className="mt-2">
-                                <button
-                                    type="button"
-                                    disabled
-                                    title="Coming soon"
-                                    className="px-3 py-1.5 text-xs rounded-md border border-gray-300 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-400 cursor-not-allowed"
-                                >
-                                    {t('view_assessment_button') || 'View Assessment'}
-                                </button>
-                            </div>
-                        ) : null}
+                        {/* ✅ Always-visible View Assessment button */}
+                        <div className="mt-2">
+                            <button
+                                type="button"
+                                onClick={() => void openAssessment(dog)}
+                                className="px-3 py-1.5 text-xs rounded-md border border-blue-600 text-blue-700 hover:bg-blue-50"
+                            >
+                                {t('view_assessment_button') || 'View Assessment'}
+                            </button>
+                        </div>
 
                         {allergies ? <ClampText label="Allergies" text={dog.allergies ?? ''} /> : null}
 
@@ -487,6 +555,80 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                     {filteredDogs.map((dog) => (
                         <DogCard key={`dog-${dog.dateKey}-${dog.id}`} dog={dog} />
                     ))}
+                </div>
+            )}
+
+            {/* -------- Assessment Modal -------- */}
+            {showAssessmentModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    {/* Backdrop */}
+                    <div
+                        className="absolute inset-0 bg-black/40"
+                        onClick={closeAssessment}
+                        aria-hidden="true"
+                    />
+                    {/* Modal */}
+                    <div
+                        role="dialog"
+                        aria-modal="true"
+                        className="relative z-10 w-full max-w-xl mx-4 rounded-xl bg-white dark:bg-neutral-900 shadow-xl border border-gray-200 dark:border-neutral-800"
+                    >
+                        <div className="px-5 py-4 border-b border-gray-200 dark:border-neutral-800 flex items-center justify-between">
+                            <h2 className="text-lg font-semibold">
+                                {assessmentDog ? `Assessment for ${assessmentDog.name}` : (t('view_assessment_button') || 'View Assessment')}
+                            </h2>
+                            <button
+                                onClick={closeAssessment}
+                                className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
+                                aria-label="Close"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <div className="px-5 py-4">
+                            {assessmentLoading ? (
+                                <p className="text-sm text-gray-600 dark:text-gray-300">{t('loading') || 'Loading…'}</p>
+                            ) : (
+                                <>
+                                    {assessmentError && (
+                                        <p className="text-sm text-red-600 dark:text-red-400 mb-2">❌ {assessmentError}</p>
+                                    )}
+
+                                    <textarea
+                                        value={assessmentNotes}
+                                        onChange={(e) => setAssessmentNotes(e.target.value.slice(0, 2000))}
+                                        className="w-full min-h-[180px] rounded-lg border border-gray-300 dark:border-neutral-700 p-3 text-sm outline-none focus:ring-2 focus:ring-blue-200 dark:bg-neutral-900"
+                                        placeholder="Write assessment notes..."
+                                    />
+
+                                    <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        {assessmentNotes.length} / 2000
+                                    </div>
+
+                                    {assessmentSaveMsg && (
+                                        <div className="mt-2 text-sm text-green-700 dark:text-green-400">{assessmentSaveMsg}</div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
+                        <div className="px-5 py-3 border-t border-gray-200 dark:border-neutral-800 flex items-center justify-end gap-2">
+                            <button
+                                onClick={closeAssessment}
+                                className="px-3 py-2 rounded border border-gray-300 dark:border-neutral-700 text-gray-700 dark:text-gray-200 text-sm hover:bg-gray-50 dark:hover:bg-neutral-800"
+                            >
+                                Close
+                            </button>
+                            <button
+                                onClick={() => void saveAssessment()}
+                                disabled={assessmentLoading || assessmentNotes.trim().length === 0}
+                                className={`px-3 py-2 rounded text-sm text-white ${assessmentLoading || assessmentNotes.trim().length === 0 ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'}`}
+                            >
+                                Save
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </main>

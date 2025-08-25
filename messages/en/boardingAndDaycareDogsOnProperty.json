@@ -31,5 +31,14 @@
   "grooming_services_label": "Grooming Services",
 
   "view_assessment_button": "View Assessment",
-  "check_out_button": "Check Out"
+  "check_out_button": "Check Out",
+
+  "assessment_for_dog": "Assessment for",
+  "assessment_notes_placeholder": "Write assessment notes...",
+  "assessment_close_button": "Close",
+  "assessment_save_button": "Save",
+  "error_loading_assessment": "Failed to load assessment.",
+  "error_user_not_authenticated": "Not authenticated.",
+  "assessment_saved": "Saved.",
+  "assessment_for_dog_title": "Assessment for {name}"
 }
