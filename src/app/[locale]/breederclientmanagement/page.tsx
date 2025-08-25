@@ -195,7 +195,7 @@ export default function BreederClientManagementPage() {
 
       setClients(result);
       setHasFetchedClients(true);
-    } catch (e) {
+    } catch {
       setErrorMessage('Error loading clients.');
     } finally {
       setIsLoading(false);
