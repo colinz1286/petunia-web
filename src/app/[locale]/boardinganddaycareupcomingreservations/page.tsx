@@ -44,15 +44,17 @@ const rtdb = getDatabase();
 /** =========================
  * Types (mirrors SwiftUI model)
  * ========================= */
+type ServiceType = 'Daycare' | 'Boarding';
+
 type Reservation = {
     // Identity
-    id: string;                 // RTDB key: "{realtimeKey}-{petId}" (pickup clone adds "-pickup")
-    realtimeKey: string;        // Firestore doc id shared across pets
+    id: string; // RTDB key: "{realtimeKey}-{petId}" (pickup clone adds "-pickup")
+    realtimeKey: string; // Firestore doc id shared across pets
 
     // Type & grouping
-    type: 'Daycare' | 'Boarding';
-    groupDateKey: string;       // daycare: date; boarding: check-in (normal) or check-out (pickup clone)
-    isPickup: boolean;          // true for checkout-day clone
+    type: ServiceType;
+    groupDateKey: string; // daycare: date; boarding: check-in (normal) or check-out (pickup clone)
+    isPickup: boolean; // true for checkout-day clone
 
     // Presentation — common
     dogName: string;
@@ -80,17 +82,17 @@ type Reservation = {
     isAssessment: boolean;
 };
 
-const hasMedications = (r: Reservation) =>
-    (r.medications || '').trim().toLowerCase() === 'yes';
+type PetStatuses = Record<string, string>;
+type ReservationFS = { petStatuses?: PetStatuses };
 
-const isIntact = (r: Reservation) =>
-    (r.spayedNeutered || '').trim().toLowerCase() === 'no';
+/** =========================
+ * Small helpers
+ * ========================= */
+const hasMedications = (r: Reservation) => (r.medications || '').trim().toLowerCase() === 'yes';
+const isIntact = (r: Reservation) => (r.spayedNeutered || '').trim().toLowerCase() === 'no';
 
-const sanitizeFirebaseKey = (input: string) =>
-    input.trim().split(/[\.\#\$\[\]\/:]/g).join('-');
-
-const isValidFirebaseKey = (key: string) =>
-    key.length > 0 && !/[.\#$\[\]\/]/.test(key);
+const sanitizeFirebaseKey = (input: string) => input.trim().split(/[\.\#\$\[\]\/:]/g).join('-');
+const isValidFirebaseKey = (key: string) => key.length > 0 && !/[.\#$\[\]\/]/.test(key);
 
 const formatISOToLong = (iso: string | null | undefined) => {
     if (!iso) return '—';
@@ -117,8 +119,8 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
     const [selected, setSelected] = useState<Reservation | null>(null);
 
     // Action dialogs
-    const [showActionDialog, setShowActionDialog] = useState(false);  // Drop-off actions: Check-In / No-Show
-    const [showPickupDialog, setShowPickupDialog] = useState(false);  // Pickup actions: Check-Out
+    const [showActionDialog, setShowActionDialog] = useState(false); // Drop-off actions: Check-In / No-Show
+    const [showPickupDialog, setShowPickupDialog] = useState(false); // Pickup actions: Check-Out
     const [confirmCheckIn, setConfirmCheckIn] = useState(false);
     const [confirmNoShow, setConfirmNoShow] = useState(false);
     const [confirmCheckOut, setConfirmCheckOut] = useState(false);
@@ -153,8 +155,8 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
     }, [reservations]);
 
     /** =========================
- * Auth + business id resolution
- * ========================= */
+     * Auth + business id resolution
+     * ========================= */
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, async (user) => {
             if (!user) {
@@ -234,7 +236,10 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
 
                 const rawType = String(val['type'] ?? '').trim();
                 const hasBoardingDates = !!val['checkInDate'] || !!val['checkOutDate'];
-                const type: 'Daycare' | 'Boarding' = (rawType || (hasBoardingDates ? 'Boarding' : 'Daycare')) as any;
+                const type: ServiceType =
+                    rawType === 'Daycare' || rawType === 'Boarding'
+                        ? rawType
+                        : (hasBoardingDates ? 'Boarding' : 'Daycare');
 
                 const realtimeKey =
                     String(val['realtimeKey'] ?? '') ||
@@ -371,8 +376,8 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
     };
 
     /** =========================
-     * Actions: Check-In / No-Show / Check-Out
-     * ========================= */
+ * Actions: Check-In / No-Show
+ * ========================= */
     const checkIn = useCallback(async (r: Reservation) => {
         if (!r || r.isPickup) return;
         if (!businessId || !isValidFirebaseKey(businessId)) return;
@@ -407,12 +412,12 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
             if (r.type === 'Boarding') {
                 await rtdbUpdate(upRef, { status: 'checkedIn', checkedInAt: nowISO() });
                 // remove only the drop-off row from UI
-                setReservations(prev => prev.filter(x => x.id !== r.id));
+                setReservations((prev) => prev.filter((x) => x.id !== r.id));
             } else {
                 // daycare: remove the RTDB row entirely
                 await rtdbRemove(upRef);
                 // remove from UI
-                setReservations(prev => prev.filter(x => x.id !== r.id));
+                setReservations((prev) => prev.filter((x) => x.id !== r.id));
             }
             setSelected(null);
 
@@ -420,11 +425,11 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
             const col = r.type === 'Boarding' ? 'boardingReservations' : 'daycareReservations';
             const fsRef = doc(db, col, r.realtimeKey);
             const snap = await getDoc(fsRef);
-            const data = snap.data() as any;
+            const data = snap.data() as ReservationFS | undefined;
             if (data?.petStatuses) {
                 data.petStatuses[petId] = 'checkedIn';
-                const values: string[] = Object.values<string>(data.petStatuses);
-                const allFinalized = values.every(v => ['checkedIn', 'noShow'].includes(v));
+                const values = Object.values(data.petStatuses);
+                const allFinalized = values.every((v) => v === 'checkedIn' || v === 'noShow');
                 if (r.type === 'Daycare' && allFinalized) {
                     await deleteDoc(fsRef);
                 } else {
@@ -434,7 +439,7 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
         } catch (e) {
             console.error('❌ checkIn failed:', e);
         }
-    }, [businessId, db, rtdb]);
+    }, [businessId]);
 
     const markNoShow = useCallback(async (r: Reservation) => {
         if (!r || r.isPickup) return;
@@ -446,76 +451,79 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
         try {
             await rtdbRemove(rtdbRef(rtdb, `upcomingReservations/${businessId}/${baseKey}`));
             // Optimistic: remove both base and its pickup clone from UI
-            setReservations(prev => prev.filter(x => x.id !== baseKey && x.id !== `${baseKey}-pickup`));
+            setReservations((prev) => prev.filter((x) => x.id !== baseKey && x.id !== `${baseKey}-pickup`));
             setSelected(null);
 
             const col = r.type === 'Boarding' ? 'boardingReservations' : 'daycareReservations';
             const fsRef = doc(db, col, r.realtimeKey);
             const snap = await getDoc(fsRef);
-            const data = snap.data() as any;
+            const data = snap.data() as ReservationFS | undefined;
             if (data?.petStatuses) {
                 data.petStatuses[petId] = 'noShow';
-                const values: string[] = Object.values<string>(data.petStatuses);
-                const allFinalized = values.every(v => ['checkedIn', 'noShow'].includes(v));
+                const values = Object.values(data.petStatuses);
+                const allFinalized = values.every((v) => v === 'checkedIn' || v === 'noShow');
                 if (allFinalized) await deleteDoc(fsRef);
                 else await updateDoc(fsRef, { petStatuses: data.petStatuses });
             }
         } catch (e) {
             console.error('❌ markNoShow failed:', e);
         }
-    }, [businessId, db, rtdb]);
-
-    const checkOut = useCallback(async (r: Reservation) => {
-        if (!r || r.type !== 'Boarding') return;
-        if (!businessId || !isValidFirebaseKey(businessId)) return;
-
-        // base key without "-pickup"
-        const baseKey = r.id.endsWith('-pickup') ? r.id.slice(0, -7) : r.id;
-        const petId = baseKey.split('-').pop()!;
-        const upKey = `${r.realtimeKey}-${petId}`;
-        const dateKey = r.boardingCheckOutDate || r.groupDateKey;
-
-        const outPath = rtdbRef(rtdb, `checkOuts/${businessId}/${dateKey}/${petId}`);
-        const payload: Record<string, unknown> = {
-            name: r.dogName,
-            owner: r.ownerName,
-            type: r.type,
-            checkOutTime: nowISO(),
-            isAssessment: !!r.isAssessment,
-        };
-        if (r.medications) payload.medications = r.medications;
-        if (r.medicationDetails) payload.medicationDetails = r.medicationDetails;
-        if (r.spayedNeutered) payload.spayedNeutered = r.spayedNeutered;
-        if (r.groomingAddOns?.length) payload.groomingAddOns = r.groomingAddOns;
-
-        try {
-            await rtdbSet(outPath, payload);
-            // Optimistic UI: remove both drop-off and pickup rows
-            setReservations(prev => prev.filter(x => x.id !== baseKey && x.id !== `${baseKey}-pickup`));
-            setSelected(null);
-
-            await rtdbRemove(rtdbRef(rtdb, `upcomingReservations/${businessId}/${upKey}`));
-
-            // Update Firestore petStatuses -> "checkedOut"
-            const fsRef = doc(db, 'boardingReservations', r.realtimeKey);
-            const snap = await getDoc(fsRef);
-            const data = snap.data() as any;
-            if (data?.petStatuses) {
-                data.petStatuses[petId] = 'checkedOut';
-                const values: string[] = Object.values<string>(data.petStatuses);
-                const allDone = values.every(v => {
-                    const s = String(v).trim().toLowerCase();
-                    return s === 'checkedout' || s === 'noshow';
-                });
-                if (allDone) await deleteDoc(fsRef);
-                else await updateDoc(fsRef, { petStatuses: data.petStatuses });
-            }
-        } catch (e) {
-            console.error('❌ checkOut failed:', e);
-        }
-    }, [businessId, db, rtdb]);
+    }, [businessId]);
 
       /** =========================
+   * Action: Check-Out
+   * ========================= */
+  const checkOut = useCallback(async (r: Reservation) => {
+    if (!r || r.type !== 'Boarding') return;
+    if (!businessId || !isValidFirebaseKey(businessId)) return;
+
+    // base key without "-pickup"
+    const baseKey = r.id.endsWith('-pickup') ? r.id.slice(0, -7) : r.id;
+    const petId = baseKey.split('-').pop()!;
+    const upKey = `${r.realtimeKey}-${petId}`;
+    const dateKey = r.boardingCheckOutDate || r.groupDateKey;
+
+    const outPath = rtdbRef(rtdb, `checkOuts/${businessId}/${dateKey}/${petId}`);
+    const payload: Record<string, unknown> = {
+      name: r.dogName,
+      owner: r.ownerName,
+      type: r.type,
+      checkOutTime: nowISO(),
+      isAssessment: !!r.isAssessment,
+    };
+    if (r.medications) payload.medications = r.medications;
+    if (r.medicationDetails) payload.medicationDetails = r.medicationDetails;
+    if (r.spayedNeutered) payload.spayedNeutered = r.spayedNeutered;
+    if (r.groomingAddOns?.length) payload.groomingAddOns = r.groomingAddOns;
+
+    try {
+      await rtdbSet(outPath, payload);
+      // Optimistic UI: remove both drop-off and pickup rows
+      setReservations((prev) => prev.filter((x) => x.id !== baseKey && x.id !== `${baseKey}-pickup`));
+      setSelected(null);
+
+      await rtdbRemove(rtdbRef(rtdb, `upcomingReservations/${businessId}/${upKey}`));
+
+      // Update Firestore petStatuses -> "checkedOut"
+      const fsRef = doc(db, 'boardingReservations', r.realtimeKey);
+      const snap = await getDoc(fsRef);
+      const data = snap.data() as ReservationFS | undefined;
+      if (data?.petStatuses) {
+        data.petStatuses[petId] = 'checkedOut';
+        const values = Object.values(data.petStatuses);
+        const allDone = values.every((v) => {
+          const s = String(v).trim().toLowerCase();
+          return s === 'checkedout' || s === 'noshow';
+        });
+        if (allDone) await deleteDoc(fsRef);
+        else await updateDoc(fsRef, { petStatuses: data.petStatuses });
+      }
+    } catch (e) {
+      console.error('❌ checkOut failed:', e);
+    }
+  }, [businessId]);
+
+  /** =========================
    * UI
    * ========================= */
   return (

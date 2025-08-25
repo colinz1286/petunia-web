@@ -160,7 +160,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
         const list: Dog[] = [];
         snap.forEach((dateNode) => {
           dateNode.forEach((dogNode) => {
-            const v = dogNode.val() as Record<string, any> | null;
+            const v = dogNode.val() as Record<string, unknown> | null;
             if (!v) return;
             const name = (v.name as string) || t('unknown_dog');
             const owner = (v.owner as string) || t('unknown_owner');

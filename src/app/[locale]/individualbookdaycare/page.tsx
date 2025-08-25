@@ -4,27 +4,23 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import {
-    getAuth,
-    onAuthStateChanged
-} from 'firebase/auth';
-import {
-    getFirestore,
-    collection,
-    getDocs,
-    getDoc,
-    setDoc,
-    addDoc,
-    doc,
-    query,
-    where,
-    Timestamp
+  getFirestore,
+  collection,
+  getDocs,
+  getDoc,
+  setDoc,
+  doc,
+  query,
+  where,
+  Timestamp,
 } from 'firebase/firestore';
 import {
-    getDatabase,
-    ref as rtdbRef,
-    set as rtdbSet,
-    get as rtdbGet
+  getDatabase,
+  ref as rtdbRef,
+  set as rtdbSet,
+  get as rtdbGet,
 } from 'firebase/database';
 import { initializeApp } from 'firebase/app';
 
@@ -36,12 +32,12 @@ import GroomingModal from '@/components/GroomingModal';
    Firebase init (once)
    ========================= */
 const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
 initializeApp(firebaseConfig);
 const auth = getAuth();
@@ -54,11 +50,11 @@ const rtdb = getDatabase();
 type Pet = { id: string; name: string };
 
 type DraftBooking = {
-    date: Date;
-    dropOffTime: string;
-    petIds: string[];
-    isAssessment: boolean;
-    groomingAddOns?: Record<string, string[]>;
+  date: Date;
+  dropOffTime: string;
+  petIds: string[];
+  isAssessment: boolean;
+  groomingAddOns?: Record<string, string[]>;
 };
 
 type FSMap = Record<string, unknown>;
@@ -70,562 +66,661 @@ type PetVaccineMap = Record<string, Record<VaccineKey, PetVaccineRecord>>;
 
 const uniq = <T,>(arr: T[]) => Array.from(new Set(arr));
 const uniqueById = <T extends { id: string }>(items: T[]) =>
-    Array.from(new Map(items.map((i) => [i.id, i])).values());
+  Array.from(new Map(items.map((i) => [i.id, i])).values());
 
-const serializeGroomingSelections = (selections: Record<string, Set<string>>): Record<string, string[]> => {
-    const out: Record<string, string[]> = {};
-    for (const [petId, set] of Object.entries(selections)) {
-        if (set && set.size) out[petId] = Array.from(set);
-    }
-    return out;
+const serializeGroomingSelections = (
+  selections: Record<string, Set<string>>,
+): Record<string, string[]> => {
+  const out: Record<string, string[]> = {};
+  for (const [petId, set] of Object.entries(selections)) {
+    if (set && set.size) out[petId] = Array.from(set);
+  }
+  return out;
 };
 
 const weekdayName = (d: Date, tz: string) =>
-    new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'long' }).format(d); // "Monday"
+  new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'long' }).format(d); // "Monday"
 
 const ymdKey = (d: Date, tz: string) =>
-    new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d); // YYYY-MM-DD
+  new Intl.DateTimeFormat('en-CA', {
+    timeZone: tz,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(d); // YYYY-MM-DD
 
 const sortTimeStrings = (arr: string[]) => {
-    const toMin = (s: string) => {
-        const m = s.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-        if (!m) return Number.POSITIVE_INFINITY;
+  const toMin = (s: string) => {
+    const m = s.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (!m) return Number.POSITIVE_INFINITY;
+    let h = parseInt(m[1], 10);
+    const mm = parseInt(m[2], 10);
+    const ap = m[3].toUpperCase();
+    if (ap === 'PM' && h !== 12) h += 12;
+    if (ap === 'AM' && h === 12) h = 0;
+    return h * 60 + mm;
+  };
+  return [...arr]
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .sort((a, b) => toMin(a) - toMin(b));
+};
+
+const isValidFirebaseKey = (s: string) => s !== '' && !/[/.#$\[\]#]/.test(s);
+
+const policyKeyToEnum = (raw: string): VaccineKey | null => {
+  const s = raw.toLowerCase();
+  if (s.includes('rabies')) return 'Rabies';
+  if (s.includes('bordetella')) return 'Bordetella';
+  if (s.includes('influenza') || s.includes('civ')) return 'Canine Influenza';
+  if (s.includes('distemper') || s.includes('dhpp') || s.includes('da2pp') || s.includes('dapp')) return 'Distemper';
+  return null;
+};
+
+/* =========================
+   Page
+   ========================= */
+export default function IndividualBookDaycarePage() {
+  const t = useTranslations('individualBookDaycare');
+  const locale = useLocale();
+  const router = useRouter();
+  const params = useSearchParams();
+
+  const businessId = params.get('businessId') || '';
+  const businessName = params.get('businessName') || t('default_business_name');
+
+  // Auth/user
+  const [userId, setUserId] = useState('');
+  const [ownerName, setOwnerName] = useState('Client');
+
+  // Pets
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [selectedPetIds, setSelectedPetIds] = useState<string[]>([]);
+
+  // Booking inputs
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [dropOffOptions, setDropOffOptions] = useState<string[]>([]);
+  const [selectedTime, setSelectedTime] = useState('');
+
+  // Business settings / features
+  const [businessTimeZoneId, setBusinessTimeZoneId] = useState<string | null>(null);
+  const [dropOffTimeRequired, setDropOffTimeRequired] = useState(false);
+  const [dropOffTimesByWeekday, setDropOffTimesByWeekday] = useState<WeekdayMap>({});
+  const [maxPerTimeSlot, setMaxPerTimeSlot] = useState<number>(3);
+  const [includePendingInCapacity, setIncludePendingInCapacity] = useState(false);
+  const [clientWritesRTDB, setClientWritesRTDB] = useState(true);
+  const [enforceWaiverVersion, setEnforceWaiverVersion] = useState(false);
+  const [temperamentTestRequired, setTemperamentTestRequired] = useState(false);
+  const [isAssessment, setIsAssessment] = useState(false);
+
+  // Waiver
+  const [waiverRequired, setWaiverRequired] = useState(false);
+  const [waiverSigned, setWaiverSigned] = useState(true);
+  const [showWaiverModal, setShowWaiverModal] = useState(false);
+  const [hasCheckedAgreement, setHasCheckedAgreement] = useState(false);
+
+  // Drafts & grooming
+  const [draftBookings, setDraftBookings] = useState<DraftBooking[]>([]);
+  const [groomingAvailable, setGroomingAvailable] = useState(false);
+  const [groomingServices, setGroomingServices] = useState<string[]>([]);
+  const [groomingSelections, setGroomingSelections] = useState<Record<string, Set<string>>>({});
+  const [showGroomingPrompt, setShowGroomingPrompt] = useState(false);
+  const [pendingDraft, setPendingDraft] = useState<DraftBooking | null>(null);
+  const [showGroomingUI, setShowGroomingUI] = useState(false);
+
+  // Duplicate prevention
+  const [hasExistingReservation, setHasExistingReservation] = useState(false);
+
+  // Vaccine alerts (read-only step 1)
+  const [requiredVaccines, setRequiredVaccines] = useState<Set<VaccineKey>>(new Set());
+  const [petVaccineData, setPetVaccineData] = useState<PetVaccineMap>({});
+  const [alertsByPet, setAlertsByPet] = useState<Record<string, string[]>>({});
+  const [isLoadingAlerts, setIsLoadingAlerts] = useState(false);
+
+  // UI flow
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error] = useState<string | null>(null);
+
+  const bizTZ = businessTimeZoneId || Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const shouldShowAlertsSection = useMemo(() => {
+    if (isLoadingAlerts || selectedPetIds.length === 0) return true;
+    const problems = selectedPetIds.some((pid) => (alertsByPet[pid] || []).length > 0);
+    return problems;
+  }, [isLoadingAlerts, selectedPetIds, alertsByPet]);
+
+  /* =========================
+     Vaccine alerts recompute
+     ========================= */
+  const isExpired = useCallback(
+    (expiresAt: Date | null): boolean => {
+      if (!expiresAt) return true;
+      const today = new Date(
+        new Intl.DateTimeFormat('en-CA', {
+          timeZone: bizTZ,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        }).format(new Date()),
+      );
+      const expDay = new Date(
+        new Intl.DateTimeFormat('en-CA', {
+          timeZone: bizTZ,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        }).format(expiresAt),
+      );
+      return expDay.getTime() < today.getTime();
+    },
+    [bizTZ],
+  );
+
+  const recomputeVaccineAlerts = useCallback(
+    (source: PetVaccineMap = petVaccineData) => {
+      const df = new Intl.DateTimeFormat('en-CA', {
+        timeZone: bizTZ,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      });
+      const alerts: Record<string, string[]> = {};
+      selectedPetIds.forEach((pid) => {
+        const vmap = source[pid] || {};
+        const msgs: string[] = [];
+        requiredVaccines.forEach((k) => {
+          const rec = vmap[k];
+          if (rec?.isVaccinated) {
+            if (isExpired(rec.expiresAt)) {
+              const when = rec.expiresAt ? ` ${df.format(rec.expiresAt)}` : '';
+              msgs.push(`${k}: Expired${when}`);
+            }
+          } else {
+            msgs.push(`${k}: Not on file`);
+          }
+        });
+        alerts[pid] = msgs;
+      });
+      setAlertsByPet(alerts);
+    },
+    [bizTZ, isExpired, petVaccineData, requiredVaccines, selectedPetIds],
+  );
+
+  const loadVaccineData = useCallback(
+    async (uid: string, petIds: Set<string>) => {
+      setIsLoadingAlerts(true);
+      const base = collection(db, 'users', uid, 'pets');
+      const next: PetVaccineMap = { ...petVaccineData };
+
+      await Promise.all(
+        Array.from(petIds).map(async (pid) => {
+          const snap = await getDoc(doc(base, pid)).catch(() => null);
+          const data = (snap?.data() || {}) as FSMap;
+          const records = (data['vaccinationRecords'] as FSMap) || {};
+          const map: Partial<Record<VaccineKey, PetVaccineRecord>> = {};
+
+          Object.entries(records).forEach(([rawKey, rec]) => {
+            const key = policyKeyToEnum(rawKey);
+            if (!key) return;
+            if (typeof rec === 'object' && rec) {
+              const obj = rec as FSMap;
+              const date = (obj['date'] as Timestamp | undefined)?.toDate() || null;
+              const isVacc = !!(obj['isVaccinated'] as boolean);
+              map[key] = { expiresAt: date, isVaccinated: isVacc };
+            }
+          });
+          next[pid] = map as Record<VaccineKey, PetVaccineRecord>;
+        }),
+      );
+
+      setPetVaccineData(next);
+      setIsLoadingAlerts(false);
+      recomputeVaccineAlerts(next);
+    },
+    [petVaccineData, recomputeVaccineAlerts],
+  );
+
+  /* =========================
+     Filtering + capacity
+     ========================= */
+  const filterUnavailableTimes = useCallback(
+    async (date: Date, options: string[]) => {
+      if (!businessId || !isValidFirebaseKey(businessId)) return;
+
+      const dayKeyBiz = ymdKey(date, bizTZ);
+      const dayKeyDevice = ymdKey(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
+
+      const snap = await rtdbGet(rtdbRef(rtdb, `upcomingReservations/${businessId}`)).catch(() => null);
+      const val = (snap?.val() as Record<string, FSMap>) || {};
+
+      const counts: Record<string, number> = {};
+      Object.values(val).forEach((row: FSMap) => {
+        const window = (row?.arrivalWindow as string) || '';
+        const status = (row?.status as string) || '';
+        const d1 = (row?.date as string) || '';
+        const dBiz = (row?.dateBusinessTZ as string) || '';
+
+        const sameDay = dBiz === dayKeyBiz || d1 === dayKeyBiz || d1 === dayKeyDevice;
+        const countable = status === 'approved' || (includePendingInCapacity && status === 'pending');
+        if (sameDay && countable && window) counts[window] = (counts[window] ?? 0) + 1;
+      });
+
+      // Hide past times in business TZ for today
+      const nowLabel = new Intl.DateTimeFormat('en-US', {
+        timeZone: bizTZ,
+        hour12: true,
+        hour: 'numeric',
+        minute: '2-digit',
+      }).format(new Date());
+      const nowMins = sortTimeStrings([nowLabel, nowLabel]).length
+        ? (() => {
+            const m = nowLabel.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i)!;
+            let h = parseInt(m[1], 10);
+            const mm = parseInt(m[2], 10);
+            const ap = m[3].toUpperCase();
+            if (ap === 'PM' && h !== 12) h += 12;
+            if (ap === 'AM' && h === 12) h = 0;
+            return h * 60 + mm;
+          })()
+        : 0;
+
+      const todayKey = ymdKey(new Date(), bizTZ);
+      const isTodayBiz = todayKey === dayKeyBiz;
+
+      const toMin = (s: string) => {
+        const m = s.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+        if (!m) return 0;
         let h = parseInt(m[1], 10);
         const mm = parseInt(m[2], 10);
         const ap = m[3].toUpperCase();
         if (ap === 'PM' && h !== 12) h += 12;
         if (ap === 'AM' && h === 12) h = 0;
         return h * 60 + mm;
-    };
-    return [...arr].map(s => s.trim()).filter(Boolean).sort((a, b) => toMin(a) - toMin(b));
-};
+      };
 
-const isValidFirebaseKey = (s: string) => s !== '' && !/[/.#$\[\]#]/.test(s);
+      const filtered = options.filter((opt) => {
+        const underCap = (counts[opt] ?? 0) < maxPerTimeSlot;
+        if (!isTodayBiz) return underCap;
+        return underCap && toMin(opt) > nowMins;
+      });
 
-/* =========================
-   Page
-   ========================= */
-export default function IndividualBookDaycarePage() {
-    const t = useTranslations('individualBookDaycare');
-    const locale = useLocale();
-    const router = useRouter();
-    const params = useSearchParams();
+      setDropOffOptions(filtered);
+      setSelectedTime(filtered[0] || '');
+    },
+    [businessId, includePendingInCapacity, maxPerTimeSlot, bizTZ],
+  );
 
-    const businessId = params.get('businessId') || '';
-    const businessName = params.get('businessName') || t('default_business_name');
+  /* =========================
+     Duplicate daycare prevention (biz TZ)
+     ========================= */
+  const checkForExistingReservation = useCallback(
+    async (d: Date, uid: string) => {
+      const bizKey = ymdKey(d, bizTZ);
+      const qref = query(
+        collection(db, 'daycareReservations'),
+        where('userId', '==', uid),
+        where('businessId', '==', businessId),
+        where('status', 'in', ['pending', 'approved']),
+      );
+      const snap = await getDocs(qref);
+      const exists = snap.docs.some((docSnap) => {
+        const data = docSnap.data() as FSMap;
+        const ts = (data['date'] as Timestamp | undefined)?.toDate();
+        const keyField = (data['dateBusinessTZ'] as string | undefined) || (ts ? ymdKey(ts, bizTZ) : '');
+        return keyField === bizKey;
+      });
+      setHasExistingReservation(exists);
+    },
+    [businessId, bizTZ],
+  );
 
-    // Auth/user
-    const [userId, setUserId] = useState('');
-    const [ownerName, setOwnerName] = useState('Client');
+  /* =========================
+     Fetch business settings
+     ========================= */
+  const fetchBusinessSettings = useCallback(
+    async (bizId: string) => {
+      const bsnap = await getDoc(doc(db, 'businesses', bizId));
+      const data = (bsnap.data() || {}) as FSMap;
 
-    // Pets
-    const [pets, setPets] = useState<Pet[]>([]);
-    const [selectedPetIds, setSelectedPetIds] = useState<string[]>([]);
+      // Core toggles
+      setDropOffTimeRequired(!!(data['dropOffTimeRequiredDaycare'] as boolean));
+      setWaiverRequired(!!(data['waiverRequired'] as boolean));
+      setTemperamentTestRequired(!!(data['temperamentTestRequired'] as boolean));
 
-    // Booking inputs
-    const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-    const [dropOffOptions, setDropOffOptions] = useState<string[]>([]);
-    const [selectedTime, setSelectedTime] = useState('');
+      // TZ + features
+      setBusinessTimeZoneId((data['timeZoneId'] as string) || (data['timezone'] as string) || null);
+      const features = (data['features'] as FSMap) || {};
+      setIncludePendingInCapacity(!!features['countPendingInCapacity']);
+      setClientWritesRTDB(features['clientWritesRTDB'] !== false);
+      setEnforceWaiverVersion(!!features['enforceWaiverVersion']);
 
-    // Business settings / features
-    const [businessTimeZoneId, setBusinessTimeZoneId] = useState<string | null>(null);
-    const [dropOffTimeRequired, setDropOffTimeRequired] = useState(false);
-    const [dropOffTimesByWeekday, setDropOffTimesByWeekday] = useState<WeekdayMap>({});
-    const [maxPerTimeSlot, setMaxPerTimeSlot] = useState<number>(3);
-    const [includePendingInCapacity, setIncludePendingInCapacity] = useState(false);
-    const [clientWritesRTDB, setClientWritesRTDB] = useState(true);
-    const [enforceWaiverVersion, setEnforceWaiverVersion] = useState(false);
-    const [temperamentTestRequired, setTemperamentTestRequired] = useState(false);
-    const [isAssessment, setIsAssessment] = useState(false);
+      // Grooming
+      setGroomingAvailable(!!(data['groomingAvailableAsAddOnToDaycare'] as boolean));
+      setGroomingServices(
+        ((data['groomingServices'] as string[]) || []).map((s) => (s || '').trim()).filter(Boolean),
+      );
 
-    // Waiver
-    const [waiverRequired, setWaiverRequired] = useState(false);
-    const [waiverSigned, setWaiverSigned] = useState(true);
-    const [showWaiverModal, setShowWaiverModal] = useState(false);
-    const [hasCheckedAgreement, setHasCheckedAgreement] = useState(false);
+      // Times map
+      const map = (data['dropOffTimesDaycare'] as WeekdayMap) || {};
+      setDropOffTimesByWeekday(map);
 
-    // Drafts & grooming
-    const [draftBookings, setDraftBookings] = useState<DraftBooking[]>([]);
-    const [groomingAvailable, setGroomingAvailable] = useState(false);
-    const [groomingServices, setGroomingServices] = useState<string[]>([]);
-    const [groomingSelections, setGroomingSelections] = useState<Record<string, Set<string>>>({});
-    const [showGroomingPrompt, setShowGroomingPrompt] = useState(false);
-    const [pendingDraft, setPendingDraft] = useState<DraftBooking | null>(null);
-    const [showGroomingUI, setShowGroomingUI] = useState(false);
+      // Booking limits
+      const limits = (data['bookingLimits'] as FSMap) || {};
+      setMaxPerTimeSlot(
+        typeof limits['maxPerTimeSlot'] === 'number' ? (limits['maxPerTimeSlot'] as number) : 3,
+      );
 
-    // Duplicate prevention
-    const [hasExistingReservation, setHasExistingReservation] = useState(false);
-
-    // Vaccine alerts (read-only step 1)
-    const [requiredVaccines, setRequiredVaccines] = useState<Set<VaccineKey>>(new Set());
-    const [petVaccineData, setPetVaccineData] = useState<PetVaccineMap>({});
-    const [alertsByPet, setAlertsByPet] = useState<Record<string, string[]>>({});
-    const [isLoadingAlerts, setIsLoadingAlerts] = useState(false);
-
-    // UI flow
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error] = useState<string | null>(null);
-
-    const bizTZ = businessTimeZoneId || Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const shouldShowAlertsSection = useMemo(() => {
-        if (isLoadingAlerts || selectedPetIds.length === 0) return true;
-        const problems = selectedPetIds.some(pid => (alertsByPet[pid] || []).length > 0);
-        return problems;
-    }, [isLoadingAlerts, selectedPetIds, alertsByPet]);
-
-    /* =========================
-   Auth + initial load
-   ========================= */
-    useEffect(() => {
-        const unsub = onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                router.push(`/${locale}/loginsignup`);
-                return;
-            }
-            const uid = user.uid;
-            setUserId(uid);
-
-            // Owner name for RTDB
-            const usnap = await getDoc(doc(db, 'users', uid)).catch(() => null);
-            const fn = (usnap?.data()?.firstName as string) || '';
-            const ln = (usnap?.data()?.lastName as string) || '';
-            const on = `${fn} ${ln}`.trim();
-            if (on) setOwnerName(on);
-
-            await Promise.all([loadUserPets(uid), fetchBusinessSettings(businessId), checkWaiverStatus(businessId, uid)]);
-            setIsLoading(false);
-        });
-        return () => unsub();
-    }, [router, locale, businessId]);
-
-    /* =========================
-       Fetch business settings
-       ========================= */
-    const fetchBusinessSettings = useCallback(async (bizId: string) => {
-        const bsnap = await getDoc(doc(db, 'businesses', bizId));
-        const data = (bsnap.data() || {}) as FSMap;
-
-        // Core toggles
-        setDropOffTimeRequired(!!(data['dropOffTimeRequiredDaycare'] as boolean));
-        setWaiverRequired(!!(data['waiverRequired'] as boolean));
-        setTemperamentTestRequired(!!(data['temperamentTestRequired'] as boolean));
-
-        // TZ + features
-        setBusinessTimeZoneId((data['timeZoneId'] as string) || (data['timezone'] as string) || null);
-        const features = (data['features'] as FSMap) || {};
-        setIncludePendingInCapacity(!!features['countPendingInCapacity']);
-        setClientWritesRTDB(features['clientWritesRTDB'] !== false);
-        setEnforceWaiverVersion(!!features['enforceWaiverVersion']);
-
-        // Grooming
-        setGroomingAvailable(!!(data['groomingAvailableAsAddOnToDaycare'] as boolean));
-        setGroomingServices(((data['groomingServices'] as string[]) || []).map(s => (s || '').trim()).filter(Boolean));
-
-        // Times map
-        const map = (data['dropOffTimesDaycare'] as WeekdayMap) || {};
-        setDropOffTimesByWeekday(map);
-
-        // Booking limits
-        const limits = (data['bookingLimits'] as FSMap) || {};
-        setMaxPerTimeSlot(typeof limits['maxPerTimeSlot'] === 'number' ? (limits['maxPerTimeSlot'] as number) : 3);
-
-        // Required vaccines (keys may vary → normalize)
-        const reqRaw = (data['requiredVaccinations'] as FSMap) || {};
-        const reqSet: Set<VaccineKey> = new Set();
-        Object.keys(reqRaw).forEach(k => {
-            if (reqRaw[k] === true) {
-                const v = policyKeyToEnum(k);
-                if (v) reqSet.add(v);
-            }
-        });
-        setRequiredVaccines(reqSet);
-
-        // Seed options for selected date
-        if (selectedDate) {
-            const weekday = weekdayName(selectedDate, bizTZ);
-            const sorted = sortTimeStrings(map[weekday] || []);
-            setDropOffOptions(sorted);
-            setSelectedTime(sorted[0] || '');
-            await filterUnavailableTimes(selectedDate, sorted);
-            await checkForExistingReservation(selectedDate, userId);
+      // Required vaccines (keys may vary → normalize)
+      const reqRaw = (data['requiredVaccinations'] as FSMap) || {};
+      const reqSet: Set<VaccineKey> = new Set();
+      Object.keys(reqRaw).forEach((k) => {
+        if (reqRaw[k] === true) {
+          const v = policyKeyToEnum(k);
+          if (v) reqSet.add(v);
         }
-    }, [selectedDate, userId, bizTZ]);
+      });
+      setRequiredVaccines(reqSet);
 
-    /* =========================
-       Waiver (version-aware)
-       ========================= */
-    const checkWaiverStatus = useCallback(async (bizId: string, uid: string) => {
-        try {
-            const bizRef = doc(db, 'businesses', bizId);
-            const waiverRef = doc(db, 'businesses', bizId, 'settings', 'clientWaiver');
-            const clientRef = doc(db, 'userApprovedBusinesses', bizId, 'clients', uid);
+      // Seed options for selected date
+      if (selectedDate) {
+        const weekday = weekdayName(selectedDate, bizTZ);
+        const sorted = sortTimeStrings(map[weekday] || []);
+        setDropOffOptions(sorted);
+        setSelectedTime(sorted[0] || '');
+        await filterUnavailableTimes(selectedDate, sorted);
+        await checkForExistingReservation(selectedDate, userId);
+      }
+    },
+    [selectedDate, userId, bizTZ, filterUnavailableTimes, checkForExistingReservation],
+  );
 
-            const [bizSnap, wSnap, cSnap] = await Promise.all([getDoc(bizRef), getDoc(waiverRef), getDoc(clientRef)]);
-            const b = (bizSnap.data() || {}) as FSMap;
-            const w = (wSnap.data() || {}) as FSMap;
-            const c = (cSnap.data() || {}) as FSMap;
+  /* =========================
+     Waiver (version-aware)
+     ========================= */
+  const checkWaiverStatus = useCallback(async (bizId: string, uid: string) => {
+    try {
+      const bizRef = doc(db, 'businesses', bizId);
+      const waiverRef = doc(db, 'businesses', bizId, 'settings', 'clientWaiver');
+      const clientRef = doc(db, 'userApprovedBusinesses', bizId, 'clients', uid);
 
-            const enforce = !!(((b['features'] as FSMap) || {})['enforceWaiverVersion'] as boolean);
-            const version = (w['waiverVersion'] as number | undefined);
-            const subUpdated = (w['lastUpdated'] as Timestamp | undefined)?.toDate();
-            const rootUpdated = (b['waiverLastUpdated'] as Timestamp | undefined)?.toDate();
-            const lastUpdated = subUpdated || rootUpdated || null;
+      const [bizSnap, wSnap, cSnap] = await Promise.all([getDoc(bizRef), getDoc(waiverRef), getDoc(clientRef)]);
+      const b = (bizSnap.data() || {}) as FSMap;
+      const w = (wSnap.data() || {}) as FSMap;
+      const c = (cSnap.data() || {}) as FSMap;
 
-            const versionSigned = (c['waiverVersionSigned'] as number | undefined) ?? 0;
-            const signedAt = (c['waiverSignedAt'] as Timestamp | undefined)?.toDate() || null;
-            const legacy = (c['waiverSigned'] as boolean | undefined) ?? false;
+      const enforce = !!(((b['features'] as FSMap) || {})['enforceWaiverVersion'] as boolean);
+      const version = w['waiverVersion'] as number | undefined;
+      const subUpdated = (w['lastUpdated'] as Timestamp | undefined)?.toDate();
+      const rootUpdated = (b['waiverLastUpdated'] as Timestamp | undefined)?.toDate();
+      const lastUpdated = subUpdated || rootUpdated || null;
 
-            setWaiverRequired(!!(b['waiverRequired'] as boolean));
+      const versionSigned = (c['waiverVersionSigned'] as number | undefined) ?? 0;
+      const signedAt = (c['waiverSignedAt'] as Timestamp | undefined)?.toDate() || null;
+      const legacy = (c['waiverSigned'] as boolean | undefined) ?? false;
 
-            let signed = true;
-            if (!b['waiverRequired']) signed = true;
-            else if (enforce && typeof version === 'number') signed = versionSigned >= version;
-            else if (lastUpdated && signedAt) signed = signedAt >= lastUpdated;
-            else signed = legacy;
+      setWaiverRequired(!!(b['waiverRequired'] as boolean));
 
-            setWaiverSigned(signed);
-            if (b['waiverRequired'] && !signed) setShowWaiverModal(true);
-        } catch (e) {
-            console.warn('⚠️ Waiver check failed (non-fatal):', e);
-            setWaiverSigned(true);
-        }
-    }, []);
+      let signed = true;
+      if (!b['waiverRequired']) signed = true;
+      else if (enforce && typeof version === 'number') signed = versionSigned >= version;
+      else if (lastUpdated && signedAt) signed = signedAt >= lastUpdated;
+      else signed = legacy;
 
-    /* =========================
-       Pets + vaccine data
-       ========================= */
-    const loadUserPets = useCallback(async (uid: string) => {
-        const ps = await getDocs(collection(db, 'users', uid, 'pets'));
-        const raw = ps.docs.map(d => ({ id: d.id, name: (d.data().petName as string) || 'Unnamed' }));
-        const unique = uniqueById(raw);
-        setPets(unique);
-        setSelectedPetIds(unique.map(p => p.id));
+      setWaiverSigned(signed);
+      if (b['waiverRequired'] && !signed) setShowWaiverModal(true);
+    } catch (e) {
+      console.warn('⚠️ Waiver check failed (non-fatal):', e);
+      setWaiverSigned(true);
+    }
+  }, []);
 
-        // Preload vaccine data for selected pets
-        await loadVaccineData(uid, new Set(unique.map(p => p.id)));
-    }, []);
+  /* =========================
+     Pets + vaccine data
+     ========================= */
+  const loadUserPets = useCallback(
+    async (uid: string) => {
+      const ps = await getDocs(collection(db, 'users', uid, 'pets'));
+      const raw = ps.docs.map((d) => ({ id: d.id, name: (d.data().petName as string) || 'Unnamed' }));
+      const unique = uniqueById(raw);
+      setPets(unique);
+      setSelectedPetIds(unique.map((p) => p.id));
 
-    const policyKeyToEnum = (raw: string): VaccineKey | null => {
-        const s = raw.toLowerCase();
-        if (s.includes('rabies')) return 'Rabies';
-        if (s.includes('bordetella')) return 'Bordetella';
-        if (s.includes('influenza') || s.includes('civ')) return 'Canine Influenza';
-        if (s.includes('distemper') || s.includes('dhpp') || s.includes('da2pp') || s.includes('dapp')) return 'Distemper';
-        return null;
-    };
+      // Preload vaccine data for selected pets
+      await loadVaccineData(uid, new Set(unique.map((p) => p.id)));
+    },
+    [loadVaccineData],
+  );
 
-    const isExpired = (expiresAt: Date | null): boolean => {
-        if (!expiresAt) return true;
-        const today = new Date(new Intl.DateTimeFormat('en-CA', { timeZone: bizTZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()));
-        const expDay = new Date(new Intl.DateTimeFormat('en-CA', { timeZone: bizTZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(expiresAt));
-        return expDay.getTime() < today.getTime();
-    };
+  /* =========================
+     Auth + initial load
+     ========================= */
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        router.push(`/${locale}/loginsignup`);
+        return;
+      }
+      const uid = user.uid;
+      setUserId(uid);
 
-    const loadVaccineData = useCallback(async (uid: string, petIds: Set<string>) => {
-        setIsLoadingAlerts(true);
-        const base = collection(db, 'users', uid, 'pets');
-        const next: PetVaccineMap = { ...petVaccineData };
+      // Owner name for RTDB
+      const usnap = await getDoc(doc(db, 'users', uid)).catch(() => null);
+      const fn = (usnap?.data()?.firstName as string) || '';
+      const ln = (usnap?.data()?.lastName as string) || '';
+      const on = `${fn} ${ln}`.trim();
+      if (on) setOwnerName(on);
 
-        await Promise.all(
-            Array.from(petIds).map(async (pid) => {
-                const snap = await getDoc(doc(base, pid)).catch(() => null);
-                const data = (snap?.data() || {}) as FSMap;
-                const records = (data['vaccinationRecords'] as FSMap) || {};
-                const map: Record<VaccineKey, PetVaccineRecord> = {} as any;
+      await Promise.all([loadUserPets(uid), fetchBusinessSettings(businessId), checkWaiverStatus(businessId, uid)]);
+      setIsLoading(false);
+    });
+    return () => unsub();
+  }, [router, locale, businessId, loadUserPets, fetchBusinessSettings, checkWaiverStatus]);
 
-                Object.entries(records).forEach(([rawKey, rec]) => {
-                    const key = policyKeyToEnum(rawKey);
-                    if (!key) return;
-                    if (typeof rec === 'object' && rec) {
-                        const obj = rec as FSMap;
-                        const date = (obj['date'] as Timestamp | undefined)?.toDate() || null;
-                        const isVacc = !!(obj['isVaccinated'] as boolean);
-                        map[key] = { expiresAt: date, isVaccinated: isVacc };
-                    }
-                });
-                next[pid] = map;
-            })
-        );
+  /* =========================
+     Time options & capacity filtering (on date change)
+     ========================= */
+  useEffect(() => {
+    (async () => {
+      if (!selectedDate) return;
+      const weekday = weekdayName(selectedDate, bizTZ);
+      const raw = sortTimeStrings(dropOffTimesByWeekday[weekday] || []);
+      setDropOffOptions(raw);
+      setSelectedTime(raw[0] || '');
+      await filterUnavailableTimes(selectedDate, raw);
+      if (userId) await checkForExistingReservation(selectedDate, userId);
+    })();
+  }, [selectedDate, dropOffTimesByWeekday, bizTZ, filterUnavailableTimes, checkForExistingReservation, userId]);
 
-        setPetVaccineData(next);
-        setIsLoadingAlerts(false);
-        recomputeVaccineAlerts(next);
-    }, [petVaccineData, bizTZ]);
+  /* =========================
+     Selected pets → refresh alerts
+     ========================= */
+  useEffect(() => {
+    recomputeVaccineAlerts();
+  }, [selectedPetIds, recomputeVaccineAlerts]);
 
-    const recomputeVaccineAlerts = (source: PetVaccineMap = petVaccineData) => {
-        const df = new Intl.DateTimeFormat('en-CA', { timeZone: bizTZ, year: 'numeric', month: '2-digit', day: '2-digit' });
-        const alerts: Record<string, string[]> = {};
-        selectedPetIds.forEach((pid) => {
-            const vmap = source[pid] || {};
-            const msgs: string[] = [];
-            requiredVaccines.forEach((k) => {
-                const rec = vmap[k];
-                if (rec?.isVaccinated) {
-                    if (isExpired(rec.expiresAt)) {
-                        const when = rec.expiresAt ? ` ${df.format(rec.expiresAt)}` : '';
-                        msgs.push(`${k}: Expired${when}`);
-                    }
-                } else {
-                    msgs.push(`${k}: Not on file`);
-                }
-            });
-            alerts[pid] = msgs;
-        });
-        setAlertsByPet(alerts);
-    };
-
-    /* =========================
-       Time options & capacity filtering
-       ========================= */
-    useEffect(() => {
-        (async () => {
-            if (!selectedDate) return;
-            const weekday = weekdayName(selectedDate, bizTZ);
-            const raw = sortTimeStrings(dropOffTimesByWeekday[weekday] || []);
-            setDropOffOptions(raw);
-            setSelectedTime(raw[0] || '');
-            await filterUnavailableTimes(selectedDate, raw);
-            if (userId) await checkForExistingReservation(selectedDate, userId);
-        })();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedDate, dropOffTimesByWeekday, bizTZ]);
-
-    const filterUnavailableTimes = useCallback(async (date: Date, options: string[]) => {
-        if (!businessId || !isValidFirebaseKey(businessId)) return;
-
-        const dayKeyBiz = ymdKey(date, bizTZ);
-        const dayKeyDevice = ymdKey(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
-
-        const snap = await rtdbGet(rtdbRef(rtdb, `upcomingReservations/${businessId}`)).catch(() => null);
-        const val = (snap?.val() as Record<string, FSMap>) || {};
-
-        const counts: Record<string, number> = {};
-        Object.values(val).forEach((row: any) => {
-            const window = (row?.arrivalWindow as string) || '';
-            const status = (row?.status as string) || '';
-            const d1 = (row?.date as string) || '';
-            const dBiz = (row?.dateBusinessTZ as string) || '';
-
-            const sameDay = dBiz === dayKeyBiz || d1 === dayKeyBiz || d1 === dayKeyDevice;
-            const countable = status === 'approved' || (includePendingInCapacity && status === 'pending');
-            if (sameDay && countable && window) counts[window] = (counts[window] ?? 0) + 1;
-        });
-
-        // Hide past times in business TZ for today
-        const nowLabel = new Intl.DateTimeFormat('en-US', { timeZone: bizTZ, hour12: true, hour: 'numeric', minute: '2-digit' }).format(new Date());
-        const nowMins = sortTimeStrings([nowLabel, nowLabel]).length ? (() => {
-            const m = nowLabel.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i)!;
-            let h = parseInt(m[1], 10), mm = parseInt(m[2], 10), ap = m[3].toUpperCase();
-            if (ap === 'PM' && h !== 12) h += 12;
-            if (ap === 'AM' && h === 12) h = 0;
-            return h * 60 + mm;
-        })() : 0;
-
-        const todayKey = ymdKey(new Date(), bizTZ);
-        const isTodayBiz = todayKey === dayKeyBiz;
-
-        const toMin = (s: string) => {
-            const m = s.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-            if (!m) return 0;
-            let h = parseInt(m[1], 10), mm = parseInt(m[2], 10); const ap = m[3].toUpperCase();
-            if (ap === 'PM' && h !== 12) h += 12;
-            if (ap === 'AM' && h === 12) h = 0;
-            return h * 60 + mm;
-        };
-
-        const filtered = options.filter(opt => {
-            const underCap = (counts[opt] ?? 0) < maxPerTimeSlot;
-            if (!isTodayBiz) return underCap;
-            return underCap && toMin(opt) > nowMins;
-        });
-
-        setDropOffOptions(filtered);
-        setSelectedTime(filtered[0] || '');
-    }, [businessId, includePendingInCapacity, maxPerTimeSlot, bizTZ]);
-
-    /* =========================
-       Duplicate daycare prevention (biz TZ)
-       ========================= */
-    const checkForExistingReservation = useCallback(async (d: Date, uid: string) => {
-        const bizKey = ymdKey(d, bizTZ);
-        const qref = query(
-            collection(db, 'daycareReservations'),
-            where('userId', '==', uid),
-            where('businessId', '==', businessId),
-            where('status', 'in', ['pending', 'approved'])
-        );
-        const snap = await getDocs(qref);
-        const exists = snap.docs.some(docSnap => {
-            const data = docSnap.data() as FSMap;
-            const ts = (data['date'] as Timestamp | undefined)?.toDate();
-            const keyField = (data['dateBusinessTZ'] as string | undefined) || (ts ? ymdKey(ts, bizTZ) : '');
-            return keyField === bizKey;
-        });
-        setHasExistingReservation(exists);
-    }, [businessId, bizTZ]);
-
-    /* =========================
-       Selected pets → refresh alerts
-       ========================= */
-    useEffect(() => {
-        recomputeVaccineAlerts();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedPetIds]);
-
-      /* =========================
+  /* =========================
      Add booking draft (with Assessment flag)
      ========================= */
-  const addBookingDraft = useCallback(() => {
-    if (!selectedDate || (dropOffTimeRequired && !selectedTime) || selectedPetIds.length === 0) return;
-
-    // prevent same-day duplicate draft
-    const exists = draftBookings.some(
-      (b) =>
-        ymdKey(b.date, bizTZ) === ymdKey(selectedDate, bizTZ) &&
-        b.dropOffTime === selectedTime &&
-        JSON.stringify([...b.petIds].sort()) === JSON.stringify([...selectedPetIds].sort())
-    );
-    if (exists) {
-      alert(t('duplicate_daycare_message'));
-      return;
-    }
-
-    const newDraft: DraftBooking = {
-      date: selectedDate,
-      dropOffTime: selectedTime,
-      petIds: [...selectedPetIds],
-      isAssessment
-    };
-
-    if (groomingAvailable && groomingServices.length > 0) {
-      setPendingDraft(newDraft);
-      setShowGroomingPrompt(true);
-    } else {
-      setDraftBookings((prev) => [...prev, newDraft]);
-      resetFormAfterDraft();
-    }
-  }, [
-    selectedDate, selectedTime, selectedPetIds, draftBookings,
-    dropOffTimeRequired, groomingAvailable, groomingServices, isAssessment, t, bizTZ
-  ]);
-
-  const resetFormAfterDraft = () => {
+  const resetFormAfterDraft = useCallback(() => {
     setSelectedTime('');
     setDropOffOptions([]);
-    setSelectedPetIds(pets.map(p => p.id));
-  };
+    setSelectedPetIds(pets.map((p) => p.id));
+  }, [pets]);
+
+  const addBookingDraft = useCallback(
+    () => {
+      if (!selectedDate || (dropOffTimeRequired && !selectedTime) || selectedPetIds.length === 0) return;
+
+      // prevent same-day duplicate draft
+      const exists = draftBookings.some(
+        (b) =>
+          ymdKey(b.date, bizTZ) === ymdKey(selectedDate, bizTZ) &&
+          b.dropOffTime === selectedTime &&
+          JSON.stringify([...b.petIds].sort()) === JSON.stringify([...selectedPetIds].sort()),
+      );
+      if (exists) {
+        alert(t('duplicate_daycare_message'));
+        return;
+      }
+
+      const newDraft: DraftBooking = {
+        date: selectedDate,
+        dropOffTime: selectedTime,
+        petIds: [...selectedPetIds],
+        isAssessment,
+      };
+
+      if (groomingAvailable && groomingServices.length > 0) {
+        setPendingDraft(newDraft);
+        setShowGroomingPrompt(true);
+      } else {
+        setDraftBookings((prev) => [...prev, newDraft]);
+        resetFormAfterDraft();
+      }
+    },
+    [
+      selectedDate,
+      selectedTime,
+      selectedPetIds,
+      draftBookings,
+      dropOffTimeRequired,
+      groomingAvailable,
+      groomingServices,
+      isAssessment,
+      t,
+      bizTZ,
+      resetFormAfterDraft,
+    ],
+  );
 
   /* =========================
      Submit all drafts (Firestore + optional RTDB)
      ========================= */
-  const submitAllReservations = useCallback(async () => {
-    if (draftBookings.length === 0) { alert(t('no_bookings_to_submit')); return; }
-    if (waiverRequired && !waiverSigned) { setShowWaiverModal(true); return; }
+  const submitAllReservations = useCallback(
+    async () => {
+      if (draftBookings.length === 0) {
+        alert(t('no_bookings_to_submit'));
+        return;
+      }
+      if (waiverRequired && !waiverSigned) {
+        setShowWaiverModal(true);
+        return;
+      }
 
-    setIsSubmitting(true);
+      setIsSubmitting(true);
 
-    try {
-      const userSnap = await getDoc(doc(db, 'users', userId));
-      const firstName = (userSnap.data()?.firstName as string) || 'Client';
-      const lastName  = (userSnap.data()?.lastName  as string) || '';
-      const owner = `${firstName} ${lastName}`.trim() || ownerName;
+      try {
+        const userSnap = await getDoc(doc(db, 'users', userId));
+        const firstName = (userSnap.data()?.firstName as string) || 'Client';
+        const lastName = (userSnap.data()?.lastName as string) || '';
+        const owner = `${firstName} ${lastName}`.trim() || ownerName;
 
-      // latest waiver version for backfill
-      const wSnap = await getDoc(doc(db, 'businesses', businessId, 'settings', 'clientWaiver'));
-      const waiverVersionLatest = (wSnap.data()?.waiverVersion as number) ?? 1;
+        // latest waiver version for backfill
+        const wSnap = await getDoc(doc(db, 'businesses', businessId, 'settings', 'clientWaiver'));
+        const waiverVersionLatest = (wSnap.data()?.waiverVersion as number) ?? 1;
 
-      for (const booking of draftBookings) {
-        const reservationId = crypto.randomUUID();
-        const realtimeKey = reservationId;
+        for (const booking of draftBookings) {
+          const reservationId = crypto.randomUUID();
+          const realtimeKey = reservationId;
 
-        const petStatuses: Record<string, string> = {};
-        booking.petIds.forEach(pid => petStatuses[pid] = 'pending');
+          const petStatuses: Record<string, string> = {};
+          booking.petIds.forEach((pid) => (petStatuses[pid] = 'pending'));
 
-        const dateBizKey = ymdKey(booking.date, bizTZ);
+          const dateBizKey = ymdKey(booking.date, bizTZ);
 
-        const reservation: FSMap = {
-          userId,
-          businessId,
-          petIds: booking.petIds,
-          petStatuses,
-          date: Timestamp.fromDate(booking.date),   // legacy timestamp
-          dateBusinessTZ: dateBizKey,               // new string key in biz TZ
-          arrivalWindow: booking.dropOffTime,
-          status: 'approved',
-          realtimeKey
-        };
-        if (booking.isAssessment) reservation['isAssessment'] = true;
+          const reservation: FSMap = {
+            userId,
+            businessId,
+            petIds: booking.petIds,
+            petStatuses,
+            date: Timestamp.fromDate(booking.date), // legacy timestamp
+            dateBusinessTZ: dateBizKey, // new string key in biz TZ
+            arrivalWindow: booking.dropOffTime,
+            status: 'approved',
+            realtimeKey,
+          };
+          if (booking.isAssessment) reservation['isAssessment'] = true;
 
-        const groomForReservation = serializeGroomingSelections(groomingSelections);
-        if (Object.keys(groomForReservation).length) reservation['groomingAddOns'] = groomForReservation;
+          const groomForReservation = serializeGroomingSelections(groomingSelections);
+          if (Object.keys(groomForReservation).length) reservation['groomingAddOns'] = groomForReservation;
 
-        // Firestore
-        await setDoc(doc(db, 'daycareReservations', reservationId), reservation);
+          // Firestore
+          await setDoc(doc(db, 'daycareReservations', reservationId), reservation);
 
-        // Optional RTDB mirrors (per pet)
-        if (clientWritesRTDB) {
-          await Promise.all(
-            booking.petIds.map(async (petId) => {
-              const pet = pets.find(p => p.id === petId);
-              if (!pet) return;
+          // Optional RTDB mirrors (per pet)
+          if (clientWritesRTDB) {
+            await Promise.all(
+              booking.petIds.map(async (petId) => {
+                const pet = pets.find((p) => p.id === petId);
+                if (!pet) return;
 
-              const rtdbKey = `${realtimeKey}-${petId}`;
-              const entry: FSMap = {
-                dogName: pet.name,
-                ownerName: owner,
-                type: 'Daycare',
-                date: ymdKey(booking.date, Intl.DateTimeFormat().resolvedOptions().timeZone), // device legacy
-                dateBusinessTZ: dateBizKey,  // new
-                arrivalWindow: booking.dropOffTime,
-                status: 'approved',
-                userId,
-                realtimeKey
-              };
-              if (booking.isAssessment) entry['isAssessment'] = true;
+                const rtdbKey = `${realtimeKey}-${petId}`;
+                const entry: FSMap = {
+                  dogName: pet.name,
+                  ownerName: owner,
+                  type: 'Daycare',
+                  date: ymdKey(booking.date, Intl.DateTimeFormat().resolvedOptions().timeZone), // device legacy
+                  dateBusinessTZ: dateBizKey, // new
+                  arrivalWindow: booking.dropOffTime,
+                  status: 'approved',
+                  userId,
+                  realtimeKey,
+                };
+                if (booking.isAssessment) entry['isAssessment'] = true;
 
-              const perPet = groomingSelections[petId];
-              if (perPet && perPet.size) entry['groomingAddOns'] = Array.from(perPet);
+                const perPet = groomingSelections[petId];
+                if (perPet && perPet.size) entry['groomingAddOns'] = Array.from(perPet);
 
-              // enrich from pet doc
-              const ps = await getDoc(doc(db, 'users', userId, 'pets', petId)).catch(() => null);
-              const pdata = ps?.data() || {};
-              if (pdata['medications'])       entry['medications']       = pdata['medications'];
-              if (pdata['medicationDetails']) entry['medicationDetails'] = pdata['medicationDetails'];
-              if (pdata['spayedNeutered'])    entry['spayedNeutered']    = pdata['spayedNeutered'];
+                // enrich from pet doc
+                const ps = await getDoc(doc(db, 'users', userId, 'pets', petId)).catch(() => null);
+                const pdata = ps?.data() || {};
+                if (pdata['medications']) entry['medications'] = pdata['medications'];
+                if (pdata['medicationDetails']) entry['medicationDetails'] = pdata['medicationDetails'];
+                if (pdata['spayedNeutered']) entry['spayedNeutered'] = pdata['spayedNeutered'];
 
-              await rtdbSet(rtdbRef(rtdb, `upcomingReservations/${businessId}/${rtdbKey}`), entry);
-            })
+                await rtdbSet(rtdbRef(rtdb, `upcomingReservations/${businessId}/${rtdbKey}`), entry);
+              }),
+            );
+          }
+        }
+
+        // Waiver version backfill (non-breaking)
+        if (waiverRequired) {
+          await setDoc(
+            doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
+            { waiverVersionSigned: waiverVersionLatest, waiverSignedAt: Timestamp.now() },
+            { merge: true },
           );
         }
-      }
 
-      // Waiver version backfill (non-breaking)
-      if (waiverRequired) {
-        await setDoc(
-          doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
-          { waiverVersionSigned: waiverVersionLatest, waiverSignedAt: Timestamp.now() },
-          { merge: true }
-        );
+        // Success UI reset
+        setDraftBookings([]);
+        setGroomingSelections({});
+        setSelectedTime('');
+        setSelectedDate(null);
+        setSelectedPetIds(pets.map((p) => p.id));
+        alert(t('submission_success'));
+      } catch (e) {
+        console.error('❌ submitAllReservations failed:', e);
+        alert(t('submission_error') || 'There was an error submitting your bookings.');
+      } finally {
+        setIsSubmitting(false);
       }
-
-      // Success UI reset
-      setDraftBookings([]);
-      setGroomingSelections({});
-      setSelectedTime('');
-      setSelectedDate(null);
-      setSelectedPetIds(pets.map(p => p.id));
-      alert(t('submission_success'));
-    } catch (e) {
-      console.error('❌ submitAllReservations failed:', e);
-      alert(t('submission_error') || 'There was an error submitting your bookings.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [
-    draftBookings, waiverRequired, waiverSigned, groomingSelections,
-    userId, ownerName, pets, businessId, clientWritesRTDB, bizTZ, t
-  ]);
+    },
+    [
+      draftBookings,
+      waiverRequired,
+      waiverSigned,
+      groomingSelections,
+      userId,
+      ownerName,
+      pets,
+      businessId,
+      clientWritesRTDB,
+      bizTZ,
+      t,
+    ],
+  );
 
   /* =========================
      Render
@@ -685,7 +780,11 @@ export default function IndividualBookDaycarePage() {
                   value={selectedTime}
                   onChange={(e) => setSelectedTime(e.target.value)}
                 >
-                  {dropOffOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                  {dropOffOptions.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
                 </select>
               </div>
             )}
@@ -701,9 +800,9 @@ export default function IndividualBookDaycarePage() {
                       checked={selectedPetIds.includes(pet.id)}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedPetIds(prev => uniq([...prev, pet.id]));
+                          setSelectedPetIds((prev) => uniq([...prev, pet.id]));
                         } else {
-                          setSelectedPetIds(prev => prev.filter(id => id !== pet.id));
+                          setSelectedPetIds((prev) => prev.filter((id) => id !== pet.id));
                         }
                       }}
                     />
@@ -719,9 +818,11 @@ export default function IndividualBookDaycarePage() {
                 <input
                   type="checkbox"
                   checked={isAssessment}
-                  onChange={() => setIsAssessment(v => !v)}
+                  onChange={() => setIsAssessment((v) => !v)}
                 />
-                <span><em>Assessment day</em></span>
+                <span>
+                  <em>Assessment day</em>
+                </span>
               </label>
             )}
 
@@ -743,15 +844,15 @@ export default function IndividualBookDaycarePage() {
                   <div className="text-sm text-gray-600">Select at least one pet to check alerts.</div>
                 ) : (
                   <div className="space-y-2">
-                    {selectedPetIds.map(pid => {
-                      const pet = pets.find(p => p.id === pid);
+                    {selectedPetIds.map((pid) => {
+                      const pet = pets.find((p) => p.id === pid);
                       const issues = alertsByPet[pid] || [];
                       if (!issues.length) return null;
                       return (
                         <div key={pid} className="border rounded p-2">
                           <div className="text-sm font-semibold">{pet?.name || 'Pet'}</div>
                           <ul className="list-disc list-inside text-sm">
-                            {issues.map(msg => (
+                            {issues.map((msg) => (
                               <li key={msg} className={/Expired|Not on file/i.test(msg) ? 'text-red-600' : ''}>
                                 {msg}
                               </li>
@@ -768,7 +869,9 @@ export default function IndividualBookDaycarePage() {
             {/* Add to booking list */}
             <button
               onClick={addBookingDraft}
-              className={`w-full max-w-xs py-3 rounded text-white text-sm ${hasExistingReservation ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-800 hover:bg-blue-700'}`}
+              className={`w-full max-w-xs py-3 rounded text-white text-sm ${
+                hasExistingReservation ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-800 hover:bg-blue-700'
+              }`}
               disabled={hasExistingReservation}
             >
               {t('add_to_booking_list')}
@@ -782,7 +885,10 @@ export default function IndividualBookDaycarePage() {
                   if (pendingDraft) {
                     setDraftBookings((prev) => [
                       ...prev,
-                      { ...pendingDraft, groomingAddOns: serializeGroomingSelections(groomingSelections) }
+                      {
+                        ...pendingDraft,
+                        groomingAddOns: serializeGroomingSelections(groomingSelections),
+                      },
                     ]);
                   }
                   resetFormAfterDraft();
@@ -801,27 +907,38 @@ export default function IndividualBookDaycarePage() {
               <div className="w-full space-y-4">
                 <h2 className="text-md font-semibold text-center">{t('your_bookings')}</h2>
                 {draftBookings.map((b, idx) => {
-                  const petNames = b.petIds.map(id => pets.find(p => p.id === id)?.name || 'Unknown').join(', ');
+                  const petNames = b.petIds
+                    .map((id) => pets.find((p) => p.id === id)?.name || 'Unknown')
+                    .join(', ');
                   const hasGroom = b.groomingAddOns && Object.keys(b.groomingAddOns).length > 0;
                   return (
                     <div key={`${b.date.toISOString()}-${idx}`} className="border p-3 rounded shadow-sm">
-                      <p><strong>📅</strong> {b.date.toLocaleDateString()}</p>
-                      <p><strong>⏰</strong> {b.dropOffTime}</p>
-                      <p><strong>🐶</strong> {petNames}</p>
+                      <p>
+                        <strong>📅</strong> {b.date.toLocaleDateString()}
+                      </p>
+                      <p>
+                        <strong>⏰</strong> {b.dropOffTime}
+                      </p>
+                      <p>
+                        <strong>🐶</strong> {petNames}
+                      </p>
                       {b.isAssessment && <p className="italic text-gray-600 mt-1">Assessment</p>}
                       {hasGroom && (
                         <p className="mt-1">
                           <strong>🛁</strong>{' '}
-                          {b.petIds.map((pid) => {
-                            const svcs = b.groomingAddOns?.[pid];
-                            if (!svcs?.length) return null;
-                            const name = pets.find(p => p.id === pid)?.name || 'Unknown';
-                            return `${name}: ${svcs.join(', ')}`;
-                          }).filter(Boolean).join(' | ')}
+                          {b.petIds
+                            .map((pid) => {
+                              const svcs = b.groomingAddOns?.[pid];
+                              if (!svcs?.length) return null;
+                              const name = pets.find((p) => p.id === pid)?.name || 'Unknown';
+                              return `${name}: ${svcs.join(', ')}`;
+                            })
+                            .filter(Boolean)
+                            .join(' | ')}
                         </p>
                       )}
                       <button
-                        onClick={() => setDraftBookings(prev => prev.filter((_, i) => i !== idx))}
+                        onClick={() => setDraftBookings((prev) => prev.filter((_, i) => i !== idx))}
                         className="mt-2 text-red-600 text-sm underline"
                       >
                         {t('remove_booking')}
@@ -856,9 +973,11 @@ export default function IndividualBookDaycarePage() {
                 <button
                   onClick={() => {
                     if (pendingDraft) {
-                      setGroomingSelections(prev => {
+                      setGroomingSelections((prev) => {
                         const cp = { ...prev };
-                        pendingDraft.petIds.forEach(pid => { if (!cp[pid]) cp[pid] = new Set(); });
+                        pendingDraft.petIds.forEach((pid) => {
+                          if (!cp[pid]) cp[pid] = new Set();
+                        });
                         return cp;
                       });
                       setShowGroomingUI(true);
@@ -872,12 +991,14 @@ export default function IndividualBookDaycarePage() {
                 <button
                   onClick={() => {
                     if (pendingDraft) {
-                      setGroomingSelections(prev => {
+                      setGroomingSelections((prev) => {
                         const cp = { ...prev };
-                        pendingDraft.petIds.forEach(pid => { delete cp[pid]; });
+                        pendingDraft.petIds.forEach((pid) => {
+                          delete cp[pid];
+                        });
                         return cp;
                       });
-                      setDraftBookings(prev => [...prev, pendingDraft]);
+                      setDraftBookings((prev) => [...prev, pendingDraft]);
                     }
                     resetFormAfterDraft();
                     setShowGroomingPrompt(false);
@@ -904,7 +1025,7 @@ export default function IndividualBookDaycarePage() {
                 <input
                   type="checkbox"
                   checked={hasCheckedAgreement}
-                  onChange={() => setHasCheckedAgreement(v => !v)}
+                  onChange={() => setHasCheckedAgreement((v) => !v)}
                   className="mt-1"
                 />
                 <span>{t('waiver_checkbox_label')}</span>
@@ -917,11 +1038,17 @@ export default function IndividualBookDaycarePage() {
                       if (enforceWaiverVersion) {
                         const w = await getDoc(doc(db, 'businesses', businessId, 'settings', 'clientWaiver'));
                         const version = (w.data()?.waiverVersion as number) ?? 1;
-                        await setDoc(doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
-                          { waiverVersionSigned: version, waiverSignedAt: Timestamp.now() }, { merge: true });
+                        await setDoc(
+                          doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
+                          { waiverVersionSigned: version, waiverSignedAt: Timestamp.now() },
+                          { merge: true },
+                        );
                       } else {
-                        await setDoc(doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
-                          { waiverSignedAt: Timestamp.now() }, { merge: true });
+                        await setDoc(
+                          doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
+                          { waiverSignedAt: Timestamp.now() },
+                          { merge: true },
+                        );
                       }
                       setWaiverSigned(true);
                       setShowWaiverModal(false);

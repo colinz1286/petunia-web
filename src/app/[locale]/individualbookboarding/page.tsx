@@ -42,7 +42,6 @@ type Pet = {
 };
 
 type GroomingSelections = Record<string, string[]>; // { petId: [service, ...] }
-
 type WeekdayMap = Record<string, string[]>; // e.g., { Monday: ["9:00 AM", ...], ... }
 
 type BusinessFeatures = {
@@ -86,8 +85,8 @@ type BusinessSettingsDoc = {
 };
 
 type ClientWaiverSubdoc = {
-    waiverVersion?: number;      // Int
-    lastUpdated?: Timestamp;     // Timestamp
+    waiverVersion?: number;
+    lastUpdated?: Timestamp;
 };
 
 type ClientWaiverState = {
@@ -117,13 +116,12 @@ type BoardingReservationWrite = {
  *  Time helpers (business TZ)
  *  ========================= */
 const weekdayName = (d: Date, tz: string) =>
-    new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'long' }).format(d); // e.g. "Monday"
+    new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'long' }).format(d);
 
 const ymdKey = (d: Date, tz: string) =>
-    new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d); // "YYYY-MM-DD"
+    new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
 
 const parseTimeToMinutes = (label: string) => {
-    // "h:mm AM/PM" -> minutes since 00:00
     const m = label.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
     if (!m) return Number.POSITIVE_INFINITY;
     let hours = parseInt(m[1], 10);
@@ -135,15 +133,12 @@ const parseTimeToMinutes = (label: string) => {
 };
 
 const sortTimeStrings = (arr: string[]) =>
-    [...arr]
-        .map(s => s.trim())
-        .filter(Boolean)
-        .sort((a, b) => parseTimeToMinutes(a) - parseTimeToMinutes(b));
+    [...arr].map(s => s.trim()).filter(Boolean).sort((a, b) => parseTimeToMinutes(a) - parseTimeToMinutes(b));
 
 const nowMinutesInTZ = (tz: string) => {
     const label = new Intl.DateTimeFormat('en-US', {
         timeZone: tz, hour12: true, hour: 'numeric', minute: '2-digit'
-    }).format(new Date()); // e.g., "2:37 PM"
+    }).format(new Date());
     return parseTimeToMinutes(label);
 };
 
@@ -162,7 +157,6 @@ const filterCheckInTimesForSameDay = (
     const nowMins = nowMinutesInTZ(tz);
     const cutoffMins = cutoff ? parseTimeToMinutes(cutoff) : null;
 
-    // If cutoff exists and we're past it, block same-day entirely
     if (cutoffMins !== null && nowMins >= cutoffMins) return [];
 
     return options.filter(opt => {
@@ -173,14 +167,11 @@ const filterCheckInTimesForSameDay = (
 };
 
 const nightsBetweenKeys = (start: Date, end: Date, tz: string): string[] => {
-    // Returns [start, end) as yyyy-MM-dd in business TZ
     const keys: string[] = [];
-    // Walk day by day using the biz key (robust & DST-safe)
     let cursor = start;
     while (ymdKey(cursor, tz) < ymdKey(end, tz)) {
         keys.push(ymdKey(cursor, tz));
         const next = new Date(cursor.getTime() + 24 * 60 * 60 * 1000);
-        // stop infinite loops
         if (ymdKey(next, tz) === ymdKey(cursor, tz)) break;
         cursor = next;
     }
@@ -251,10 +242,7 @@ export default function IndividualBookBoardingPage() {
     // Validation / flow
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [overlapDetected, setOverlapDetected] = useState(false);
-    const [showOverlapAlert, setShowOverlapAlert] = useState(false);
-    const [showCapacityAlert, setShowCapacityAlert] = useState(false);
     const [suppressValidations, setSuppressValidations] = useState(false);
-    const [lastSubmittedReservationId, setLastSubmittedReservationId] = useState<string | null>(null);
 
     const bizTZ = businessTimeZoneId || Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -275,6 +263,35 @@ export default function IndividualBookBoardingPage() {
         checkInTimeRequired, checkInWindow, checkOutTimeRequired, checkOutWindow,
         overlapDetected, capacityBlockingNights
     ]);
+
+    /** =========================
+     *  Time option builders (defined early so they can be deps)
+     *  ========================= */
+    const refreshCheckInOptions = useCallback((map?: WeekdayMap) => {
+        if (!checkInTimeRequired || !checkInDate) {
+            setCheckInOptions([]); setCheckInWindow('');
+            return;
+        }
+        const weekday = weekdayName(checkInDate, bizTZ);
+        const raw = (map || checkInTimesByWeekday)[weekday] || [];
+        const sorted = sortTimeStrings(raw);
+        const filtered = filterCheckInTimesForSameDay(sorted, checkInDate, bizTZ, sameDayCheckInCutoff);
+        setCheckInOptions(filtered);
+        setCheckInWindow(filtered[0] || '');
+    }, [checkInDate, checkInTimeRequired, checkInTimesByWeekday, bizTZ, sameDayCheckInCutoff]);
+
+    const refreshCheckOutOptions = useCallback((map?: WeekdayMap) => {
+        if (!checkOutTimeRequired || !checkOutDate) {
+            setCheckOutOptions([]); setCheckOutWindow('');
+            return;
+        }
+        const weekday = weekdayName(checkOutDate, bizTZ);
+        const raw = (map || checkOutTimesByWeekday)[weekday] || [];
+        const sorted = sortTimeStrings(raw);
+        setCheckOutOptions(sorted);
+        setCheckOutWindow(sorted[0] || '');
+    }, [checkOutDate, checkOutTimeRequired, checkOutTimesByWeekday, bizTZ]);
+
     /** =========================
      *  Load auth, pets, business settings, waiver
      *  ========================= */
@@ -299,7 +316,7 @@ export default function IndividualBookBoardingPage() {
                 setOwnerName('Client');
             }
 
-            // Load pets (w/ extra fields for RTDB)
+            // Load pets
             try {
                 const pcol = collection(db, 'users', uid, 'pets');
                 const psnap = await getDocs(pcol);
@@ -352,13 +369,13 @@ export default function IndividualBookBoardingPage() {
                     : null
             );
 
-            // Time requirements (prefer new keys, fallback to legacy)
+            // Time requirements
             const ciReq = data.checkInTimeRequiredBoarding ?? data.dropOffTimeRequiredBoarding ?? false;
             const coReq = data.checkOutTimeRequiredBoarding ?? data.pickUpTimeRequiredBoarding ?? false;
             setCheckInTimeRequired(!!ciReq);
             setCheckOutTimeRequired(!!coReq);
 
-            // Time maps (prefer new keys, fallback to legacy)
+            // Time maps
             const ciMap = data.checkInTimesBoarding ?? data.dropOffTimesBoarding ?? {};
             const coMap = data.checkOutTimesBoarding ?? data.pickUpTimesBoarding ?? {};
             setCheckInTimesByWeekday(ciMap);
@@ -372,9 +389,7 @@ export default function IndividualBookBoardingPage() {
 
             // Grooming
             setGroomingAvailableAsAddOn(!!data.groomingAvailableAsAddOnToBoarding);
-            setGroomingServices(
-                (data.groomingServices || []).map(s => (s || '').trim()).filter(Boolean)
-            );
+            setGroomingServices((data.groomingServices || []).map(s => (s || '').trim()).filter(Boolean));
 
             // Root waiver toggle
             setWaiverRequired(!!data.waiverRequired);
@@ -385,7 +400,7 @@ export default function IndividualBookBoardingPage() {
         } catch (e) {
             console.error('❌ Failed to fetch business settings:', e);
         }
-    }, []);
+    }, [refreshCheckInOptions, refreshCheckOutOptions]);
 
     /** Waiver check (version-aware, with fallbacks) */
     const checkWaiverStatus = useCallback(async (bizId: string, uid: string) => {
@@ -430,38 +445,9 @@ export default function IndividualBookBoardingPage() {
             if (!!rootData.waiverRequired && !signed) setShowWaiverModal(true);
         } catch (e) {
             console.error('❌ Error checking waiver status:', e);
-            // Failsafe — do not hard-block on error
             setWaiverSigned(true);
         }
     }, []);
-
-    /** =========================
-     *  Time option builders
-     *  ========================= */
-    const refreshCheckInOptions = useCallback((map?: WeekdayMap) => {
-        if (!checkInTimeRequired || !checkInDate) {
-            setCheckInOptions([]); setCheckInWindow('');
-            return;
-        }
-        const weekday = weekdayName(checkInDate, bizTZ);
-        const raw = (map || checkInTimesByWeekday)[weekday] || [];
-        const sorted = sortTimeStrings(raw);
-        const filtered = filterCheckInTimesForSameDay(sorted, checkInDate, bizTZ, sameDayCheckInCutoff);
-        setCheckInOptions(filtered);
-        setCheckInWindow(filtered[0] || '');
-    }, [checkInDate, checkInTimeRequired, checkInTimesByWeekday, bizTZ, sameDayCheckInCutoff]);
-
-    const refreshCheckOutOptions = useCallback((map?: WeekdayMap) => {
-        if (!checkOutTimeRequired || !checkOutDate) {
-            setCheckOutOptions([]); setCheckOutWindow('');
-            return;
-        }
-        const weekday = weekdayName(checkOutDate, bizTZ);
-        const raw = (map || checkOutTimesByWeekday)[weekday] || [];
-        const sorted = sortTimeStrings(raw);
-        setCheckOutOptions(sorted);
-        setCheckOutWindow(sorted[0] || '');
-    }, [checkOutDate, checkOutTimeRequired, checkOutTimesByWeekday, bizTZ]);
 
     /** =========================
      *  Validators (overlap, capacity, per-slot)
@@ -507,7 +493,6 @@ export default function IndividualBookBoardingPage() {
                 const overlapPets = petIds.some(pid => mySet.has(pid));
                 if (overlapDates && overlapPets) {
                     setOverlapDetected(true);
-                    setShowOverlapAlert(true);
                     return;
                 }
             }
@@ -520,7 +505,7 @@ export default function IndividualBookBoardingPage() {
         setCapacityBlockingNights([]);
         if (!checkInDate || !checkOutDate) return;
         if (checkInDate >= checkOutDate) return;
-        if (!capacityBoardingTotal || capacityBoardingTotal <= 0) return; // unlimited
+        if (!capacityBoardingTotal || capacityBoardingTotal <= 0) return;
 
         try {
             const statuses = includePendingInCapacity ? ['pending', 'approved'] : ['approved'];
@@ -554,7 +539,6 @@ export default function IndividualBookBoardingPage() {
             }
             if (blocked.length) {
                 setCapacityBlockingNights(blocked);
-                setShowCapacityAlert(true);
             }
         } catch (e) {
             console.error('❌ Capacity query failed:', e);
@@ -585,7 +569,6 @@ export default function IndividualBookBoardingPage() {
             }
             if (countForWindow + 1 > maxPerTimeSlot) {
                 setCapacityBlockingNights([cinKey]);
-                setShowCapacityAlert(true);
             }
         } catch (e) {
             console.error('❌ Per-slot cap query failed:', e);
@@ -618,7 +601,6 @@ export default function IndividualBookBoardingPage() {
     const handleAgreeToWaiver = useCallback(async () => {
         if (!userId || !businessId) return;
         try {
-            // Load latest waiverVersion to backfill if needed
             const wref = doc(db, 'businesses', businessId, 'settings', 'clientWaiver');
             const wsnap = await getDoc(wref);
             const version = (wsnap.data()?.waiverVersion as number) ?? 1;
@@ -831,11 +813,11 @@ export default function IndividualBookBoardingPage() {
             )}
         </div>
     );
+
     /** =========================
      *  Submit (mirrors iOS)
      *  ========================= */
     async function handleSubmit() {
-        // Waiver block
         if (waiverRequired && !waiverSigned) {
             setShowWaiverModal(true);
             return;
@@ -845,15 +827,14 @@ export default function IndividualBookBoardingPage() {
         if (selectedPetIds.size === 0) return;
         if (checkInTimeRequired && !checkInWindow) return;
         if (checkOutTimeRequired && !checkOutWindow) return;
-        if (overlapDetected) { setShowOverlapAlert(true); return; }
-        if (capacityBlockingNights.length) { setShowCapacityAlert(true); return; }
+        if (overlapDetected) return;
+        if (capacityBlockingNights.length) return;
 
         setIsSubmitting(true);
         setSuppressValidations(true);
 
         try {
             const reservationId = crypto.randomUUID();
-            setLastSubmittedReservationId(reservationId);
 
             const cinKey = ymdKey(checkInDate, bizTZ);
             const coutKey = ymdKey(checkOutDate, bizTZ);
@@ -906,11 +887,9 @@ export default function IndividualBookBoardingPage() {
                     if (checkInTimeRequired) base.checkInWindow = checkInWindow;
                     if (checkOutTimeRequired) base.checkOutWindow = checkOutWindow;
 
-                    // Per-pet grooming add-ons
                     const perPet = groomingSelections[petId] || [];
                     if (perPet.length) base.groomingAddOns = perPet;
 
-                    // Enrich with pet metadata
                     if (pet.medications) base.medications = pet.medications;
                     if (pet.medicationDetails) base.medicationDetails = pet.medicationDetails;
                     if (pet.spayedNeutered) base.spayedNeutered = pet.spayedNeutered;
@@ -936,20 +915,17 @@ export default function IndividualBookBoardingPage() {
                 }
             }
 
-            // UI success
             setIsSubmitting(false);
             setGroomingSelections({});
-            alert(t('reservation_submitted')); // Mirrors iOS alert UX
+            alert(t('reservation_submitted'));
             router.push(`/${locale}/individualupcomingappointments`);
         } catch (e) {
             console.error('❌ Submit failed:', e);
             setIsSubmitting(false);
             setSuppressValidations(false);
-            setLastSubmittedReservationId(null);
             alert(t('error_submitting_reservation'));
         }
     }
-
 }
 
 /** =========================
@@ -1023,7 +999,7 @@ function GroomingModal(props: {
                     ))}
                 </div>
 
-                {/* Footer (always visible) */}
+                {/* Footer */}
                 <div className="sticky bottom-0 bg-white/95 backdrop-blur px-4 py-3 border-t">
                     <button
                         onClick={() => onSave(localSel)}
