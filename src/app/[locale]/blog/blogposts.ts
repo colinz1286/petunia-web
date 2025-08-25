@@ -20,6 +20,19 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'best-chew-toys-for-heavy-chewers',
+        title:
+            'Best Chew Toys for Heavy Chewers: Materials, Sizing, Safer Picks, and Real-World Handling for Homes & Facilities',
+        date: 'August 25, 2025',
+        description:
+            'Research-backed guide to power-chew safety: correct sizing to reduce choke risk, durable materials, specific brand/model picks, at-home hardness tests, cleaning and replacement rules, plus home and facility SOPs.',
+        component: () =>
+            import('./posts/best-chew-toys-for-heavy-chewers') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner'],
+    },
+    {
         slug: 'fall-seasonal-allergies-in-dogs-usa',
         title:
             'Fall Seasonal Allergies in Dogs (U.S.): Causes, Timing by Region, Signs, Treatments, and a Practical Owner & Boarding Guide',
