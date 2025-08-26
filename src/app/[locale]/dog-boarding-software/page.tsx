@@ -44,7 +44,7 @@ export default function DogBoardingSoftwarePage() {
         </div>
         <div className="mt-6 max-w-md mx-auto text-base text-gray-700">
           <p className="mt-4 font-semibold text-[#2c4a30]">
-            Petunia is <strong>$3/month</strong> after your free trial of 15 days. <strong>No contracts. Cancel anytime.</strong> Multi-location management is coming in April of 2026.
+            Petunia is <strong>$5/month</strong> after your free trial of 15 days. <strong>No contracts. Cancel anytime.</strong> Multi-location management is coming in April of 2026.
           </p>
         </div>
       </section>
