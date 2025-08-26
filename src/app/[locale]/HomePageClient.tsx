@@ -159,7 +159,7 @@ export default function HomePageClient() {
                                 This part of Petunia is coming soon! We&rsquo;re rolling out tools built specifically for sitters and walkers.
                             </p>
                             <p className="text-lg text-balance">
-                                Just $5/month. No commissions, ever. Bring your existing clients and grow from there.
+                                $5/month. No commissions, ever. Bring your existing clients and grow from there.
                             </p>
                             <p className="text-lg text-balance">
                                 You’ve worked hard to build trust. Every walk, every visit, every tail wag — it all adds up to something real.
