@@ -50,23 +50,6 @@ export default function DogBoardingChecklistWhatToBringWhatToUploadWhenToBook() 
           ))}
         </div>
 
-        {/* CTA */}
-        <div className="mb-8">
-          <a
-            href="/resources/boarding-checklist.pdf"
-            className="inline-block rounded-xl bg-[#2c4a30] text-white px-4 py-2 font-medium hover:opacity-90"
-          >
-            Download the printable checklist (PDF)
-          </a>
-          <span className="mx-2 text-sm text-gray-500">•</span>
-          <a
-            href={`/${locale}/app`}
-            className="inline-block rounded-xl bg-[#e4dbcb] text-[#2c4a30] px-4 py-2 font-medium border border-[#d9cfc2] hover:opacity-90"
-          >
-            Upload everything to Petunia before arrival
-          </a>
-        </div>
-
         {/* INTRO */}
         <p className="text-lg mb-4">
           Whether you board once a year for the holidays or use daycare every week, the difference
