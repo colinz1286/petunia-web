@@ -20,6 +20,18 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'dog-boarding-checklist-what-to-bring-what-to-upload-when-to-book',
+        title: 'Boarding Checklist: What to Bring, What to Upload, and When to Book',
+        date: 'August 25, 2025',
+        description:
+            'Copy-ready boarding & daycare prep: packing list (food, meds, gear), upload steps (vaccines, vet info, emergency contacts), booking timelines, vaccine windows, intake forms, CIRDC/cough reschedule rules, and operator SOPs. Includes printable checklist + Petunia upload CTA.',
+        component: () =>
+            import('./posts/dog-boarding-checklist-what-to-bring-what-to-upload-when-to-book') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'boarding'],
+    },
+    {
         slug: 'airline-pet-travel-2025-italy-in-cabin-large-dogs-what-it-means-us',
         title:
             'Airline Pet Travel Is Shifting (Italy Allows Big Dogs In-Cabin): What U.S. Flyers Should Know Now',
