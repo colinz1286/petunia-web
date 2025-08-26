@@ -20,6 +20,19 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'fda-approves-12-month-flea-tick-injection-dogs-bravecto-quantum-2025',
+        title:
+            'FDA Approves the First 8–12-Month Flea & Tick Injection for Dogs (Bravecto Quantum): A Plain-English Guide for Owners & Boarding/Daycare Operators',
+        date: 'August 25, 2025',
+        description:
+            'What the FDA approved on July 10, 2025; how the 8–12-month injection works; eligibility by age/weight; safety (isoxazoline class) and side effects; lone star tick caveat; cost vs. monthly/12-week orals; vet Q&A; owner and facility checklists.',
+        component: () =>
+            import('./posts/fda-approves-12-month-flea-tick-injection-dogs-bravecto-quantum-2025') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'boarding', 'vet'],
+    },
+    {
         slug: 'best-chew-toys-for-heavy-chewers',
         title:
             'Best Chew Toys for Heavy Chewers: Materials, Sizing, Safer Picks, and Real-World Handling for Homes & Facilities',
