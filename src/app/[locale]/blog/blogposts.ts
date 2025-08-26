@@ -20,6 +20,19 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'tick-borne-disease-2025-lyme-anaplasmosis-dogs-prevention',
+        title:
+            'Ticks Are Surging in 2025: Lyme, Anaplasmosis & ER Visits—What That Means for Dogs (State Snapshots, Checklists, and Facility SOPs)',
+        date: 'August 25, 2025',
+        description:
+            'News-validated surge with state snapshots (California anaplasmosis rise; New York tick submissions & positivity), national ER tick-bite trends, prevention options (monthly, 12-week, once-yearly), owner checklists, and boarding/daycare grooming & yard SOPs. Sources: Los Angeles Times (Aug 18, 2025), 11Alive/CDC (July 9, 2025), VCU Health (July 16, 2025), Times Union (July 2025).',
+        component: () =>
+            import('./posts/tick-borne-disease-2025-lyme-anaplasmosis-dogs-prevention') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'vet'],
+    },
+    {
         slug: 'fda-approves-12-month-flea-tick-injection-dogs-bravecto-quantum-2025',
         title:
             'FDA Approves the First 8–12-Month Flea & Tick Injection for Dogs (Bravecto Quantum): A Plain-English Guide for Owners & Boarding/Daycare Operators',
