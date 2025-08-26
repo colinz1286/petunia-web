@@ -20,6 +20,19 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'pet-insurance-2025-costs-claims-coverage-guide-dogs',
+        title:
+            'Pet Insurance in 2025: Costs, Value, and How Claims Really Pay Out (Premium Trends, Deductible Math, and Break-Even Scenarios)',
+        date: 'August 25, 2025',
+        description:
+            '2025 premium averages; why prices are rising (veterinary inflation, claim severity, reinsurance); top claims categories; step-by-step reimbursement math after deductible/co-insurance; break-even examples; 12 levers to lower premiums without gutting coverage.',
+        component: () =>
+            import('./posts/pet-insurance-2025-costs-claims-coverage-guide-dogs') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner'],
+    },
+    {
         slug: 'tick-borne-disease-2025-lyme-anaplasmosis-dogs-prevention',
         title:
             'Ticks Are Surging in 2025: Lyme, Anaplasmosis & ER Visits—What That Means for Dogs (State Snapshots, Checklists, and Facility SOPs)',
