@@ -20,6 +20,19 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'airline-pet-travel-2025-italy-in-cabin-large-dogs-what-it-means-us',
+        title:
+            'Airline Pet Travel Is Shifting (Italy Allows Big Dogs In-Cabin): What U.S. Flyers Should Know Now',
+        date: 'August 25, 2025',
+        description:
+            'ENAC’s 2025 guidelines for larger dogs in the cabin; how U.S. airline rules differ; United & Delta snapshots; carrier/restraint specs; seat planning; fees; CDC dog-import requirements; and copy-ready packing/booking/airport templates for holiday trips.',
+        component: () =>
+            import('./posts/airline-pet-travel-2025-italy-in-cabin-large-dogs-what-it-means-us') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner'],
+    },
+    {
         slug: 'pet-insurance-2025-costs-claims-coverage-guide-dogs',
         title:
             'Pet Insurance in 2025: Costs, Value, and How Claims Really Pay Out (Premium Trends, Deductible Math, and Break-Even Scenarios)',
