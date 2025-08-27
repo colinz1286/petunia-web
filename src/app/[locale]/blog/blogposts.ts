@@ -20,6 +20,18 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'why-do-some-dogs-howl-meaning-history-wild-cousins',
+        title: 'Why Do Some Dogs Howl? Meaning, History, and Wild Cousins (Wolves, Coyotes & More)',
+        date: 'August 26, 2025',
+        description:
+            'A fun, evidence-based deep dive into dog howling: meanings (contact, separation, territory, emotion), history from wolves to pets, wild cousins (wolves, coyotes, jackals), acoustics, red flags, and training triage—practical, vet-aware, and myth-busting.',
+        component: () =>
+            import('./posts/why-do-some-dogs-howl-meaning-history-wild-cousins') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'boarding'],
+    },
+    {
         slug: 'how-much-does-dog-boarding-and-daycare-software-cost-2025',
         title: 'How Much Does Dog Boarding & Daycare Software Cost in 2025?',
         date: 'August 26, 2025',
