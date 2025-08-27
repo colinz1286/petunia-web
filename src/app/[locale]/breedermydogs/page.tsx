@@ -130,8 +130,8 @@ const mapDocToDog = (id: string, data: Record<string, unknown>): BreedingDog | n
     typeof data.bodyWeightLbs === 'number'
       ? (data.bodyWeightLbs as number)
       : typeof data.bodyWeightLbs === 'string'
-      ? Number(data.bodyWeightLbs)
-      : undefined;
+        ? Number(data.bodyWeightLbs)
+        : undefined;
 
   return {
     id,
@@ -300,16 +300,31 @@ export default function BreederMyDogsPage() {
           Breeding Dogs
         </h1>
 
+        <div className="mx-auto mt-4 mb-6 w-full">
+          <button
+            type="button"
+            onClick={() => setShowAdd(true)}
+            disabled={!isNonEmptyKey(businessId)}
+            style={{ backgroundColor: '#2c4a30', borderColor: '#2c4a30', color: '#ffffff' }}
+            className="w-full rounded-xl px-4 py-3 font-semibold shadow-md
+               border text-white hover:opacity-90
+               focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2c4a30]
+               disabled:cursor-not-allowed disabled:bg-[#9fb5a5] disabled:border-[#9fb5a5]"
+          >
+            Add New Dog
+          </button>
+        </div>
+
         {isLoading && dogs.length === 0 ? (
           <div className="py-6 text-center text-gray-600">Loading…</div>
         ) : loadError ? (
           <div className="py-4 text-center text-red-600 whitespace-pre-wrap">{loadError}</div>
         ) : dogs.length === 0 ? (
-          <div className="mt-6 rounded-lg border bg-white p-4 text-center text-gray-600">
+          <div className="mt-2 rounded-lg border bg-white p-4 text-center text-gray-600">
             No breeding dogs added yet.
           </div>
         ) : (
-          <div className="mt-4 space-y-6">
+          <div className="mt-2 space-y-6">
             {males.length > 0 && (
               <Section title="Males">
                 {males.map((dog) => (
@@ -326,15 +341,6 @@ export default function BreederMyDogsPage() {
             )}
           </div>
         )}
-
-        <button
-          type="button"
-          onClick={() => setShowAdd(true)}
-          disabled={!isNonEmptyKey(businessId)}
-          className="mt-6 w-full rounded-xl bg-[color:var(--color-accent)] px-4 py-3 text-white disabled:opacity-50"
-        >
-          Add New Dog
-        </button>
       </div>
 
       {/* Add modal */}
@@ -392,7 +398,9 @@ function DogRow({ dog, onEdit }: { dog: BreedingDog; onEdit: () => void }) {
           Edit
         </button>
       </div>
-      <div className="text-sm text-gray-800">{dog.breed} • {ageString(dog.dateOfBirth)}</div>
+      <div className="text-sm text-gray-800">
+        {dog.breed} • {ageString(dog.dateOfBirth)}
+      </div>
       <hr className="mt-3" />
     </div>
   );
@@ -433,12 +441,11 @@ function AddEditDogModal({
   onClose: () => void;
   onSaved: (dog: BreedingDog) => void;
 }) {
-  // Form state
   const [dogName, setDogName] = useState<string>(existingDog?.dogName ?? '');
   const [dobStr, setDobStr] = useState<string>(
-    existingDog ? toDateInputValue(existingDog.dateOfBirth) : toDateInputValue(
-      new Date(new Date().setFullYear(new Date().getFullYear() - 1))
-    )
+    existingDog
+      ? toDateInputValue(existingDog.dateOfBirth)
+      : toDateInputValue(new Date(new Date().setFullYear(new Date().getFullYear() - 1)))
   );
   const [breed, setBreed] = useState<string>(existingDog?.breed ?? '');
   const [gender, setGender] = useState<Gender | ''>(existingDog?.gender ?? '');
@@ -449,9 +456,7 @@ function AddEditDogModal({
   const [bodyWeightText, setBodyWeightText] = useState<string>(
     Number.isFinite(existingDog?.bodyWeightLbs) ? String(existingDog?.bodyWeightLbs) : ''
   );
-  const [bodyWeightUpdatedAt] = useState<Date | undefined>(
-    existingDog?.bodyWeightUpdatedAt
-  );
+  const [bodyWeightUpdatedAt] = useState<Date | undefined>(existingDog?.bodyWeightUpdatedAt);
 
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -468,7 +473,6 @@ function AddEditDogModal({
     const statusOk = statuses.includes(status);
     const chipOk = microchipNumber.length <= 60;
 
-    // if weight provided, it must be numeric
     let weightOk = true;
     const wt = bodyWeightText.trim();
     if (wt.length > 0) {
@@ -486,18 +490,7 @@ function AddEditDogModal({
       weightOk &&
       isNonEmptyKey(businessId)
     );
-  }, [
-    dogName,
-    dobStr,
-    breed,
-    gender,
-    status,
-    microchipNumber,
-    bodyWeightText,
-    businessId,
-    genders,
-    statuses,
-  ]);
+  }, [dogName, dobStr, breed, gender, status, microchipNumber, bodyWeightText, businessId, genders, statuses]);
 
   const onSave = useCallback(async () => {
     if (!isValidForm) return;
@@ -595,7 +588,7 @@ function AddEditDogModal({
     mode,
     existingDog?.id,
     existingDog?.microchipNumber,
-    existingDog?.bodyWeightLbs, // <-- added per exhaustive-deps
+    existingDog?.bodyWeightLbs,
     bodyWeightUpdatedAt,
     onClose,
     onSaved,
@@ -654,9 +647,7 @@ function AddEditDogModal({
             <label className="mb-1 block text-sm font-semibold text-[color:var(--color-accent)]">
               Gender
             </label>
-
             <div className="grid grid-cols-2 gap-2" role="group" aria-label="Gender">
-              {/* Male */}
               <label className="cursor-pointer">
                 <input
                   type="radio"
@@ -668,20 +659,14 @@ function AddEditDogModal({
                 />
                 <span
                   className="block rounded-full border-2 px-4 py-2 text-center text-sm font-semibold transition-colors
-                   bg-white text-[color:var(--color-accent)] border-[color:var(--color-accent)]
-                   peer-checked:!bg-[#22c55e] peer-checked:!border-[#22c55e] peer-checked:!text-black
-                   peer-focus:ring-2 peer-focus:ring-[#22c55e] peer-focus:ring-offset-1"
-                  style={
-                    gender === 'Male'
-                      ? { backgroundColor: '#22c55e', color: '#000', borderColor: '#22c55e' }
-                      : undefined
-                  }
+                             bg-white text-[color:var(--color-accent)] border-[color:var(--color-accent)]
+                             peer-checked:!bg-[#22c55e] peer-checked:!border-[#22c55e] peer-checked:!text-black
+                             peer-focus:ring-2 peer-focus:ring-[#22c55e] peer-focus:ring-offset-1"
                 >
                   Male
                 </span>
               </label>
 
-              {/* Female */}
               <label className="cursor-pointer">
                 <input
                   type="radio"
@@ -693,14 +678,9 @@ function AddEditDogModal({
                 />
                 <span
                   className="block rounded-full border-2 px-4 py-2 text-center text-sm font-semibold transition-colors
-                   bg-white text-[color:var(--color-accent)] border-[color:var(--color-accent)]
-                   peer-checked:!bg-[#22c55e] peer-checked:!border-[#22c55e] peer-checked:!text-black
-                   peer-focus:ring-2 peer-focus:ring-[#22c55e] peer-focus:ring-offset-1"
-                  style={
-                    gender === 'Female'
-                      ? { backgroundColor: '#22c55e', color: '#000', borderColor: '#22c55e' }
-                      : undefined
-                  }
+                             bg-white text-[color:var(--color-accent)] border-[color:var(--color-accent)]
+                             peer-checked:!bg-[#22c55e] peer-checked:!border-[#22c55e] peer-checked:!text-black
+                             peer-focus:ring-2 peer-focus:ring-[#22c55e] peer-focus:ring-offset-1"
                 >
                   Female
                 </span>
@@ -764,7 +744,6 @@ function AddEditDogModal({
         </div>
 
         <div className="mt-6 flex justify-end gap-2">
-          {/* Cancel — solid red */}
           <button
             type="button"
             onClick={onClose}
@@ -777,7 +756,6 @@ function AddEditDogModal({
             Cancel
           </button>
 
-          {/* Save — bright 'green light' with black text (forced) */}
           <button
             type="button"
             onClick={onSave}
@@ -786,8 +764,7 @@ function AddEditDogModal({
             className="appearance-none rounded-xl border px-4 py-2 text-sm font-semibold shadow-md
                      !bg-[#22c55e] !text-black !border-[#22c55e]
                      hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#22c55e]
-                     disabled:cursor-not-allowed disabled:opacity-60
-                     disabled:!bg-[#22c55e] disabled:!text-black"
+                     disabled:cursor-not-allowed disabled:opacity-60 disabled:!bg-[#22c55e] disabled:!text-black"
           >
             {isSaving ? 'Saving…' : 'Save'}
           </button>

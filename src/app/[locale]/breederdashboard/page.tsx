@@ -208,7 +208,9 @@ export default function BreederDashboardPage() {
 
         {/* Navigation buttons */}
         <div className="space-y-3">
-          <DashLink disabled href={ROUTES.currentLitters} label={cs(t('current_litters'))} />
+
+          {/* Make Current Litters ACTIVE */}
+          <DashLink href={ROUTES.currentLitters} label={t('current_litters')} />
           
           {/* Make My Dogs ACTIVE */}
           <DashLink href={ROUTES.myDogs} label={t('my_dogs')} />
