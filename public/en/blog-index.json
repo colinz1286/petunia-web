@@ -10,6 +10,15 @@
         "breed": "German Shepherd"
     },
     {
+        "slug": "petunia-pets-what-is-it",
+        "title": "Petunia Pets: What It Is, Who It’s For, and How It Works",
+        "date": "August 26, 2025",
+        "categories": [
+            "owner",
+            "boarding"
+        ]
+    },
+    {
         "slug": "dog-boarding-checklist-what-to-bring-what-to-upload-when-to-book",
         "title": "Boarding Checklist: What to Bring, What to Upload, and When to Book",
         "date": "August 25, 2025",

@@ -20,6 +20,18 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'petunia-pets-what-is-it',
+        title: 'Petunia Pets: What It Is, Who It’s For, and How It Works',
+        date: 'August 26, 2025',
+        description:
+            'Canonical brand explainer: what Petunia Pets is, who it serves (owners &amp; facilities), core features (real-time booking, vaccines, waivers, reminders, grooming add-ons), platforms (iOS &amp; web), quick start, support, and $5/month pricing for businesses (30-day free trial).',
+        component: () =>
+            import('./posts/petunia-pets-what-is-it') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'boarding'],
+    },
+    {
         slug: 'dog-boarding-checklist-what-to-bring-what-to-upload-when-to-book',
         title: 'Boarding Checklist: What to Bring, What to Upload, and When to Book',
         date: 'August 25, 2025',
