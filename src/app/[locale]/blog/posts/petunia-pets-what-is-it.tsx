@@ -371,12 +371,6 @@ export default function PetuniaPetsWhatIsIt() {
           >
             Create your account
           </Link>
-          <Link
-            href={`/${locale}/businesssignup`}
-            className="inline-flex items-center justify-center rounded-xl px-4 py-2 font-medium border border-[#2c4a30] text-[#2c4a30] hover:bg-[#e4dbcb]"
-          >
-            See business plans
-          </Link>
         </div>
 
         <h2 className="text-2xl font-semibold mt-10 mb-3">Support &amp; Trust</h2>

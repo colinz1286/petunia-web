@@ -20,6 +20,18 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-much-does-dog-boarding-and-daycare-software-cost-2025',
+        title: 'How Much Does Dog Boarding & Daycare Software Cost in 2025?',
+        date: 'August 26, 2025',
+        description:
+            'A 2025 pricing guide for kennel/daycare software: models, real-world ranges, add-ons (SMS/email/modules), hidden one-time fees, TCO math, migration tips—plus Petunia&rsquo;s $5/month plan for boarding & daycare with a 30-day free trial.',
+        component: () =>
+            import('./posts/how-much-does-dog-boarding-and-daycare-software-cost-2025') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'petunia-pets-what-is-it',
         title: 'Petunia Pets: What It Is, Who It’s For, and How It Works',
         date: 'August 26, 2025',
