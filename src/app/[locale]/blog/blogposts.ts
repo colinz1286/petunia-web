@@ -20,6 +20,19 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'what-health-issues-do-poodles-have',
+        title: 'What Health Issues Do Poodles Have? A Practical, Vet-Informed Guide (Standard, Miniature & Toy)',
+        date: 'August 26, 2025',
+        description:
+            'Common Poodle health issues by variety: Addison&rsquo;s disease, sebaceous adenitis, PRA/cataracts, patellar luxation, Legg&ndash;Calv&eacute;&ndash;Perthes, hip dysplasia, tracheal collapse, hypothyroidism/Cushing&rsquo;s, von Willebrand disease, GDV/bloat, dental/ear care, senior planning, and breeder testing (CHIC/ACVO).',
+        component: () =>
+            import('./posts/what-health-issues-do-poodles-have') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Poodle',
+    },
+    {
         slug: 'why-do-some-dogs-howl-meaning-history-wild-cousins',
         title: 'Why Do Some Dogs Howl? Meaning, History, and Wild Cousins (Wolves, Coyotes & More)',
         date: 'August 26, 2025',
