@@ -24,7 +24,7 @@ export const blogPosts: BlogPostEntry[] = [
         title: 'What Health Issues Do Poodles Have? A Practical, Vet-Informed Guide (Standard, Miniature & Toy)',
         date: 'August 26, 2025',
         description:
-            'Common Poodle health issues by variety: Addison&rsquo;s disease, sebaceous adenitis, PRA/cataracts, patellar luxation, Legg&ndash;Calv&eacute;&ndash;Perthes, hip dysplasia, tracheal collapse, hypothyroidism/Cushing&rsquo;s, von Willebrand disease, GDV/bloat, dental/ear care, senior planning, and breeder testing (CHIC/ACVO).',
+            'Common Poodle health issues by variety: Addison’s disease, sebaceous adenitis, PRA/cataracts, patellar luxation, Legg–Calvé–Perthes, hip dysplasia, tracheal collapse, hypothyroidism/Cushing’s, von Willebrand disease, GDV/bloat, dental/ear care, senior planning, and breeder testing (CHIC/ACVO).',
         component: () =>
             import('./posts/what-health-issues-do-poodles-have') as Promise<{
                 default: React.ComponentType<object>;
