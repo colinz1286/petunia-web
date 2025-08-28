@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'labrador-puppies-for-sale-near-me',
+        title: 'Labrador Puppies for Sale Near Me – A Guide to Finding the Right Dog',
+        date: 'August 28, 2025',
+        description:
+            'Practical guide: how to evaluate rescues and responsible breeders, which health tests to ask for (hips, elbows, eyes, EIC/PRA DNA), temperament checks, contracts, costs, and red flags.',
+        component: () => import('./posts/labrador-puppies-for-sale-near-me'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Labrador Retriever',
+    },
+    {
         slug: 'what-is-the-bite-force-of-a-cane-corso',
         title: 'What Is the Bite Force of a Cane Corso? A Fun, Fact-Checked Deep Dive (Without the Hype)',
         date: 'August 28, 2025',
