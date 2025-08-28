@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'why-do-dogs-chew-on-sticks',
+        title: 'Why Do Dogs Chew on Sticks? Instincts, Dental Health, Safety Risks, and Better Alternatives',
+        date: 'August 28, 2025',
+        description:
+            'In-depth look at stick chewing: instincts, teething biology, sensory feedback, boredom relief, dental health (plaque/calculus, gum care), risk assessment (splinters, toxins, obstructions), safer alternatives, redirection training, enrichment systems, first-aid cues, and a daily dental routine.',
+        component: () => import('./posts/why-do-dogs-chew-on-sticks'),
+        categories: ['owner', 'train', 'vet'],
+    },
+    {
         slug: 'how-to-potty-train-a-puppy',
         title: 'How to Potty Train a Puppy: The Calm, Science-Backed Guide to Faster Results',
         date: 'August 28, 2025',
