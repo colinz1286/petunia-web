@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'french-bulldog-puppies-first-weeks-at-home',
+        title: 'French Bulldog Puppies: The First Few Weeks at Home',
+        date: 'August 28, 2025',
+        description:
+            'Step by step arrival plan for French Bulldog puppies: shopping list, safe home setup, food transition, crate and potty training, first vet visit, and brachycephalic safety.',
+        component: () => import('./posts/french-bulldog-puppies-first-weeks-at-home'),
+        categories: ['owner', 'breed_specific_guides', 'breeder'],
+        breed: 'French Bulldog',
+    },
+    {
         slug: 'what-health-issues-do-poodles-have',
         title: 'What Health Issues Do Poodles Have? A Practical, Vet-Informed Guide (Standard, Miniature & Toy)',
         date: 'August 26, 2025',
