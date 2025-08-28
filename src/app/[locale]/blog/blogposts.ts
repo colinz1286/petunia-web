@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'french-bulldog-puppies-for-sale-near-me',
+        title: 'French bulldog puppies for sale near me – a guide to finding the right puppy for you and your family',
+        date: 'August 28, 2025',
+        description:
+            'Practical guide: how to evaluate rescues and responsible breeders, which health tests to ask for (respiratory function grading, eyes, hips/elbows, patellas, cardiac), temperament checks, contracts, costs, and red flags.',
+        component: () => import('./posts/french-bulldog-puppies-for-sale-near-me'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'French Bulldog',
+    },
+    {
         slug: 'labrador-puppies-for-sale-near-me',
         title: 'Labrador Puppies for Sale Near Me – A Guide to Finding the Right Dog',
         date: 'August 28, 2025',
