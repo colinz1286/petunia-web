@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'merle-french-bulldog-what-is-it',
+        title: 'Merle French Bulldog: What Is It?',
+        date: 'August 28, 2025',
+        description:
+            'Merle genetics explained, breed-standard context, price dynamics, health considerations (hearing, eyes, skin), care and grooming, buyer due diligence, and why merle-to-merle breeding is unsafe.',
+        component: () => import('./posts/merle-french-bulldog-what-is-it'),
+        categories: ['owner', 'breed_specific_guides', 'breeder'],
+        breed: 'French Bulldog',
+    },
+    {
         slug: 'french-bulldog-puppies-first-weeks-at-home',
         title: 'French Bulldog Puppies: The First Few Weeks at Home',
         date: 'August 28, 2025',
