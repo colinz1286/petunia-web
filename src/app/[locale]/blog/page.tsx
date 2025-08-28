@@ -192,7 +192,7 @@ export default function BlogPage() {
           Welcome to the Petunia Blog
         </h1>
         <p className="text-gray-600 italic text-lg mb-8 max-w-xl text-balance">
-          Advice, how-tos, and real answers for sitters, walkers, boarding facility owners, and loving pet parents.
+          Advice, how-tos, and real answers for sitters, walkers, boarding facility owners, and loving pet parents. Want to see an artitle on a specific topic? Email us at admind@petuniapets.com. We would love to hear from you!
         </p>
 
         {/* Filter Row 1 */}
