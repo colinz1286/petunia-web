@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'what-is-the-bite-force-of-a-cane-corso',
+        title: 'What Is the Bite Force of a Cane Corso? A Fun, Fact-Checked Deep Dive (Without the Hype)',
+        date: 'August 28, 2025',
+        description:
+            'Evidence-based overview: how bite force is measured (Newtons), what peer-reviewed studies report for domestic dogs and canids, why viral PSI lists mislead, and where Cane Corsos likely fit relative to size and skull type.',
+        component: () => import('./posts/what-is-the-bite-force-of-a-cane-corso'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Cane Corso',
+    },
+    {
         slug: 'why-do-dogs-chew-on-sticks',
         title: 'Why Do Dogs Chew on Sticks? Instincts, Dental Health, Safety Risks, and Better Alternatives',
         date: 'August 28, 2025',
