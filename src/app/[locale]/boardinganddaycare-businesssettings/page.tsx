@@ -404,7 +404,11 @@ export default function BusinessSettingsPage() {
                                                 checked={noDaycareDays.has(day)}
                                                 onChange={(val) => {
                                                     const updated = new Set(noDaycareDays);
-                                                    val ? updated.add(day) : updated.delete(day);
+                                                    if (val) {
+                                                        updated.add(day);
+                                                    } else {
+                                                        updated.delete(day);
+                                                    }
                                                     setNoDaycareDays(updated);
                                                 }}
                                             />
@@ -476,7 +480,11 @@ export default function BusinessSettingsPage() {
                                                 checked={noBoardingDays.has(day)}
                                                 onChange={(val) => {
                                                     const updated = new Set(noBoardingDays);
-                                                    val ? updated.add(day) : updated.delete(day);
+                                                    if (val) {
+                                                        updated.add(day);
+                                                    } else {
+                                                        updated.delete(day);
+                                                    }
                                                     setNoBoardingDays(updated);
                                                 }}
                                             />
@@ -552,7 +560,11 @@ export default function BusinessSettingsPage() {
                                                 checked={noAfterHoursDays.has(day)}
                                                 onChange={(val) => {
                                                     const updated = new Set(noAfterHoursDays);
-                                                    val ? updated.add(day) : updated.delete(day);
+                                                    if (val) {
+                                                        updated.add(day);
+                                                    } else {
+                                                        updated.delete(day);
+                                                    }
                                                     setNoAfterHoursDays(updated);
                                                 }}
                                             />
