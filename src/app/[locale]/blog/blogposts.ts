@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'why-employee-turnover-is-so-high-in-the-pet-boarding-and-daycare-industry-and-what-you-can-do-about-it',
+        title: 'Why Employee Turnover Is So High in the Pet Boarding and Daycare Industry—and What You Can Do About It',
+        date: 'August 28, 2025',
+        description:
+            'Causes of high turnover in pet boarding/daycare and a practical playbook to cut churn: hiring funnel fixes, 10-shift onboarding, skill-based pay ladder, schedule design, safety culture, and retention KPIs.',
+        component: () => import('./posts/why-employee-turnover-is-so-high-in-the-pet-boarding-and-daycare-industry-and-what-you-can-do-about-it'),
+        categories: ['boarding'],
+    },
+    {
         slug: 'How-to-Handle-a-client-complaint-about-kennel-cough',
         title: 'How to Handle a Client Complaint About Kennel Cough',
         date: 'August 27, 2025',
