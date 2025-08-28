@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-to-handle-a-client-complaint-about-kennel-cough',
+        title: 'How to Handle a Client Complaint About Kennel Cough',
+        date: 'August 27, 2025',
+        description:
+            'Owner- and operator-ready playbook: what CIRDC/kennel cough is, incubation/timing, why clean facilities can still see cases, how vaccines reduce severity (not risk to zero), scripts for de-escalation, notification policy, and an ops checklist.',
+        component: () => import('./posts/how-to-handle-a-client-complaint-about-kennel-cough'),
+        categories: ['boarding'],
+    },
+    {
         slug: 'french-bulldog-puppies-for-sale-near-me',
         title: 'French bulldog puppies for sale near me – a guide to finding the right puppy for you and your family',
         date: 'August 28, 2025',
