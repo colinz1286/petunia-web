@@ -35,5 +35,9 @@
   "state_paperwork_toggle": "Enable State Paperwork Log",
   "save_changes_button": "Save Changes",
   "saving": "Saving...",
-  "back_to_dashboard": "Back to Dashboard"
+  "back_to_dashboard": "Back to Dashboard",
+  "require_after_hours_pickup": "Require time for after-hours pick-up",
+  "after_hours_time_settings_title": "After Hours Time Settings",
+  "after_hours_pickup_times": "After-Hours Pick-Up Times",
+  "no_after_hours_day": "No after-hours pick-up on"
 }

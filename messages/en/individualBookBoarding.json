@@ -41,5 +41,6 @@
   "drop_off_date": "Drop-Off Date",
   "pick_up_date": "Pick-Up Date",
   "drop_off_time": "Drop-Off Time",
-  "pick_up_time": "Pick-Up Time"
+  "pick_up_time": "Pick-Up Time",
+  "after_hours_fee_may_apply_suffix": "After Hours. Additional Fee May Apply"
 }

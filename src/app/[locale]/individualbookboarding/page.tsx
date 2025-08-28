@@ -82,6 +82,10 @@ type BusinessSettingsDoc = {
     // Waiver (root-level fallback date)
     waiverRequired?: boolean;
     waiverLastUpdated?: Timestamp;
+
+    // ✅ NEW: After-hours pick-up
+    afterHoursPickUpTimeRequired?: boolean;
+    afterHoursPickUpTimes?: WeekdayMap;
 };
 
 type ClientWaiverSubdoc = {
@@ -210,6 +214,7 @@ export default function IndividualBookBoardingPage() {
 
     const [checkInOptions, setCheckInOptions] = useState<string[]>([]);
     const [checkOutOptions, setCheckOutOptions] = useState<string[]>([]);
+    const [checkOutDisplayOptions, setCheckOutDisplayOptions] = useState<string[]>([]); // ✅ labels with suffix
 
     const [checkInWindow, setCheckInWindow] = useState('');
     const [checkOutWindow, setCheckOutWindow] = useState('');
@@ -265,8 +270,8 @@ export default function IndividualBookBoardingPage() {
     ]);
 
     /** =========================
-     *  Time option builders (defined early so they can be deps)
-     *  ========================= */
+ *  Time option builders (defined early so they can be deps)
+ *  ========================= */
     const refreshCheckInOptions = useCallback((map?: WeekdayMap) => {
         if (!checkInTimeRequired || !checkInDate) {
             setCheckInOptions([]); setCheckInWindow('');
@@ -280,17 +285,49 @@ export default function IndividualBookBoardingPage() {
         setCheckInWindow(filtered[0] || '');
     }, [checkInDate, checkInTimeRequired, checkInTimesByWeekday, bizTZ, sameDayCheckInCutoff]);
 
-    const refreshCheckOutOptions = useCallback((map?: WeekdayMap) => {
+    // ✅ NEW: merge normal + after-hours for checkout, attach suffix in labels (display only)
+    const [afterHoursPickUpTimeRequired, setAfterHoursPickUpTimeRequired] = useState<boolean>(false);
+    const [afterHoursPickUpTimesByWeekday, setAfterHoursPickUpTimesByWeekday] = useState<WeekdayMap>({});
+
+    const refreshCheckOutOptions = useCallback((
+        baseMapOpt?: WeekdayMap,
+        afterMapOpt?: WeekdayMap,
+        afterReqOpt?: boolean
+    ) => {
         if (!checkOutTimeRequired || !checkOutDate) {
-            setCheckOutOptions([]); setCheckOutWindow('');
+            setCheckOutOptions([]); setCheckOutDisplayOptions([]); setCheckOutWindow('');
             return;
         }
         const weekday = weekdayName(checkOutDate, bizTZ);
-        const raw = (map || checkOutTimesByWeekday)[weekday] || [];
-        const sorted = sortTimeStrings(raw);
-        setCheckOutOptions(sorted);
-        setCheckOutWindow(sorted[0] || '');
-    }, [checkOutDate, checkOutTimeRequired, checkOutTimesByWeekday, bizTZ]);
+
+        const baseMap = baseMapOpt || checkOutTimesByWeekday;
+        const afterMap = afterMapOpt || afterHoursPickUpTimesByWeekday;
+        const afterRequired = afterReqOpt ?? afterHoursPickUpTimeRequired;
+
+        const base = baseMap[weekday] || [];
+        const after = afterRequired ? (afterMap[weekday] || []) : [];
+
+        // unique + sorted
+        const combined = Array.from(new Set([...base, ...after]));
+        const combinedSorted = sortTimeStrings(combined);
+
+        // raw values we store
+        setCheckOutOptions(combinedSorted);
+
+        // display labels with suffix for after-hours only
+        const suffix = ` ${t('after_hours_fee_may_apply_suffix')}`;
+        const afterSet = new Set(after);
+        const labels = combinedSorted.map(tStr => afterSet.has(tStr) ? `${tStr}${suffix}` : tStr);
+        setCheckOutDisplayOptions(labels);
+
+        // keep or choose default
+        if (!combinedSorted.includes(checkOutWindow)) {
+            setCheckOutWindow(combinedSorted[0] || '');
+        }
+    }, [
+        checkOutDate, checkOutTimeRequired, checkOutTimesByWeekday, afterHoursPickUpTimesByWeekday,
+        afterHoursPickUpTimeRequired, bizTZ, checkOutWindow, t
+    ]);
 
     /** =========================
      *  Load auth, pets, business settings, waiver
@@ -348,7 +385,7 @@ export default function IndividualBookBoardingPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [router, locale, businessId]);
 
-    /** Fetch Business settings (parity with iOS) */
+    /** Fetch Business settings (parity with iOS; includes after-hours) */
     const fetchBusinessSettings = useCallback(async (bizId: string) => {
         try {
             const bref = doc(db, 'businesses', bizId);
@@ -391,12 +428,18 @@ export default function IndividualBookBoardingPage() {
             setGroomingAvailableAsAddOn(!!data.groomingAvailableAsAddOnToBoarding);
             setGroomingServices((data.groomingServices || []).map(s => (s || '').trim()).filter(Boolean));
 
-            // Root waiver toggle
+            // Waiver
             setWaiverRequired(!!data.waiverRequired);
+
+            // ✅ After-hours
+            const ahReq = !!data.afterHoursPickUpTimeRequired;
+            const ahMap = data.afterHoursPickUpTimes || {};
+            setAfterHoursPickUpTimeRequired(ahReq);
+            setAfterHoursPickUpTimesByWeekday(ahMap);
 
             // Refresh options if dates already chosen
             refreshCheckInOptions(ciMap);
-            refreshCheckOutOptions(coMap);
+            refreshCheckOutOptions(coMap, ahMap, ahReq);
         } catch (e) {
             console.error('❌ Failed to fetch business settings:', e);
         }
@@ -595,9 +638,6 @@ export default function IndividualBookBoardingPage() {
         revalidateAll();
     }, [selectedPetIds, revalidateAll]);
 
-    /** =========================
-     *  Waiver agree handler
-     *  ========================= */
     const handleAgreeToWaiver = useCallback(async () => {
         if (!userId || !businessId) return;
         try {
@@ -620,7 +660,7 @@ export default function IndividualBookBoardingPage() {
             console.error('❌ Failed to record waiver:', e);
             alert(t('waiver_agreement_failed'));
         }
-    }, [businessId, userId, enforceWaiverVersion, t]);
+    }, [userId, businessId, enforceWaiverVersion, t]);
 
     /** =========================
      *  UI
@@ -731,7 +771,7 @@ export default function IndividualBookBoardingPage() {
                         />
                     </div>
 
-                    {/* Check-Out Time */}
+                    {/* Check-Out Time (labels include After Hours suffix, but value stays raw) */}
                     {checkOutTimeRequired && checkOutOptions.length > 0 && (
                         <div className="flex flex-col items-center space-y-1 w-full">
                             <label className="font-semibold text-center text-sm">{t('select_checkout_time')}</label>
@@ -740,8 +780,10 @@ export default function IndividualBookBoardingPage() {
                                 value={checkOutWindow}
                                 onChange={(e) => setCheckOutWindow(e.target.value)}
                             >
-                                {checkOutOptions.map((opt) => (
-                                    <option key={opt} value={opt}>{opt}</option>
+                                {checkOutOptions.map((opt, i) => (
+                                    <option key={opt} value={opt}>
+                                        {checkOutDisplayOptions[i] || opt}
+                                    </option>
                                 ))}
                             </select>
                         </div>
@@ -792,8 +834,7 @@ export default function IndividualBookBoardingPage() {
                     <button
                         onClick={async () => { await handleSubmit(); }}
                         disabled={isSubmitDisabled}
-                        className={`w-full max-w-xs text-white py-3 rounded transition text-sm ${isSubmitDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-800 hover:bg-green-700'
-                            }`}
+                        className={`w-full max-w-xs text-white py-3 rounded transition text-sm ${isSubmitDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-800 hover:bg-green-700'}`}
                     >
                         {isSubmitting ? t('saving') : t('submit_boarding_reservation')}
                     </button>
@@ -860,7 +901,7 @@ export default function IndividualBookBoardingPage() {
                 nights
             };
             if (checkInTimeRequired) payload.checkInWindow = checkInWindow;
-            if (checkOutTimeRequired) payload.checkOutWindow = checkOutWindow;
+            if (checkOutTimeRequired) payload.checkOutWindow = checkOutWindow; // raw time stored
             if (Object.keys(groomingSelections).length) payload.groomingAddOns = groomingSelections;
 
             // 1) Firestore write
@@ -955,7 +996,7 @@ function GroomingModal(props: {
 
     return (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-            <div className="bg-white w-full max-w-lg rounded-xl shadow-md p-0 flex flex-col max-h-[85vh]">
+            <div className="bg-white w-full max-w-lg rounded-xl shadow-md p-0 flex flex-col max-h[85vh]">
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-3 border-b">
                     <h3 className="text-lg font-semibold text-[color:var(--color-accent)]">
