@@ -7,7 +7,7 @@ import { useLocale } from 'next-intl';
 export default function HandleClientComplaintKennelCough() {
   const locale = useLocale();
 
-  const title = 'how to handle a client complaint about kennel cough';
+  const title = 'How to Handle a Client Complaint about Kennel Cough';
   const date = 'August 27, 2025';
   const slug = 'how-to-handle-a-client-complaint-about-kennel-cough';
   const categories = ['owner', 'boarding', 'daycare'] as const;

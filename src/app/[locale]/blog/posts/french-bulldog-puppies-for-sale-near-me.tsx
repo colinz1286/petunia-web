@@ -8,7 +8,7 @@ export default function FrenchBulldogPuppiesForSaleNearMeGuide() {
   const locale = useLocale();
 
   const title =
-    'French bulldog puppies for sale near me – a guide to finding the right puppy for you and your family';
+    'French bulldog Puppies for Sale Near Me – A Guide to Finding the Right Puppy for Uou and Your Family';
   const date = 'August 28, 2025';
   const slug = 'french-bulldog-puppies-for-sale-near-me';
   const categories = ['owner', 'breeder', 'rescue'] as const;

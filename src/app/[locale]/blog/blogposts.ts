@@ -20,7 +20,7 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
-        slug: 'how-to-handle-a-client-complaint-about-kennel-cough',
+        slug: 'How-to-Handle-a-client-complaint-about-kennel-cough',
         title: 'How to Handle a Client Complaint About Kennel Cough',
         date: 'August 27, 2025',
         description:
@@ -135,7 +135,7 @@ export const blogPosts: BlogPostEntry[] = [
     },
     {
         slug: 'petunia-pets-what-is-it',
-        title: 'Petunia Pets: What It Is, Who It’s For, and How It Works',
+        title: 'Petunia Pets: What It Is, Who Is It For, and How It Works',
         date: 'August 26, 2025',
         description:
             'Canonical brand explainer: what Petunia Pets is, who it serves (owners &amp; facilities), core features (real-time booking, vaccines, waivers, reminders, grooming add-ons), platforms (iOS &amp; web), quick start, support, and $5/month pricing for businesses (30-day free trial).',
