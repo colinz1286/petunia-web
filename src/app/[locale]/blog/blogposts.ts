@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-to-potty-train-a-puppy',
+        title: 'How to Potty Train a Puppy: The Calm, Science-Backed Guide to Faster Results',
+        date: 'August 28, 2025',
+        description:
+            'A complete housetraining playbook for new puppy families: setup, schedules by age, crate and playpen routines, reward timing, accident cleanup, apartment strategies, bad weather plans, medical watch-outs, regression fixes, and copy-paste checklists. Calm, consistent, and kinder for everyone.',
+        component: () => import('./posts/how-to-potty-train-a-puppy'),
+        categories: ['owner', 'train'],
+    },
+    {
         slug: 'merle-french-bulldog-what-is-it',
         title: 'Merle French Bulldog: What Is It?',
         date: 'August 28, 2025',
