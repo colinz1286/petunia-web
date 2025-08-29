@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'is-there-a-veterinary-shortage',
+        title: 'Is There a Veterinary Shortage? Costs, Causes, Specialty Gaps, Salaries, and a 10–15 Year Outlook',
+        date: 'August 29, 2025',
+        description:
+            'A practical, evidence-informed look at today’s veterinary workforce: what “shortage” really means, why local and specialty gaps persist, how much veterinary school costs, salary ranges, and where relief may come from over the next 10–15 years.',
+        component: () => import('./posts/is-there-a-veterinary-shortage'),
+        categories: ['owner','vet'],
+    },
+    {
         slug: 'why-employee-turnover-is-so-high-in-the-pet-boarding-and-daycare-industry-and-what-you-can-do-about-it',
         title: 'Why Employee Turnover Is So High in the Pet Boarding and Daycare Industry—and What You Can Do About It',
         date: 'August 28, 2025',
