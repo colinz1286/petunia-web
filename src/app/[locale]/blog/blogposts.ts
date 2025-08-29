@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'why-does-my-dogs-breath-stink',
+        title: "Why Does My Dog's Breath Stink? Dental Health, Real Causes, Red Flags, Fixes, Costs, and Breed Risk—An In-Depth Owner Guide",
+        date: 'August 29, 2025',
+        description:
+            "A 4,000+ word, evidence-informed guide to canine halitosis: true dental causes, when to worry, what actually fixes it, realistic cost ranges, breed risk, and a 90-day plan.",
+        component: () => import('./posts/why-does-my-dogs-breath-stink'),
+        categories: ['owner', 'vet'],
+    },
+    {
         slug: 'how-do-i-start-a-dog-rescue-or-shelter',
         title: 'How Do I Start a Dog Rescue or Shelter? Costs, Legal Requirements, Qualifications, Sourcing, and Marketing Across Six Countries',
         date: 'August 29, 2025',

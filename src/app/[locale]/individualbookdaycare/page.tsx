@@ -374,16 +374,17 @@ export default function IndividualBookDaycarePage() {
   );
 
   /* =========================
-     Fetch business settings
-     ========================= */
+   Fetch business settings (returns waiverRequired boolean)
+   ========================= */
   const fetchBusinessSettings = useCallback(
-    async (bizId: string) => {
+    async (bizId: string): Promise<boolean> => {
       const bsnap = await getDoc(doc(db, 'businesses', bizId));
       const data = (bsnap.data() || {}) as FSMap;
 
       // Core toggles
+      const waiverReq = !!(data['waiverRequired'] as boolean);
+      setWaiverRequired(waiverReq);
       setDropOffTimeRequired(!!(data['dropOffTimeRequiredDaycare'] as boolean));
-      setWaiverRequired(!!(data['waiverRequired'] as boolean));
       setTemperamentTestRequired(!!(data['temperamentTestRequired'] as boolean));
 
       // TZ + features
@@ -404,9 +405,7 @@ export default function IndividualBookDaycarePage() {
 
       // Booking limits
       const limits = (data['bookingLimits'] as FSMap) || {};
-      setMaxPerTimeSlot(
-        typeof limits['maxPerTimeSlot'] === 'number' ? (limits['maxPerTimeSlot'] as number) : 3,
-      );
+      setMaxPerTimeSlot(typeof limits['maxPerTimeSlot'] === 'number' ? (limits['maxPerTimeSlot'] as number) : 3);
 
       // Required vaccines (keys may vary → normalize)
       const reqRaw = (data['requiredVaccinations'] as FSMap) || {};
@@ -428,36 +427,29 @@ export default function IndividualBookDaycarePage() {
         await filterUnavailableTimes(selectedDate, sorted);
         await checkForExistingReservation(selectedDate, userId);
       }
+
+      return waiverReq; // ← use this to decide prompting without racing setState
     },
-    [selectedDate, userId, bizTZ, filterUnavailableTimes, checkForExistingReservation],
+    [selectedDate, userId, bizTZ, filterUnavailableTimes, checkForExistingReservation]
   );
 
   /* =========================
-   Waiver status (waiverConfirmations/{businessId}_{userId})
+   Waiver status fetcher → returns boolean only
    ========================= */
-  const checkWaiverStatus = useCallback(
-    async (bizId: string, uid: string) => {
-      // If we can't positively verify, fail-closed and prompt
-      if (!bizId || !uid || !isValidFirebaseKey(bizId)) {
-        setWaiverSigned(false);
-        if (waiverRequired) setShowWaiverModal(true);
-        return;
-      }
+  const getWaiverSigned = useCallback(
+    async (bizId: string, uid: string): Promise<boolean> => {
+      if (!bizId || !uid || !isValidFirebaseKey(bizId)) return false;
       try {
         const key = `${bizId}_${uid}`;
         const snap = await getDoc(doc(db, 'waiverConfirmations', key));
         const data = (snap.data() || null) as FSMap | null;
-        const signed = !!(data && data['confirmedByClient'] === true);
-
-        setWaiverSigned(signed);
-        if (waiverRequired && !signed) setShowWaiverModal(true);
+        return !!(data && data['confirmedByClient'] === true);
       } catch (e) {
-        console.warn('⚠️ Waiver check failed (fail-closed):', e);
-        setWaiverSigned(false);
-        if (waiverRequired) setShowWaiverModal(true);
+        console.warn('⚠️ Waiver read failed (fail-closed to false):', e);
+        return false;
       }
     },
-    [waiverRequired]
+    [] // ← stable identity
   );
 
   /* =========================
@@ -478,7 +470,7 @@ export default function IndividualBookDaycarePage() {
   );
 
   /* =========================
-   Auth + initial load
+   Auth + initial load (stable)
    ========================= */
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
@@ -489,6 +481,7 @@ export default function IndividualBookDaycarePage() {
 
       const uid = user.uid;
       setUserId(uid);
+      setIsLoading(true);
 
       try {
         // Owner name (best-effort)
@@ -498,16 +491,22 @@ export default function IndividualBookDaycarePage() {
         const on = `${fn} ${ln}`.trim();
         if (on) setOwnerName(on);
 
-        // Sequenced loads so waiverRequired is known before we decide to prompt
+        // 1) Load pets
         await loadUserPets(uid);
 
+        // 2) Load business settings → get waiver requirement deterministically
+        let waiverReq = false;
         if (businessId && isValidFirebaseKey(businessId)) {
-          await fetchBusinessSettings(businessId);     // ← sets waiverRequired, time zone, etc.
-          await checkWaiverStatus(businessId, uid);    // ← reads /waiverConfirmations/{bizId}_{uid}
+          waiverReq = await fetchBusinessSettings(businessId);
         } else {
-          // Invalid/missing businessId: skip settings & waiver check here.
-          // (checkWaiverStatus is fail-closed already if you prefer to call it.)
           console.warn('⚠️ Missing or invalid businessId; skipped settings + waiver check.');
+        }
+
+        // 3) Check waiver (pure boolean) and decide to prompt without racing setState
+        if (businessId && isValidFirebaseKey(businessId)) {
+          const signed = await getWaiverSigned(businessId, uid);
+          setWaiverSigned(signed);
+          if (waiverReq && !signed) setShowWaiverModal(true);
         }
       } catch (err) {
         console.error('❌ Initial load failed:', err);
@@ -517,14 +516,19 @@ export default function IndividualBookDaycarePage() {
     });
 
     return () => unsub();
-    // Functions are memoized with useCallback; include them to satisfy ESLint.
-  }, [router, locale, businessId, loadUserPets, fetchBusinessSettings, checkWaiverStatus]);
+
+    // Only re-run if route/locale/business changes.
+    // Intentionally NOT depending on loadUserPets/fetchBusinessSettings/getWaiverSigned
+    // to avoid callback-identity feedback loops.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, locale, businessId]);
 
   /* =========================
-     Time options & capacity filtering (on date change)
-     ========================= */
+   Time options & capacity filtering (on date change)
+   ========================= */
   useEffect(() => {
     (async () => {
+      if (isLoading) return;            // ← add this line
       if (!selectedDate) return;
       const weekday = weekdayName(selectedDate, bizTZ);
       const raw = sortTimeStrings(dropOffTimesByWeekday[weekday] || []);
@@ -533,7 +537,7 @@ export default function IndividualBookDaycarePage() {
       await filterUnavailableTimes(selectedDate, raw);
       if (userId) await checkForExistingReservation(selectedDate, userId);
     })();
-  }, [selectedDate, dropOffTimesByWeekday, bizTZ, filterUnavailableTimes, checkForExistingReservation, userId]);
+  }, [isLoading, selectedDate, dropOffTimesByWeekday, bizTZ, filterUnavailableTimes, checkForExistingReservation, userId]);
 
   /* =========================
      Selected pets → refresh alerts
