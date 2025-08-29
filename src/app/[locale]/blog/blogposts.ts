@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-to-know-if-my-dog-is-sick',
+        title: 'How to Know If My Dog Is Sick: Subtle Signs, Red Flags, Home Checks, Vet Care, Costs, and a Practical 72-Hour Plan',
+        date: 'August 29, 2025',
+        description:
+            'A 5,000+ word, evidence-informed guide to recognizing when a dog may be sick: broad signs and symptoms, home checks (TPR, gums/CRT, hydration), emergency red flags, what vets do, realistic U.S. cost ranges, and a calm 72-hour plan.',
+        component: () => import('./posts/how-to-know-if-my-dog-is-sick'),
+        categories: ['owner'],
+    },
+    {
         slug: 'why-does-my-dogs-breath-stink',
         title: "Why Does My Dog's Breath Stink? Dental Health, Real Causes, Red Flags, Fixes, Costs, and Breed Risk—An In-Depth Owner Guide",
         date: 'August 29, 2025',

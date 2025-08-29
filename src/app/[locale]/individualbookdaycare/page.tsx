@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -136,6 +136,10 @@ export default function IndividualBookDaycarePage() {
   // Pets
   const [pets, setPets] = useState<Pet[]>([]);
   const [selectedPetIds, setSelectedPetIds] = useState<string[]>([]);
+
+  // Boot guards to prevent repeated bootstrap loops
+  const bootOnceRef = useRef(false);
+  const lastUidRef = useRef<string | null>(null);
 
   // Booking inputs
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
@@ -434,57 +438,106 @@ export default function IndividualBookDaycarePage() {
   );
 
   /* =========================
-   Waiver status fetcher → returns boolean only
+   Waiver status (iOS-style): compare version/date in userApprovedBusinesses
    ========================= */
-  const getWaiverSigned = useCallback(
+  const getWaiverSignedIOS = useCallback(
     async (bizId: string, uid: string): Promise<boolean> => {
       if (!bizId || !uid || !isValidFirebaseKey(bizId)) return false;
+
+      // Reads mirror iOS: businesses (features/root date), clientWaiver (version/subdoc date), userApprovedBusinesses (client record)
+      const bizRef = doc(db, 'businesses', bizId);
+      const waiverRef = doc(db, 'businesses', bizId, 'settings', 'clientWaiver');
+      const clientRef = doc(db, 'userApprovedBusinesses', bizId, 'clients', uid);
+
       try {
-        const key = `${bizId}_${uid}`;
-        const snap = await getDoc(doc(db, 'waiverConfirmations', key));
-        const data = (snap.data() || null) as FSMap | null;
-        return !!(data && data['confirmedByClient'] === true);
+        const [bizSnap, waiverSnap, clientSnap] = await Promise.all([
+          getDoc(bizRef),
+          getDoc(waiverRef),
+          getDoc(clientRef),
+        ]);
+
+        const b = (bizSnap.data() || {}) as FSMap;
+        const w = (waiverSnap.data() || {}) as FSMap;
+        const c = (clientSnap.data() || {}) as FSMap;
+
+        // Is a waiver required for this business?
+        const waiverReq = !!(b['waiverRequired'] as boolean);
+        if (!waiverReq) return true;
+
+        // Version enforcement flag (matches iOS)
+        const enforce = !!(((b['features'] as FSMap) || {})['enforceWaiverVersion'] as boolean);
+
+        // Compare version if enforced
+        const version = w['waiverVersion'] as number | undefined;
+        const versionSigned = (c['waiverVersionSigned'] as number | undefined) ?? 0;
+        if (enforce && typeof version === 'number') {
+          return versionSigned >= version;
+        }
+
+        // Otherwise compare dates: client signedAt vs lastUpdated (subdoc or root)
+        const subUpdated = (w['lastUpdated'] as Timestamp | undefined)?.toDate();
+        const rootUpdated = (b['waiverLastUpdated'] as Timestamp | undefined)?.toDate();
+        const lastUpdated = subUpdated || rootUpdated || null;
+
+        const signedAt = (c['waiverSignedAt'] as Timestamp | undefined)?.toDate() || null;
+        if (lastUpdated && signedAt) return signedAt >= lastUpdated;
+
+        // Legacy boolean fallback (iOS also checks this)
+        return (c['waiverSigned'] as boolean | undefined) ?? false;
       } catch (e) {
-        console.warn('⚠️ Waiver read failed (fail-closed to false):', e);
+        console.warn('⚠️ Waiver read failed (fail-closed=false):', e);
         return false;
       }
     },
-    [] // ← stable identity
+    []
   );
 
-  /* =========================
-     Pets + vaccine data
-     ========================= */
   const loadUserPets = useCallback(
     async (uid: string) => {
       const ps = await getDocs(collection(db, 'users', uid, 'pets'));
       const raw = ps.docs.map((d) => ({ id: d.id, name: (d.data().petName as string) || 'Unnamed' }));
       const unique = uniqueById(raw);
+
       setPets(unique);
-      setSelectedPetIds(unique.map((p) => p.id));
+
+      const nextIds = unique.map((p) => p.id);
+      setSelectedPetIds((prev) => {
+        // shallow equality check to avoid needless toggles
+        if (prev.length === nextIds.length && prev.every((v, i) => v === nextIds[i])) return prev;
+        return nextIds;
+      });
 
       // Preload vaccine data for selected pets
-      await loadVaccineData(uid, new Set(unique.map((p) => p.id)));
+      await loadVaccineData(uid, new Set(nextIds));
     },
-    [loadVaccineData],
+    [loadVaccineData]
   );
 
   /* =========================
-   Auth + initial load (stable)
+   Auth + initial load (run once; ignore dups)
    ========================= */
   useEffect(() => {
+    if (bootOnceRef.current) return;        // ← don’t resubscribe
+    bootOnceRef.current = true;
+
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         router.push(`/${locale}/loginsignup`);
         return;
       }
 
       const uid = user.uid;
+
+      // Ignore duplicate events for the same user (StrictMode, reconnects, etc.)
+      if (lastUidRef.current === uid && !isLoading) return;
+      lastUidRef.current = uid;
+
       setUserId(uid);
       setIsLoading(true);
 
       try {
-        // Owner name (best-effort)
+        // Best-effort owner name
         const usnap = await getDoc(doc(db, 'users', uid)).catch(() => null);
         const fn = (usnap?.data()?.firstName as string) || '';
         const ln = (usnap?.data()?.lastName as string) || '';
@@ -494,7 +547,7 @@ export default function IndividualBookDaycarePage() {
         // 1) Load pets
         await loadUserPets(uid);
 
-        // 2) Load business settings → get waiver requirement deterministically
+        // 2) Load business settings → tells us if waiver is required
         let waiverReq = false;
         if (businessId && isValidFirebaseKey(businessId)) {
           waiverReq = await fetchBusinessSettings(businessId);
@@ -502,9 +555,9 @@ export default function IndividualBookDaycarePage() {
           console.warn('⚠️ Missing or invalid businessId; skipped settings + waiver check.');
         }
 
-        // 3) Check waiver (pure boolean) and decide to prompt without racing setState
+        // 3) Check waiver using iOS-style logic
         if (businessId && isValidFirebaseKey(businessId)) {
-          const signed = await getWaiverSigned(businessId, uid);
+          const signed = await getWaiverSignedIOS(businessId, uid);
           setWaiverSigned(signed);
           if (waiverReq && !signed) setShowWaiverModal(true);
         }
@@ -516,12 +569,9 @@ export default function IndividualBookDaycarePage() {
     });
 
     return () => unsub();
-
-    // Only re-run if route/locale/business changes.
-    // Intentionally NOT depending on loadUserPets/fetchBusinessSettings/getWaiverSigned
-    // to avoid callback-identity feedback loops.
+    // Intentionally empty dependency array so we don't resubscribe repeatedly
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router, locale, businessId]);
+  }, []);
 
   /* =========================
    Time options & capacity filtering (on date change)
@@ -717,6 +767,38 @@ export default function IndividualBookDaycarePage() {
       bizTZ,
       t,
     ],
+  );
+
+  const handleWaiverAgree = useCallback(
+    async () => {
+      if (!hasCheckedAgreement) return;
+      try {
+        // Read latest version to store alongside the acceptance (mirrors iOS)
+        const wSnap = await getDoc(doc(db, 'businesses', businessId, 'settings', 'clientWaiver')).catch(() => null);
+        const version = (wSnap?.data()?.waiverVersion as number) ?? undefined;
+
+        const payload: FSMap = {
+          waiverSignedAt: Timestamp.now(),
+          waiverSigned: true, // legacy fallback
+        };
+        if (typeof version === 'number') payload['waiverVersionSigned'] = version;
+
+        await setDoc(
+          doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
+          payload,
+          { merge: true }
+        );
+
+        // Re-check using iOS logic, then close only if actually signed
+        const ok = await getWaiverSignedIOS(businessId, userId);
+        setWaiverSigned(ok);
+        setShowWaiverModal(waiverRequired && !ok);
+      } catch (err) {
+        console.error('❌ Failed to record waiver:', err);
+        alert(t('waiver_agreement_failed'));
+      }
+    },
+    [hasCheckedAgreement, businessId, userId, waiverRequired, getWaiverSignedIOS, t]
   );
 
   /* =========================
@@ -1029,28 +1111,9 @@ export default function IndividualBookDaycarePage() {
               </label>
               <div className="flex justify-end">
                 <button
-                  onClick={async () => {
-                    try {
-                      await setDoc(
-                        doc(db, 'waiverConfirmations', `${businessId}_${userId}`),
-                        {
-                          businessId,
-                          userId,
-                          confirmedByClient: true,
-                          signedAt: Timestamp.now(),
-                        },
-                        { merge: true }
-                      );
-                      setWaiverSigned(true);
-                      setShowWaiverModal(false);
-                    } catch (err) {
-                      console.error('❌ Failed to record waiver:', err);
-                      alert(t('waiver_agreement_failed'));
-                    }
-                  }}
+                  onClick={handleWaiverAgree}
                   disabled={!hasCheckedAgreement}
-                  className={`px-4 py-2 rounded text-sm text-white ${hasCheckedAgreement ? 'bg-green-700 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'
-                    }`}
+                  className={`px-4 py-2 rounded text-sm text-white ${hasCheckedAgreement ? 'bg-green-700 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'}`}
                 >
                   {t('agree_button')}
                 </button>
