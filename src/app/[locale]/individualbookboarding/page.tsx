@@ -272,18 +272,27 @@ export default function IndividualBookBoardingPage() {
     /** =========================
  *  Time option builders (defined early so they can be deps)
  *  ========================= */
+    /** Build check-in options and preserve the current selection if still valid */
     const refreshCheckInOptions = useCallback((map?: WeekdayMap) => {
         if (!checkInTimeRequired || !checkInDate) {
-            setCheckInOptions([]); setCheckInWindow('');
+            setCheckInOptions([]);
+            setCheckInWindow('');
             return;
         }
+
         const weekday = weekdayName(checkInDate, bizTZ);
-        const raw = (map || checkInTimesByWeekday)[weekday] || [];
+        const raw = (map ?? checkInTimesByWeekday)[weekday] ?? [];
         const sorted = sortTimeStrings(raw);
         const filtered = filterCheckInTimesForSameDay(sorted, checkInDate, bizTZ, sameDayCheckInCutoff);
+
         setCheckInOptions(filtered);
-        setCheckInWindow(filtered[0] || '');
+
+        // 🔑 Preserve current selection if still valid; otherwise fall back to first available
+        setCheckInWindow(prev =>
+            prev && filtered.includes(prev) ? prev : (filtered[0] ?? '')
+        );
     }, [checkInDate, checkInTimeRequired, checkInTimesByWeekday, bizTZ, sameDayCheckInCutoff]);
+
 
     // ✅ NEW: merge normal + after-hours for checkout, attach suffix in labels (display only)
     const [afterHoursPickUpTimeRequired, setAfterHoursPickUpTimeRequired] = useState<boolean>(false);
@@ -621,11 +630,16 @@ export default function IndividualBookBoardingPage() {
     /** =========================
      *  Change handlers to mirror iOS onChange(...)
      *  ========================= */
+    // Rebuild check-in options when inputs that actually change the option list change
+    useEffect(() => {
+        refreshCheckInOptions();
+    }, [refreshCheckInOptions, checkInDate]);
+
+    // Re-run validations separately (won't reset the user's time selection)
     useEffect(() => {
         setSuppressValidations(false);
-        refreshCheckInOptions();
         revalidateAll();
-    }, [checkInDate, refreshCheckInOptions, revalidateAll]);
+    }, [revalidateAll, checkInDate]);
 
     useEffect(() => {
         setSuppressValidations(false);
