@@ -20,13 +20,22 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-do-i-start-a-dog-rescue-or-shelter',
+        title: 'How Do I Start a Dog Rescue or Shelter? Costs, Legal Requirements, Qualifications, Sourcing, and Marketing Across Six Countries',
+        date: 'August 29, 2025',
+        description:
+            'A step-by-step roadmap to launching a foster-based rescue or a brick-and-mortar shelter: startup budgets, whether you can start at home, licensing examples for the US, UK, Ireland, Canada, Australia, and New Zealand, required qualifications, ethical sourcing, and marketing beyond social media.',
+        component: () => import('./posts/how-do-i-start-a-dog-rescue-or-shelter'),
+        categories: ['rescue'],
+    },
+    {
         slug: 'is-there-a-veterinary-shortage',
         title: 'Is There a Veterinary Shortage? Costs, Causes, Specialty Gaps, Salaries, and a 10–15 Year Outlook',
         date: 'August 29, 2025',
         description:
             'A practical, evidence-informed look at today’s veterinary workforce: what “shortage” really means, why local and specialty gaps persist, how much veterinary school costs, salary ranges, and where relief may come from over the next 10–15 years.',
         component: () => import('./posts/is-there-a-veterinary-shortage'),
-        categories: ['owner','vet'],
+        categories: ['owner', 'vet'],
     },
     {
         slug: 'why-employee-turnover-is-so-high-in-the-pet-boarding-and-daycare-industry-and-what-you-can-do-about-it',

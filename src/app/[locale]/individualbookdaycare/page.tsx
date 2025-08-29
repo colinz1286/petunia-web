@@ -149,13 +149,12 @@ export default function IndividualBookDaycarePage() {
   const [maxPerTimeSlot, setMaxPerTimeSlot] = useState<number>(3);
   const [includePendingInCapacity, setIncludePendingInCapacity] = useState(false);
   const [clientWritesRTDB, setClientWritesRTDB] = useState(true);
-  const [enforceWaiverVersion, setEnforceWaiverVersion] = useState(false);
   const [temperamentTestRequired, setTemperamentTestRequired] = useState(false);
   const [isAssessment, setIsAssessment] = useState(false);
 
   // Waiver
   const [waiverRequired, setWaiverRequired] = useState(false);
-  const [waiverSigned, setWaiverSigned] = useState(true);
+  const [waiverSigned, setWaiverSigned] = useState(false); // fail-closed by default
   const [showWaiverModal, setShowWaiverModal] = useState(false);
   const [hasCheckedAgreement, setHasCheckedAgreement] = useState(false);
 
@@ -392,7 +391,6 @@ export default function IndividualBookDaycarePage() {
       const features = (data['features'] as FSMap) || {};
       setIncludePendingInCapacity(!!features['countPendingInCapacity']);
       setClientWritesRTDB(features['clientWritesRTDB'] !== false);
-      setEnforceWaiverVersion(!!features['enforceWaiverVersion']);
 
       // Grooming
       setGroomingAvailable(!!(data['groomingAvailableAsAddOnToDaycare'] as boolean));
@@ -435,44 +433,32 @@ export default function IndividualBookDaycarePage() {
   );
 
   /* =========================
-     Waiver (version-aware)
-     ========================= */
-  const checkWaiverStatus = useCallback(async (bizId: string, uid: string) => {
-    try {
-      const bizRef = doc(db, 'businesses', bizId);
-      const waiverRef = doc(db, 'businesses', bizId, 'settings', 'clientWaiver');
-      const clientRef = doc(db, 'userApprovedBusinesses', bizId, 'clients', uid);
+   Waiver status (waiverConfirmations/{businessId}_{userId})
+   ========================= */
+  const checkWaiverStatus = useCallback(
+    async (bizId: string, uid: string) => {
+      // If we can't positively verify, fail-closed and prompt
+      if (!bizId || !uid || !isValidFirebaseKey(bizId)) {
+        setWaiverSigned(false);
+        if (waiverRequired) setShowWaiverModal(true);
+        return;
+      }
+      try {
+        const key = `${bizId}_${uid}`;
+        const snap = await getDoc(doc(db, 'waiverConfirmations', key));
+        const data = (snap.data() || null) as FSMap | null;
+        const signed = !!(data && data['confirmedByClient'] === true);
 
-      const [bizSnap, wSnap, cSnap] = await Promise.all([getDoc(bizRef), getDoc(waiverRef), getDoc(clientRef)]);
-      const b = (bizSnap.data() || {}) as FSMap;
-      const w = (wSnap.data() || {}) as FSMap;
-      const c = (cSnap.data() || {}) as FSMap;
-
-      const enforce = !!(((b['features'] as FSMap) || {})['enforceWaiverVersion'] as boolean);
-      const version = w['waiverVersion'] as number | undefined;
-      const subUpdated = (w['lastUpdated'] as Timestamp | undefined)?.toDate();
-      const rootUpdated = (b['waiverLastUpdated'] as Timestamp | undefined)?.toDate();
-      const lastUpdated = subUpdated || rootUpdated || null;
-
-      const versionSigned = (c['waiverVersionSigned'] as number | undefined) ?? 0;
-      const signedAt = (c['waiverSignedAt'] as Timestamp | undefined)?.toDate() || null;
-      const legacy = (c['waiverSigned'] as boolean | undefined) ?? false;
-
-      setWaiverRequired(!!(b['waiverRequired'] as boolean));
-
-      let signed = true;
-      if (!b['waiverRequired']) signed = true;
-      else if (enforce && typeof version === 'number') signed = versionSigned >= version;
-      else if (lastUpdated && signedAt) signed = signedAt >= lastUpdated;
-      else signed = legacy;
-
-      setWaiverSigned(signed);
-      if (b['waiverRequired'] && !signed) setShowWaiverModal(true);
-    } catch (e) {
-      console.warn('⚠️ Waiver check failed (non-fatal):', e);
-      setWaiverSigned(true);
-    }
-  }, []);
+        setWaiverSigned(signed);
+        if (waiverRequired && !signed) setShowWaiverModal(true);
+      } catch (e) {
+        console.warn('⚠️ Waiver check failed (fail-closed):', e);
+        setWaiverSigned(false);
+        if (waiverRequired) setShowWaiverModal(true);
+      }
+    },
+    [waiverRequired]
+  );
 
   /* =========================
      Pets + vaccine data
@@ -492,36 +478,47 @@ export default function IndividualBookDaycarePage() {
   );
 
   /* =========================
-     Auth + initial load
-     ========================= */
+   Auth + initial load
+   ========================= */
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
         router.push(`/${locale}/loginsignup`);
         return;
       }
+
       const uid = user.uid;
       setUserId(uid);
 
-      // Owner name
-      const usnap = await getDoc(doc(db, 'users', uid)).catch(() => null);
-      const fn = (usnap?.data()?.firstName as string) || '';
-      const ln = (usnap?.data()?.lastName as string) || '';
-      const on = `${fn} ${ln}`.trim();
-      if (on) setOwnerName(on);
+      try {
+        // Owner name (best-effort)
+        const usnap = await getDoc(doc(db, 'users', uid)).catch(() => null);
+        const fn = (usnap?.data()?.firstName as string) || '';
+        const ln = (usnap?.data()?.lastName as string) || '';
+        const on = `${fn} ${ln}`.trim();
+        if (on) setOwnerName(on);
 
-      // Do the initial loads
-      await Promise.all([
-        loadUserPets(uid),
-        fetchBusinessSettings(businessId),
-        checkWaiverStatus(businessId, uid),
-      ]);
+        // Sequenced loads so waiverRequired is known before we decide to prompt
+        await loadUserPets(uid);
 
-      setIsLoading(false);
+        if (businessId && isValidFirebaseKey(businessId)) {
+          await fetchBusinessSettings(businessId);     // ← sets waiverRequired, time zone, etc.
+          await checkWaiverStatus(businessId, uid);    // ← reads /waiverConfirmations/{bizId}_{uid}
+        } else {
+          // Invalid/missing businessId: skip settings & waiver check here.
+          // (checkWaiverStatus is fail-closed already if you prefer to call it.)
+          console.warn('⚠️ Missing or invalid businessId; skipped settings + waiver check.');
+        }
+      } catch (err) {
+        console.error('❌ Initial load failed:', err);
+      } finally {
+        setIsLoading(false);
+      }
     });
+
     return () => unsub();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router, locale, businessId]);
+    // Functions are memoized with useCallback; include them to satisfy ESLint.
+  }, [router, locale, businessId, loadUserPets, fetchBusinessSettings, checkWaiverStatus]);
 
   /* =========================
      Time options & capacity filtering (on date change)
@@ -623,8 +620,6 @@ export default function IndividualBookDaycarePage() {
         const owner = `${firstName} ${lastName}`.trim() || ownerName;
 
         // latest waiver version for backfill
-        const wSnap = await getDoc(doc(db, 'businesses', businessId, 'settings', 'clientWaiver'));
-        const waiverVersionLatest = (wSnap.data()?.waiverVersion as number) ?? 1;
 
         for (const booking of draftBookings) {
           const reservationId = crypto.randomUUID();
@@ -689,15 +684,6 @@ export default function IndividualBookDaycarePage() {
               }),
             );
           }
-        }
-
-        // Waiver version backfill (non-breaking)
-        if (waiverRequired) {
-          await setDoc(
-            doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
-            { waiverVersionSigned: waiverVersionLatest, waiverSignedAt: Timestamp.now() },
-            { merge: true },
-          );
         }
 
         // Success UI reset
@@ -959,9 +945,11 @@ export default function IndividualBookDaycarePage() {
             {draftBookings.length > 0 && (
               <button
                 onClick={submitAllReservations}
-                className={`w-full max-w-xs text-white py-3 rounded transition text-sm ${isSubmitting ? 'bg-gray-400 cursor-wait' : 'bg-green-800 hover:bg-green-700'
+                className={`w-full max-w-xs text-white py-3 rounded transition text-sm ${isSubmitting || (waiverRequired && !waiverSigned)
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-green-800 hover:bg-green-700'
                   }`}
-                disabled={isSubmitting}
+                disabled={isSubmitting || (waiverRequired && !waiverSigned)}
               >
                 {isSubmitting ? t('submitting_reservations') : t('submit_all')}
               </button>
@@ -1039,22 +1027,16 @@ export default function IndividualBookDaycarePage() {
                 <button
                   onClick={async () => {
                     try {
-                      // If version enforcement is on, also backfill version now
-                      if (enforceWaiverVersion) {
-                        const w = await getDoc(doc(db, 'businesses', businessId, 'settings', 'clientWaiver'));
-                        const version = (w.data()?.waiverVersion as number) ?? 1;
-                        await setDoc(
-                          doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
-                          { waiverVersionSigned: version, waiverSignedAt: Timestamp.now() },
-                          { merge: true },
-                        );
-                      } else {
-                        await setDoc(
-                          doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
-                          { waiverSignedAt: Timestamp.now() },
-                          { merge: true },
-                        );
-                      }
+                      await setDoc(
+                        doc(db, 'waiverConfirmations', `${businessId}_${userId}`),
+                        {
+                          businessId,
+                          userId,
+                          confirmedByClient: true,
+                          signedAt: Timestamp.now(),
+                        },
+                        { merge: true }
+                      );
                       setWaiverSigned(true);
                       setShowWaiverModal(false);
                     } catch (err) {
