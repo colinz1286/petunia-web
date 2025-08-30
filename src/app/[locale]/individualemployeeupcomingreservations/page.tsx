@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 import { getApps, initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
@@ -107,6 +107,7 @@ const nowISO = () => new Date().toISOString();
 export default function IndividualEmployeeUpcomingReservationsPage() {
   const router = useRouter();
   const t = useTranslations('individualEmployeeUpcomingReservations');
+  const locale = useLocale();
 
   const [businessId, setBusinessId] = useState<string>('');
   const [groups, setGroups] = useState<GroupedReservation[]>([]);
@@ -546,6 +547,17 @@ export default function IndividualEmployeeUpcomingReservationsPage() {
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <main className="max-w-3xl mx-auto px-4 py-6">
+        <main className="max-w-3xl mx-auto px-4 py-6">
+          {/* Back (left-aligned, mobile-friendly) */}
+          <div className="w-full max-w-sm sm:max-w-md mx-auto">
+            <button
+              onClick={() => router.push(`/${locale}/individualdashboard`)}
+              className="mb-2 block w-fit text-sm text-[color:var(--color-accent)] underline hover:opacity-90"
+            >
+              ← {t('back_to_dashboard', { defaultMessage: 'Back to Dashboard' })}
+            </button>
+          </div>
+        </main>
         <h1 className="text-3xl font-bold text-center text-[color:var(--color-accent)] mb-4">
           {t('upcoming_reservations_title')}
         </h1>
@@ -824,7 +836,7 @@ export default function IndividualEmployeeUpcomingReservationsPage() {
                 }}
               >
                 {t('yes_button')}
-            </button>
+              </button>
             </div>
           </div>
         </div>

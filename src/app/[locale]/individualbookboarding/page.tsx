@@ -8,7 +8,7 @@ import {
 } from 'firebase/firestore';
 import { getDatabase, ref, set as rtdbSet } from 'firebase/database';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -24,7 +24,7 @@ const firebaseConfig = {
     messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
-initializeApp(firebaseConfig);
+if (!getApps().length) initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
 const rtdb = getDatabase();
@@ -88,17 +88,6 @@ type BusinessSettingsDoc = {
     afterHoursPickUpTimes?: WeekdayMap;
 };
 
-type ClientWaiverSubdoc = {
-    waiverVersion?: number;
-    lastUpdated?: Timestamp;
-};
-
-type ClientWaiverState = {
-    waiverVersionSigned?: number;
-    waiverSignedAt?: Timestamp;
-    waiverSigned?: boolean; // legacy boolean
-};
-
 type BoardingReservationWrite = {
     userId: string;
     businessId: string;
@@ -124,6 +113,12 @@ const weekdayName = (d: Date, tz: string) =>
 
 const ymdKey = (d: Date, tz: string) =>
     new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
+
+const normalizeDate = (d: Date) => {
+    const n = new Date(d);
+    n.setHours(0, 0, 0, 0);
+    return n;
+};
 
 const parseTimeToMinutes = (label: string) => {
     const m = label.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
@@ -225,18 +220,11 @@ export default function IndividualBookBoardingPage() {
     const [businessTimeZoneId, setBusinessTimeZoneId] = useState<string | null>(null);
     const [includePendingInCapacity, setIncludePendingInCapacity] = useState(false);
     const [clientWritesRTDB, setClientWritesRTDB] = useState(true);
-    const [enforceWaiverVersion, setEnforceWaiverVersion] = useState(false);
 
     // Capacity
     const [capacityBoardingTotal, setCapacityBoardingTotal] = useState<number | null>(null);
     const [capacityBlockingNights, setCapacityBlockingNights] = useState<string[]>([]);
     const [maxPerTimeSlot, setMaxPerTimeSlot] = useState<number>(0);
-
-    // Waiver
-    const [waiverRequired, setWaiverRequired] = useState(false);
-    const [waiverSigned, setWaiverSigned] = useState(true);
-    const [showWaiverModal, setShowWaiverModal] = useState(false);
-    const [hasCheckedAgreement, setHasCheckedAgreement] = useState(false);
 
     // Grooming
     const [groomingAvailableAsAddOn, setGroomingAvailableAsAddOn] = useState(false);
@@ -251,20 +239,19 @@ export default function IndividualBookBoardingPage() {
 
     const bizTZ = businessTimeZoneId || Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    /** Derived submit disabled (mirrors iOS) */
+    /** Derived submit disabled — waiver removed */
     const isSubmitDisabled = useMemo(() => {
         if (isSubmitting) return true;
         if (!checkInDate || !checkOutDate) return true;
         if (checkInDate >= checkOutDate) return true;
         if (selectedPetIds.size === 0) return true;
-        if (waiverRequired && !waiverSigned) return true;
         if (checkInTimeRequired && !checkInWindow) return true;
         if (checkOutTimeRequired && !checkOutWindow) return true;
         if (overlapDetected) return true;
         if (capacityBlockingNights.length > 0) return true;
         return false;
     }, [
-        isSubmitting, checkInDate, checkOutDate, selectedPetIds, waiverRequired, waiverSigned,
+        isSubmitting, checkInDate, checkOutDate, selectedPetIds,
         checkInTimeRequired, checkInWindow, checkOutTimeRequired, checkOutWindow,
         overlapDetected, capacityBlockingNights
     ]);
@@ -293,6 +280,25 @@ export default function IndividualBookBoardingPage() {
         );
     }, [checkInDate, checkInTimeRequired, checkInTimesByWeekday, bizTZ, sameDayCheckInCutoff]);
 
+    // Find the next check-in date that has at least one available time (post-filter)
+    const findNextCheckInDate = useCallback(
+        async (startDate: Date) => {
+            for (let i = 1; i <= 30; i++) {
+                const candidate = normalizeDate(new Date(startDate.getTime() + i * 24 * 60 * 60 * 1000));
+                const day = weekdayName(candidate, bizTZ);
+                const raw = sortTimeStrings((checkInTimesByWeekday[day] || []).map((s) => s || ''));
+                if (raw.length === 0) continue; // no times configured on this weekday
+
+                // For non-today, filterCheckInTimesForSameDay returns everything (no past-time cut)
+                const filtered = filterCheckInTimesForSameDay(raw, candidate, bizTZ, sameDayCheckInCutoff);
+                if (filtered.length > 0) {
+                    return { date: candidate, times: filtered };
+                }
+            }
+            return null;
+        },
+        [bizTZ, checkInTimesByWeekday, sameDayCheckInCutoff]
+    );
 
     // ✅ NEW: merge normal + after-hours for checkout, attach suffix in labels (display only)
     const [afterHoursPickUpTimeRequired, setAfterHoursPickUpTimeRequired] = useState<boolean>(false);
@@ -339,25 +345,31 @@ export default function IndividualBookBoardingPage() {
     ]);
 
     /** =========================
-     *  Load auth, pets, business settings, waiver
-     *  ========================= */
+ *  Load auth, pets, business settings (dup-guarded) — waiver removed
+ *  ========================= */
     useEffect(() => {
+        let handled = false; // prevents double fire in StrictMode / reconnects
+
         const unsub = onAuthStateChanged(auth, async (user) => {
+            if (handled) return;
+            handled = true;
+
             if (!user) {
                 router.push(`/${locale}/loginsignup`);
                 return;
             }
+
             const uid = user.uid;
             setUserId(uid);
 
-            // Load user name for RTDB ownerName
+            // Load user name for RTDB ownerName (best-effort)
             try {
                 const uref = doc(db, 'users', uid);
-                const usnap = await getDoc(uref);
-                const fn = (usnap.data()?.firstName as string) || '';
-                const ln = (usnap.data()?.lastName as string) || '';
+                const usnap = await getDoc(uref).catch(() => null);
+                const fn = (usnap?.data()?.firstName as string) || '';
+                const ln = (usnap?.data()?.lastName as string) || '';
                 const on = `${fn} ${ln}`.trim();
-                if (on) setOwnerName(on);
+                setOwnerName(on || 'Client');
             } catch {
                 setOwnerName('Client');
             }
@@ -383,30 +395,27 @@ export default function IndividualBookBoardingPage() {
                 console.error('❌ Failed to load pets:', e);
             }
 
-            // Load business settings
+            // Business settings (no waiver)
             await fetchBusinessSettings(businessId);
-
-            // Waiver check
-            await checkWaiverStatus(businessId, uid);
         });
 
         return () => unsub();
+        // Keep deps minimal to avoid re-subscribing
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [router, locale, businessId]);
 
-    /** Fetch Business settings (parity with iOS; includes after-hours) */
+    /** Fetch Business settings (parity with iOS; includes after-hours) — waiver removed */
     const fetchBusinessSettings = useCallback(async (bizId: string) => {
         try {
             const bref = doc(db, 'businesses', bizId);
             const bsnap = await getDoc(bref);
             const data = (bsnap.data() || {}) as BusinessSettingsDoc;
 
-            // TZ & features
+            // TZ & features (no enforceWaiverVersion)
             setBusinessTimeZoneId(data.timeZoneId || null);
             const f = data.features || {};
             setIncludePendingInCapacity(!!f.countPendingInCapacity);
             setClientWritesRTDB(f.clientWritesRTDB !== false); // default true
-            setEnforceWaiverVersion(!!f.enforceWaiverVersion);
 
             // Capacity
             setCapacityBoardingTotal(
@@ -437,9 +446,6 @@ export default function IndividualBookBoardingPage() {
             setGroomingAvailableAsAddOn(!!data.groomingAvailableAsAddOnToBoarding);
             setGroomingServices((data.groomingServices || []).map(s => (s || '').trim()).filter(Boolean));
 
-            // Waiver
-            setWaiverRequired(!!data.waiverRequired);
-
             // ✅ After-hours
             const ahReq = !!data.afterHoursPickUpTimeRequired;
             const ahMap = data.afterHoursPickUpTimes || {};
@@ -453,53 +459,6 @@ export default function IndividualBookBoardingPage() {
             console.error('❌ Failed to fetch business settings:', e);
         }
     }, [refreshCheckInOptions, refreshCheckOutOptions]);
-
-    /** Waiver check (version-aware, with fallbacks) */
-    const checkWaiverStatus = useCallback(async (bizId: string, uid: string) => {
-        try {
-            const bizRef = doc(db, 'businesses', bizId);
-            const waiverRef = doc(db, 'businesses', bizId, 'settings', 'clientWaiver');
-            const clientRef = doc(db, 'userApprovedBusinesses', bizId, 'clients', uid);
-
-            const [bizSnap, wSnap, cSnap] = await Promise.all([
-                getDoc(bizRef),
-                getDoc(waiverRef),
-                getDoc(clientRef),
-            ]);
-
-            const rootData = (bizSnap.data() || {}) as BusinessSettingsDoc;
-            const subData = (wSnap.data() || {}) as ClientWaiverSubdoc;
-            const clientData = (cSnap.data() || {}) as ClientWaiverState;
-
-            const enforce = !!(rootData.features?.enforceWaiverVersion);
-            const version = subData.waiverVersion;
-            const subLast = subData.lastUpdated?.toDate();
-            const rootLast = rootData.waiverLastUpdated?.toDate();
-            const lastUpdated = subLast || rootLast || null;
-
-            const versionSigned = clientData.waiverVersionSigned ?? 0;
-            const signedAt = clientData.waiverSignedAt?.toDate?.() ?? null;
-            const legacyBool = clientData.waiverSigned ?? false;
-
-            let signed = true;
-            if (!rootData.waiverRequired) {
-                signed = true;
-            } else if (enforce && typeof version === 'number') {
-                signed = versionSigned >= version;
-            } else if (lastUpdated && signedAt) {
-                signed = signedAt >= lastUpdated;
-            } else {
-                signed = legacyBool;
-            }
-
-            setWaiverRequired(!!rootData.waiverRequired);
-            setWaiverSigned(signed);
-            if (!!rootData.waiverRequired && !signed) setShowWaiverModal(true);
-        } catch (e) {
-            console.error('❌ Error checking waiver status:', e);
-            setWaiverSigned(true);
-        }
-    }, []);
 
     /** =========================
      *  Validators (overlap, capacity, per-slot)
@@ -631,9 +590,46 @@ export default function IndividualBookBoardingPage() {
      *  Change handlers to mirror iOS onChange(...)
      *  ========================= */
     // Rebuild check-in options when inputs that actually change the option list change
+    // Rebuild options AND auto-advance if today has no remaining times
     useEffect(() => {
-        refreshCheckInOptions();
-    }, [refreshCheckInOptions, checkInDate]);
+        (async () => {
+            // If time selection isn't required or no date picked, just refresh normally
+            if (!checkInTimeRequired || !checkInDate) {
+                refreshCheckInOptions();
+                return;
+            }
+
+            const weekday = weekdayName(checkInDate, bizTZ);
+            const raw = sortTimeStrings((checkInTimesByWeekday[weekday] || []).map((s) => s || ''));
+            const filtered = filterCheckInTimesForSameDay(raw, checkInDate, bizTZ, sameDayCheckInCutoff);
+
+            // If this day has configured times but none are valid now (e.g., it's late),
+            // jump to the next day that has at least one valid check-in time.
+            if (raw.length > 0 && filtered.length === 0) {
+                const next = await findNextCheckInDate(checkInDate);
+                if (next) {
+                    setCheckInDate(next.date);
+                    setCheckInOptions(next.times);
+                    setCheckInWindow(next.times[0] || '');
+                    // Optional: if checkout not chosen yet, you can prefill next-day checkout
+                    // if (!checkOutDate) setCheckOutDate(new Date(next.date.getTime() + 24*60*60*1000));
+                    return;
+                }
+            }
+
+            // Otherwise, use today's filtered times (already excludes past times & cutoff)
+            setCheckInOptions(filtered);
+            setCheckInWindow(prev => (prev && filtered.includes(prev) ? prev : (filtered[0] ?? '')));
+        })();
+    }, [
+        checkInDate,
+        checkInTimeRequired,
+        checkInTimesByWeekday,
+        bizTZ,
+        sameDayCheckInCutoff,
+        refreshCheckInOptions, // safe; it's stable
+        findNextCheckInDate
+    ]);
 
     // Re-run validations separately (won't reset the user's time selection)
     useEffect(() => {
@@ -651,30 +647,6 @@ export default function IndividualBookBoardingPage() {
         setSuppressValidations(false);
         revalidateAll();
     }, [selectedPetIds, revalidateAll]);
-
-    const handleAgreeToWaiver = useCallback(async () => {
-        if (!userId || !businessId) return;
-        try {
-            const wref = doc(db, 'businesses', businessId, 'settings', 'clientWaiver');
-            const wsnap = await getDoc(wref);
-            const version = (wsnap.data()?.waiverVersion as number) ?? 1;
-
-            const cref = doc(db, 'userApprovedBusinesses', businessId, 'clients', userId);
-            await setDoc(
-                cref,
-                enforceWaiverVersion
-                    ? { waiverVersionSigned: version, waiverSignedAt: Timestamp.now() }
-                    : { waiverSignedAt: Timestamp.now() },
-                { merge: true }
-            );
-
-            setWaiverSigned(true);
-            setShowWaiverModal(false);
-        } catch (e) {
-            console.error('❌ Failed to record waiver:', e);
-            alert(t('waiver_agreement_failed'));
-        }
-    }, [userId, businessId, enforceWaiverVersion, t]);
 
     /** =========================
      *  UI
@@ -696,51 +668,6 @@ export default function IndividualBookBoardingPage() {
                     <br />
                     <span className="text-lg font-normal text-gray-600">{businessName}</span>
                 </h1>
-
-                {/* Waiver banner */}
-                {waiverRequired && !waiverSigned && (
-                    <p className="text-red-600 text-sm text-center whitespace-pre-line">
-                        {t('waiver_required_message')}
-                    </p>
-                )}
-
-                {/* Waiver modal */}
-                {showWaiverModal && (
-                    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-                        <div className="bg-white p-6 rounded-xl shadow-md max-w-md w-full space-y-4">
-                            <h2 className="text-lg font-semibold text-center text-[color:var(--color-accent)]">
-                                {t('waiver_required_title')}
-                            </h2>
-                            <p className="text-sm text-gray-700 whitespace-pre-line">{t('waiver_required_message')}</p>
-
-                            <label className="flex items-start gap-2 text-sm text-gray-700">
-                                <input
-                                    type="checkbox"
-                                    checked={hasCheckedAgreement}
-                                    onChange={() => setHasCheckedAgreement(v => !v)}
-                                    className="mt-1"
-                                />
-                                <span>{t('waiver_checkbox_label')}</span>
-                            </label>
-
-                            <div className="flex justify-end gap-2 pt-1">
-                                <button
-                                    onClick={() => setShowWaiverModal(false)}
-                                    className="px-4 py-2 rounded text-sm bg-gray-200 hover:bg-gray-300"
-                                >
-                                    {t('cancel_button')}
-                                </button>
-                                <button
-                                    onClick={handleAgreeToWaiver}
-                                    disabled={!hasCheckedAgreement}
-                                    className={`px-4 py-2 rounded text-sm text-white ${hasCheckedAgreement ? 'bg-green-700 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'}`}
-                                >
-                                    {t('agree_button')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
 
                 {/* Form */}
                 <div className="flex flex-col items-center space-y-6">
@@ -837,8 +764,8 @@ export default function IndividualBookBoardingPage() {
                         <button
                             onClick={() => setShowGroomingModal(true)}
                             className="w-full max-w-xs py-3 rounded-lg text-white text-base font-semibold
-               bg-green-800 hover:bg-green-700 shadow-md ring-1 ring-black/10
-               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-600"
+                            bg-green-800 hover:bg-green-700 shadow-md ring-1 ring-black/10
+                            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-600"
                         >
                             {t('select_grooming_addons')}
                         </button>
@@ -870,13 +797,9 @@ export default function IndividualBookBoardingPage() {
     );
 
     /** =========================
-     *  Submit (mirrors iOS)
-     *  ========================= */
+ *  Submit (mirrors iOS) — waiver removed
+ *  ========================= */
     async function handleSubmit() {
-        if (waiverRequired && !waiverSigned) {
-            setShowWaiverModal(true);
-            return;
-        }
         if (!userId || !businessId || !checkInDate || !checkOutDate) return;
         if (checkInDate >= checkOutDate) return;
         if (selectedPetIds.size === 0) return;
@@ -954,26 +877,9 @@ export default function IndividualBookBoardingPage() {
                 await Promise.all(writes);
             }
 
-            // 3) Backfill waiver version if required
-            if (waiverRequired) {
-                try {
-                    const wref = doc(db, 'businesses', businessId, 'settings', 'clientWaiver');
-                    const wsnap = await getDoc(wref);
-                    const version = (wsnap.data()?.waiverVersion as number) ?? 1;
-                    await setDoc(
-                        doc(db, 'userApprovedBusinesses', businessId, 'clients', userId),
-                        { waiverVersionSigned: version, waiverSignedAt: Timestamp.now() },
-                        { merge: true }
-                    );
-                } catch (e) {
-                    console.warn('⚠️ Waiver backfill failed (non-fatal):', e);
-                }
-            }
-
             setIsSubmitting(false);
             setGroomingSelections({});
             alert(t('reservation_submitted'));
-            router.push(`/${locale}/individualupcomingappointments`);
         } catch (e) {
             console.error('❌ Submit failed:', e);
             setIsSubmitting(false);

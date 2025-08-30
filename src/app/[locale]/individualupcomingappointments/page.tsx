@@ -344,6 +344,16 @@ export default function IndividualUpcomingAppointmentsPage() {
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <main className="max-w-2xl mx-auto px-4 py-6">
+        {/* Back (left-aligned, mobile-friendly) */}
+        <div className="w-full max-w-sm sm:max-w-md mx-auto">
+          <button
+            onClick={() => router.push(`/${locale}/individualdashboard`)}
+            className="mb-2 block w-fit text-sm text-[color:var(--color-accent)] underline hover:opacity-90"
+          >
+            ← {t('back_to_dashboard', { default: 'Back to Dashboard' })}
+          </button>
+        </div>
+
         <h1 className="text-3xl font-bold text-center text-[color:var(--color-accent)] mb-6">
           {t('upcoming_appointments_title')}
         </h1>

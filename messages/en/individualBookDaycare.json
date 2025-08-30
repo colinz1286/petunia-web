@@ -4,28 +4,43 @@
   "back_to_select_service": "Back to Select Service",
   "book_daycare_title": "Book Daycare",
   "default_business_name": "Selected Business",
+
   "duplicate_daycare_message": "You already added a booking for this day.",
+  "loading": "Loading...",
+
+  "select_date": "Select a Date",
+  "select_date_placeholder": "Select a date",
+  "select_time": "Select a Drop-Off Time",
+  "no_specific_time": "No specific time",
+  "select_pets": "Select Pets",
+
+  "assessment_toggle_label": "is This an Assessment Day?",
+  "assessment_badge": "Assessment",
+
   "grooming_addons_title": "Add-On Grooming Services",
   "grooming_prompt_message": "Would you like to add grooming services for your selected pets?",
   "grooming_services_for": "Grooming options for",
-  "loading": "Loading...",
-  "no_bookings_to_submit": "You must add at least one booking before submitting.",
+  "grooming_for_pet": "Grooming for {name}",
+  "no_services_available": "No services available",
+  "done_button": "Done",
+  "cancel_button": "Cancel",
+
+  "your_bookings": "Your Bookings",
   "remove_booking": "Remove",
-  "select_date": "Select a Date",
-  "select_pets": "Select Pets",
-  "select_time": "Select a Drop-Off Time",
-  "submission_success": "Your reservation has been submitted!",
+
+  "no_bookings_to_submit": "You must add at least one booking before submitting.",
   "submit": "Submit Reservation",
   "submit_all": "Submit All Reservations",
   "submitting_reservations": "Submitting Reservations...",
+  "submission_success": "Your reservation has been submitted!",
+  "submission_error": "There was an error submitting your bookings. Please try again.",
+
   "waiver_required": "You must sign the waiver before booking.",
   "waiver_required_title": "Waiver Agreement Required",
   "waiver_required_message": "Please agree to this facility’s waiver before continuing.\n\nBy tapping Agree, you confirm you’ve read and accepted the terms.",
   "waiver_agreement_failed": "Failed to save waiver. Please try again.",
+  "waiver_checkbox_label": "I agree to this facility’s terms and conditions.",
   "agree_button": "Agree",
-  "cancel_button": "Cancel",
-  "your_bookings": "Your Bookings",
   "yes": "Yes",
-  "no": "No",
-  "waiver_checkbox_label": "I agree to this facility’s terms and conditions."
+  "no": "No"
 }
