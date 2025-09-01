@@ -77,7 +77,7 @@ export default function IndividualBookServicesPage() {
         });
 
         return () => unsubscribe();
-       
+
     }, [locale, router]);
 
     const fetchApprovedBusinesses = async (uid: string) => {
@@ -203,20 +203,22 @@ export default function IndividualBookServicesPage() {
 
     const handleBusinessClick = useCallback(
         async (bizId: string, bizName: string) => {
-            const uid = uidRef.current;
-            if (!uid) return;
+            // ===== TEMP BYPASS (48–72h): disable waiver gate =====
+            // const uid = uidRef.current;
+            // if (!uid) return;
 
-            const gate = await readWaiverGate(bizId, uid);
-            const alreadyShown = waiverGateShownRef.current.has(gate.key);
+            // const gate = await readWaiverGate(bizId, uid);
+            // const alreadyShown = waiverGateShownRef.current.has(gate.key);
 
-            if (gate.required && !gate.signed && !alreadyShown) {
-                setActiveBiz({ id: bizId, name: bizName });
-                setWaiverAgreeChecked(false);
-                await loadWaiverContent(bizId);   // ⬅️ load the full waiver
-                setShowWaiverModal(true);         // ⬅️ then show modal
-                return;
-            }
+            // if (gate.required && !gate.signed && !alreadyShown) {
+            //   setActiveBiz({ id: bizId, name: bizName });
+            //   setWaiverAgreeChecked(false);
+            //   await loadWaiverContent(bizId);
+            //   setShowWaiverModal(true);
+            //   return;
+            // }
 
+            // Always allow navigation during the temporary window
             routeToSelectService({ id: bizId, name: bizName });
         },
         [readWaiverGate, routeToSelectService, loadWaiverContent]
@@ -360,8 +362,8 @@ export default function IndividualBookServicesPage() {
                                 onClick={handleAgree}
                                 disabled={!waiverAgreeChecked || isProcessingWaiver}
                                 className={`px-4 py-2 rounded text-sm text-white ${waiverAgreeChecked && !isProcessingWaiver
-                                        ? 'bg-green-700 hover:bg-green-600'
-                                        : 'bg-gray-400 cursor-not-allowed'
+                                    ? 'bg-green-700 hover:bg-green-600'
+                                    : 'bg-gray-400 cursor-not-allowed'
                                     }`}
                             >
                                 {isProcessingWaiver ? 'Saving…' : 'Agree'}
