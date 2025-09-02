@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'glp-1-for-dogs-hype-vs-data-risks-timelines',
+        title: 'GLP-1 for Dogs: Hype vs Data, Risks, Timelines & a Vet-Guided Weight-Loss Playbook',
+        date: 'September 1, 2025',
+        description:
+            'An evidence-informed guide to GLP-1 therapies for dogs: how they work, what OKV-119 aims to do, realistic approval timelines, safety questions, off-label/compounding rules, and a step-by-step, vet-aligned weight-loss program owners and facilities can start today.',
+        component: () => import('./posts/glp-1-for-dogs-hype-vs-data-risks-timelines'),
+        categories: ['owner', 'vet'],
+    },
+    {
         slug: 'how-to-know-if-my-dog-is-sick',
         title: 'How to Know If My Dog Is Sick: Subtle Signs, Red Flags, Home Checks, Vet Care, Costs, and a Practical 72-Hour Plan',
         date: 'August 29, 2025',
