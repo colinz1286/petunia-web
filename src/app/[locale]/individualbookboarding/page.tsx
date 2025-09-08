@@ -79,6 +79,8 @@ type BusinessSettingsDoc = {
     groomingAvailableAsAddOnToBoarding?: boolean;
     groomingServices?: string[];
 
+    depositRequired?: boolean;
+
     // Waiver (root-level fallback date)
     waiverRequired?: boolean;
     waiverLastUpdated?: Timestamp;
@@ -459,7 +461,7 @@ export default function IndividualBookBoardingPage() {
             setAfterHoursPickUpTimesByWeekday(ahMap);
 
             // 🔷 Deposit requirement (boarding)
-            setDepositRequired(!!(data as any).depositRequired);
+            setDepositRequired(Boolean(data.depositRequired));
             setDepositAcknowledged(false); // reset every time settings load
 
             // Refresh options if dates already chosen
