@@ -232,6 +232,11 @@ export default function IndividualBookBoardingPage() {
     const [groomingSelections, setGroomingSelections] = useState<GroomingSelections>({});
     const [showGroomingModal, setShowGroomingModal] = useState(false);
 
+    // 🔷 Deposit gate
+    const [depositRequired, setDepositRequired] = useState<boolean>(false);
+    const [depositAcknowledged, setDepositAcknowledged] = useState<boolean>(false);
+    const gatingActive = depositRequired && !depositAcknowledged;
+
     // Validation / flow
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [overlapDetected, setOverlapDetected] = useState(false);
@@ -242,6 +247,7 @@ export default function IndividualBookBoardingPage() {
     /** Derived submit disabled — waiver removed */
     const isSubmitDisabled = useMemo(() => {
         if (isSubmitting) return true;
+        if (gatingActive) return true;
         if (!checkInDate || !checkOutDate) return true;
         if (checkInDate >= checkOutDate) return true;
         if (selectedPetIds.size === 0) return true;
@@ -253,7 +259,7 @@ export default function IndividualBookBoardingPage() {
     }, [
         isSubmitting, checkInDate, checkOutDate, selectedPetIds,
         checkInTimeRequired, checkInWindow, checkOutTimeRequired, checkOutWindow,
-        overlapDetected, capacityBlockingNights
+        overlapDetected, capacityBlockingNights, gatingActive
     ]);
 
     /** =========================
@@ -451,6 +457,10 @@ export default function IndividualBookBoardingPage() {
             const ahMap = data.afterHoursPickUpTimes || {};
             setAfterHoursPickUpTimeRequired(ahReq);
             setAfterHoursPickUpTimesByWeekday(ahMap);
+
+            // 🔷 Deposit requirement (boarding)
+            setDepositRequired(!!(data as any).depositRequired);
+            setDepositAcknowledged(false); // reset every time settings load
 
             // Refresh options if dates already chosen
             refreshCheckInOptions(ciMap);
@@ -663,6 +673,30 @@ export default function IndividualBookBoardingPage() {
                 </button>
 
                 {/* Heading */}
+                {/* 🔷 Deposit gate */}
+                {depositRequired && (
+                    <div className="w-full max-w-xl mx-auto">
+                        <div className="bg-gray-100/80 border border-gray-300 rounded-2xl p-4 shadow-sm">
+                            <div className="text-base font-semibold mb-2">
+                                {t('deposit_required_notice_title')}
+                            </div>
+                            <p className="text-sm text-gray-800 mb-3">
+                                {t('deposit_required_notice_body')}
+                            </p>
+                            <label className="inline-flex items-center gap-2 text-sm font-semibold">
+                                <span>{t('deposit_required_confirm_yes')}</span>
+                                <input
+                                    type="checkbox"
+                                    checked={depositAcknowledged}
+                                    onChange={(e) => setDepositAcknowledged(e.target.checked)}
+                                    className="h-4 w-4"
+                                    aria-label={t('deposit_required_confirm_yes')}
+                                />
+                            </label>
+                        </div>
+                    </div>
+                )}
+
                 <h1 className="text-3xl font-bold text-center text-[color:var(--color-accent)]">
                     {t('book_boarding_title')}
                     <br />
@@ -670,7 +704,8 @@ export default function IndividualBookBoardingPage() {
                 </h1>
 
                 {/* Form */}
-                <div className="flex flex-col items-center space-y-6">
+                {/* Form (gated) */}
+                <div className={`flex flex-col items-center space-y-6 ${gatingActive ? 'opacity-50 pointer-events-none select-none' : ''}`}>
                     {/* Check-In Date */}
                     <div className="flex flex-col items-center space-y-1 w-full">
                         <label className="font-semibold text-center text-sm">{t('select_checkin_date')}</label>
@@ -800,6 +835,7 @@ export default function IndividualBookBoardingPage() {
  *  Submit (mirrors iOS) — waiver removed
  *  ========================= */
     async function handleSubmit() {
+        if (gatingActive) return;
         if (!userId || !businessId || !checkInDate || !checkOutDate) return;
         if (checkInDate >= checkOutDate) return;
         if (selectedPetIds.size === 0) return;

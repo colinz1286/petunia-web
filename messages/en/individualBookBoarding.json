@@ -3,6 +3,10 @@
   "default_business_name": "Selected Business",
   "back_to_select_service": "Back to Select Service",
 
+  "deposit_required_notice_title": "Deposit Required",
+  "deposit_required_notice_body": "This business requires a deposit for boarding reservations. Have you already made a deposit for the reservation you are about to enter? If not, please call to make a deposit before submitting your reservation.",
+  "deposit_required_confirm_yes": "Yes",
+
   "select_checkin_date": "Select Check-In Date",
   "select_checkout_date": "Select Check-Out Date",
   "select_date_placeholder": "Select a date",
