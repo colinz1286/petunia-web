@@ -103,7 +103,6 @@ export default function BusinessSettingsPage() {
         }
         // Fallback: rely on Unicode property via regex if supported
         try {
-            // @ts-ignore: some runtimes support \p{Extended_Pictographic}
             return /\p{Extended_Pictographic}/u.test(s);
         } catch {
             return false;
