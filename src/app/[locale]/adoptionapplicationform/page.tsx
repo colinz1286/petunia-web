@@ -4,10 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 
-import {
-  getAuth,
-  onAuthStateChanged
-} from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import {
   getFirestore,
   doc,
@@ -30,6 +27,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+// helper for lint-safe error messages
+function formatErr(err: unknown): string {
+  return err instanceof Error ? err.message : String(err ?? '');
+}
 
 export default function AdoptionApplicationFormPage() {
   const t = useTranslations('adoptionApplicationForm');
@@ -68,8 +70,8 @@ export default function AdoptionApplicationFormPage() {
         const snap = await getDoc(doc(db, 'businesses', businessId));
         const data = snap.data();
         if (data && Array.isArray(data.applicationQuestions)) {
-          setQuestions(data.applicationQuestions);
-          setAnswers(data.applicationQuestions.map(() => ''));
+          setQuestions(data.applicationQuestions as string[]);
+          setAnswers((data.applicationQuestions as string[]).map(() => ''));
         }
       } finally {
         setLoading(false);
@@ -92,35 +94,38 @@ export default function AdoptionApplicationFormPage() {
     try {
       // get user profile
       const userSnap = await getDoc(doc(db, 'users', userId));
-      const userData = userSnap.data() ?? {};
-      const fullName = `${userData.firstName ?? ''} ${userData.lastName ?? ''}`.trim();
-      const email = userData.email ?? auth.currentUser?.email ?? '';
+      const userData = (userSnap.data() ?? {}) as Record<string, unknown>;
+      const fullName = `${(userData.firstName as string | undefined) ?? ''} ${(userData.lastName as string | undefined) ?? ''}`.trim();
+      const email = (userData.email as string | undefined) ?? auth.currentUser?.email ?? '';
 
       const phone =
-        userData.phoneNumber ??
-        userData.userPhone ??
-        userData.phone ??
-        userData.contactPhone ??
+        (userData.phoneNumber as string | undefined) ??
+        (userData.userPhone as string | undefined) ??
+        (userData.phone as string | undefined) ??
+        (userData.contactPhone as string | undefined) ??
         '';
 
       // address string (flatten nested object if present)
       let addressStr = '';
-      if (typeof userData.address === 'object') {
-        const addr = userData.address as Record<string, string>;
-        addressStr = [addr.street, addr.line2, addr.city, addr.state ?? addr.region, addr.zipCode ?? addr.postalCode, addr.country]
-          .filter(Boolean)
-          .join(', ');
+      if (typeof userData.address === 'object' && userData.address) {
+        const addr = userData.address as Record<string, string | undefined>;
+        addressStr = [
+          addr.street,
+          addr.line2,
+          addr.city,
+          (addr.state ?? addr.region),
+          (addr.zipCode ?? addr.postalCode),
+          addr.country
+        ].filter(Boolean).join(', ');
       } else {
         addressStr = [
-          userData.street ?? userData.addressLine1,
-          userData.line2 ?? userData.addressLine2,
-          userData.city,
-          userData.state ?? userData.region,
-          userData.zipCode ?? userData.postalCode ?? userData.zip,
-          userData.country
-        ]
-          .filter(Boolean)
-          .join(', ');
+          (userData.street as string | undefined) ?? (userData.addressLine1 as string | undefined),
+          (userData.line2 as string | undefined) ?? (userData.addressLine2 as string | undefined),
+          userData.city as string | undefined,
+          (userData.state as string | undefined) ?? (userData.region as string | undefined),
+          (userData.zipCode as string | undefined) ?? (userData.postalCode as string | undefined) ?? (userData.zip as string | undefined),
+          userData.country as string | undefined
+        ].filter(Boolean).join(', ');
       }
 
       // pair questions with answers
@@ -148,8 +153,8 @@ export default function AdoptionApplicationFormPage() {
 
       setShowSuccess(true);
       setAnswers(questions.map(() => ''));
-    } catch (err: any) {
-      setErrorMessage(t('failed_to_submit') + ' ' + (err.message ?? ''));
+    } catch (err: unknown) {
+      setErrorMessage(t('failed_to_submit') + ' ' + formatErr(err));
     } finally {
       setIsSubmitting(false);
     }
@@ -173,7 +178,9 @@ export default function AdoptionApplicationFormPage() {
         {loading ? (
           <p className="text-sm text-gray-500">{t('loading_questions', { defaultValue: 'Loading…' })}</p>
         ) : questions.length === 0 ? (
-          <p className="text-sm text-gray-500">{t('no_questions', { defaultValue: 'This business has not provided any application questions.' })}</p>
+          <p className="text-sm text-gray-500">
+            {t('no_questions', { defaultValue: 'This business has not provided any application questions.' })}
+          </p>
         ) : (
           <form
             onSubmit={(e) => {
