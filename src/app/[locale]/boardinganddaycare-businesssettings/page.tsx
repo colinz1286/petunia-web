@@ -84,6 +84,32 @@ export default function BusinessSettingsPage() {
         statePaperworkLog: false,
     });
 
+    // --- Business Bio (matches iOS) ---
+    const BIO_LIMIT = 500;
+    const [businessBio, setBusinessBio] = useState('');
+
+    // Emoji detector: block anything with emoji/pictographs
+    const hasEmoji = (s: string) => {
+        // Fast path: if none of these code units exist, likely OK
+        // but still scan scalars for emoji presentation.
+        for (const ch of s) {
+            const code = ch.codePointAt(0)!;
+            // Common emoji ranges (not exhaustive but practical)
+            if (
+                (code >= 0x1F300 && code <= 0x1FAFF) || // Misc symbols & pictographs / Emoji
+                (code >= 0x2600 && code <= 0x27BF) ||  // Dingbats, misc symbols
+                (code >= 0x1F1E6 && code <= 0x1F1FF)   // Flags
+            ) return true;
+        }
+        // Fallback: rely on Unicode property via regex if supported
+        try {
+            // @ts-ignore: some runtimes support \p{Extended_Pictographic}
+            return /\p{Extended_Pictographic}/u.test(s);
+        } catch {
+            return false;
+        }
+    };
+
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     // 5:00 AM → 24:00 in 15-min increments (matches iOS)
@@ -113,6 +139,7 @@ export default function BusinessSettingsPage() {
                 setBusinessPhone(data.businessPhone || '');
                 const addr = data.businessAddress || {};
                 setBusinessAddress(`${addr.street || ''}, ${addr.city || ''}, ${addr.state || ''} ${addr.zipCode || ''}`);
+                setBusinessBio(data.businessBio || '');
 
                 setOffersBoarding(data.offersBoarding || false);
                 setOffersDaycare(data.offersDaycare || false);
@@ -163,12 +190,25 @@ export default function BusinessSettingsPage() {
         if (!businessId) return;
         setSaving(true);
 
+        const trimmedBio = businessBio.trim();
+        if (trimmedBio.length > BIO_LIMIT) {
+            alert(t('business_bio_too_long'));
+            setSaving(false);
+            return;
+        }
+        if (hasEmoji(trimmedBio)) {
+            alert(t('business_bio_emoji_blocked'));
+            setSaving(false);
+            return;
+        }
+
         await updateDoc(doc(db, 'businesses', businessId), {
             offersBoarding,
             offersDaycare,
             offersGrooming,
             offersTraining,
             groomingServices: groomingServices.filter((s) => s.trim() !== ''),
+            businessBio: trimmedBio,
             waiverRequired,
             waiverText,
 
@@ -280,6 +320,39 @@ export default function BusinessSettingsPage() {
                         <div>
                             <label className="font-semibold text-sm">{t('business_address_field')}</label>
                             <input value={businessAddress} disabled className="w-full border px-3 py-2 rounded bg-gray-100 text-sm" />
+                        </div>
+                        {/* --- Business Bio --- */}
+                        <div className="mt-4">
+                            <h3 className="font-semibold text-sm text-[color:var(--color-accent)]">{t('business_bio_header')}</h3>
+                            <p className="text-xs text-gray-500 mb-1">
+                                {t('business_bio_subtitle')}
+                            </p>
+
+                            <div className="relative">
+                                {businessBio.trim() === '' && (
+                                    <span className="absolute top-2 left-3 text-gray-400 pointer-events-none text-sm">
+                                        {t('business_bio_placeholder')}
+                                    </span>
+                                )}
+                                <textarea
+                                    value={businessBio}
+                                    onChange={(e) => setBusinessBio(e.target.value)}
+                                    className="w-full h-32 border px-3 py-2 rounded resize-none text-sm"
+                                    aria-label={t('business_bio_header')}
+                                />
+                            </div>
+
+                            {/* Counter + validation */}
+                            <div className="mt-1 flex items-center justify-between">
+                                <span
+                                    className={`text-xs ${businessBio.length > BIO_LIMIT ? 'text-red-600' : 'text-gray-500'}`}
+                                >
+                                    {t('business_bio_counter', { used: businessBio.length, limit: BIO_LIMIT })}
+                                </span>
+                            </div>
+                            {hasEmoji(businessBio) && (
+                                <p className="text-xs text-red-600 mt-1">{t('business_bio_no_emoji')}</p>
+                            )}
                         </div>
                     </div>
 
