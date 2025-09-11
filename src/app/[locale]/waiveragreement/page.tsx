@@ -10,7 +10,7 @@ import {
   doc,
   getDoc,
   setDoc,
-  Timestamp
+  Timestamp,
 } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 
@@ -27,6 +27,11 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Small helper to satisfy @typescript-eslint/no-explicit-any
+function errorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err ?? '');
+}
+
 export default function WaiverAgreementPage() {
   const t = useTranslations('waiverAgreement');
   const router = useRouter();
@@ -40,7 +45,7 @@ export default function WaiverAgreementPage() {
   const [waiverVersion, setWaiverVersion] = useState(1);
   const [loading, setLoading] = useState(true);
   const [agreeChecked, setAgreeChecked] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   // Ensure user is logged in
@@ -68,8 +73,8 @@ export default function WaiverAgreementPage() {
         } else {
           setWaiverText('');
         }
-      } catch (err: any) {
-        setErrorMessage(t('failed_to_load') + ' ' + (err.message ?? ''));
+      } catch (err: unknown) {
+        setErrorMsg(`${t('failed_to_load')} ${errorMessage(err)}`);
       } finally {
         setLoading(false);
       }
@@ -79,36 +84,44 @@ export default function WaiverAgreementPage() {
 
   const submitAgreement = useCallback(async () => {
     if (!agreeChecked) {
-      setErrorMessage(t('waiver_alert_title'));
+      setErrorMsg(t('waiver_alert_title'));
       return;
     }
     if (!userId || !businessId) return;
 
     try {
       // Write waiver info under userApprovedBusinesses
-      const ref = doc(db, 'userApprovedBusinesses', businessId, 'clients', userId);
-      await setDoc(ref, {
-        waiverSigned: true,
-        waiverSignedAt: Timestamp.now(),
-        waiverVersionSigned: waiverVersion,
-        waiverVersion: waiverVersion,
-        waiverSnapshot: waiverText
-      }, { merge: true });
+      const clientRef = doc(db, 'userApprovedBusinesses', businessId, 'clients', userId);
+      await setDoc(
+        clientRef,
+        {
+          waiverSigned: true,                   // legacy flag
+          waiverSignedAt: Timestamp.now(),      // modern field
+          waiverVersionSigned: waiverVersion,   // modern field
+          waiverVersion: waiverVersion,         // legacy version
+          waiverSnapshot: waiverText,           // snapshot of text
+        },
+        { merge: true }
+      );
 
       // Optional redundant confirmation record
       const confirmationId = `${businessId}_${userId}`;
-      await setDoc(doc(db, 'waiverConfirmations', confirmationId), {
-        userId,
-        businessId,
-        waiverText,
-        waiverVersion,
-        signedAt: Timestamp.now(),
-        confirmedByClient: true
-      }, { merge: true });
+      await setDoc(
+        doc(db, 'waiverConfirmations', confirmationId),
+        {
+          userId,
+          businessId,
+          waiverText,
+          waiverVersion,
+          signedAt: Timestamp.now(),
+          confirmedByClient: true,
+        },
+        { merge: true }
+      );
 
       setSuccess(true);
-    } catch (err: any) {
-      setErrorMessage(t('failed_to_submit') + ' ' + (err.message ?? ''));
+    } catch (err: unknown) {
+      setErrorMsg(`${t('failed_to_submit')} ${errorMessage(err)}`);
     }
   }, [userId, businessId, waiverText, waiverVersion, agreeChecked, t]);
 
@@ -156,7 +169,7 @@ export default function WaiverAgreementPage() {
           </>
         )}
 
-        {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
+        {errorMsg && <p className="text-sm text-red-600">{errorMsg}</p>}
 
         {success && (
           <div className="bg-green-100 text-green-800 p-3 rounded shadow text-center font-medium text-sm">
