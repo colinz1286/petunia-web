@@ -1,0 +1,17 @@
+{
+  "submitted_adoption_applications_title": "Submitted Adoption Applications",
+  "loading_submitted_applications": "Loading applications…",
+  "reload_button": "Reload",
+  "no_submitted_applications": "No submitted adoption applications yet.",
+  "unknown_user": "Unknown",
+  "failed_to_load_applications": "Failed to load applications: {error}",
+  "failed_to_delete_application": "Failed to delete: {error}",
+  "delete_button": "Delete",
+
+  "application_detail_title": "Application",
+  "loading_application_detail": "Loading…",
+  "no_answer_provided": "No answer provided",
+  "application_not_found": "Application not found.",
+  "failed_to_load_application_detail": "Failed to load application:",
+  "delete_application_confirm": "Delete this application?"
+}

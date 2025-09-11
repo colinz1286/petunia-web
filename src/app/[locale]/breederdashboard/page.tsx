@@ -57,7 +57,7 @@ export default function BreederDashboardPage() {
     () => ({
       currentLitters: `/${locale}/breedercurrentlitters`,
       myDogs: `/${locale}/breedermydogs`,
-      applicationsContracts: `/${locale}/breederapplicationscontracts`,
+      applicationsContracts: `/${locale}/breederapplicationsandcontracts`,
       clientManagement: `/${locale}/breederclientmanagement`,
       pendingRequests: `/${locale}/breederpendingrequests`,
       upcomingAppointments: `/${locale}/breederupcomingappointments`,
@@ -215,7 +215,7 @@ export default function BreederDashboardPage() {
           {/* Make My Dogs ACTIVE */}
           <DashLink href={ROUTES.myDogs} label={t('my_dogs')} />
 
-          <DashLink disabled href={ROUTES.applicationsContracts} label={cs(t('applications_contracts'))} />
+          <DashLink href={ROUTES.applicationsContracts} label={t('applications_contracts')} />
 
           {/* Make Pending Requests ACTIVE */}
            <DashLink href={ROUTES.clientManagement} label={t('client_management')} />

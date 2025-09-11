@@ -14,7 +14,7 @@ export default getRequestConfig(async ({ locale }) => {
   }
 
   const messages = {
- 
+
     // Existing namespaces
     businessDashboard: (await import(`../../messages/${safeLocale}/businessDashboard.json`)).default,
     boardingAndDaycareBusinessSettings: (await import(`../../messages/${safeLocale}/boardingAndDaycareBusinessSettings.json`)).default,
@@ -27,6 +27,9 @@ export default getRequestConfig(async ({ locale }) => {
     breederDashboard: (await import(`../../messages/${safeLocale}/breederDashboard.json`)).default,
     breederMyDogs: (await import(`../../messages/${safeLocale}/breederMyDogs.json`)).default,
     breederPendingRequests: (await import(`../../messages/${safeLocale}/breederPendingRequests.json`)).default,
+    breederApplicationsAndContracts: (await import(`../../messages/${safeLocale}/breederApplicationsAndContracts.json`)).default,
+    breederSubmittedApplications: (await import(`../../messages/${safeLocale}/breederSubmittedApplications.json`)).default,
+    breederSubmittedContracts: (await import(`../../messages/${safeLocale}/breederSubmittedContracts.json`)).default,
     businessSignUp: (await import(`../../messages/${safeLocale}/businessSignUp.json`)).default,
     individualSignUp: (await import(`../../messages/${safeLocale}/individualSignUp.json`)).default,
     individualDashboard: (await import(`../../messages/${safeLocale}/individualDashboard.json`)).default,
