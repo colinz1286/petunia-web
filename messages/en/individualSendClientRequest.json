@@ -15,5 +15,10 @@
   "services_offered_label": "Services Offered:",
   "error_sending_request": "There was an error sending your request.",
   "unknown_user": "Unknown User",
-  "sending": "Sending…"
+  "sending": "Sending…",
+  "waiver_button_title": "Waiver",
+  "waiver_status_not_signed": "Not signed",
+  "waiver_status_signed_on": "Signed on {date}",
+  "waiver_status_resign_required": "Re-sign required",
+  "adoption_application_button": "Adoption Application"
 }

@@ -2,6 +2,7 @@ import IndividualEmployeeDogsOnPropertyPage from "@/app/[locale]/individualemplo
 
 export default {
   en: () => ({
+    adoptionApplicationForm: require('./messages/en/adoptionApplicationForm.json'),
     businessDashboard: require('./messages/en/businessDashboard.json'),
     boardingAndDaycareBusinessSettings: require('./messages/en/boardingAndDaycareBusinessSettings.json'),
     boardingAndDaycarePendingRequests: require('./messages/en/boardingAndDaycarePendingRequests.json'),
@@ -32,6 +33,7 @@ export default {
     individualSendClientRequest: require('./messages/en/individualSendClientRequest.json'),
     individualUpcomingAppointments: require('./messages/en/individualUpcomingAppointments.json'),
     individualEmployeeDogsOnProperty: require('./messages/en/individualEmployeeDogsOnProperty.json'),
-    individualEmployeeUpcomingReservations: require('./messages/en/individualEmployeeUpcomingReservations.json')
+    individualEmployeeUpcomingReservations: require('./messages/en/individualEmployeeUpcomingReservations.json'),
+    waiverAgreement: require('./messages/en/waiverAgreement.json')
   })
 };

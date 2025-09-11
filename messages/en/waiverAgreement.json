@@ -1,0 +1,14 @@
+{
+  "back_button": "Back",
+  "waiver_title": "Waiver Agreement",
+  "loading_waiver": "Loading waiver...",
+  "no_waiver_found": "No waiver found for this business.",
+  "waiver_agree_toggle": "I have read and agree to the waiver",
+  "submit_agreement_button": "Submit Agreement",
+  "waiver_alert_title": "You must agree to the waiver before submitting.",
+  "ok_button": "OK",
+  "waiver_submitted_alert_title": "Waiver Submitted",
+  "waiver_submitted_alert_message": "Your waiver agreement has been saved successfully.",
+  "failed_to_load": "Failed to load waiver:",
+  "failed_to_submit": "Failed to submit waiver:"
+}

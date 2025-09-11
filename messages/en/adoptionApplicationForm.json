@@ -1,0 +1,14 @@
+{
+  "back_button": "Back",
+  "adoption_application_title": "Adoption Application",
+  "loading_questions": "Loading questions...",
+  "no_questions": "This business has not provided any application questions.",
+  "your_answer_placeholder": "Your answer",
+  "submit_application_button": "Submit Application",
+  "submitting": "Submitting…",
+  "application_submitted_alert_title": "Application Submitted",
+  "application_submitted_alert_message": "Your adoption application has been sent successfully.",
+  "ok_button": "OK",
+  "unknown_user": "Unknown User",
+  "failed_to_submit": "Failed to submit:"
+}

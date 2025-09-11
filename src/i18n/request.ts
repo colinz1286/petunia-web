@@ -16,6 +16,7 @@ export default getRequestConfig(async ({ locale }) => {
   const messages = {
 
     // Existing namespaces
+    adoptionApplicationForm: (await import(`../../messages/${safeLocale}/adoptionApplicationForm.json`)).default,
     businessDashboard: (await import(`../../messages/${safeLocale}/businessDashboard.json`)).default,
     boardingAndDaycareBusinessSettings: (await import(`../../messages/${safeLocale}/boardingAndDaycareBusinessSettings.json`)).default,
     boardingAndDaycarePendingRequests: (await import(`../../messages/${safeLocale}/boardingAndDaycarePendingRequests.json`)).default,
@@ -46,7 +47,8 @@ export default getRequestConfig(async ({ locale }) => {
     individualBookDaycare: (await import(`../../messages/${safeLocale}/individualBookDaycare.json`)).default,
     individualBookBoarding: (await import(`../../messages/${safeLocale}/individualBookBoarding.json`)).default,
     individualEmployeeDogsOnProperty: (await import(`../../messages/${safeLocale}/individualEmployeeDogsOnProperty.json`)).default,
-    individualEmployeeUpcomingReservations: (await import(`../../messages/${safeLocale}/individualEmployeeUpcomingReservations.json`)).default
+    individualEmployeeUpcomingReservations: (await import(`../../messages/${safeLocale}/individualEmployeeUpcomingReservations.json`)).default,
+    waiverAgreement: (await import(`../../messages/${safeLocale}/waiverAgreement.json`)).default
   } as const;
 
   return {
