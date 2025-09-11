@@ -18,43 +18,43 @@ import {
 
 // ===== AKC breeds (partial list; extend as needed) =====
 const AKC_BREEDS: string[] = [
-  'Affenpinscher','Afghan Hound','Airedale Terrier','Akita','Alaskan Malamute',
-  'American Bulldog','American Eskimo Dog','American Foxhound','American Hairless Terrier',
-  'American Staffordshire Terrier','American Water Spaniel','Anatolian Shepherd Dog',
-  'Australian Cattle Dog','Australian Shepherd','Australian Terrier','Basenji','Basset Hound',
-  'Beagle','Bearded Collie','Beauceron','Bedlington Terrier','Belgian Malinois',
-  'Belgian Sheepdog','Belgian Tervuren','Bernese Mountain Dog','Bichon Frise','Bloodhound',
-  'Border Collie','Border Terrier','Borzoi','Boston Terrier','Bouvier des Flandres',
-  'Boxer','Boykin Spaniel','Briard','Brittany','Brussels Griffon','Bull Terrier',
-  'Bulldog','Bullmastiff','Cairn Terrier','Cane Corso','Cardigan Welsh Corgi',
-  'Cavalier King Charles Spaniel','Chesapeake Bay Retriever','Chihuahua','Chinese Crested',
-  'Chinese Shar-Pei','Chow Chow','Clumber Spaniel','Cocker Spaniel','Collie','Coonhound',
-  'Corgi','Coton de Tulear','Curly-Coated Retriever','Dachshund','Dalmatian',
-  'Dandie Dinmont Terrier','Doberman Pinscher','Dogo Argentino','Dogue de Bordeaux',
-  'Dutch Shepherd','English Cocker Spaniel','English Foxhound','English Setter',
-  'English Springer Spaniel','English Toy Spaniel','Field Spaniel','Finnish Lapphund',
-  'Finnish Spitz','Flat-Coated Retriever','French Bulldog','German Pinscher',
-  'German Shepherd Dog','German Shorthaired Pointer','German Wirehaired Pointer',
-  'Giant Schnauzer','Glen of Imaal Terrier','Golden Retriever','Gordon Setter',
-  'Great Dane','Great Pyrenees','Greater Swiss Mountain Dog','Greyhound',
-  'Havanese','Ibizan Hound','Irish Setter','Irish Terrier','Irish Wolfhound',
-  'Italian Greyhound','Japanese Chin','Keeshond','Kerry Blue Terrier','Komondor',
-  'Kuvasz','Labrador Retriever','Lagotto Romagnolo','Lakeland Terrier','Leonberger',
-  'Lhasa Apso','Lowchen','Maltese','Manchester Terrier','Mastiff','Miniature American Shepherd',
-  'Miniature Bull Terrier','Miniature Pinscher','Miniature Schnauzer','Neapolitan Mastiff',
-  'Newfoundland','Norfolk Terrier','Norwegian Buhund','Norwegian Elkhound','Norwegian Lundehund',
-  'Norwich Terrier','Nova Scotia Duck Tolling Retriever','Old English Sheepdog','Otterhound',
-  'Papillon','Parson Russell Terrier','Pekingese','Pembroke Welsh Corgi','Petit Basset Griffon Vendéen',
-  'Pharaoh Hound','Plott Hound','Pointer','Polish Lowland Sheepdog','Pomeranian','Poodle',
-  'Portuguese Podengo Pequeno','Portuguese Water Dog','Pug','Puli','Pyrenean Shepherd',
-  'Rat Terrier','Redbone Coonhound','Rhodesian Ridgeback','Rottweiler','Saint Bernard',
-  'Saluki','Samoyed','Schipperke','Scottish Deerhound','Scottish Terrier','Sealyham Terrier',
-  'Shetland Sheepdog','Shiba Inu','Shih Tzu','Siberian Husky','Silky Terrier',
-  'Skye Terrier','Soft Coated Wheaten Terrier','Spinone Italiano','Staffordshire Bull Terrier',
-  'Standard Schnauzer','Sussex Spaniel','Swedish Vallhund','Thai Ridgeback','Tibetan Mastiff',
-  'Tibetan Spaniel','Tibetan Terrier','Toy Fox Terrier','Treeing Walker Coonhound',
-  'Vizsla','Weimaraner','Welsh Springer Spaniel','Welsh Terrier','West Highland White Terrier',
-  'Whippet','Wire Fox Terrier','Wirehaired Pointing Griffon','Xoloitzcuintli','Yorkshire Terrier',
+  'Affenpinscher', 'Afghan Hound', 'Airedale Terrier', 'Akita', 'Alaskan Malamute',
+  'American Bulldog', 'American Eskimo Dog', 'American Foxhound', 'American Hairless Terrier',
+  'American Staffordshire Terrier', 'American Water Spaniel', 'Anatolian Shepherd Dog',
+  'Australian Cattle Dog', 'Australian Shepherd', 'Australian Terrier', 'Basenji', 'Basset Hound',
+  'Beagle', 'Bearded Collie', 'Beauceron', 'Bedlington Terrier', 'Belgian Malinois',
+  'Belgian Sheepdog', 'Belgian Tervuren', 'Bernese Mountain Dog', 'Bichon Frise', 'Bloodhound',
+  'Border Collie', 'Border Terrier', 'Borzoi', 'Boston Terrier', 'Bouvier des Flandres',
+  'Boxer', 'Boykin Spaniel', 'Briard', 'Brittany', 'Brussels Griffon', 'Bull Terrier',
+  'Bulldog', 'Bullmastiff', 'Cairn Terrier', 'Cane Corso', 'Cardigan Welsh Corgi',
+  'Cavalier King Charles Spaniel', 'Chesapeake Bay Retriever', 'Chihuahua', 'Chinese Crested',
+  'Chinese Shar-Pei', 'Chow Chow', 'Clumber Spaniel', 'Cocker Spaniel', 'Collie', 'Coonhound',
+  'Corgi', 'Coton de Tulear', 'Curly-Coated Retriever', 'Dachshund', 'Dalmatian',
+  'Dandie Dinmont Terrier', 'Doberman Pinscher', 'Dogo Argentino', 'Dogue de Bordeaux',
+  'Dutch Shepherd', 'English Cocker Spaniel', 'English Foxhound', 'English Setter',
+  'English Springer Spaniel', 'English Toy Spaniel', 'Field Spaniel', 'Finnish Lapphund',
+  'Finnish Spitz', 'Flat-Coated Retriever', 'French Bulldog', 'German Pinscher',
+  'German Shepherd Dog', 'German Shorthaired Pointer', 'German Wirehaired Pointer',
+  'Giant Schnauzer', 'Glen of Imaal Terrier', 'Golden Retriever', 'Gordon Setter',
+  'Great Dane', 'Great Pyrenees', 'Greater Swiss Mountain Dog', 'Greyhound',
+  'Havanese', 'Ibizan Hound', 'Irish Setter', 'Irish Terrier', 'Irish Wolfhound',
+  'Italian Greyhound', 'Japanese Chin', 'Keeshond', 'Kerry Blue Terrier', 'Komondor',
+  'Kuvasz', 'Labrador Retriever', 'Lagotto Romagnolo', 'Lakeland Terrier', 'Leonberger',
+  'Lhasa Apso', 'Lowchen', 'Maltese', 'Manchester Terrier', 'Mastiff', 'Miniature American Shepherd',
+  'Miniature Bull Terrier', 'Miniature Pinscher', 'Miniature Schnauzer', 'Neapolitan Mastiff',
+  'Newfoundland', 'Norfolk Terrier', 'Norwegian Buhund', 'Norwegian Elkhound', 'Norwegian Lundehund',
+  'Norwich Terrier', 'Nova Scotia Duck Tolling Retriever', 'Old English Sheepdog', 'Otterhound',
+  'Papillon', 'Parson Russell Terrier', 'Pekingese', 'Pembroke Welsh Corgi', 'Petit Basset Griffon Vendéen',
+  'Pharaoh Hound', 'Plott Hound', 'Pointer', 'Polish Lowland Sheepdog', 'Pomeranian', 'Poodle',
+  'Portuguese Podengo Pequeno', 'Portuguese Water Dog', 'Pug', 'Puli', 'Pyrenean Shepherd',
+  'Rat Terrier', 'Redbone Coonhound', 'Rhodesian Ridgeback', 'Rottweiler', 'Saint Bernard',
+  'Saluki', 'Samoyed', 'Schipperke', 'Scottish Deerhound', 'Scottish Terrier', 'Sealyham Terrier',
+  'Shetland Sheepdog', 'Shiba Inu', 'Shih Tzu', 'Siberian Husky', 'Silky Terrier',
+  'Skye Terrier', 'Soft Coated Wheaten Terrier', 'Spinone Italiano', 'Staffordshire Bull Terrier',
+  'Standard Schnauzer', 'Sussex Spaniel', 'Swedish Vallhund', 'Thai Ridgeback', 'Tibetan Mastiff',
+  'Tibetan Spaniel', 'Tibetan Terrier', 'Toy Fox Terrier', 'Treeing Walker Coonhound',
+  'Vizsla', 'Weimaraner', 'Welsh Springer Spaniel', 'Welsh Terrier', 'West Highland White Terrier',
+  'Whippet', 'Wire Fox Terrier', 'Wirehaired Pointing Griffon', 'Xoloitzcuintli', 'Yorkshire Terrier',
 ].sort();
 
 type OperatingHoursMap = Record<string, { open?: string; close?: string; closed?: 'true' | 'false' }>;
@@ -67,6 +67,27 @@ export default function BreederBusinessSettingsPage() {
   const [businessName, setBusinessName] = useState('');
   const [businessPhone, setBusinessPhone] = useState('');
   const [businessAddress, setBusinessAddress] = useState('');
+
+  // --- Business Bio (plain text, <=500, no emoji) ---
+  const BIO_LIMIT = 500;
+  const [businessBio, setBusinessBio] = useState('');
+
+  // Emoji detector (practical coverage)
+  const hasEmoji = (s: string) => {
+    for (const ch of s) {
+      const code = ch.codePointAt(0)!;
+      if (
+        (code >= 0x1f300 && code <= 0x1faff) || // symbols & pictographs
+        (code >= 0x2600 && code <= 0x27bf) ||   // dingbats / misc
+        (code >= 0x1f1e6 && code <= 0x1f1ff)    // flags
+      ) return true;
+    }
+    try {
+      return /\p{Extended_Pictographic}/u.test(s);
+    } catch {
+      return false;
+    }
+  };
 
   // ===== Offerings =====
   const [offersStudServices, setOffersStudServices] = useState(false);
@@ -167,6 +188,7 @@ export default function BreederBusinessSettingsPage() {
       const state = (addr.state as string) ?? '';
       const zip = (addr.zipCode as string) ?? '';
       setBusinessAddress([street, city, state, zip].filter(Boolean).join(', '));
+      setBusinessBio((data.businessBio as string) ?? '');
 
       // Offerings
       setOffersStudServices(Boolean(data.offersStudServices));
@@ -313,6 +335,18 @@ export default function BreederBusinessSettingsPage() {
     try {
       const db = getFirestore();
       const businessRef = fsDoc(db, 'businesses', businessId);
+      // --- Business Bio validation (mirror iOS) ---
+      const trimmedBio = businessBio.trim();
+      if (trimmedBio.length > BIO_LIMIT) {
+        setAlertMessage('Bio must be 500 characters or fewer.');
+        setShowAlert(true);
+        return;
+      }
+      if (hasEmoji(trimmedBio)) {
+        setAlertMessage('Please remove emojis from your bio.');
+        setShowAlert(true);
+        return;
+      }
       const contractRef = fsDoc(collection(businessRef, 'settings'), 'buyerContract');
 
       // Clean lists
@@ -328,6 +362,7 @@ export default function BreederBusinessSettingsPage() {
       // Root update (merge to avoid overwrites)
       const rootUpdate = {
         businessType: 'Breeder',
+        businessBio: trimmedBio,
         offersStudServices,
         breedsOffered: cleanedBreeds,
         acceptsApplications,
@@ -469,6 +504,41 @@ export default function BreederBusinessSettingsPage() {
                   disabled
                   className="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-700"
                 />
+                {/* --- Business Bio --- */}
+                <div className="mt-4">
+                  <div className="mb-1 text-sm font-semibold text-[#2c4a30]">Business Bio</div>
+                  <div className="text-xs text-gray-600 mb-1">
+                    A short description clients will see (500 characters max). Plain text only.
+                  </div>
+
+                  <div className="relative">
+                    {businessBio.trim() === '' && (
+                      <span className="pointer-events-none absolute left-3 top-2 text-sm text-gray-400">
+                        Tell clients what makes your business great…
+                      </span>
+                    )}
+                    <textarea
+                      value={businessBio}
+                      onChange={(e) => {
+                        setBusinessBio(e.target.value);
+                        flagUnsaved();
+                      }}
+                      rows={6}
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm"
+                      aria-label="Business Bio"
+                    />
+                  </div>
+
+                  {/* Counter + validation */}
+                  <div className="mt-1 flex items-center justify-between">
+                    <span className={`text-xs ${businessBio.length > BIO_LIMIT ? 'text-red-600' : 'text-gray-500'}`}>
+                      {businessBio.length} / {BIO_LIMIT}
+                    </span>
+                  </div>
+                  {hasEmoji(businessBio) && (
+                    <div className="mt-1 text-xs text-red-600">Emojis are not allowed.</div>
+                  )}
+                </div>
               </div>
             </div>
           </section>
