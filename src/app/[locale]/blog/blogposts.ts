@@ -20,6 +20,16 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'how-many-variants-of-doodles-exist',
+        title: 'How Many Variants of Doodles Exist? Popular Types, Temperaments, and What Owners Should Know',
+        date: 'September 12, 2025',
+        description:
+            'Doodles come in dozens of poodle-mix variants. This guide covers the most popular doodles in depth—temperament, hypoallergenic myths, grooming demands, health issues, and which mix might be right for your family.',
+        component: () => import('./posts/how-many-variants-of-doodles-exist'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Doodles',
+    },
+    {
         slug: 'glp-1-for-dogs-hype-vs-data-risks-timelines',
         title: 'GLP-1 for Dogs: Hype vs Data, Risks, Timelines & a Vet-Guided Weight-Loss Playbook',
         date: 'September 1, 2025',
