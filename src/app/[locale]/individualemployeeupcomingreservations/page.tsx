@@ -101,6 +101,83 @@ const formatISODateLong = (iso: string) => {
 
 const nowISO = () => new Date().toISOString();
 
+/** Time parsing + sort helpers */
+
+// Minutes since midnight for the *start* of a window string.
+// Handles: "7am", "7:00 AM–9:00 AM", "10:30am-12pm", "8:00 AM", "Afternoon", "Anytime", "".
+// Empty/unknown windows sink to the BOTTOM (23:59).
+const minuteFromWindow = (window?: string | null): number => {
+  const LATE = 23 * 60 + 59;
+  if (!window) return LATE;
+  let s = String(window).trim();
+  if (!s) return LATE;
+
+  // normalize dashes/spacers
+  s = s.replace(/ — | – |–|—/g, '-').replace(/\s+to\s+/gi, '-');
+
+  // named buckets
+  switch (s.toLowerCase()) {
+    case 'morning': return 8 * 60;
+    case 'midday': return 12 * 60;
+    case 'afternoon': return 15 * 60;
+    case 'evening': return 17 * 60;
+    case 'anytime': return 12 * 60;
+    default: break;
+  }
+
+  // first token of range is the start time
+  const start = s.split('-')[0]?.trim() || s;
+
+  // try common formats
+  const tryParse = (re: RegExp) => {
+    const m = start.match(re);
+    if (!m) return null;
+    let hh = Number(m[1] ?? 0);
+    const mm = Number(m[2] ?? 0);
+    const ampm = (m[3] ?? '').toLowerCase();
+    if (ampm === 'pm' && hh < 12) hh += 12;
+    if (ampm === 'am' && hh === 12) hh = 0;
+    if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return null;
+    return hh * 60 + mm;
+  };
+
+  const res: number | null =
+    tryParse(/^(\d{1,2}):(\d{2})\s*([ap]m)$/i) || // 7:30 AM
+    tryParse(/^(\d{1,2})\s*([ap]m)$/i) ||         // 7 AM
+    tryParse(/^(\d{1,2}):(\d{2})$/);              // 07:30 (24h)
+  if (res != null) return res;
+
+  // compact like "730am", "1030pm", "7am"
+  const lower = start.toLowerCase().replace(/\s+/g, '');
+  const pm = lower.endsWith('pm');
+  const am = lower.endsWith('am');
+  const digits = lower.replace(/am|pm/g, '');
+  const n = Number(digits);
+  if (!Number.isNaN(n)) {
+    let h = 0, m = 0;
+    if (n < 100) { h = n; m = 0; }
+    else if (n < 1000) { h = Math.floor(n / 100); m = n % 100; }
+    else { h = Math.floor(n / 100); m = n % 100; }
+    if (pm && h < 12) h += 12;
+    if (am && h === 12) h = 0;
+    if (h >= 0 && h <= 23 && m >= 0 && m <= 59) return h * 60 + m;
+  }
+
+  return LATE;
+};
+
+// Numeric start minute by row type
+const startMinute = (g: GroupedReservation): number => {
+  if (g.type === 'Boarding') {
+    const w = g.isPickup ? g.boardingCheckOutWindow : g.boardingCheckInWindow;
+    return minuteFromWindow(w);
+  }
+  return minuteFromWindow(g.arrivalWindow);
+};
+
+// Keep pickups after drop-offs if times tie
+const pickupBit = (g: GroupedReservation) => (g.isPickup ? 1 : 0);
+
 /** =========================
  * Page
  * ========================= */
@@ -136,21 +213,25 @@ export default function IndividualEmployeeUpcomingReservationsPage() {
       if (!map[g.groupDateKey]) map[g.groupDateKey] = [];
       map[g.groupDateKey].push(g);
     }
-    // sort within each date by time window (CI or CO) / arrival window
+
+    // sort within each date by true time (minutes), then pickupBit, then owner/dog for stability
     Object.values(map).forEach((list) => {
       list.sort((a, b) => {
-        if (a.groupDateKey !== b.groupDateKey) {
-          return a.groupDateKey < b.groupDateKey ? -1 : 1;
-        }
-        const wa =
-          a.type === 'Boarding'
-            ? (a.isPickup ? (a.boardingCheckOutWindow || '') : (a.boardingCheckInWindow || ''))
-            : (a.arrivalWindow || '');
-        const wb =
-          b.type === 'Boarding'
-            ? (b.isPickup ? (b.boardingCheckOutWindow || '') : (b.boardingCheckInWindow || ''))
-            : (b.arrivalWindow || '');
-        return wa.localeCompare(wb);
+        if (a.groupDateKey !== b.groupDateKey) return a.groupDateKey < b.groupDateKey ? -1 : 1;
+
+        const la = startMinute(a), lb = startMinute(b);
+        if (la !== lb) return la - lb;
+
+        const pa = pickupBit(a) - pickupBit(b);
+        if (pa !== 0) return pa;
+
+        const oa = (a.ownerName || '').toLowerCase();
+        const ob = (b.ownerName || '').toLowerCase();
+        if (oa !== ob) return oa < ob ? -1 : 1;
+
+        const da = (a.dogNames[0] || '').toLowerCase();
+        const db = (b.dogNames[0] || '').toLowerCase();
+        return da < db ? -1 : (da > db ? 1 : 0);
       });
     });
     return map;
@@ -347,18 +428,23 @@ export default function IndividualEmployeeUpcomingReservationsPage() {
         }
       });
 
-      // final sort (date, then window)
+      // final sort: (date ASC, startMinute ASC, pickupBit ASC) + stable tie-breakers
       list.sort((a, b) => {
         if (a.groupDateKey !== b.groupDateKey) return a.groupDateKey < b.groupDateKey ? -1 : 1;
-        const wa =
-          a.type === 'Boarding'
-            ? (a.isPickup ? (a.boardingCheckOutWindow || '') : (a.boardingCheckInWindow || ''))
-            : (a.arrivalWindow || '');
-        const wb =
-          b.type === 'Boarding'
-            ? (b.isPickup ? (b.boardingCheckOutWindow || '') : (b.boardingCheckInWindow || ''))
-            : (b.arrivalWindow || '');
-        return wa.localeCompare(wb);
+
+        const la = startMinute(a), lb = startMinute(b);
+        if (la !== lb) return la - lb;
+
+        const pa = pickupBit(a) - pickupBit(b);
+        if (pa !== 0) return pa;
+
+        const oa = (a.ownerName || '').toLowerCase();
+        const ob = (b.ownerName || '').toLowerCase();
+        if (oa !== ob) return oa < ob ? -1 : 1;
+
+        const da = (a.dogNames[0] || '').toLowerCase();
+        const db = (b.dogNames[0] || '').toLowerCase();
+        return da < db ? -1 : (da > db ? 1 : 0);
       });
 
       setGroups(list);

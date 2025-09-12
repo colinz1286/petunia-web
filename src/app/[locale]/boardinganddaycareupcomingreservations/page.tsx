@@ -7,34 +7,34 @@ import { useRouter } from 'next/navigation';
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import {
-    getFirestore,
-    collection,
-    query,
-    where,
-    getDocs,
-    getDoc,
-    doc,
-    updateDoc,
-    deleteDoc,
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  getDoc,
+  doc,
+  updateDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 import {
-    getDatabase,
-    ref as rtdbRef,
-    onValue,
-    off as rtdbOff,
-    update as rtdbUpdate,
-    remove as rtdbRemove,
-    set as rtdbSet,
-    DataSnapshot,
+  getDatabase,
+  ref as rtdbRef,
+  onValue,
+  off as rtdbOff,
+  update as rtdbUpdate,
+  remove as rtdbRemove,
+  set as rtdbSet,
+  DataSnapshot,
 } from 'firebase/database';
 
 const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
 initializeApp(firebaseConfig);
 const auth = getAuth();
@@ -47,39 +47,39 @@ const rtdb = getDatabase();
 type ServiceType = 'Daycare' | 'Boarding';
 
 type Reservation = {
-    // Identity
-    id: string; // RTDB key: "{realtimeKey}-{petId}" (pickup clone adds "-pickup")
-    realtimeKey: string; // Firestore doc id shared across pets
+  // Identity
+  id: string; // RTDB key: "{realtimeKey}-{petId}" (pickup clone adds "-pickup")
+  realtimeKey: string; // Firestore doc id shared across pets
 
-    // Type & grouping
-    type: ServiceType;
-    groupDateKey: string; // daycare: date; boarding: check-in (normal) or check-out (pickup clone)
-    isPickup: boolean; // true for checkout-day clone
+  // Type & grouping
+  type: ServiceType;
+  groupDateKey: string; // daycare: date; boarding: check-in (normal) or check-out (pickup clone)
+  isPickup: boolean; // true for checkout-day clone
 
-    // Presentation — common
-    dogName: string;
-    ownerName: string;
-    status: string;
+  // Presentation — common
+  dogName: string;
+  ownerName: string;
+  status: string;
 
-    // Daycare
-    daycareDate?: string | null;
-    arrivalWindow?: string | null;
+  // Daycare
+  daycareDate?: string | null;
+  arrivalWindow?: string | null;
 
-    // Boarding
-    boardingCheckInDate?: string | null;
-    boardingCheckOutDate?: string | null;
-    boardingCheckInWindow?: string | null;
-    boardingCheckOutWindow?: string | null;
-    nights?: number | null;
+  // Boarding
+  boardingCheckInDate?: string | null;
+  boardingCheckOutDate?: string | null;
+  boardingCheckInWindow?: string | null;
+  boardingCheckOutWindow?: string | null;
+  nights?: number | null;
 
-    // Optional metadata
-    groomingAddOns?: string[] | null;
-    medications?: string | null;
-    medicationDetails?: string | null;
-    spayedNeutered?: string | null;
+  // Optional metadata
+  groomingAddOns?: string[] | null;
+  medications?: string | null;
+  medicationDetails?: string | null;
+  spayedNeutered?: string | null;
 
-    // Assessment flag
-    isAssessment: boolean;
+  // Assessment flag
+  isAssessment: boolean;
 };
 
 type PetStatuses = Record<string, string>;
@@ -95,384 +95,479 @@ const sanitizeFirebaseKey = (input: string) => input.trim().split(/[\.\#\$\[\]\/
 const isValidFirebaseKey = (key: string) => key.length > 0 && !/[.\#$\[\]\/]/.test(key);
 
 const formatISOToLong = (iso: string | null | undefined) => {
-    if (!iso) return '—';
-    const fIn = new Date(`${iso}T00:00:00`);
-    if (Number.isNaN(fIn.getTime())) return iso;
-    return new Intl.DateTimeFormat(undefined, { dateStyle: 'long' }).format(fIn);
+  if (!iso) return '—';
+  const fIn = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(fIn.getTime())) return iso;
+  return new Intl.DateTimeFormat(undefined, { dateStyle: 'long' }).format(fIn);
 };
 
 const nowISO = () => new Date().toISOString();
 
+/** Time parsing + sort helpers */
+
+// Minutes since midnight for the *start* of a window string.
+// Handles: "7am", "7:00 AM–9:00 AM", "10:30am-12pm", "8:00 AM", "Afternoon", "Anytime", "".
+// Empty/unknown windows sink to the BOTTOM (23:59).
+const minuteFromWindow = (window?: string | null): number => {
+  const LATE = 23 * 60 + 59;
+  if (!window) return LATE;
+  let s = String(window).trim();
+  if (!s) return LATE;
+
+  // normalize dashes/spacers
+  s = s
+    .replace(/ — | – |–|—/g, '-')
+    .replace(/\s+to\s+/gi, '-');
+
+  // named buckets
+  switch (s.toLowerCase()) {
+    case 'morning': return 8 * 60;
+    case 'midday': return 12 * 60;
+    case 'afternoon': return 15 * 60;
+    case 'evening': return 17 * 60;
+    case 'anytime': return 12 * 60;
+    default: break;
+  }
+
+  // first token of range is the start time
+  const start = s.split('-')[0]?.trim() || s;
+
+  // common formats
+  const tryParse = (fmt: RegExp) => {
+    const m = start.match(fmt);
+    if (!m) return null;
+    let hh = Number(m[1] ?? 0);
+    const mm = Number(m[2] ?? 0);
+    const ampm = (m[3] ?? '').toLowerCase();
+    if (ampm === 'pm' && hh < 12) hh += 12;
+    if (ampm === 'am' && hh === 12) hh = 0;
+    if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return null;
+    return hh * 60 + mm;
+  };
+
+  // 7:30 AM / 7:30AM / 7:30 am
+  const res: number | null =
+    tryParse(/^(\d{1,2}):(\d{2})\s*([ap]m)$/i) ||
+    // 7 AM / 7AM
+    tryParse(/^(\d{1,2})\s*([ap]m)$/i) ||
+    // 07:30 (24h)
+    tryParse(/^(\d{1,2}):(\d{2})$/);
+
+  if (res != null) return res;
+
+  // compact like "730am", "1030pm", "7am"
+  const lower = start.toLowerCase().replace(/\s+/g, '');
+  const pm = lower.endsWith('pm');
+  const am = lower.endsWith('am');
+  const digits = lower.replace(/am|pm/g, '');
+  const n = Number(digits);
+  if (!Number.isNaN(n)) {
+    let h = 0, m = 0;
+    if (n < 100) { h = n; m = 0; }
+    else if (n < 1000) { h = Math.floor(n / 100); m = n % 100; }
+    else { h = Math.floor(n / 100); m = n % 100; }
+    if (pm && h < 12) h += 12;
+    if (am && h === 12) h = 0;
+    if (h >= 0 && h <= 23 && m >= 0 && m <= 59) return h * 60 + m;
+  }
+
+  return LATE;
+};
+
+// Numeric start minute for sorting by type (drop-off vs pickup)
+const startMinute = (r: Reservation): number => {
+  if (r.type === 'Boarding') {
+    const w = r.isPickup ? r.boardingCheckOutWindow : r.boardingCheckInWindow;
+    return minuteFromWindow(w);
+  }
+  return minuteFromWindow(r.arrivalWindow);
+};
+
+// Keep pickups after drop-offs if times tie
+const pickupBit = (r: Reservation) => (r.isPickup ? 1 : 0);
+
+
 export default function BoardingAndDaycareUpcomingReservationsPage() {
-    const t = useTranslations('boardingAndDaycareUpcomingReservations');
-    const locale = useLocale();
-    const router = useRouter();
+  const t = useTranslations('boardingAndDaycareUpcomingReservations');
+  const locale = useLocale();
+  const router = useRouter();
 
-    // Core state
-    const [businessId, setBusinessId] = useState<string>('');
-    const [reservations, setReservations] = useState<Reservation[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  // Core state
+  const [businessId, setBusinessId] = useState<string>('');
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-    // UI selections
-    const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
-    const [selected, setSelected] = useState<Reservation | null>(null);
+  // UI selections
+  const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<Reservation | null>(null);
 
-    // Action dialogs
-    const [showActionDialog, setShowActionDialog] = useState(false); // Drop-off actions: Check-In / No-Show
-    const [showPickupDialog, setShowPickupDialog] = useState(false); // Pickup actions: Check-Out
-    const [confirmCheckIn, setConfirmCheckIn] = useState(false);
-    const [confirmNoShow, setConfirmNoShow] = useState(false);
-    const [confirmCheckOut, setConfirmCheckOut] = useState(false);
+  // Action dialogs
+  const [showActionDialog, setShowActionDialog] = useState(false); // Drop-off actions: Check-In / No-Show
+  const [showPickupDialog, setShowPickupDialog] = useState(false); // Pickup actions: Check-Out
+  const [confirmCheckIn, setConfirmCheckIn] = useState(false);
+  const [confirmNoShow, setConfirmNoShow] = useState(false);
+  const [confirmCheckOut, setConfirmCheckOut] = useState(false);
 
-    // RTDB listener handle
-    const rtdbSubRef = useRef<ReturnType<typeof rtdbRef> | null>(null);
-    const rtdbCbRef = useRef<((snap: DataSnapshot) => void) | null>(null);
+  // RTDB listener handle
+  const rtdbSubRef = useRef<ReturnType<typeof rtdbRef> | null>(null);
+  const rtdbCbRef = useRef<((snap: DataSnapshot) => void) | null>(null);
 
-    // Grouped by date key
-    const grouped = useMemo(() => {
-        const map: Record<string, Reservation[]> = {};
-        for (const r of reservations) {
-            if (!map[r.groupDateKey]) map[r.groupDateKey] = [];
-            map[r.groupDateKey].push(r);
-        }
-        // sort inside each group by relevant window
-        Object.values(map).forEach((list) => {
-            list.sort((a, b) => {
-                const winA =
-                    a.type === 'Boarding'
-                        ? (a.isPickup ? (a.boardingCheckOutWindow || '') : (a.boardingCheckInWindow || ''))
-                        : (a.arrivalWindow || '');
-                const winB =
-                    b.type === 'Boarding'
-                        ? (b.isPickup ? (b.boardingCheckOutWindow || '') : (b.boardingCheckInWindow || ''))
-                        : (b.arrivalWindow || '');
-                if (a.groupDateKey !== b.groupDateKey) return a.groupDateKey < b.groupDateKey ? -1 : 1;
-                return winA.localeCompare(winB);
-            });
-        });
-        return map;
-    }, [reservations]);
+  // Grouped by date key
+  const grouped = useMemo(() => {
+    const map: Record<string, Reservation[]> = {};
+    for (const r of reservations) {
+      if (!map[r.groupDateKey]) map[r.groupDateKey] = [];
+      map[r.groupDateKey].push(r);
+    }
+    // sort inside each group by true time (minutes), then pickupBit, then owner/dog
+    Object.values(map).forEach((list) => {
+      list.sort((a, b) => {
+        // (items are already same date, but guard anyway)
+        if (a.groupDateKey !== b.groupDateKey) return a.groupDateKey < b.groupDateKey ? -1 : 1;
 
-    /** =========================
-     * Auth + business id resolution
-     * ========================= */
-    useEffect(() => {
-        const unsub = onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                router.push(`/${locale}/loginsignup`);
-                return;
-            }
-            setIsLoading(true);
-            try {
-                // Find business the user owns
-                const qref = query(collection(db, 'businesses'), where('ownerId', '==', user.uid));
-                const snap = await getDocs(qref);
-                const first = snap.docs[0];
-                if (!first) {
-                    setErrorMsg(t('error_no_business_record'));
-                    setIsLoading(false);
-                    return;
-                }
-                const bizId = sanitizeFirebaseKey(first.id);
-                if (!isValidFirebaseKey(bizId)) {
-                    setErrorMsg(t('error_invalid_business_key'));
-                    setIsLoading(false);
-                    return;
-                }
-                setBusinessId(bizId);
-            } catch (e) {
-                console.error('❌ Business lookup failed:', e);
-                setErrorMsg(t('error_load_business'));
-                setIsLoading(false);
-            }
-        });
-        return () => unsub();
-    }, [router, locale, t]);
+        const la = startMinute(a), lb = startMinute(b);
+        if (la !== lb) return la - lb;
 
-    /** =========================
-     * Start/stop RTDB listener when businessId is ready
-     * ========================= */
-    useEffect(() => {
-        if (!businessId) return;
+        const pa = pickupBit(a) - pickupBit(b);
+        if (pa !== 0) return pa;
 
-        // Cleanup any old listener
-        if (rtdbSubRef.current && rtdbCbRef.current) {
-            rtdbOff(rtdbSubRef.current, 'value', rtdbCbRef.current);
-            rtdbSubRef.current = null;
-            rtdbCbRef.current = null;
-        }
+        const oa = (a.ownerName || '').toLowerCase();
+        const ob = (b.ownerName || '').toLowerCase();
+        if (oa !== ob) return oa < ob ? -1 : 1;
 
-        const ref = rtdbRef(rtdb, `upcomingReservations/${businessId}`);
-        const cb = (snap: DataSnapshot) => applySnapshot(snap);
-        onValue(ref, cb);
-        rtdbSubRef.current = ref;
-        rtdbCbRef.current = cb;
+        const da = (a.dogName || '').toLowerCase();
+        const db = (b.dogName || '').toLowerCase();
+        return da < db ? -1 : (da > db ? 1 : 0);
+      });
+    });
+    return map;
+  }, [reservations]);
 
-        return () => {
-            if (rtdbSubRef.current && rtdbCbRef.current) {
-                rtdbOff(rtdbSubRef.current, 'value', rtdbCbRef.current);
-                rtdbSubRef.current = null;
-                rtdbCbRef.current = null;
-            }
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [businessId]);
-
-    /** =========================
-     * Snapshot parser (matches Swift)
-     * ========================= */
-    const applySnapshot = (snapshot: DataSnapshot) => {
-        try {
-            const list: Reservation[] = [];
-            snapshot.forEach((child) => {
-                const val = child.val() as Record<string, unknown> | null;
-                if (!val || typeof val !== 'object') return;
-
-                const dogName = (String(val['dogName'] ?? '').trim()) || t('unknown_dog');
-                const ownerName = (String(val['ownerName'] ?? '').trim()) || t('unknown_owner');
-                const statusRaw = String(val['status'] ?? 'approved').trim();
-                const statusLower = statusRaw.toLowerCase();
-
-                const rawType = String(val['type'] ?? '').trim();
-                const hasBoardingDates = !!val['checkInDate'] || !!val['checkOutDate'];
-                const type: ServiceType =
-                    rawType === 'Daycare' || rawType === 'Boarding'
-                        ? rawType
-                        : (hasBoardingDates ? 'Boarding' : 'Daycare');
-
-                const realtimeKey =
-                    String(val['realtimeKey'] ?? '') ||
-                    child.key.split('-').slice(0, -1).join('-');
-
-                const groomingAddOns = (val['groomingAddOns'] as string[]) || null;
-                const medications = (val['medications'] as string) || null;
-                const medicationDetails = (val['medicationDetails'] as string) || null;
-                const spayedNeutered = (val['spayedNeutered'] as string) || null;
-                const isAssessment = (val['isAssessment'] as boolean) ?? false;
-
-                if (type === 'Boarding') {
-                    const cin = (val['checkInDate'] as string) || '';
-                    const cout = (val['checkOutDate'] as string) || '';
-                    const ciWin = (val['checkInWindow'] as string) || '';
-                    const coWin = (val['checkOutWindow'] as string) || '';
-                    const nInt = (val['nights'] as number | undefined);
-                    const nights = typeof nInt === 'number' ? Math.round(nInt) : null;
-
-                    // Ensure "{...}-{petId}" pattern exists
-                    const hasPetId = child.key.includes('-');
-                    if (!hasPetId) return;
-
-                    // 1) Drop-off row (hide once finalized)
-                    if (cin && !(statusLower === 'checkedin' || statusLower === 'checkedout' || statusLower === 'noshow')) {
-                        list.push({
-                            id: child.key,
-                            realtimeKey,
-                            type: 'Boarding',
-                            groupDateKey: cin,
-                            isPickup: false,
-                            dogName,
-                            ownerName,
-                            status: statusRaw,
-                            daycareDate: null,
-                            arrivalWindow: null,
-                            boardingCheckInDate: cin,
-                            boardingCheckOutDate: cout || null,
-                            boardingCheckInWindow: ciWin || null,
-                            boardingCheckOutWindow: coWin || null,
-                            nights,
-                            groomingAddOns,
-                            medications,
-                            medicationDetails,
-                            spayedNeutered,
-                            isAssessment,
-                        });
-                    }
-
-                    // 2) Pickup clone (hide if noshow or already checkedout)
-                    if (cout && statusLower !== 'noshow' && statusLower !== 'checkedout') {
-                        list.push({
-                            id: `${child.key}-pickup`,
-                            realtimeKey,
-                            type: 'Boarding',
-                            groupDateKey: cout,
-                            isPickup: true,
-                            dogName,
-                            ownerName,
-                            status: statusRaw,
-                            daycareDate: null,
-                            arrivalWindow: null,
-                            boardingCheckInDate: cin || null,
-                            boardingCheckOutDate: cout,
-                            boardingCheckInWindow: ciWin || null,
-                            boardingCheckOutWindow: coWin || null,
-                            nights,
-                            groomingAddOns,
-                            medications,
-                            medicationDetails,
-                            spayedNeutered,
-                            isAssessment,
-                        });
-                    }
-                } else {
-                    // Daycare: requires date + arrivalWindow
-                    const date = (val['date'] as string) || '';
-                    const arrive = (val['arrivalWindow'] as string) || '';
-                    if (!date || !arrive) return;
-
-                    list.push({
-                        id: child.key,
-                        realtimeKey,
-                        type: 'Daycare',
-                        groupDateKey: date,
-                        isPickup: false,
-                        dogName,
-                        ownerName,
-                        status: statusRaw,
-                        daycareDate: date,
-                        arrivalWindow: arrive,
-                        boardingCheckInDate: null,
-                        boardingCheckOutDate: null,
-                        boardingCheckInWindow: null,
-                        boardingCheckOutWindow: null,
-                        nights: null,
-                        groomingAddOns,
-                        medications,
-                        medicationDetails,
-                        spayedNeutered,
-                        isAssessment,
-                    });
-                }
-            });
-
-            // Sort (by groupDateKey then window for each type)
-            list.sort((a, b) => {
-                if (a.groupDateKey !== b.groupDateKey) {
-                    return a.groupDateKey < b.groupDateKey ? -1 : 1;
-                }
-                const wa =
-                    a.type === 'Boarding'
-                        ? (a.isPickup ? (a.boardingCheckOutWindow || '') : (a.boardingCheckInWindow || ''))
-                        : (a.arrivalWindow || '');
-                const wb =
-                    b.type === 'Boarding'
-                        ? (b.isPickup ? (b.boardingCheckOutWindow || '') : (b.boardingCheckInWindow || ''))
-                        : (b.arrivalWindow || '');
-                return wa.localeCompare(wb);
-            });
-
-            setReservations(list);
-            // expand the first date section by default
-            if (list.length && expandedDates.size === 0) {
-                setExpandedDates(new Set([list[0].groupDateKey]));
-            }
-            setIsLoading(false);
-            setErrorMsg(null);
-        } catch (e) {
-            console.error('❌ applySnapshot failed:', e);
-            setErrorMsg(t('error_parse_snapshot'));
-            setIsLoading(false);
-        }
-    };
-
-    /** =========================
- * Actions: Check-In / No-Show
- * ========================= */
-    const checkIn = useCallback(async (r: Reservation) => {
-        if (!r || r.isPickup) return;
-        if (!businessId || !isValidFirebaseKey(businessId)) return;
-
-        const petId = r.id.split('-').pop()!;
-        if (!isValidFirebaseKey(petId)) return;
-
-        const dateKey = r.type === 'Boarding'
-            ? (r.boardingCheckInDate || r.groupDateKey)
-            : (r.daycareDate || r.groupDateKey);
-
-        const checkInPath = rtdbRef(rtdb, `checkIns/${businessId}/${dateKey}/${petId}`);
-        const baseKey = `${r.realtimeKey}-${petId}`;
-        const upRef = rtdbRef(rtdb, `upcomingReservations/${businessId}/${baseKey}`);
-
-        // payload (include assessment + optional metadata)
-        const payload: Record<string, unknown> = {
-            name: r.dogName,
-            owner: r.ownerName,
-            type: r.type,
-            checkInTime: nowISO(),
-            isAssessment: !!r.isAssessment,
-        };
-        if (r.medications) payload.medications = r.medications;
-        if (r.medicationDetails) payload.medicationDetails = r.medicationDetails;
-        if (r.spayedNeutered) payload.spayedNeutered = r.spayedNeutered;
-        if (r.groomingAddOns?.length) payload.groomingAddOns = r.groomingAddOns;
-
-        try {
-            await rtdbSet(checkInPath, payload);
-
-            if (r.type === 'Boarding') {
-                await rtdbUpdate(upRef, { status: 'checkedIn', checkedInAt: nowISO() });
-                // remove only the drop-off row from UI
-                setReservations((prev) => prev.filter((x) => x.id !== r.id));
-            } else {
-                // daycare: remove the RTDB row entirely
-                await rtdbRemove(upRef);
-                // remove from UI
-                setReservations((prev) => prev.filter((x) => x.id !== r.id));
-            }
-            setSelected(null);
-
-            // Firestore petStatuses update
-            const col = r.type === 'Boarding' ? 'boardingReservations' : 'daycareReservations';
-            const fsRef = doc(db, col, r.realtimeKey);
-            const snap = await getDoc(fsRef);
-            const data = snap.data() as ReservationFS | undefined;
-            if (data?.petStatuses) {
-                data.petStatuses[petId] = 'checkedIn';
-                const values = Object.values(data.petStatuses);
-                const allFinalized = values.every((v) => v === 'checkedIn' || v === 'noShow');
-                if (r.type === 'Daycare' && allFinalized) {
-                    await deleteDoc(fsRef);
-                } else {
-                    await updateDoc(fsRef, { petStatuses: data.petStatuses });
-                }
-            }
-        } catch (e) {
-            console.error('❌ checkIn failed:', e);
-        }
-    }, [businessId]);
-
-    const markNoShow = useCallback(async (r: Reservation) => {
-        if (!r || r.isPickup) return;
-        if (!businessId || !isValidFirebaseKey(businessId)) return;
-
-        const petId = r.id.split('-').pop()!;
-        const baseKey = `${r.realtimeKey}-${petId}`;
-
-        try {
-            await rtdbRemove(rtdbRef(rtdb, `upcomingReservations/${businessId}/${baseKey}`));
-            // Optimistic: remove both base and its pickup clone from UI
-            setReservations((prev) => prev.filter((x) => x.id !== baseKey && x.id !== `${baseKey}-pickup`));
-            setSelected(null);
-
-            const col = r.type === 'Boarding' ? 'boardingReservations' : 'daycareReservations';
-            const fsRef = doc(db, col, r.realtimeKey);
-            const snap = await getDoc(fsRef);
-            const data = snap.data() as ReservationFS | undefined;
-            if (data?.petStatuses) {
-                data.petStatuses[petId] = 'noShow';
-                const values = Object.values(data.petStatuses);
-                const allFinalized = values.every((v) => v === 'checkedIn' || v === 'noShow');
-                if (allFinalized) await deleteDoc(fsRef);
-                else await updateDoc(fsRef, { petStatuses: data.petStatuses });
-            }
-        } catch (e) {
-            console.error('❌ markNoShow failed:', e);
-        }
-    }, [businessId]);
-
-      /** =========================
-   * Action: Check-Out
+  /** =========================
+   * Auth + business id resolution
    * ========================= */
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        router.push(`/${locale}/loginsignup`);
+        return;
+      }
+      setIsLoading(true);
+      try {
+        // Find business the user owns
+        const qref = query(collection(db, 'businesses'), where('ownerId', '==', user.uid));
+        const snap = await getDocs(qref);
+        const first = snap.docs[0];
+        if (!first) {
+          setErrorMsg(t('error_no_business_record'));
+          setIsLoading(false);
+          return;
+        }
+        const bizId = sanitizeFirebaseKey(first.id);
+        if (!isValidFirebaseKey(bizId)) {
+          setErrorMsg(t('error_invalid_business_key'));
+          setIsLoading(false);
+          return;
+        }
+        setBusinessId(bizId);
+      } catch (e) {
+        console.error('❌ Business lookup failed:', e);
+        setErrorMsg(t('error_load_business'));
+        setIsLoading(false);
+      }
+    });
+    return () => unsub();
+  }, [router, locale, t]);
+
+  /** =========================
+   * Start/stop RTDB listener when businessId is ready
+   * ========================= */
+  useEffect(() => {
+    if (!businessId) return;
+
+    // Cleanup any old listener
+    if (rtdbSubRef.current && rtdbCbRef.current) {
+      rtdbOff(rtdbSubRef.current, 'value', rtdbCbRef.current);
+      rtdbSubRef.current = null;
+      rtdbCbRef.current = null;
+    }
+
+    const ref = rtdbRef(rtdb, `upcomingReservations/${businessId}`);
+    const cb = (snap: DataSnapshot) => applySnapshot(snap);
+    onValue(ref, cb);
+    rtdbSubRef.current = ref;
+    rtdbCbRef.current = cb;
+
+    return () => {
+      if (rtdbSubRef.current && rtdbCbRef.current) {
+        rtdbOff(rtdbSubRef.current, 'value', rtdbCbRef.current);
+        rtdbSubRef.current = null;
+        rtdbCbRef.current = null;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessId]);
+
+  /** =========================
+   * Snapshot parser (matches Swift)
+   * ========================= */
+  const applySnapshot = (snapshot: DataSnapshot) => {
+    try {
+      const list: Reservation[] = [];
+      snapshot.forEach((child) => {
+        const val = child.val() as Record<string, unknown> | null;
+        if (!val || typeof val !== 'object') return;
+
+        const dogName = (String(val['dogName'] ?? '').trim()) || t('unknown_dog');
+        const ownerName = (String(val['ownerName'] ?? '').trim()) || t('unknown_owner');
+        const statusRaw = String(val['status'] ?? 'approved').trim();
+        const statusLower = statusRaw.toLowerCase();
+
+        const rawType = String(val['type'] ?? '').trim();
+        const hasBoardingDates = !!val['checkInDate'] || !!val['checkOutDate'];
+        const type: ServiceType =
+          rawType === 'Daycare' || rawType === 'Boarding'
+            ? rawType
+            : (hasBoardingDates ? 'Boarding' : 'Daycare');
+
+        const realtimeKey =
+          String(val['realtimeKey'] ?? '') ||
+          child.key.split('-').slice(0, -1).join('-');
+
+        const groomingAddOns = (val['groomingAddOns'] as string[]) || null;
+        const medications = (val['medications'] as string) || null;
+        const medicationDetails = (val['medicationDetails'] as string) || null;
+        const spayedNeutered = (val['spayedNeutered'] as string) || null;
+        const isAssessment = (val['isAssessment'] as boolean) ?? false;
+
+        if (type === 'Boarding') {
+          const cin = (val['checkInDate'] as string) || '';
+          const cout = (val['checkOutDate'] as string) || '';
+          const ciWin = (val['checkInWindow'] as string) || '';
+          const coWin = (val['checkOutWindow'] as string) || '';
+          const nInt = (val['nights'] as number | undefined);
+          const nights = typeof nInt === 'number' ? Math.round(nInt) : null;
+
+          // Ensure "{...}-{petId}" pattern exists
+          const hasPetId = child.key.includes('-');
+          if (!hasPetId) return;
+
+          // 1) Drop-off row (hide once finalized)
+          if (cin && !(statusLower === 'checkedin' || statusLower === 'checkedout' || statusLower === 'noshow')) {
+            list.push({
+              id: child.key,
+              realtimeKey,
+              type: 'Boarding',
+              groupDateKey: cin,
+              isPickup: false,
+              dogName,
+              ownerName,
+              status: statusRaw,
+              daycareDate: null,
+              arrivalWindow: null,
+              boardingCheckInDate: cin,
+              boardingCheckOutDate: cout || null,
+              boardingCheckInWindow: ciWin || null,
+              boardingCheckOutWindow: coWin || null,
+              nights,
+              groomingAddOns,
+              medications,
+              medicationDetails,
+              spayedNeutered,
+              isAssessment,
+            });
+          }
+
+          // 2) Pickup clone (hide if noshow or already checkedout)
+          if (cout && statusLower !== 'noshow' && statusLower !== 'checkedout') {
+            list.push({
+              id: `${child.key}-pickup`,
+              realtimeKey,
+              type: 'Boarding',
+              groupDateKey: cout,
+              isPickup: true,
+              dogName,
+              ownerName,
+              status: statusRaw,
+              daycareDate: null,
+              arrivalWindow: null,
+              boardingCheckInDate: cin || null,
+              boardingCheckOutDate: cout,
+              boardingCheckInWindow: ciWin || null,
+              boardingCheckOutWindow: coWin || null,
+              nights,
+              groomingAddOns,
+              medications,
+              medicationDetails,
+              spayedNeutered,
+              isAssessment,
+            });
+          }
+        } else {
+          // Daycare: requires date + arrivalWindow
+          const date = (val['date'] as string) || '';
+          const arrive = (val['arrivalWindow'] as string) || '';
+          if (!date || !arrive) return;
+
+          list.push({
+            id: child.key,
+            realtimeKey,
+            type: 'Daycare',
+            groupDateKey: date,
+            isPickup: false,
+            dogName,
+            ownerName,
+            status: statusRaw,
+            daycareDate: date,
+            arrivalWindow: arrive,
+            boardingCheckInDate: null,
+            boardingCheckOutDate: null,
+            boardingCheckInWindow: null,
+            boardingCheckOutWindow: null,
+            nights: null,
+            groomingAddOns,
+            medications,
+            medicationDetails,
+            spayedNeutered,
+            isAssessment,
+          });
+        }
+      });
+
+      // Sort by (date ASC, startMinute ASC, pickupBit ASC) + stable tie-breakers
+      list.sort((a, b) => {
+        if (a.groupDateKey !== b.groupDateKey) {
+          return a.groupDateKey < b.groupDateKey ? -1 : 1;
+        }
+
+        const la = startMinute(a), lb = startMinute(b);
+        if (la !== lb) return la - lb;
+
+        const pa = pickupBit(a) - pickupBit(b);
+        if (pa !== 0) return pa;
+
+        const oa = (a.ownerName || '').toLowerCase();
+        const ob = (b.ownerName || '').toLowerCase();
+        if (oa !== ob) return oa < ob ? -1 : 1;
+
+        const da = (a.dogName || '').toLowerCase();
+        const db = (b.dogName || '').toLowerCase();
+        return da < db ? -1 : (da > db ? 1 : 0);
+      });
+
+      setReservations(list);
+      // expand the first date section by default
+      if (list.length && expandedDates.size === 0) {
+        setExpandedDates(new Set([list[0].groupDateKey]));
+      }
+      setIsLoading(false);
+      setErrorMsg(null);
+    } catch (e) {
+      console.error('❌ applySnapshot failed:', e);
+      setErrorMsg(t('error_parse_snapshot'));
+      setIsLoading(false);
+    }
+  };
+
+  /** =========================
+* Actions: Check-In / No-Show
+* ========================= */
+  const checkIn = useCallback(async (r: Reservation) => {
+    if (!r || r.isPickup) return;
+    if (!businessId || !isValidFirebaseKey(businessId)) return;
+
+    const petId = r.id.split('-').pop()!;
+    if (!isValidFirebaseKey(petId)) return;
+
+    const dateKey = r.type === 'Boarding'
+      ? (r.boardingCheckInDate || r.groupDateKey)
+      : (r.daycareDate || r.groupDateKey);
+
+    const checkInPath = rtdbRef(rtdb, `checkIns/${businessId}/${dateKey}/${petId}`);
+    const baseKey = `${r.realtimeKey}-${petId}`;
+    const upRef = rtdbRef(rtdb, `upcomingReservations/${businessId}/${baseKey}`);
+
+    // payload (include assessment + optional metadata)
+    const payload: Record<string, unknown> = {
+      name: r.dogName,
+      owner: r.ownerName,
+      type: r.type,
+      checkInTime: nowISO(),
+      isAssessment: !!r.isAssessment,
+    };
+    if (r.medications) payload.medications = r.medications;
+    if (r.medicationDetails) payload.medicationDetails = r.medicationDetails;
+    if (r.spayedNeutered) payload.spayedNeutered = r.spayedNeutered;
+    if (r.groomingAddOns?.length) payload.groomingAddOns = r.groomingAddOns;
+
+    try {
+      await rtdbSet(checkInPath, payload);
+
+      if (r.type === 'Boarding') {
+        await rtdbUpdate(upRef, { status: 'checkedIn', checkedInAt: nowISO() });
+        // remove only the drop-off row from UI
+        setReservations((prev) => prev.filter((x) => x.id !== r.id));
+      } else {
+        // daycare: remove the RTDB row entirely
+        await rtdbRemove(upRef);
+        // remove from UI
+        setReservations((prev) => prev.filter((x) => x.id !== r.id));
+      }
+      setSelected(null);
+
+      // Firestore petStatuses update
+      const col = r.type === 'Boarding' ? 'boardingReservations' : 'daycareReservations';
+      const fsRef = doc(db, col, r.realtimeKey);
+      const snap = await getDoc(fsRef);
+      const data = snap.data() as ReservationFS | undefined;
+      if (data?.petStatuses) {
+        data.petStatuses[petId] = 'checkedIn';
+        const values = Object.values(data.petStatuses);
+        const allFinalized = values.every((v) => v === 'checkedIn' || v === 'noShow');
+        if (r.type === 'Daycare' && allFinalized) {
+          await deleteDoc(fsRef);
+        } else {
+          await updateDoc(fsRef, { petStatuses: data.petStatuses });
+        }
+      }
+    } catch (e) {
+      console.error('❌ checkIn failed:', e);
+    }
+  }, [businessId]);
+
+  const markNoShow = useCallback(async (r: Reservation) => {
+    if (!r || r.isPickup) return;
+    if (!businessId || !isValidFirebaseKey(businessId)) return;
+
+    const petId = r.id.split('-').pop()!;
+    const baseKey = `${r.realtimeKey}-${petId}`;
+
+    try {
+      await rtdbRemove(rtdbRef(rtdb, `upcomingReservations/${businessId}/${baseKey}`));
+      // Optimistic: remove both base and its pickup clone from UI
+      setReservations((prev) => prev.filter((x) => x.id !== baseKey && x.id !== `${baseKey}-pickup`));
+      setSelected(null);
+
+      const col = r.type === 'Boarding' ? 'boardingReservations' : 'daycareReservations';
+      const fsRef = doc(db, col, r.realtimeKey);
+      const snap = await getDoc(fsRef);
+      const data = snap.data() as ReservationFS | undefined;
+      if (data?.petStatuses) {
+        data.petStatuses[petId] = 'noShow';
+        const values = Object.values(data.petStatuses);
+        const allFinalized = values.every((v) => v === 'checkedIn' || v === 'noShow');
+        if (allFinalized) await deleteDoc(fsRef);
+        else await updateDoc(fsRef, { petStatuses: data.petStatuses });
+      }
+    } catch (e) {
+      console.error('❌ markNoShow failed:', e);
+    }
+  }, [businessId]);
+
+  /** =========================
+* Action: Check-Out
+* ========================= */
   const checkOut = useCallback(async (r: Reservation) => {
     if (!r || r.type !== 'Boarding') return;
     if (!businessId || !isValidFirebaseKey(businessId)) return;
