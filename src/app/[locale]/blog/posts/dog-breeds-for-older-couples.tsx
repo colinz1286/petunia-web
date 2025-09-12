@@ -9,7 +9,7 @@ export default function DogBreedsForOlderCouples() {
 
   const title =
     'Dog Breeds for Older Couples: Honest Questions, Gentle Companions, and How to Decide with Kindness';
-  const date = 'September 11, 2025';
+  const date = 'September 12, 2025';
   const categories = ['owner'] as const;
 
   const categoryLabels: Record<string, string> = {

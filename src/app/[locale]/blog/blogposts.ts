@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'common-training-mistakes-for-new-dog-owners',
+        title: 'Common Training Mistakes for New Dog Owners: Gentle Guidance and How to Avoid Them',
+        date: 'September 10, 2025',
+        description:
+            'A kind and practical guide for first-time dog owners. Covers the most common training mistakes—like inconsistency, skipping socialization, or relying on punishment—and how to build trust, confidence, and lasting skills instead.',
+        component: () => import('./posts/common-training-mistakes-for-new-dog-owners'),
+        categories: ['owner'],
+    },
+    {
         slug: 'dog-breeds-for-older-couples',
         title: 'Dog Breeds for Older Couples: Honest Questions, Gentle Companions, and How to Decide with Kindness',
         date: 'September 12, 2025',

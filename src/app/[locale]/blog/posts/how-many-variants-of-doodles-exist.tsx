@@ -9,7 +9,7 @@ export default function HowManyVariantsOfDoodlesExist() {
 
   const title =
     'How Many Variants of Doodles Exist? Popular Types, Temperaments, and What Owners Should Know';
-  const date = 'September 12, 2025';
+  const date = 'September 11, 2025';
   const categories = ['owner', 'breed_specific_guides'] as const;
 
   const categoryLabels: Record<string, string> = {
