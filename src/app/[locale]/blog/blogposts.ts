@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'dog-breeds-for-older-couples',
+        title: 'Dog Breeds for Older Couples: Honest Questions, Gentle Companions, and How to Decide with Kindness',
+        date: 'September 12, 2025',
+        description:
+            'A thoughtful, kind, and practical guide for older couples considering a dog. Covers questions to ask yourself, gentle breeds to consider, senior dog adoption, and alternatives to ownership.',
+        component: () => import('./posts/dog-breeds-for-older-couples'),
+        categories: ['owner'],
+    },
+    {
         slug: 'how-many-variants-of-doodles-exist',
         title: 'How Many Variants of Doodles Exist? Popular Types, Temperaments, and What Owners Should Know',
         date: 'September 12, 2025',
