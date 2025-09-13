@@ -7,8 +7,16 @@
   "no_business_found": "No business found for this account.",
   "error_loading_business": "Error loading business information.",
   "client_joined_label": "Joined on: {date}",
+
+  "waiver_label": "Waiver:",
+  "waiver_signed": "Signed",
+  "waiver_not_signed": "Not Signed",
+
   "vaccines_current": "Vaccines Current",
   "vaccines_not_current": "Vaccines Not Current",
+  "no_information_entered": "No information entered",
+  "expiration_prefix": "Expiration:",
+
   "unnamed_pet": "Unnamed Pet",
   "view_file_1": "View Vaccine File 1",
   "view_file_2": "View Vaccine File 2"
