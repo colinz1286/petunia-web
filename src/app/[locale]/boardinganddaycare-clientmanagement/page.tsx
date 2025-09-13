@@ -231,7 +231,7 @@ export default function ClientManagementPage() {
             const petPromises = petsSnap.docs.map(async (petDoc) => {
               const petData = petDoc.data();
               const name = (petData.petName as string) ?? t('unnamed_pet');
-              const records = (petData.vaccinationRecords as Record<string, any>) ?? {};
+              const records = (petData.vaccinationRecords as Record<string, { date?: Timestamp | { seconds?: number } }>) ?? {};
 
               const requiredVaccines = ['Rabies', 'Bordetella', 'DAPP (or DHPP/DA2PP)', 'Canine Influenza'];
               const vaccineDisplay: { name: string; value: string; style: 'gray' | 'red' | 'yellow' }[] =
