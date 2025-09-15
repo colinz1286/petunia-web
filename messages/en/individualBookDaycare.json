@@ -24,6 +24,7 @@
   "no_services_available": "No services available",
   "done_button": "Done",
   "cancel_button": "Cancel",
+  "existing_appointment": "You already have an appointment for this date.",
 
   "your_bookings": "Your Bookings",
   "remove_booking": "Remove",

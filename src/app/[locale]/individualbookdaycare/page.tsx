@@ -733,6 +733,13 @@ export default function IndividualBookDaycarePage() {
             />
           </div>
 
+          {/* Existing reservation inline note (bold + green, centered) */}
+          {hasExistingReservation && (
+            <p className="text-center font-bold text-green-600 text-[16px] max-w-sm sm:max-w-md mx-auto">
+              {t('existing_appointment')}
+            </p>
+          )}
+
           {/* Time */}
           {(!dropOffTimeRequired || timeOptions.length > 0) && (
             <div className="flex flex-col items-center space-y-1 w-full">
