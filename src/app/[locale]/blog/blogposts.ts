@@ -20,6 +20,24 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'hidden-risks-in-pet-boarding',
+        title: 'The Hidden Risks in Pet Boarding: Liability, Health, and How to Protect Your Business',
+        date: 'September 15, 2025',
+        description:
+            'Operator-grade guidance on boarding risk: contracts, insurance, disease control, behavior policies, environment design, documentation, crisis response, and printable SOPs.',
+        component: () => import('./posts/hidden-risks-in-pet-boarding'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'hip-dysplasia-in-dogs-guide',
+        title: 'Hip Dysplasia in Dogs: Early Signs, Prevention, Treatment Options, and Life-Care Planning',
+        date: 'September 16, 2025',
+        description:
+            'A practical, evidence-informed guide to canine hip dysplasia: early signs, diagnostics, non-surgical care, rehab, surgical options, costs, timelines, and prevention through breeding and daily habits.',
+        component: () => import('./posts/hip-dysplasia-in-dogs-guide'),
+        categories: ['owner'],
+    },
+    {
         slug: 'common-training-mistakes-for-new-dog-owners',
         title: 'Common Training Mistakes for New Dog Owners: Gentle Guidance and How to Avoid Them',
         date: 'September 10, 2025',
