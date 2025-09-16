@@ -205,6 +205,7 @@ export default function BoardingAndDaycareDashboardPage() {
           />
 
           <DashboardLink href="/boardinganddaycare-pendingrequests" label={t('pending_requests')} />
+          <DashboardLink href="/boardinganddaycarenotificationsview" label={t('notifications')} />
           <DashboardLink href="/boardinganddaycare-clientmanagement" label={t('client_management')} />
 
           {enableEmployeeManagement && (
