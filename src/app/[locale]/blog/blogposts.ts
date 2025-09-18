@@ -20,6 +20,33 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'addisons-disease-in-dogs',
+        title: 'Addison’s Disease in Dogs: What Owners Need to Know About Diagnosis and Daily Management',
+        date: 'September 13, 2025',
+        description:
+            'A 2,000+ word owner’s guide to Addison’s disease (hypoadrenocorticism): causes, breeds at risk, early symptoms, crisis recognition, diagnostic testing, lifelong treatment with medications, monitoring, and home-care SOPs.',
+        component: () => import('./posts/addisons-disease-in-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'managing-group-play-safely',
+        title: 'Managing Group Play Safely: Behavior Assessment, Supervision Ratios, and Incident Prevention',
+        date: 'September 14, 2025',
+        description:
+            'An operator-grade, 2,000+ word playgroup safety manual: intake behavior assessments, selection and grouping, supervision ratios, arousal management, environment design, equipment staging, break-up protocols, documentation, and printable SOPs.',
+        component: () => import('./posts/managing-group-play-safely'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'bloat-gdv-in-large-breed-dogs',
+        title: 'Bloat (GDV) in Large Breed Dogs: Recognizing the Warning Signs and Reducing Risk',
+        date: 'September 17, 2025',
+        description:
+            'A comprehensive, evidence-aware guide to canine bloat (gastric dilatation-volvulus): what it is, early signs, emergency steps, diagnostics, treatment, preventive gastropexy, feeding and exercise rules, and SOPs for households and facilities.',
+        component: () => import('./posts/bloat-gdv-in-large-breed-dogs'),
+        categories: ['owner'],
+    },
+    {
         slug: 'hidden-risks-in-pet-boarding',
         title: 'The Hidden Risks in Pet Boarding: Liability, Health, and How to Protect Your Business',
         date: 'September 15, 2025',
