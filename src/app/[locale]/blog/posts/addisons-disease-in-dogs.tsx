@@ -9,7 +9,7 @@ export default function AddisonsDiseaseDogs() {
 
   const title =
     'Addison’s Disease in Dogs: What Owners Need to Know About Diagnosis and Daily Management';
-  const date = 'September 18, 2025';
+  const date = 'September 13, 2025';
   const categories = ['owner'] as const;
 
   // Exact labels from prior posts (do not change keys/labels)

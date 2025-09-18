@@ -20,6 +20,33 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'tracheal-collapse-in-small-breeds',
+        title: 'Tracheal Collapse in Small Breeds: Symptoms, Lifestyle Adjustments, and Veterinary Care',
+        date: 'September 7, 2025',
+        description:
+            'A comprehensive, 2,000+ word owner’s guide to tracheal collapse in small dogs: hallmark “goose-honk” cough, triggers, at-home modifications, weight and harness strategies, medications, sedatives, anti-tussives, anesthesia considerations, stent/surgery decision paths, and daily SOPs.',
+        component: () => import('./posts/tracheal-collapse-in-small-breeds'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'canine-allergies-explained',
+        title: 'Canine Allergies Explained: Food vs. Environmental Triggers and How to Help Your Dog Thrive',
+        date: 'September 8, 2025',
+        description:
+            'A comprehensive 2,000+ word guide for pet owners: how dog allergies work, food vs. environmental triggers, the elimination diet done right, flea allergy dermatitis, ear/skin flare protocols, meds and supplements, home/environment tweaks, and practical SOPs.',
+        component: () => import('./posts/canine-allergies-explained'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'feeding-dogs-in-daycare-and-boarding',
+        title: 'Feeding Dogs in Daycare and Boarding: Scheduling, Special Diets, and Risk Management',
+        date: 'September 9, 2025',
+        description:
+            'An operator-grade, 2,000+ word guide to feeding systems in daycare and boarding: intake questions, portioning in grams, food prep, sanitation, allergy controls, raw/prescription diets, med-with-food workflows, bloat and aspiration risk, documentation, and printable SOPs.',
+        component: () => import('./posts/feeding-dogs-in-daycare-and-boarding'),
+        categories: ['boarding', 'daycare'],
+    },
+    {
         slug: 'addisons-disease-in-dogs',
         title: 'Addison’s Disease in Dogs: What Owners Need to Know About Diagnosis and Daily Management',
         date: 'September 13, 2025',
