@@ -20,6 +20,15 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'food-vs-environmental-allergies-in-dogs-how-to-tell-the-difference',
+        title: 'Food vs. Environmental Allergies in Dogs: How to Tell the Difference',
+        date: 'September 5, 2025',
+        description:
+            'A veterinary-informed guide to separating food allergies from environmental allergies in dogs: patterns, diet trials, immunotherapy, and a step-by-step SOP families can follow.',
+        component: () => import('./posts/food-vs-environmental-allergies-in-dogs-how-to-tell-the-difference'),
+        categories: ['owner'],
+    },
+    {
         slug: 'excessive-shedding-in-dogs-when-its-normal-and-when-to-see-the-vet',
         title: 'Excessive Shedding in Dogs: When It\'s Normal and When to See the Vet',
         date: 'September 6, 2025',
