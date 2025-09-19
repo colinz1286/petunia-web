@@ -137,6 +137,17 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['owner'],
     },
     {
+        slug: 'cavalier-king-charles-ownership-costs-vet-bills-grooming-and-boarding',
+        title: 'Cavalier King Charles Ownership Costs: Vet Bills, Grooming, and Boarding',
+        date: 'September 18, 2025',
+        description:
+            'A full, operator-grade breakdown of Cavalier King Charles Spaniel ownership costs: realistic budgets for vet care, grooming, food, insurance, daycare/boarding, travel, training, supplies, and senior care—plus cost-control systems that keep comfort high without surprise bills.',
+        component: () =>
+            import('./posts/cavalier-king-charles-ownership-costs-vet-bills-grooming-and-boarding'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Cavalier King Charles Spaniel',
+    },
+    {
         slug: 'how-many-variants-of-doodles-exist',
         title: 'How Many Variants of Doodles Exist? Popular Types, Temperaments, and What Owners Should Know',
         date: 'September 11, 2025',
