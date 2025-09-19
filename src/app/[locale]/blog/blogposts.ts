@@ -20,6 +20,24 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'excessive-shedding-in-dogs-when-its-normal-and-when-to-see-the-vet',
+        title: 'Excessive Shedding in Dogs: When It\'s Normal and When to See the Vet',
+        date: 'September 6, 2025',
+        description:
+            'A research-backed guide covering normal vs. excessive shedding, at-home fixes (grooming, nutrition, environment), red-flag symptoms, and what to expect at the vet.',
+        component: () => import('./posts/excessive-shedding-in-dogs-when-its-normal-and-when-to-see-the-vet'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'hiring-and-retaining-great-kennel-staff',
+        title: 'Hiring and Retaining Great Kennel Staff: Culture and Burnout Prevention',
+        date: 'September 18, 2025',
+        description:
+            'An operator-grade, 2,000+ word guide for kennel and daycare owners on staff retention: hiring pipelines, onboarding, culture-building, mentorship, fair wages, flexible scheduling, communication systems, burnout prevention, and SOPs for sustainable teams.',
+        component: () => import('./posts/hiring-and-retaining-great-kennel-staff'),
+        categories: ['boarding'],
+    },
+    {
         slug: 'tracheal-collapse-in-small-breeds',
         title: 'Tracheal Collapse in Small Breeds: Symptoms, Lifestyle Adjustments, and Veterinary Care',
         date: 'September 7, 2025',
