@@ -707,7 +707,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'Evidence-informed guide to tail language: why wags happen, left–right asymmetry, speed/height/stiffness variables, breed and tail-shape caveats, life-stage nuances, safety with kids, training applications, daycare/boarding context, and health issues like “limber tail.”',
         component: () => import('./posts/why-do-dogs-wag-their-tails'),
-        categories: ['owner', 'breed_specific_guides'],
+        categories: ['owner'],
     },
     {
         slug: 'how-much-does-a-cane-corso-cost-to-own',
