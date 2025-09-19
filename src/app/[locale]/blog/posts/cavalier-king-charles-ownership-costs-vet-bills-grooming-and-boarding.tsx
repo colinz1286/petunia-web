@@ -12,7 +12,6 @@ export default function CavalierKingCharlesOwnershipCosts() {
   const date = 'September 18, 2025';
   const description =
     'A full, operator-grade breakdown of Cavalier King Charles Spaniel ownership costs: realistic budgets for vet care, grooming, food, insurance, daycare/boarding, travel, training, supplies, and senior care—plus cost-control systems that keep comfort high without surprise bills.';
-  const categories = ['owner', 'budgeting', 'boarding'] as const;
 
   const categoryLabels: Record<string, string> = {
     owner: 'Pet Owners',
