@@ -349,9 +349,10 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 rounded-full text-sm ${
-                filter === f ? 'bg-[color:var(--color-accent)] text-white' : 'bg-gray-200 text-gray-800'
-              }`}
+              className={`px-3 py-1.5 rounded-full text-sm ${filter === f
+                  ? 'bg-[#2f855a] text-white'   // ✅ hardcoded green accent
+                  : 'bg-gray-200 text-gray-800'
+                }`}
             >
               {t(f.toLowerCase())}
             </button>
@@ -372,14 +373,14 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
             {filter === 'Daycare'
               ? t('no_daycare_dogs')
               : filter === 'Boarding'
-              ? t('no_boarding_dogs')
-              : t('no_grooming_dogs')}
+                ? t('no_boarding_dogs')
+                : t('no_grooming_dogs')}
           </p>
         )}
 
         {!isLoading && !errorMsg && filteredDogs.length > 0 && (
           <div className="space-y-3">
-            {filteredDogs.map((dog) => {
+            {filteredDogs.map((dog, idx) => {
               const expandedRow = expanded.has(dog.id);
               return (
                 <div key={dog.id} className="rounded-xl border border-[color:var(--color-accent)] bg-white">
@@ -389,6 +390,9 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
                     onClick={() => toggleExpand(dog.id)}
                   >
                     <div className="flex items-center gap-2">
+                      {/* NEW: sequential number before the dog name */}
+                      <span className="text-gray-500 font-mono">{idx + 1}.</span>
+
                       <span className="font-semibold">🐶 {dog.name || t('unknown_dog')}</span>
                       {hasMedications(dog) && <span title={t('medications_label')}>💊</span>}
                       {isIntact(dog) && (
