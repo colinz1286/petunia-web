@@ -20,6 +20,78 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'new-penn-vet-clinic-advances-treatment-for-canine-retinal-disease',
+        title: 'New Penn Vet Clinic Advances Treatment for Canine Retinal Disease',
+        date: 'September 25, 2025',
+        description:
+            'Penn Vet has opened a new specialty clinic for canine retinal disease, including progressive retinal atrophy (PRA). Learn what these diseases are, why they matter, and what diagnostic and treatment innovations are underway in the U.S. and UK.',
+        component: () => import('./posts/new-penn-vet-clinic-advances-treatment-for-canine-retinal-disease'),
+        categories: ['owner', 'veterinary'],
+    },
+    {
+        slug: 'california-dogs-tick-borne-anaplasmosis-tripled',
+        title: 'California Dogs & Tick-Borne Bacteria: Why Anaplasmosis Has Tripled',
+        date: 'September 25, 2025',
+        description:
+            'Dogs in California now test positive for anaplasmosis at nearly triple the historical rate. This article explores tick surveillance, overlapping pathogens, prevention, and what boarding/daycare facilities need to know.',
+        component: () => import('./posts/california-dogs-tick-borne-anaplasmosis-tripled'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'pet-owners-underestimate-lifetime-costs-new-study-reveals-hidden-financial-risk',
+        title: 'Pet Owners Underestimate Lifetime Costs: New Study Reveals Hidden Financial Risk',
+        date: 'September 24, 2025',
+        description:
+            'A 2025 deep dive into the lifetime costs of pet ownership. New research shows most owners underestimate the financial commitment, leaving families unprepared for emergencies. Learn real cost breakdowns, hidden expenses, and planning strategies.',
+        component: () => import('./posts/pet-owners-underestimate-lifetime-costs-new-study-reveals-hidden-financial-risk'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'dog-fall-allergies-us-canada-with-anz-callouts',
+        title: 'Dog Fall Allergies: U.S./Canada Guide with Australia/NZ Spring Callouts',
+        date: 'September 23, 2025',
+        description:
+            'A veterinary-informed 2025 guide to dog fall allergies across the U.S. and Canada, with seasonal callouts for Australia and New Zealand. Learn symptom patterns, pollen calendars, home care that helps, and when to involve your veterinarian.',
+        component: () => import('./posts/dog-fall-allergies-us-canada-with-anz-callouts'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'dog-titer-testing-explained-where-to-get-it-us-uk',
+        title: 'Dog Titer Testing Explained + Where to Get It (U.S. + UK Resources)',
+        date: 'September 22, 2025',
+        description:
+            'A veterinary-informed guide to dog titer testing: what it is, when it matters, how reliable it is, and where owners can access testing in the U.S. and UK.',
+        component: () => import('./posts/dog-titer-testing-explained-where-to-get-it-us-uk'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'daycare-for-intact-dogs-policies-heat-cycles-safety-us-uk-au',
+        title: 'Daycare for Intact Dogs: Policies, Heat Cycles & Safety (U.S. + UK/AU)',
+        date: 'September 21, 2025',
+        description:
+            'A practical, evidence-aligned guide to operating daycare with intact males and females: policy choices, heat-cycle exclusions, grouping, staffing, waivers, and regional notes for the U.S., UK, and Australia.',
+        component: () => import('./posts/daycare-for-intact-dogs-policies-heat-cycles-safety-us-uk-au'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'bravecto-quantum-for-dogs-onset-cost-safety-vs-alternatives',
+        title: 'Bravecto Quantum for Dogs: Onset, Cost & Safety vs. Alternatives',
+        date: 'September 20, 2025',
+        description:
+            'A veterinary-informed 2025 guide to Bravecto Quantum for dogs: how fast it works, cost comparisons, safety evidence, and alternatives for flea and tick prevention worldwide.',
+        component: () => import('./posts/bravecto-quantum-for-dogs-onset-cost-safety-vs-alternatives'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'canine-influenza-2025-safety-boosters-boarding-rules',
+        title: 'Canine Influenza 2025: Safety, Boosters & Boarding Rules',
+        date: 'September 19, 2025',
+        description:
+            'A veterinary-informed 2025 guide to canine influenza: current vaccine safety, booster recommendations, global boarding requirements, and practical owner advice.',
+        component: () => import('./posts/canine-influenza-2025-safety-boosters-boarding-rules'),
+        categories: ['owner', 'boarding'],
+    },
+    {
         slug: 'food-vs-environmental-allergies-in-dogs-how-to-tell-the-difference',
         title: 'Food vs. Environmental Allergies in Dogs: How to Tell the Difference',
         date: 'September 5, 2025',
