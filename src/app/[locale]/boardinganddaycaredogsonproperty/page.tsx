@@ -344,20 +344,25 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
         </h1>
 
         {/* Filter segmented control */}
-        <div className="flex items-center justify-center gap-2 mb-4">
+        <div className="flex items-center justify-center gap-2 mb-2">
           {(['Daycare', 'Boarding', 'Grooming'] as FilterType[]).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 rounded-full text-sm ${filter === f
-                  ? 'bg-[#2f855a] text-white'   // ✅ hardcoded green accent
-                  : 'bg-gray-200 text-gray-800'
+              className={`px-3 py-1.5 rounded-full text-sm ${filter === f ? 'bg-[#2f855a] text-white' : 'bg-gray-200 text-gray-800'
                 }`}
             >
               {t(f.toLowerCase())}
             </button>
           ))}
         </div>
+
+        {/* ✅ NEW: total count under the filter (only when not loading and no error) */}
+        {!isLoading && !errorMsg && (
+          <p className="text-center text-sm text-gray-500 mb-4">
+            {filteredDogs.length} total
+          </p>
+        )}
 
         {/* States */}
         {isLoading && (

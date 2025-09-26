@@ -405,7 +405,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
         const showAssessmentBadge = isAssessmentDaycare(dog);
 
         return (
-            <div className="rounded-2xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
+            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden dark:bg-white dark:border-gray-200">
                 <div className="w-full p-4 flex items-center justify-between gap-4">
                     <button
                         type="button"
@@ -436,23 +436,30 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                         >
                             {t('check_out_button') || 'Check Out'}
                         </button>
-                        <svg
-                            className={`h-4 w-4 transition-transform ${selectedDogId === dog.id ? 'rotate-180' : ''}`}
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                            aria-hidden="true"
+                        <button
+                            type="button"
+                            onClick={() => onToggleDogDetails(dog.id)}
+                            aria-label={selectedDogId === dog.id ? 'Collapse details' : 'Expand details'}
+                            className="p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-200"
                         >
-                            <path
-                                fillRule="evenodd"
-                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.188l3.71-3.957a.75.75 0 111.1 1.02l-4.25 4.53a.75.75 0 01-1.1 0l-4.25-4.53a.75.75 0 01.02-1.06z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
+                            <svg
+                                className={`h-4 w-4 text-gray-600 transition-transform ${selectedDogId === dog.id ? 'rotate-180' : ''}`}
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.188l3.71-3.957a.75.75 0 111.1 1.02l-4.25 4.53a.75.75 0 01-1.1 0l-4.25-4.53a.75.75 0 01.02-1.06z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
                 {selectedDogId === dog.id ? (
-                    <div className="px-4 pb-4 text-sm text-gray-800 dark:text-gray-200">
+                    <div className="px-4 pb-4 text-sm !text-black dark:!text-black">
                         <div className="mt-1">Owner: {dog.owner}</div>
                         <div className="mt-1">Type: {dog.type}</div>
                         <div className="mt-1">
@@ -522,7 +529,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
     // ---------------------------------------------------------------------------
     return (
         <main className="w-full max-w-md sm:max-w-lg mx-auto px-2 sm:px-4 py-6">
-            <header className="mb-5">
+            <header className="mb-5 text-center">
                 <h1 className="text-2xl sm:text-3xl font-bold text-[color:var(--color-accent)]">
                     {t('title')}
                 </h1>
@@ -531,10 +538,15 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                 </p>
             </header>
 
-            {/* Filters */}
-            <div className="mb-5">
+            <div className="mb-2 flex justify-center">
                 <SegmentedControl />
             </div>
+
+            {!isBootstrapping && !error && (
+                <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    {filteredDogs.length} total
+                </p>
+            )}
 
             {/* Loading / Error */}
             {isBootstrapping ? (
