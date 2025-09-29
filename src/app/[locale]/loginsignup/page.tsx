@@ -122,6 +122,8 @@ export default function LoginSignupPage() {
         const type = normalizeBusinessType(businessData);
         if (type === 'breeder') {
           router.push(`/${locale}/breederdashboard`);
+        } else if (type === 'walkersitter') {
+          router.push(`/${locale}/walkersitterdashboard`);
         } else {
           router.push(`/${locale}/boardinganddaycaredashboard`);
         }
@@ -212,7 +214,7 @@ export default function LoginSignupPage() {
             className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm"
           />
 
-        <input
+          <input
             type="password"
             placeholder="Password"
             value={password}

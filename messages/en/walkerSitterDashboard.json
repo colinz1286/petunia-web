@@ -1,0 +1,16 @@
+{
+  "business_dashboard_greeting": "Welcome to Your Dashboard",
+  "business_verified": "Verified",
+  "business_not_verified": "Not Verified",
+  "verify_now": "Verify Now",
+  "logout": "Logout",
+  "resolving_business_id": "Resolving your business...",
+  "ws_todays_visits": "Today’s Visits",
+  "ws_upcoming_visits": "Upcoming Visits",
+  "pending_requests": "Pending Requests",
+  "notifications": "Notifications",
+  "ws_clients_pets": "Clients & Pets",
+  "ws_visit_reports": "Visit Reports",
+  "reminders": "Reminders",
+  "business_settings_title": "Business Settings"
+}

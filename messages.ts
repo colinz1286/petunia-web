@@ -34,6 +34,7 @@ export default {
     individualUpcomingAppointments: require('./messages/en/individualUpcomingAppointments.json'),
     individualEmployeeDogsOnProperty: require('./messages/en/individualEmployeeDogsOnProperty.json'),
     individualEmployeeUpcomingReservations: require('./messages/en/individualEmployeeUpcomingReservations.json'),
-    waiverAgreement: require('./messages/en/waiverAgreement.json')
+    waiverAgreement: require('./messages/en/waiverAgreement.json'),
+    walkerSitterDashboard: require('./messages/en/walkerSitterDashboard.json'),
   })
 };

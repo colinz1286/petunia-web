@@ -61,18 +61,20 @@ export default function BusinessSignUpPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Mirror iOS: enable Boarding/Daycare and Breeder
-  const businessTypes = [
-    'Boarding/Daycare',
-    'Breeder',
-    'Pet Sitter/Dog Walker (Coming Soon!)',
-    'Groomer (Coming Soon!)',
-    'Shelter/Rescue (Coming Soon!)',
-    'Veterinary Clinic (Coming Soon!)',
-    'Pet Trainer (Coming Soon!)',
-    'Pet Retail Store (Coming Soon!)'
+  // Mirror iOS: normalized labels & stored values
+  const businessTypeOptions = [
+    { label: 'Boarding/Daycare', value: 'boardingDaycare' },
+    { label: 'Breeder', value: 'breeder' },
+    { label: 'Walker/Sitter', value: 'walkerSitter' },  // combined type
+    { label: 'Groomer (Coming Soon!)', value: 'groomer' },
+    { label: 'Shelter/Rescue (Coming Soon!)', value: 'shelterRescue' },
+    { label: 'Veterinary Clinic (Coming Soon!)', value: 'veterinaryClinic' },
+    { label: 'Pet Trainer (Coming Soon!)', value: 'petTrainer' },
+    { label: 'Pet Retail Store (Coming Soon!)', value: 'petRetail' }
   ];
-  const enabledTypes = new Set(['Boarding/Daycare', 'Breeder']);
+
+  // Enabled set (Walker/Sitter intentionally left out for now)
+  const enabledBusinessTypeValues = new Set(['boardingDaycare', 'breeder']);
 
   const handleChange = (field: string, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -269,11 +271,10 @@ export default function BusinessSignUpPage() {
         {/* Business Type */}
         <h2 className="text-lg font-semibold mt-8">Select Business Type</h2>
         <div className="space-y-3">
-          {businessTypes.map(type => {
-            const isSelected = form.businessType === type;
-            const isEnabled = enabledTypes.has(type);
+          {businessTypeOptions.map(opt => {
+            const isSelected = form.businessType === opt.value;
+            const isEnabled = enabledBusinessTypeValues.has(opt.value);
 
-            // enabled idle = green; selected = blue; disabled = white
             const base = 'w-full px-4 py-3 rounded border-2 text-sm relative transition';
             const selectedClasses = 'bg-[#2563eb] text-white border-[#2563eb]';   // blue (selected)
             const enabledIdleClasses = 'bg-[#3f6f49] text-white border-[#3f6f49]'; // green (idle)
@@ -287,25 +288,23 @@ export default function BusinessSignUpPage() {
 
             return (
               <button
-                key={type}
+                key={opt.value}
                 type="button"
                 className={`${base} ${classes}`}
                 onClick={() => {
                   if (isEnabled) {
-                    handleChange('businessType', type);
+                    handleChange('businessType', opt.value);   // store normalized value
                     setError(null);
                   } else {
-                    setError(`🚧 ${type} coming soon`);
+                    setError(`🚧 ${opt.label} coming soon`);
                   }
                 }}
                 aria-pressed={isSelected}
               >
-                {/* centered label */}
                 <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                  {type}
+                  {opt.label}
                 </span>
 
-                {/* right check when selected */}
                 {isSelected && (
                   <span className="pointer-events-none absolute right-3 inset-y-0 flex items-center">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
@@ -316,8 +315,7 @@ export default function BusinessSignUpPage() {
                   </span>
                 )}
 
-                {/* keeps height */}
-                <span className="opacity-0">{type}</span>
+                <span className="opacity-0">{opt.label}</span>
               </button>
             );
           })}
