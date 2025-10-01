@@ -1,0 +1,15 @@
+{
+  "back_button": "Back",
+  "pending_requests_title": "Pending Client Requests",
+  "loading_requests": "Loading requests...",
+  "no_pending_requests": "No pending requests.",
+  "approve_button": "Approve",
+  "decline_button": "Decline",
+  "notification_approved": "Your request has been approved.",
+  "notification_declined": "Your request has been declined.",
+  "error_loading": "Failed to load requests.",
+  "error_processing": "Failed to process request.",
+  "not_authenticated": "You must be logged in to view this page.",
+  "no_business_found": "No business found for this account.",
+  "unknown_user": "Unknown User"
+}

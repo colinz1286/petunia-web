@@ -49,7 +49,9 @@ export default getRequestConfig(async ({ locale }) => {
     individualEmployeeDogsOnProperty: (await import(`../../messages/${safeLocale}/individualEmployeeDogsOnProperty.json`)).default,
     individualEmployeeUpcomingReservations: (await import(`../../messages/${safeLocale}/individualEmployeeUpcomingReservations.json`)).default,
     waiverAgreement: (await import(`../../messages/${safeLocale}/waiverAgreement.json`)).default,
-    walkerSitterDashboard: (await import(`../../messages/${safeLocale}/walkerSitterDashboard.json`)).default
+     walkerSitterBusinessSettings: (await import(`../../messages/${safeLocale}/walkerSitterBusinessSettings.json`)).default,
+    walkerSitterDashboard: (await import(`../../messages/${safeLocale}/walkerSitterDashboard.json`)).default,
+    walkerSitterPendingRequests: (await import(`../../messages/${safeLocale}/walkerSitterPendingRequests.json`)).default
   } as const;
 
   return {
