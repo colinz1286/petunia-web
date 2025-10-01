@@ -10,6 +10,138 @@
         "breed": "German Shepherd"
     },
     {
+        "slug": "border-collie-health-guide",
+        "title": "Border Collie Health Guide: Joint Care, Seizures, and Longevity",
+        "date": "October 1, 2025",
+        "categories": [
+            "owner",
+            "breed_specific_guides"
+        ],
+        "breed": "Border Collie"
+    },
+    {
+        "slug": "westie-allergies",
+        "title": "West Highland White Terrier Allergies: Why Westies Scratch and What Helps",
+        "date": "October 1, 2025",
+        "categories": [
+            "owner",
+            "allergy",
+            "breed_specific_guides"
+        ],
+        "breed": "West Highland White Terrier"
+    },
+    {
+        "slug": "great-dane-health-lifespan",
+        "title": "Great Dane Health and Lifespan: How to Support a Giant Breed",
+        "date": "October 1, 2025",
+        "categories": [
+            "owner",
+            "breed_specific_guides"
+        ],
+        "breed": "Great Dane"
+    },
+    {
+        "slug": "allergy-ear-skin-hotspots",
+        "title": "Ear Infections, Hot Spots, and Skin Irritation: The Allergy Connection",
+        "date": "September 30, 2025",
+        "categories": [
+            "owner",
+            "allergy"
+        ]
+    },
+    {
+        "slug": "boxer-skin-issues",
+        "title": "Boxer Skin Issues Explained: Allergies, Lumps, and Early Warning Signs",
+        "date": "September 30, 2025",
+        "categories": [
+            "owner",
+            "allergy",
+            "breed_specific_guides"
+        ],
+        "breed": "Boxer"
+    },
+    {
+        "slug": "boston-terrier-coat-care",
+        "title": "Boston Terrier Coat Care: Shedding, Allergies, and Skin Health",
+        "date": "September 29, 2025",
+        "categories": [
+            "owner",
+            "breed_specific_guides"
+        ],
+        "breed": "Boston Terrier"
+    },
+    {
+        "slug": "beagle-shedding",
+        "title": "Do Beagles Shed? Grooming, Allergy Considerations, and Household Tips",
+        "date": "September 29, 2025",
+        "categories": [
+            "owner",
+            "breed_specific_guides"
+        ],
+        "breed": "Beagle"
+    },
+    {
+        "slug": "cavalier-king-charles-spaniel-health-risks",
+        "title": "Cavalier King Charles Spaniel Health Risks: Heart, Eyes, and Lifespan",
+        "date": "September 28, 2025",
+        "categories": [
+            "owner",
+            "breed_specific_guides"
+        ],
+        "breed": "Cavalier King Charles Spaniel"
+    },
+    {
+        "slug": "dachshund-back-problems",
+        "title": "Dachshund Back Problems Explained: Prevention and Care Tips",
+        "date": "September 28, 2025",
+        "categories": [
+            "owner",
+            "breed_specific_guides"
+        ],
+        "breed": "Dachshund"
+    },
+    {
+        "slug": "best-dog-breeds-for-families",
+        "title": "Best Dog Breeds for Families with Young Kids",
+        "date": "September 27, 2025",
+        "categories": [
+            "owner"
+        ]
+    },
+    {
+        "slug": "senior-dog-health-problems",
+        "title": "Top 10 Senior Dog Health Problems (and How to Support Aging Pets)",
+        "date": "September 27, 2025",
+        "categories": [
+            "owner"
+        ]
+    },
+    {
+        "slug": "dog-vaccines-what-they-protect",
+        "title": "Most Common Dog Vaccines: What They Protect Against and Why They Matter",
+        "date": "September 26, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "separation-anxiety-dogs",
+        "title": "Signs of Separation Anxiety in Dogs (and How to Help Them Cope)",
+        "date": "September 26, 2025",
+        "categories": [
+            "owner"
+        ]
+    },
+    {
+        "slug": "french-bulldog-shedding-myths",
+        "title": "French Bulldog Shedding Myths: What Owners Really Need to Know",
+        "date": "September 26, 2025",
+        "categories": [
+            "owner"
+        ]
+    },
+    {
         "slug": "new-penn-vet-clinic-advances-treatment-for-canine-retinal-disease",
         "title": "New Penn Vet Clinic Advances Treatment for Canine Retinal Disease",
         "date": "September 25, 2025",

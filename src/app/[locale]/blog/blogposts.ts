@@ -20,6 +20,140 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
+        slug: 'border-collie-health-guide',
+        title: 'Border Collie Health Guide: Joint Care, Seizures, and Longevity',
+        date: 'October 1, 2025',
+        description:
+            'Border Collies are active, intelligent dogs with unique health needs. Learn about joint care, seizures, and how to support longevity in this detailed breed health guide.',
+        component: () => import('./posts/border-collie-health-guide'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Border Collie',
+    },
+    {
+        slug: 'westie-allergies',
+        title: 'West Highland White Terrier Allergies: Why Westies Scratch and What Helps',
+        date: 'October 1, 2025',
+        description:
+            'West Highland White Terriers are prone to allergies that cause scratching, itching, and skin issues. Learn why Westies develop allergies, the signs to watch for, and the best treatments and prevention tips.',
+        component: () => import('./posts/westie-allergies'),
+        categories: ['owner', 'allergy', 'breed_specific_guides'],
+        breed: 'West Highland White Terrier',
+    },
+    {
+        slug: 'great-dane-health-lifespan',
+        title: 'Great Dane Health and Lifespan: How to Support a Giant Breed',
+        date: 'October 1, 2025',
+        description:
+            'Great Danes are gentle giants with unique health challenges and shorter lifespans. Learn about common health issues, diet, exercise, and care strategies to support a long and healthy life.',
+        component: () => import('./posts/great-dane-health-lifespan'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Great Dane',
+    },
+    {
+        slug: 'allergy-ear-skin-hotspots',
+        title: 'Ear Infections, Hot Spots, and Skin Irritation: The Allergy Connection',
+        date: 'September 30, 2025',
+        description:
+            'Learn how allergies cause ear infections, hot spots, and skin irritation in dogs. Discover the connection, early warning signs, and prevention and treatment tips for healthier pets.',
+        component: () => import('./posts/allergy-ear-skin-hotspots'),
+        categories: ['owner', 'allergy'],
+    },
+    {
+        slug: 'boxer-skin-issues',
+        title: 'Boxer Skin Issues Explained: Allergies, Lumps, and Early Warning Signs',
+        date: 'September 30, 2025',
+        description:
+            'Boxers are prone to skin issues including allergies, lumps, and tumors. Learn the early warning signs, treatment options, and care tips for maintaining healthy skin in your Boxer.',
+        component: () => import('./posts/boxer-skin-issues'),
+        categories: ['owner', 'allergy', 'breed_specific_guides'],
+        breed: 'Boxer',
+    },
+    {
+        slug: 'boston-terrier-coat-care',
+        title: 'Boston Terrier Coat Care: Shedding, Allergies, and Skin Health',
+        date: 'September 29, 2025',
+        description:
+            'Learn how to care for your Boston Terrier’s coat. Understand shedding patterns, allergy considerations, and common skin health issues with tips for grooming and prevention.',
+        component: () => import('./posts/boston-terrier-coat-care'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier',
+    },
+    {
+        slug: 'beagle-shedding',
+        title: 'Do Beagles Shed? Grooming, Allergy Considerations, and Household Tips',
+        date: 'September 29, 2025',
+        description:
+            'Do Beagles shed? Learn about Beagle shedding patterns, grooming needs, allergy considerations, and household tips for keeping your home clean and your dog’s coat healthy.',
+        component: () => import('./posts/beagle-shedding'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Beagle',
+    },
+    {
+        slug: 'dachshund-back-problems',
+        title: 'Dachshund Back Problems Explained: Prevention and Care Tips',
+        date: 'September 28, 2025',
+        description:
+            'Dachshunds are prone to back problems like intervertebral disc disease (IVDD). Learn the causes, prevention tips, treatment options, and how to keep your Dachshund’s spine healthy.',
+        component: () => import('./posts/dachshund-back-problems'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Dachshund',
+    },
+    {
+        slug: 'cavalier-king-charles-spaniel-health-risks',
+        title: 'Cavalier King Charles Spaniel Health Risks: Heart, Eyes, and Lifespan',
+        date: 'September 28, 2025',
+        description:
+            'Learn about the most common health risks in Cavalier King Charles Spaniels, including heart disease, eye problems, and lifespan factors. Discover how to support a longer, healthier life for your Cavalier.',
+        component: () => import('./posts/cavalier-king-charles-spaniel-health-risks'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Cavalier King Charles Spaniel',
+    },
+    {
+        slug: 'best-dog-breeds-for-families',
+        title: 'Best Dog Breeds for Families with Young Kids',
+        date: 'September 27, 2025',
+        description:
+            'Looking for the best dog breeds for families with young kids? Explore top family-friendly breeds, challenges, safety tips, and daycare insights to help you choose the right dog.',
+        component: () => import('./posts/best-dog-breeds-for-families'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'senior-dog-health-problems',
+        title: 'Top 10 Senior Dog Health Problems (and How to Support Aging Pets)',
+        date: 'September 27, 2025',
+        description:
+            'Explore the top 10 health challenges senior dogs face, including arthritis, dementia, heart issues, and incontinence. Learn diet, exercise, and boarding strategies to support aging pets.',
+        component: () => import('./posts/senior-dog-health-problems'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'dog-vaccines-what-they-protect',
+        title: 'Most Common Dog Vaccines: What They Protect Against and Why They Matter',
+        date: 'September 26, 2025',
+        description:
+            'Learn about the most common dog vaccines, what they protect against, boarding and daycare requirements, and emerging vaccines that may benefit your pet.',
+        component: () => import('./posts/dog-vaccines-what-they-protect'),
+        categories: ['owner', 'veterinary'],
+    },
+    {
+        slug: 'separation-anxiety-dogs',
+        title: 'Signs of Separation Anxiety in Dogs (and How to Help Them Cope)',
+        date: 'September 26, 2025',
+        description:
+            'Learn the signs of separation anxiety in dogs, from pacing and barking to destructive behavior. Explore proven coping strategies including enrichment, daycare, and when to seek professional help.',
+        component: () => import('./posts/separation-anxiety-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'french-bulldog-shedding-myths',
+        title: 'French Bulldog Shedding Myths: What Owners Really Need to Know',
+        date: 'September 26, 2025',
+        description:
+            'French Bulldogs are often labeled as hypoallergenic, but is that true? Learn the facts about shedding, seasonal patterns, and grooming tips to keep your Frenchie healthy.',
+        component: () => import('./posts/french-bulldog-shedding-myths'),
+        categories: ['owner'],
+    },
+    {
         slug: 'new-penn-vet-clinic-advances-treatment-for-canine-retinal-disease',
         title: 'New Penn Vet Clinic Advances Treatment for Canine Retinal Disease',
         date: 'September 25, 2025',
