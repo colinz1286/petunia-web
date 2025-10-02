@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { getAuth } from 'firebase/auth';
 import {
     getFirestore,
@@ -102,14 +102,35 @@ export default function WalkerSitterBusinessSettingsPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
+    // --- Dirty tracking & leave prompt
+    const [dirty, setDirty] = useState(false);
+    const [showLeavePrompt, setShowLeavePrompt] = useState(false);
+    const nextPathRef = useRef<string | null>(null);
+    const initialJsonRef = useRef<string>('');
+
+    // --- New row inputs for dynamic lists
+    const [newService, setNewService] = useState('');
+    const [newAddOnLabel, setNewAddOnLabel] = useState('');
+    const [newAddOnPrice, setNewAddOnPrice] = useState<number>(0);
+
     // --- Load business data
     useEffect(() => {
         const unsub = auth.onAuthStateChanged((user) => {
             if (!user) return;
             const load = async () => {
-                const q = query(collection(db, 'businesses'), where('ownerId', '==', user.uid));
-                const snapshot = await getDocs(q);
-                const docSnap = snapshot.docs[0];
+                // 1) Try array-based ownerIds first
+                let docSnap: any = null;
+                {
+                    const q1 = query(collection(db, 'businesses'), where('ownerIds', 'array-contains', user.uid));
+                    const s1 = await getDocs(q1);
+                    docSnap = s1.docs[0] || null;
+                }
+                // 2) Fallback to legacy single ownerId
+                if (!docSnap) {
+                    const q2 = query(collection(db, 'businesses'), where('ownerId', '==', user.uid));
+                    const s2 = await getDocs(q2);
+                    docSnap = s2.docs[0] || null;
+                }
                 if (!docSnap) return;
 
                 const data = docSnap.data();
@@ -160,27 +181,57 @@ export default function WalkerSitterBusinessSettingsPage() {
             load();
         });
         return () => unsub();
+
+        // After first load completes, capture a clean snapshot
+        useEffect(() => {
+            if (!loading) {
+                initialJsonRef.current = JSON.stringify(buildSettingsPayload());
+                // Force one compare right away
+                const now = JSON.stringify(buildSettingsPayload());
+                setDirty(now !== initialJsonRef.current);
+            }
+        }, [loading, buildSettingsPayload]);
+
+        // Watch all fields; flip dirty when payload diverges from snapshot
+        useEffect(() => {
+            if (loading || !initialJsonRef.current) return;
+            const now = JSON.stringify(buildSettingsPayload());
+            setDirty(now !== initialJsonRef.current);
+        }, [loading, buildSettingsPayload]);
+
+        // Warn on hard navigation (refresh/close tab) if dirty
+        useEffect(() => {
+            const handler = (e: BeforeUnloadEvent) => {
+                if (!dirty) return;
+                e.preventDefault();
+                e.returnValue = '';
+            };
+            window.addEventListener('beforeunload', handler);
+            return () => window.removeEventListener('beforeunload', handler);
+        }, [dirty]);
     }, []);
 
-    // --- Save settings
-    const saveSettings = async () => {
-        if (!businessId) return;
-        setSaving(true);
-
+    // --- Build payload used for both save() and dirty comparison
+    const buildSettingsPayload = useCallback(() => {
         const walkRatesStringKeys: Record<string, number> = {};
-        Object.entries(walkRates).forEach(([k, v]) => { walkRatesStringKeys[String(k)] = v; });
+        Object.entries(walkRates).forEach(([k, v]) => {
+            const n = Number(v);
+            if (!Number.isNaN(n)) walkRatesStringKeys[String(k)] = n;
+        });
 
-        await updateDoc(doc(db, 'businesses', businessId), {
+        return {
             businessBio,
             enableWalking,
             enableSitting,
             serviceRadius,
             operatingHours,
             cancellationPolicy,
+
             walkerWaiverRequired,
             walkerWaiverText,
             sitterWaiverRequired,
             sitterWaiverText,
+
             walkerSettings: {
                 durations: walkDurations,
                 rates: walkRatesStringKeys,
@@ -197,8 +248,26 @@ export default function WalkerSitterBusinessSettingsPage() {
                 maxBookingsPerDay,
                 bufferMinutes
             }
-        });
+        };
+    }, [
+        businessBio, enableWalking, enableSitting, serviceRadius, operatingHours, cancellationPolicy,
+        walkerWaiverRequired, walkerWaiverText, sitterWaiverRequired, sitterWaiverText,
+        walkDurations, walkRates, maxDogsPerWalk,
+        sittingTypes, supportedAnimals, baseRates, includedServices, addOns,
+        maxPetsAllowed, minNoticeHours, maxBookingsPerDay, bufferMinutes
+    ]);
 
+    // --- Save settings
+    const saveSettings = async () => {
+        if (!businessId) return;
+        setSaving(true);
+
+        const payload = buildSettingsPayload();
+        await updateDoc(doc(db, 'businesses', businessId), payload);
+
+        // Mark clean after successful save
+        initialJsonRef.current = JSON.stringify(payload);
+        setDirty(false);
         setSaving(false);
     };
 
@@ -206,7 +275,17 @@ export default function WalkerSitterBusinessSettingsPage() {
     return (
         <div className="w-full max-w-2xl mx-auto px-4 py-8 text-[color:var(--color-foreground)]">
             {/* Back */}
-            <button onClick={() => router.push('/walkersitterdashboard')} className="text-sm text-blue-600 underline mb-4">
+            <button
+                onClick={() => {
+                    if (dirty) {
+                        nextPathRef.current = '/walkersitterdashboard';
+                        setShowLeavePrompt(true);
+                    } else {
+                        router.push('/walkersitterdashboard');
+                    }
+                }}
+                className="text-sm text-blue-600 underline mb-4"
+            >
                 ← {t('back_to_dashboard')}
             </button>
 
@@ -383,6 +462,142 @@ export default function WalkerSitterBusinessSettingsPage() {
                                 </label>
                             </div>
 
+                            {/* Included Services */}
+                            <div className="mt-4">
+                                <h3 className="font-semibold text-sm text-[color:var(--color-accent)] mb-2">
+                                    {t('ws_included_services')}
+                                </h3>
+
+                                {includedServices.length === 0 && (
+                                    <p className="text-sm text-gray-500">{t('ws_no_services')}</p>
+                                )}
+
+                                {includedServices.map((svc, i) => (
+                                    <div key={`svc-${i}`} className="flex items-center gap-2 mb-2">
+                                        <input
+                                            value={svc}
+                                            onChange={(e) => {
+                                                const next = [...includedServices];
+                                                next[i] = e.target.value;
+                                                setIncludedServices(next);
+                                            }}
+                                            className="flex-1 border rounded px-2 py-1"
+                                            placeholder={t('ws_service_placeholder')}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setIncludedServices(includedServices.filter((_, j) => j !== i))}
+                                            className="px-2 py-1 border rounded"
+                                        >
+                                            {t('remove')}
+                                        </button>
+                                    </div>
+                                ))}
+
+                                <div className="flex gap-2">
+                                    <input
+                                        value={newService}
+                                        onChange={(e) => setNewService(e.target.value)}
+                                        className="flex-1 border rounded px-2 py-1"
+                                        placeholder={t('ws_service_new_placeholder')}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const label = newService.trim();
+                                            if (label.length > 0) {
+                                                setIncludedServices([...includedServices, label]);
+                                                setNewService('');
+                                            }
+                                        }}
+                                        className="px-3 py-1 bg-[#2c4a30] text-white rounded"
+                                    >
+                                        {t('add')}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Add-Ons */}
+                            <div className="mt-6">
+                                <h3 className="font-semibold text-sm text-[color:var(--color-accent)] mb-2">
+                                    {t('ws_add_ons')}
+                                </h3>
+
+                                {Object.keys(addOns).length === 0 && (
+                                    <p className="text-sm text-gray-500">{t('ws_no_add_ons')}</p>
+                                )}
+
+                                {Object.entries(addOns).map(([label, price]) => (
+                                    <div key={`addon-${label}`} className="flex items-center gap-2 mb-2">
+                                        <input
+                                            value={label}
+                                            onChange={(e) => {
+                                                const newLabel = e.target.value;
+                                                setAddOns((prev) => {
+                                                    const { [label]: oldVal, ...rest } = prev;
+                                                    return newLabel ? { ...rest, [newLabel]: oldVal ?? 0 } : rest;
+                                                });
+                                            }}
+                                            className="flex-1 border rounded px-2 py-1"
+                                            placeholder={t('ws_add_on_label_placeholder')}
+                                        />
+                                        <input
+                                            type="number"
+                                            value={Number(price)}
+                                            onChange={(e) => {
+                                                const val = parseFloat(e.target.value);
+                                                setAddOns((prev) => ({ ...prev, [label]: Number.isNaN(val) ? 0 : val }));
+                                            }}
+                                            className="w-28 border rounded px-2 py-1 text-right"
+                                            placeholder="0"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setAddOns((prev) => {
+                                                    const copy = { ...prev };
+                                                    delete copy[label];
+                                                    return copy;
+                                                });
+                                            }}
+                                            className="px-2 py-1 border rounded"
+                                        >
+                                            {t('remove')}
+                                        </button>
+                                    </div>
+                                ))}
+
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        value={newAddOnLabel}
+                                        onChange={(e) => setNewAddOnLabel(e.target.value)}
+                                        className="flex-1 border rounded px-2 py-1"
+                                        placeholder={t('ws_add_on_label_placeholder')}
+                                    />
+                                    <input
+                                        type="number"
+                                        value={newAddOnPrice}
+                                        onChange={(e) => setNewAddOnPrice(parseFloat(e.target.value) || 0)}
+                                        className="w-28 border rounded px-2 py-1 text-right"
+                                        placeholder="0"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const label = newAddOnLabel.trim();
+                                            if (label.length > 0) {
+                                                setAddOns({ ...addOns, [label]: newAddOnPrice || 0 });
+                                                setNewAddOnLabel('');
+                                                setNewAddOnPrice(0);
+                                            }
+                                        }}
+                                        className="px-3 py-1 bg-[#2c4a30] text-white rounded"
+                                    >
+                                        {t('add')}
+                                    </button>
+                                </div>
+                            </div>
+
                             <label className="block mt-2">
                                 <span>{t('ws_max_pets_allowed')}</span>
                                 <input type="number" value={maxPetsAllowed} onChange={(e) => setMaxPetsAllowed(parseInt(e.target.value) || 1)} className="border rounded p-1 w-20" />
@@ -417,6 +632,31 @@ export default function WalkerSitterBusinessSettingsPage() {
                     </button>
                 </>
             )}
+
+            {showLeavePrompt && (
+                <LeavePrompt
+                    title={t('save_changes_prompt')}
+                    message={t('unsaved_changes_message')}
+                    saveLabel={t('save_changes_yes')}
+                    discardLabel={t('save_changes_no')}
+                    cancelLabel={t('cancel_button')}
+                    saving={saving}
+                    onSave={async () => {
+                        await saveSettings();
+                        setShowLeavePrompt(false);
+                        const path = nextPathRef.current || '/walkersitterdashboard';
+                        nextPathRef.current = null;
+                        router.push(path);
+                    }}
+                    onDiscard={() => {
+                        setShowLeavePrompt(false);
+                        const path = nextPathRef.current || '/walkersitterdashboard';
+                        nextPathRef.current = null;
+                        router.push(path);
+                    }}
+                    onCancel={() => setShowLeavePrompt(false)}
+                />
+            )}
         </div>
     );
 }
@@ -428,5 +668,47 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
             <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="accent-[#2c4a30] w-5 h-5" />
             <span>{label}</span>
         </label>
+    );
+}
+
+function LeavePrompt({
+    title,
+    message,
+    saveLabel,
+    discardLabel,
+    cancelLabel,
+    onSave,
+    onDiscard,
+    onCancel,
+    saving
+}: {
+    title: string;
+    message: string;
+    saveLabel: string;
+    discardLabel: string;
+    cancelLabel: string;
+    onSave: () => void;
+    onDiscard: () => void;
+    onCancel: () => void;
+    saving: boolean;
+}) {
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="w-full max-w-md rounded-lg bg-white p-4 shadow-lg">
+                <h3 className="text-lg font-semibold mb-2">{title}</h3>
+                <p className="text-sm text-gray-700 mb-4">{message}</p>
+                <div className="flex justify-end gap-2">
+                    <button onClick={onCancel} className="px-3 py-2 border rounded">
+                        {cancelLabel}
+                    </button>
+                    <button onClick={onDiscard} className="px-3 py-2 border rounded">
+                        {discardLabel}
+                    </button>
+                    <button onClick={onSave} disabled={saving} className="px-3 py-2 rounded bg-[#2c4a30] text-white">
+                        {saving ? 'Saving…' : saveLabel}
+                    </button>
+                </div>
+            </div>
+        </div>
     );
 }
