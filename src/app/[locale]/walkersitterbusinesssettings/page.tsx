@@ -9,7 +9,9 @@ import {
     where,
     getDocs,
     doc,
-    updateDoc
+    updateDoc,
+    QueryDocumentSnapshot,
+    DocumentData
 } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 import { useRouter } from 'next/navigation';
@@ -113,104 +115,6 @@ export default function WalkerSitterBusinessSettingsPage() {
     const [newAddOnLabel, setNewAddOnLabel] = useState('');
     const [newAddOnPrice, setNewAddOnPrice] = useState<number>(0);
 
-    // --- Load business data
-    useEffect(() => {
-        const unsub = auth.onAuthStateChanged((user) => {
-            if (!user) return;
-            const load = async () => {
-                // 1) Try array-based ownerIds first
-                let docSnap: any = null;
-                {
-                    const q1 = query(collection(db, 'businesses'), where('ownerIds', 'array-contains', user.uid));
-                    const s1 = await getDocs(q1);
-                    docSnap = s1.docs[0] || null;
-                }
-                // 2) Fallback to legacy single ownerId
-                if (!docSnap) {
-                    const q2 = query(collection(db, 'businesses'), where('ownerId', '==', user.uid));
-                    const s2 = await getDocs(q2);
-                    docSnap = s2.docs[0] || null;
-                }
-                if (!docSnap) return;
-
-                const data = docSnap.data();
-                setBusinessId(docSnap.id);
-                setBusinessName(data.businessName || '');
-                setBusinessPhone(data.businessPhone || '');
-                if (data.businessAddress && typeof data.businessAddress === 'object') {
-                    const addr = data.businessAddress;
-                    setBusinessAddress(`${addr.street || ''}, ${addr.city || ''}, ${addr.state || ''} ${addr.zipCode || ''}`.trim());
-                } else {
-                    setBusinessAddress(data.businessAddress || '');
-                }
-                setBusinessBio(data.businessBio || '');
-                setEnableWalking(data.enableWalking || false);
-                setEnableSitting(data.enableSitting || false);
-                setServiceRadius(data.serviceRadius || 5);
-                setOperatingHours(data.operatingHours || {});
-                setCancellationPolicy(data.cancellationPolicy || 'No Refund');
-
-                setWalkerWaiverRequired(data.walkerWaiverRequired || false);
-                setWalkerWaiverText(data.walkerWaiverText || '');
-                setSitterWaiverRequired(data.sitterWaiverRequired || false);
-                setSitterWaiverText(data.sitterWaiverText || '');
-
-                if (data.walkerSettings) {
-                    setWalkDurations(data.walkerSettings.durations || [30, 60]);
-                    const rates = data.walkerSettings.rates || {};
-                    const parsed: Record<number, number> = {};
-                    Object.keys(rates).forEach((k) => parsed[parseInt(k)] = rates[k]);
-                    setWalkRates(parsed);
-                    setMaxDogsPerWalk(data.walkerSettings.maxDogsPerWalk || 2);
-                }
-
-                if (data.sitterSettings) {
-                    setSittingTypes(data.sitterSettings.types || {});
-                    setSupportedAnimals(data.sitterSettings.animals || {});
-                    setBaseRates(data.sitterSettings.baseRates || {});
-                    setIncludedServices(data.sitterSettings.includedServices || []);
-                    setAddOns(data.sitterSettings.addOns || {});
-                    setMaxPetsAllowed(data.sitterSettings.maxPetsAllowed || 3);
-                    setMinNoticeHours(data.sitterSettings.minNoticeHours || 12);
-                    setMaxBookingsPerDay(data.sitterSettings.maxBookingsPerDay || 5);
-                    setBufferMinutes(data.sitterSettings.bufferMinutes || 30);
-                }
-
-                setLoading(false);
-            };
-            load();
-        });
-        return () => unsub();
-
-        // After first load completes, capture a clean snapshot
-        useEffect(() => {
-            if (!loading) {
-                initialJsonRef.current = JSON.stringify(buildSettingsPayload());
-                // Force one compare right away
-                const now = JSON.stringify(buildSettingsPayload());
-                setDirty(now !== initialJsonRef.current);
-            }
-        }, [loading, buildSettingsPayload]);
-
-        // Watch all fields; flip dirty when payload diverges from snapshot
-        useEffect(() => {
-            if (loading || !initialJsonRef.current) return;
-            const now = JSON.stringify(buildSettingsPayload());
-            setDirty(now !== initialJsonRef.current);
-        }, [loading, buildSettingsPayload]);
-
-        // Warn on hard navigation (refresh/close tab) if dirty
-        useEffect(() => {
-            const handler = (e: BeforeUnloadEvent) => {
-                if (!dirty) return;
-                e.preventDefault();
-                e.returnValue = '';
-            };
-            window.addEventListener('beforeunload', handler);
-            return () => window.removeEventListener('beforeunload', handler);
-        }, [dirty]);
-    }, []);
-
     // --- Build payload used for both save() and dirty comparison
     const buildSettingsPayload = useCallback(() => {
         const walkRatesStringKeys: Record<string, number> = {};
@@ -235,7 +139,7 @@ export default function WalkerSitterBusinessSettingsPage() {
             walkerSettings: {
                 durations: walkDurations,
                 rates: walkRatesStringKeys,
-                maxDogsPerWalk
+                maxDogsPerWalk,
             },
             sitterSettings: {
                 types: sittingTypes,
@@ -246,16 +150,133 @@ export default function WalkerSitterBusinessSettingsPage() {
                 maxPetsAllowed,
                 minNoticeHours,
                 maxBookingsPerDay,
-                bufferMinutes
-            }
+                bufferMinutes,
+            },
         };
     }, [
-        businessBio, enableWalking, enableSitting, serviceRadius, operatingHours, cancellationPolicy,
-        walkerWaiverRequired, walkerWaiverText, sitterWaiverRequired, sitterWaiverText,
-        walkDurations, walkRates, maxDogsPerWalk,
-        sittingTypes, supportedAnimals, baseRates, includedServices, addOns,
-        maxPetsAllowed, minNoticeHours, maxBookingsPerDay, bufferMinutes
+        businessBio,
+        enableWalking,
+        enableSitting,
+        serviceRadius,
+        operatingHours,
+        cancellationPolicy,
+        walkerWaiverRequired,
+        walkerWaiverText,
+        sitterWaiverRequired,
+        sitterWaiverText,
+        walkDurations,
+        walkRates,
+        maxDogsPerWalk,
+        sittingTypes,
+        supportedAnimals,
+        baseRates,
+        includedServices,
+        addOns,
+        maxPetsAllowed,
+        minNoticeHours,
+        maxBookingsPerDay,
+        bufferMinutes,
     ]);
+
+    // --- Load business data
+    useEffect(() => {
+        const unsub = auth.onAuthStateChanged((user) => {
+            if (!user) return;
+            const load = async () => {
+                // 1) Try array-based ownerIds first
+                let docSnap: QueryDocumentSnapshot<DocumentData> | null = null;
+                {
+                    const q1 = query(collection(db, "businesses"), where("ownerIds", "array-contains", user.uid));
+                    const s1 = await getDocs(q1);
+                    docSnap = s1.docs[0] || null;
+                }
+                // 2) Fallback to legacy single ownerId
+                if (!docSnap) {
+                    const q2 = query(collection(db, "businesses"), where("ownerId", "==", user.uid));
+                    const s2 = await getDocs(q2);
+                    docSnap = s2.docs[0] || null;
+                }
+                if (!docSnap) return;
+
+                const data = docSnap.data();
+                setBusinessId(docSnap.id);
+                setBusinessName(data.businessName || "");
+                setBusinessPhone(data.businessPhone || "");
+                if (data.businessAddress && typeof data.businessAddress === "object") {
+                    const addr = data.businessAddress;
+                    setBusinessAddress(
+                        `${addr.street || ""}, ${addr.city || ""}, ${addr.state || ""} ${addr.zipCode || ""}`.trim()
+                    );
+                } else {
+                    setBusinessAddress(data.businessAddress || "");
+                }
+                setBusinessBio(data.businessBio || "");
+                setEnableWalking(data.enableWalking || false);
+                setEnableSitting(data.enableSitting || false);
+                setServiceRadius(data.serviceRadius || 5);
+                setOperatingHours(data.operatingHours || {});
+                setCancellationPolicy(data.cancellationPolicy || "No Refund");
+
+                setWalkerWaiverRequired(data.walkerWaiverRequired || false);
+                setWalkerWaiverText(data.walkerWaiverText || "");
+                setSitterWaiverRequired(data.sitterWaiverRequired || false);
+                setSitterWaiverText(data.sitterWaiverText || "");
+
+                if (data.walkerSettings) {
+                    setWalkDurations(data.walkerSettings.durations || [30, 60]);
+                    const rates = data.walkerSettings.rates || {};
+                    const parsed: Record<number, number> = {};
+                    Object.keys(rates).forEach((k) => {
+                        parsed[parseInt(k)] = rates[k];
+                    });
+                    setWalkRates(parsed);
+                    setMaxDogsPerWalk(data.walkerSettings.maxDogsPerWalk || 2);
+                }
+
+                if (data.sitterSettings) {
+                    setSittingTypes(data.sitterSettings.types || {});
+                    setSupportedAnimals(data.sitterSettings.animals || {});
+                    setBaseRates(data.sitterSettings.baseRates || {});
+                    setIncludedServices(data.sitterSettings.includedServices || []);
+                    setAddOns(data.sitterSettings.addOns || {});
+                    setMaxPetsAllowed(data.sitterSettings.maxPetsAllowed || 3);
+                    setMinNoticeHours(data.sitterSettings.minNoticeHours || 12);
+                    setMaxBookingsPerDay(data.sitterSettings.maxBookingsPerDay || 5);
+                    setBufferMinutes(data.sitterSettings.bufferMinutes || 30);
+                }
+
+                setLoading(false);
+            };
+            load();
+        });
+        return () => unsub();
+    }, []);
+
+    // After first load completes, capture a clean snapshot
+    useEffect(() => {
+        if (!loading) {
+            initialJsonRef.current = JSON.stringify(buildSettingsPayload());
+            setDirty(false);
+        }
+    }, [loading]);
+
+    // Watch all fields; flip dirty when payload diverges from snapshot
+    useEffect(() => {
+        if (loading) return;
+        const now = JSON.stringify(buildSettingsPayload());
+        setDirty(now !== initialJsonRef.current);
+    }, [loading, buildSettingsPayload]);
+
+    // Warn on hard navigation (refresh/close tab) if dirty
+    useEffect(() => {
+        const handler = (e: BeforeUnloadEvent) => {
+            if (!dirty) return;
+            e.preventDefault();
+            e.returnValue = "";
+        };
+        window.addEventListener("beforeunload", handler);
+        return () => window.removeEventListener("beforeunload", handler);
+    }, [dirty]);
 
     // --- Save settings
     const saveSettings = async () => {

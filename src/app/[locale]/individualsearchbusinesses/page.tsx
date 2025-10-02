@@ -39,7 +39,7 @@ type Business = {
     longitude: number;
 };
 
-type BusinessTypeFilter = 'all' | 'boardingDaycare' | 'breeder';
+type BusinessTypeFilter = 'all' | 'boardingDaycare' | 'breeder' | 'walkerSitter';
 
 // Small epsilon to treat 0/blank coords as "missing"
 const COORD_EPS = 0.0001;
@@ -83,6 +83,7 @@ export default function IndividualSearchBusinessesPage() {
         all: t('type_all', { defaultValue: 'All' }),
         boardingDaycare: t('type_boarding_daycare', { defaultValue: 'Boarding/Daycare' }),
         breeder: t('type_breeder', { defaultValue: 'Breeder' }),
+        walkerSitter: t('type_walker_sitter', { defaultValue: 'Walker/Sitter' }),
     }), [t]);
 
     // --- Data: fetch businesses (iOS parity: simple collection read) ---
@@ -146,9 +147,14 @@ export default function IndividualSearchBusinessesPage() {
                 case 'all':
                     return true;
                 case 'breeder':
-                    return b.type.localeCompare('Breeder', undefined, { sensitivity: 'accent' }) === 0;
+                    return b.type.localeCompare('breeder', undefined, { sensitivity: 'accent', usage: 'search' }) === 0 ||
+                        b.type.localeCompare('Breeder', undefined, { sensitivity: 'accent' }) === 0;
                 case 'boardingDaycare':
-                    return b.type.localeCompare('Boarding/Daycare', undefined, { sensitivity: 'accent' }) === 0;
+                    return b.type.localeCompare('boardingDaycare', undefined, { sensitivity: 'accent', usage: 'search' }) === 0 ||
+                        b.type.localeCompare('Boarding/Daycare', undefined, { sensitivity: 'accent' }) === 0;
+                case 'walkerSitter':
+                    return b.type.localeCompare('walkerSitter', undefined, { sensitivity: 'accent', usage: 'search' }) === 0 ||
+                        b.type.localeCompare('Walker/Sitter', undefined, { sensitivity: 'accent' }) === 0;
                 default:
                     return true;
             }
@@ -269,6 +275,7 @@ export default function IndividualSearchBusinessesPage() {
                             { key: 'all', label: typeLabels.all },
                             { key: 'boardingDaycare', label: typeLabels.boardingDaycare },
                             { key: 'breeder', label: typeLabels.breeder },
+                            { key: 'walkerSitter', label: typeLabels.walkerSitter },
                         ] as { key: BusinessTypeFilter; label: string }[]).map(({ key, label }) => {
                             const selected = selectedType === key;
                             return (
