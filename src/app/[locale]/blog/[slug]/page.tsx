@@ -1,9 +1,16 @@
 import { blogPosts, type BlogPostEntry } from '../blogposts';
 import type { Metadata } from 'next';
 
+type PageProps = {
+  params: {
+    slug: string;
+    locale: string; // because this page lives under [locale]
+  };
+};
+
 // ✅ Dynamic metadata for each blog post
 export async function generateMetadata(
-  { params }: { params: { slug: string } }
+  { params }: PageProps
 ): Promise<Metadata> {
   const post = blogPosts.find((p) => p.slug === params.slug);
 
@@ -14,7 +21,7 @@ export async function generateMetadata(
     };
   }
 
-  const url = `https://petuniapets.com/en/blog/${post.slug}`;
+  const url = `https://petuniapets.com/${params.locale}/blog/${post.slug}`;
 
   return {
     title: post.title,
@@ -57,7 +64,7 @@ function StructuredData({ post }: { post: BlogPostEntry }) {
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://petuniapets.com/en/blog/${post.slug}`,
+      '@id': `https://petuniapets.com/blog/${post.slug}`,
     },
   };
 
@@ -70,11 +77,7 @@ function StructuredData({ post }: { post: BlogPostEntry }) {
 }
 
 // ✅ Actual blog post page
-export default async function BlogPostPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function BlogPostPage({ params }: PageProps) {
   const post = blogPosts.find((p) => p.slug === params.slug);
   if (!post) {
     return (
