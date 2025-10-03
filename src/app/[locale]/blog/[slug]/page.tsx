@@ -1,11 +1,16 @@
 import { blogPosts, type BlogPostEntry } from '../blogposts';
 import type { Metadata } from 'next';
 
+type PageProps = {
+  params: {
+    slug: string;
+    locale: string;
+  };
+};
+
 // ✅ Dynamic metadata for each blog post
-export async function generateMetadata(
-  props: { params: any } // keep flexible to satisfy Next.js typing
-): Promise<Metadata> {
-  const { slug, locale } = await props.params; // handle if params is a Promise
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug, locale } = params;
 
   const post = blogPosts.find((p) => p.slug === slug);
 
@@ -16,7 +21,7 @@ export async function generateMetadata(
     };
   }
 
-  const url = `https://petuniapets.com/${locale || 'en'}/blog/${post.slug}`;
+  const url = `https://petuniapets.com/${locale}/blog/${post.slug}`;
 
   return {
     title: post.title,
@@ -39,49 +44,37 @@ export async function generateMetadata(
 
 // ✅ JSON-LD structured data component
 function StructuredData({ post }: { post: BlogPostEntry }) {
-  const jsonLd = {
+  const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.description,
     datePublished: post.date,
-    author: {
-      '@type': 'Organization',
-      name: 'Petunia',
-    },
+    author: { '@type': 'Organization', name: 'Petunia' },
     publisher: {
       '@type': 'Organization',
       name: 'Petunia',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://petuniapets.com/petunia_logo.png',
-      },
+      logo: { '@type': 'ImageObject', url: 'https://petuniapets.com/petunia_logo.png' },
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://petuniapets.com/blog/${post.slug}`,
+      '@id': urlFor(post.slug, 'en'), // fallback if locale missing
     },
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
-  );
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />;
+}
+
+function urlFor(slug: string, locale: string) {
+  return `https://petuniapets.com/${locale}/blog/${slug}`;
 }
 
 // ✅ Actual blog post page
-export default async function BlogPostPage(props: { params: any }) {
-  const { slug } = await props.params;
-  const post = blogPosts.find((p) => p.slug === slug);
+export default async function BlogPostPage({ params }: PageProps) {
+  const post = blogPosts.find((p) => p.slug === params.slug);
 
   if (!post) {
-    return (
-      <div className="text-center py-10 text-[#2c4a30]">
-        Post not found.
-      </div>
-    );
+    return <div className="text-center py-10 text-[#2c4a30]">Post not found.</div>;
   }
 
   const Mod = (await post.component()).default;
