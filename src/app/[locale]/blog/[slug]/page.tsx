@@ -1,18 +1,13 @@
 import { blogPosts, type BlogPostEntry } from '../blogposts';
 import type { Metadata } from 'next';
 
-type PageProps = {
-  params: {
-    slug: string;
-    locale: string; // because this page lives under [locale]
-  };
-};
-
 // ✅ Dynamic metadata for each blog post
 export async function generateMetadata(
-  { params }: PageProps
+  props: { params: any } // keep flexible to satisfy Next.js typing
 ): Promise<Metadata> {
-  const post = blogPosts.find((p) => p.slug === params.slug);
+  const { slug, locale } = await props.params; // handle if params is a Promise
+
+  const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
     return {
@@ -21,7 +16,7 @@ export async function generateMetadata(
     };
   }
 
-  const url = `https://petuniapets.com/${params.locale}/blog/${post.slug}`;
+  const url = `https://petuniapets.com/${locale || 'en'}/blog/${post.slug}`;
 
   return {
     title: post.title,
@@ -77,8 +72,10 @@ function StructuredData({ post }: { post: BlogPostEntry }) {
 }
 
 // ✅ Actual blog post page
-export default async function BlogPostPage({ params }: PageProps) {
-  const post = blogPosts.find((p) => p.slug === params.slug);
+export default async function BlogPostPage(props: { params: any }) {
+  const { slug } = await props.params;
+  const post = blogPosts.find((p) => p.slug === slug);
+
   if (!post) {
     return (
       <div className="text-center py-10 text-[#2c4a30]">
