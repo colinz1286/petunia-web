@@ -41,7 +41,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'french-bulldogs-most-popular-2025',
         title: "Why French Bulldogs Remain America’s Most Popular Dog in 2025",
-        date: 'March 18, 2025',
+        date: 'October 3, 2025',
         description:
             "French Bulldogs continue to dominate in 2025, according to AKC registration. Explore why they remain so popular, the challenges of ownership, and what it means for breeders and pet owners.",
         component: () => import('./posts/french-bulldogs-most-popular-2025'),
@@ -51,7 +51,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'dog-anti-aging-pill-fda-milestone',
         title: "Anti-Aging Pill for Dogs Clears FDA Milestone",
-        date: 'February 26, 2025',
+        date: 'October 3, 2025',
         description:
             "A biotech company’s dog longevity pill has cleared a key veterinary regulator barrier. Explore how it works, the regulatory path, and what it might mean for pet owners and the pet health industry.",
         component: () => import('./posts/dog-anti-aging-pill-fda-milestone'),
