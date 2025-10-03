@@ -17,7 +17,54 @@ export const blogPosts: BlogPostEntry[] = [
             'Compare the pros and cons of daycare packages and monthly memberships, and explore the impact on cash flow, loyalty, and admin complexity.',
         component: () =>
             import('./posts/dog-daycare-packages-vs-monthly-memberships-a-balanced-look-at-two-common-pricing-models') as Promise<{ default: React.ComponentType<object> }>,
-        categories: ['boarding'],
+        categories: ['owner', 'breeder', 'breed specific guides'],
+        breed: 'Dachshund',
+    },
+    {
+        slug: 'dog-begging-human-cues',
+        title: "Insights into Dog Begging Behavior and Human Cues",
+        date: 'October 2, 2025',
+        description:
+            "A recent behavioral study reveals how human gaze influences begging in free-roaming dogs. Learn what this means for canine communication, training, and human-animal bonds.",
+        component: () => import('./posts/dog-begging-human-cues'),
+        categories: ['owner']
+    },
+    {
+        slug: 'dachshund-it-dog-2025',
+        title: "The Rise of Dachshunds as the Next “It” Dog",
+        date: 'October 2, 2025',
+        description:
+            "Dachshunds are trending in urban settings and influencer circles in 2025. Discover why this playful breed is having a cultural moment, what drives the trend, and what it means for owners.",
+        component: () => import('./posts/dachshund-it-dog-2025'),
+        categories: ['owner', 'trends', 'breeder']
+    },
+    {
+        slug: 'french-bulldogs-most-popular-2025',
+        title: "Why French Bulldogs Remain America’s Most Popular Dog in 2025",
+        date: 'March 18, 2025',
+        description:
+            "French Bulldogs continue to dominate in 2025, according to AKC registration. Explore why they remain so popular, the challenges of ownership, and what it means for breeders and pet owners.",
+        component: () => import('./posts/french-bulldogs-most-popular-2025'),
+        categories: ['owner', 'breeder', 'breed specific guides'],
+        breed: 'French Bulldog',
+    },
+    {
+        slug: 'dog-anti-aging-pill-fda-milestone',
+        title: "Anti-Aging Pill for Dogs Clears FDA Milestone",
+        date: 'February 26, 2025',
+        description:
+            "A biotech company’s dog longevity pill has cleared a key veterinary regulator barrier. Explore how it works, the regulatory path, and what it might mean for pet owners and the pet health industry.",
+        component: () => import('./posts/dog-anti-aging-pill-fda-milestone'),
+        categories: ['owner']
+    },
+    {
+        slug: 'ring-search-party-ai-lost-dogs',
+        title: "Ring’s New ‘Search Party’ Feature: AI That Helps Find Lost Dogs",
+        date: 'October 3, 2025',
+        description:
+            "Ring’s new ‘Search Party’ feature uses AI-powered video matching to help families reunite with lost dogs. Learn how it works, its pros and cons, and what it means for pet owners everywhere.",
+        component: () => import('./posts/ring-search-party-ai-lost-dogs'),
+        categories: ['owner']
     },
     {
         slug: 'border-collie-health-guide',

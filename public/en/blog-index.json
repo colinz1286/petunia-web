@@ -10,6 +10,41 @@
         "breed": "German Shepherd"
     },
     {
+        "slug": "dog-begging-human-cues",
+        "title": "Insights into Dog Begging Behavior and Human Cues",
+        "date": "October 2, 2025",
+        "categories": [
+            "owner"
+        ]
+    },
+    {
+        "slug": "dog-anti-aging-pill-fda-milestone",
+        "title": "Anti-Aging Pill for Dogs Clears FDA Milestone",
+        "date": "February 26, 2025",
+        "categories": [
+            "owner"
+        ]
+    },
+    {
+        "slug": "rings-search-party-lost-dogs",
+        "title": "Ring's AI Search Party for Lost Dogs",
+        "date": "October 03, 2025",
+        "categories": [
+            "Owner"
+        ]
+    },
+    {
+        "slug": "dachshund-it-dog-2025",
+        "title": "The Rise of Dachshunds as the Next “It” Dog",
+        "date": "October 2, 2025",
+        "categories": [
+            "owner",
+            "breeder",
+            "breed_specific_guides"
+        ],
+        "breed": "Dachshund"
+    },
+    {
         "slug": "border-collie-health-guide",
         "title": "Border Collie Health Guide: Joint Care, Seizures, and Longevity",
         "date": "October 1, 2025",
@@ -18,6 +53,17 @@
             "breed_specific_guides"
         ],
         "breed": "Border Collie"
+    },
+    {
+        "slug": "french-bulldogs-most-popular-2025",
+        "title": "Why French Bulldogs Remain America’s Most Popular Dog in 2025",
+        "date": "March 18, 2025",
+        "categories": [
+            "owner",
+            "breeder",
+            "breed_specific_guides"
+        ],
+        "breed": "French Bulldog"
     },
     {
         "slug": "westie-allergies",
