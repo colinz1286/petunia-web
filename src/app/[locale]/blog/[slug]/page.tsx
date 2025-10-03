@@ -1,17 +1,14 @@
+// src/app/[locale]/blog/[slug]/page.tsx
 import { blogPosts, type BlogPostEntry } from '../blogposts';
 import type { Metadata } from 'next';
 
-type PageProps = {
-  params: {
-    slug: string;
-    locale: string;
-  };
-};
+type RouteParams = { slug: string; locale: string };
+// ✅ Match the generated type expectation: params is a Promise<...>
+type PageProps = { params: Promise<RouteParams> };
 
-// ✅ Dynamic metadata for each blog post
+// ---- SEO metadata per post ---------------------------------------------------
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug, locale } = params;
-
+  const { slug, locale } = await params; // works even if Next passes a plain object
   const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
@@ -42,8 +39,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-// ✅ JSON-LD structured data component
-function StructuredData({ post }: { post: BlogPostEntry }) {
+// ---- JSON-LD structured data -------------------------------------------------
+function StructuredData({ post, locale }: { post: BlogPostEntry; locale: string }) {
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -58,20 +55,17 @@ function StructuredData({ post }: { post: BlogPostEntry }) {
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': urlFor(post.slug, 'en'), // fallback if locale missing
+      '@id': `https://petuniapets.com/${locale}/blog/${post.slug}`,
     },
   };
 
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />;
 }
 
-function urlFor(slug: string, locale: string) {
-  return `https://petuniapets.com/${locale}/blog/${slug}`;
-}
-
-// ✅ Actual blog post page
+// ---- Page --------------------------------------------------------------------
 export default async function BlogPostPage({ params }: PageProps) {
-  const post = blogPosts.find((p) => p.slug === params.slug);
+  const { slug, locale } = await params; // safe with Promise or object
+  const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
     return <div className="text-center py-10 text-[#2c4a30]">Post not found.</div>;
@@ -81,7 +75,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   return (
     <>
-      <StructuredData post={post} />
+      <StructuredData post={post} locale={locale} />
       <Mod />
     </>
   );
