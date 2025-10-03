@@ -1,4 +1,4 @@
-import { blogPosts } from '../blogposts';
+import { blogPosts, type BlogPostEntry } from '../blogposts';
 import type { Metadata } from 'next';
 
 // ✅ Dynamic metadata for each blog post
@@ -36,7 +36,7 @@ export async function generateMetadata(
 }
 
 // ✅ JSON-LD structured data component
-function StructuredData({ post }: { post: any }) {
+function StructuredData({ post }: { post: BlogPostEntry }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
