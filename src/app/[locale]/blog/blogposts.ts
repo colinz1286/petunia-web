@@ -21,6 +21,51 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'dog-ear-infections-causes-symptoms-and-treatment-options',
+        title: 'Dog Ear Infections: Causes, Symptoms, and Treatment Options',
+        date: 'October 6, 2025',
+        description:
+            'Learn how to identify, treat, and prevent dog ear infections. Covers yeast, bacterial, and allergy causes, plus home care and prevention tips for swimmers and active breeds.',
+        component: () => import('./posts/dog-ear-infections-causes-symptoms-and-treatment-options'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'pet-care-waivers-why-they-matter-and-what-to-include',
+        title: 'Pet Care Waivers: Why They Matter and What to Include',
+        date: 'October 6, 2025',
+        description:
+            'A clear, well-written waiver is every boarding or daycare business’s first line of defense. Learn what sections to include, how to protect your business legally, and how to store signed waivers securely in digital form.',
+        component: () => import('./posts/pet-care-waivers-why-they-matter-and-what-to-include'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'top-risks-in-dog-boarding-businesses-and-how-to-prevent-them',
+        title: 'Top Risks in Dog Boarding Businesses (and How to Prevent Them)',
+        date: 'October 6, 2025',
+        description:
+            'Running a boarding or daycare business carries real risks—from medical and behavioral incidents to liability exposure. Learn the top five risk areas and how strong policies, waivers, and training can prevent costly mistakes.',
+        component: () => import('./posts/top-risks-in-dog-boarding-businesses-and-how-to-prevent-them'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'healthy-homemade-dog-meals-for-active-breeds',
+        title: 'Healthy Homemade Dog Meals for Active Breeds',
+        date: 'October 6, 2025',
+        description:
+            'Active dogs burn calories fast—and need more than basic kibble can provide. Learn how to make balanced homemade meals for working and athletic breeds, with calorie charts, vet-approved recipes, and AAFCO nutrient tips.',
+        component: () => import('./posts/healthy-homemade-dog-meals-for-active-breeds'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'why-does-my-dog-bark-at-night',
+        title: 'Why Does My Dog Bark at Night? Causes, Solutions, and When to Worry',
+        date: 'October 6, 2025',
+        description:
+            'If your dog won’t stop barking at night, there’s usually a reason—ranging from loneliness or anxiety to medical discomfort or outside noises. Learn why dogs bark after dark, how to fix it, and when to consult a trainer or veterinarian.',
+        component: () => import('./posts/why-does-my-dog-bark-at-night'),
+        categories: ['owner'],
+    },
+    {
         slug: 'dog-begging-human-cues',
         title: "Insights into Dog Begging Behavior and Human Cues",
         date: 'October 2, 2025',
