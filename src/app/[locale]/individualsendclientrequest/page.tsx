@@ -267,8 +267,8 @@ export default function IndividualSendClientRequestPage() {
                   {waiverNeedsResign()
                     ? t('waiver_status_resign_required')
                     : waiverSignedAt
-                    ? t('waiver_status_signed_on', { date: waiverSignedAt.toLocaleString() })
-                    : t('waiver_status_not_signed')}
+                      ? t('waiver_status_signed_on', { date: waiverSignedAt.toLocaleString() })
+                      : t('waiver_status_not_signed')}
                 </p>
               </div>
             )}
@@ -304,16 +304,18 @@ export default function IndividualSendClientRequestPage() {
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* ✅ Visible 'Yes, Send Request' button with safe fallback */}
                 <button
                   onClick={sendClientRequest}
                   disabled={isSubmitting}
-                  className="w-full px-4 py-2 rounded-md text-white font-semibold bg-[var(--color-accent)] hover:opacity-90 disabled:opacity-60"
+                  className="w-full px-4 py-2 rounded-md text-white font-semibold [background:var(--color-accent,#2c4a30)] hover:opacity-90 border border-[color:var(--color-accent,#2c4a30)] disabled:opacity-60"
                 >
                   {isSubmitting
                     ? t('sending', { defaultValue: 'Sending…' })
                     : t('yes_send_request_button', { defaultValue: 'Yes, Send Request' })}
                 </button>
 
+                {/* Cancel button (unchanged) */}
                 <button
                   onClick={() => setShowConfirmation(false)}
                   disabled={isSubmitting}
