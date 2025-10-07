@@ -21,6 +21,42 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'decompression-boarding-2025',
+        title: 'Decompression Boarding: How Quiet Spaces Help Dogs Relax After Drop-Off',
+        date: 'October 7, 2025',
+        description:
+            '“Decompression boarding” is a behavioral science approach where dogs are given quiet, low-stimulation environments post-drop-off to reduce stress. Learn how boarding facilities are adopting decompression zones, the science behind them, and how owners can support calmer transitions.',
+        component: () => import('./posts/decompression-boarding-2025'),
+        categories: ['owner', 'rescue', 'vet'],
+    },
+    {
+        slug: 'veterinary-staffing-crisis-2025',
+        title: 'Why It’s Getting Harder to Find a Vet — and How Pet Owners Can Plan Ahead',
+        date: 'October 7, 2025',
+        description:
+            'Veterinary medicine faces record burnout, staff shortages, and clinic closures. Learn what’s driving the crisis, how vet schools are responding, and how pet owners can plan ahead for care access.',
+        component: () => import('./posts/veterinary-staffing-crisis-2025'),
+        categories: ['owner', 'vet'],
+    },
+    {
+        slug: 'dog-nutrition-updates-2025',
+        title: '2025 Dog Nutrition Updates: How Prescription Weight-Control Diets Are Changing Vet Care',
+        date: 'October 7, 2025',
+        description:
+            'New FDA-approved prescription diets in 2025 introduce novel fiber matrices and post-biotic blends aimed at reducing obesity rates in dogs. Learn what changed, how these foods work, and how veterinarians are using data-driven nutrition to improve canine health.',
+        component: () => import('./posts/dog-nutrition-updates-2025'),
+        categories: ['owner', 'vet', 'food'],
+    },
+    {
+        slug: 'pet-insurance-worth-it-2025',
+        title: 'Are Pet Insurance Premiums Worth It in 2025? What to Know Before You Enroll',
+        date: 'October 7, 2025',
+        description:
+            'Nationwide and Trupanion announced 2025 premium hikes amid rising veterinary costs. Learn why pet insurance prices are climbing, how to evaluate coverage, and whether it still makes financial sense for your dog or cat.',
+        component: () => import('./posts/pet-insurance-worth-it-2025'),
+        categories: ['owner'],
+    },
+    {
         slug: 'leptospirosis-core-guideline-update-2024-2025',
         title: '2024–2025 Vaccine Guideline Updates: Leptospirosis as “Core” & What That Means for Boarding and Travel',
         date: 'October 7, 2025',

@@ -10,6 +10,43 @@
         "breed": "German Shepherd"
     },
     {
+        "slug": "decompression-boarding-2025",
+        "title": "Decompression Boarding: How Quiet Spaces Help Dogs Relax After Drop-Off",
+        "date": "October 7, 2025",
+        "categories": [
+            "owner",
+            "rescue",
+            "vet"
+        ]
+    },
+    {
+        "slug": "veterinary-staffing-crisis-2025",
+        "title": "Why It’s Getting Harder to Find a Vet — and How Pet Owners Can Plan Ahead",
+        "date": "October 7, 2025",
+        "categories": [
+            "owner",
+            "vet"
+        ]
+    },
+    {
+        "slug": "dog-nutrition-updates-2025",
+        "title": "2025 Dog Nutrition Updates: How Prescription Weight-Control Diets Are Changing Vet Care",
+        "date": "October 7, 2025",
+        "categories": [
+            "owner",
+            "vet",
+            "food"
+        ]
+    },
+    {
+        "slug": "pet-insurance-worth-it-2025",
+        "title": "Are Pet Insurance Premiums Worth It in 2025? What to Know Before You Enroll",
+        "date": "October 7, 2025",
+        "categories": [
+            "owner"
+        ]
+    },
+    {
         "slug": "leptospirosis-core-guideline-update-2024-2025",
         "title": "2024–2025 Vaccine Guideline Updates: Leptospirosis as “Core” & What That Means for Boarding and Travel",
         "date": "October 7, 2025",
