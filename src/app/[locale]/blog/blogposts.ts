@@ -21,6 +21,15 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'leptospirosis-core-guideline-update-2024-2025',
+        title: '2024–2025 Vaccine Guideline Updates: Leptospirosis as “Core” & What That Means for Boarding and Travel',
+        date: 'October 7, 2025',
+        description:
+            'AAHA’s 2024 update elevates leptospirosis to recommended core for most dogs, while WSAVA’s 2024 global guidance outlines where lepto is core by region. Learn how schedules differ, what boarding and travel facilities now require, and see practical checklists for overdue vaccines.',
+        component: () => import('./posts/leptospirosis-core-guideline-update-2024-2025'),
+        categories: ['owner'],
+    },
+    {
         slug: 'dog-longevity-drugs-loyal-fda-milestone',
         title: 'Dog Longevity Drugs Are Getting Real: What Loyal’s FDA Milestones Mean for Owners',
         date: 'October 7, 2025',
