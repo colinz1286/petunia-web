@@ -21,6 +21,24 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'dog-longevity-drugs-loyal-fda-milestone',
+        title: 'Dog Longevity Drugs Are Getting Real: What Loyal’s FDA Milestones Mean for Owners',
+        date: 'October 7, 2025',
+        description:
+            'Loyal’s LOY-002 just reached a major FDA milestone — Reasonable Expectation of Effectiveness (RXE) — moving one step closer to conditional approval. Learn what RXE means, what timelines and costs to expect, and the right questions to ask your vet before considering future longevity drugs.',
+        component: () => import('./posts/dog-longevity-drugs-loyal-fda-milestone'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'pet-insurance-state-level-reform-2025',
+        title: 'Pet Insurance Is Being Rewritten at the State Level: How 2025 Rules Affect Your Policy',
+        date: 'October 7, 2025',
+        description:
+            'California’s SB 1217 and other state reforms are reshaping pet insurance in 2025—stricter disclosures, wellness vs. insurance boundaries, renewal protections, and clearer rules for premium hikes and waiting periods.',
+        component: () => import('./posts/pet-insurance-state-level-reform-2025'),
+        categories: ['owner'],
+    },
+    {
         slug: 'dog-ear-infections-causes-symptoms-and-treatment-options',
         title: 'Dog Ear Infections: Causes, Symptoms, and Treatment Options',
         date: 'October 6, 2025',
