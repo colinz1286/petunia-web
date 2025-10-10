@@ -1,0 +1,44 @@
+{
+  "back_to_dashboard": "Back to Dashboard",
+  "ws_todays_visits_title": "Today’s Visits",
+  "loading_visits": "Loading visits...",
+  "no_todays_visits": "No visits scheduled for today.",
+  "missing_permissions": "Missing or insufficient permissions.",
+  "no_business_found": "No business found for this account.",
+  "not_logged_in": "You must be logged in.",
+
+  "client_label": "Client:",
+  "pets_label": "Pets:",
+  "time_label": "Time Window:",
+  "address_label": "Address:",
+
+  "check_in_button": "Check In",
+  "check_out_button": "Check Out",
+  "add_report_button": "Add Report",
+  "visit_completed_label": "Completed",
+
+  "report_modal_title": "Report for {name}",
+  "report_placeholder": "Enter notes or updates for this visit...",
+  "save_button": "Save",
+  "saving_label": "Saving...",
+  "cancel_button": "Cancel",
+
+  "status_in_progress": "In Progress",
+  "status_completed": "Completed",
+  "status_missed": "Missed",
+  "status_upcoming": "Upcoming",
+
+  "unknown_pets": "Unknown pets",
+  "error_saving_report": "Error saving report: {error}",
+  "error_check_in": "Error marking check-in: {error}",
+  "error_check_out": "Error marking check-out: {error}",
+
+  "success_report_saved": "✅ Report saved successfully.",
+  "success_check_in": "✅ Check-in recorded.",
+  "success_check_out": "✅ Check-out completed.",
+
+  "no_visits_for_today": "You have no scheduled visits for today.",
+  "debug_loading_visits": "Fetching visits for businessId: {businessId}",
+  "debug_visit_status": "Visit status: {status}",
+  "debug_report_saved": "Report saved for visit: {visitId}"
+}

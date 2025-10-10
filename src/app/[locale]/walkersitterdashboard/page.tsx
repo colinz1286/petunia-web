@@ -79,7 +79,7 @@ export default function Page() {
                 {/* Navigation buttons */}
                 <div className="space-y-3">
                     <DashboardButton
-                        href={`/walkersitterdashboard/todayvisits`}
+                        href={`/walkersittertodaysvisits`}
                         label={t('ws_todays_visits')}
                     />
 

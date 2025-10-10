@@ -37,6 +37,7 @@ export default {
     waiverAgreement: require('./messages/en/waiverAgreement.json'),
     walkerSitterBusinessSettings: require('./messages/en/walkerSitterBusinessSettings.json'),
     walkerSitterDashboard: require('./messages/en/walkerSitterDashboard.json'),
-    walkerSitterPendingRequests: require('./messages/en/walkerSitterPendingRequests.json')
+    walkerSitterPendingRequests: require('./messages/en/walkerSitterPendingRequests.json'),
+    walkerSitterTodayVisits: require('./messages/en/walkerSitterTodaysVisits.json')
   })
 };
