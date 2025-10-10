@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, ReactNode } from 'react';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import {
@@ -79,7 +79,6 @@ function InlineModal({
 // ---------- Page ----------
 export default function WalkerSitterTodayVisitsPage() {
     const t = useTranslations('walkerSitterTodayVisits');
-    const locale = useLocale();
 
     const [businessId, setBusinessId] = useState<string>('');
     const [visits, setVisits] = useState<Visit[]>([]);
