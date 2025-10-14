@@ -40,9 +40,18 @@ export default function WaiverAgreementPage() {
 
   const businessId = searchParams.get('businessId') ?? '';
 
+  // New: optional waiver type parameter (walker | sitter | boardingDaycare)
+  const waiverTypeParam = searchParams.get('waiverType');
+  const waiverType = waiverTypeParam ? waiverTypeParam.toLowerCase() : 'boardingDaycare';
+
+
   const [userId, setUserId] = useState('');
   const [waiverText, setWaiverText] = useState('');
   const [waiverVersion, setWaiverVersion] = useState(1);
+  // Defensive fallback: ensure version numbers never write null
+  useEffect(() => {
+    if (!waiverVersion || Number.isNaN(waiverVersion)) setWaiverVersion(1);
+  }, [waiverVersion]);
   const [loading, setLoading] = useState(true);
   const [agreeChecked, setAgreeChecked] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -62,25 +71,66 @@ export default function WaiverAgreementPage() {
 
   // Load waiver text
   useEffect(() => {
-    async function fetchWaiver() {
+    const run = async () => {
       try {
-        const ref = doc(db, 'businesses', businessId, 'settings', 'clientWaiver');
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-          const data = snap.data();
-          setWaiverText((data.waiverText as string) ?? '');
-          setWaiverVersion((data.waiverVersion as number) ?? 1);
-        } else {
+        if (!businessId || !waiverType) return;
+
+        const businessRef = doc(db, 'businesses', businessId);
+        const bizSnap = await getDoc(businessRef);
+
+        if (!bizSnap.exists()) {
           setWaiverText('');
+          setLoading(false);
+          return;
+        }
+
+        const bizData = bizSnap.data() ?? {};
+        let text = '';
+        let version = 1;
+
+        // ✅ Check waiverType explicitly
+        switch (waiverType) {
+          case 'walker':
+            if (bizData.walkerWaiverText) {
+              text = bizData.walkerWaiverText;
+              version = bizData.walkerWaiverVersion ?? 1;
+            }
+            break;
+
+          case 'sitter':
+            if (bizData.sitterWaiverText) {
+              text = bizData.sitterWaiverText;
+              version = bizData.sitterWaiverVersion ?? 1;
+            }
+            break;
+
+          default:
+            // ✅ Keep legacy logic fully intact
+            const legacyRef = doc(db, 'businesses', businessId, 'settings', 'clientWaiver');
+            const legacySnap = await getDoc(legacyRef);
+            if (legacySnap.exists()) {
+              const legacyData = legacySnap.data() ?? {};
+              text = legacyData.waiverText ?? '';
+              version = legacyData.waiverVersion ?? 1;
+            }
+            break;
+        }
+
+        setWaiverText(text);
+        setWaiverVersion(version);
+
+        if (!text) {
+          console.warn(`No waiver text found for type "${waiverType}" in business ${businessId}`);
         }
       } catch (err: unknown) {
         setErrorMsg(`${t('failed_to_load')} ${errorMessage(err)}`);
       } finally {
         setLoading(false);
       }
-    }
-    if (businessId) void fetchWaiver();
-  }, [businessId, t]);
+    };
+
+    run();
+  }, [businessId, waiverType, t]);
 
   const submitAgreement = useCallback(async () => {
     if (!agreeChecked) {
@@ -90,27 +140,54 @@ export default function WaiverAgreementPage() {
     if (!userId || !businessId) return;
 
     try {
-      // Write waiver info under userApprovedBusinesses
       const clientRef = doc(db, 'userApprovedBusinesses', businessId, 'clients', userId);
-      await setDoc(
-        clientRef,
-        {
-          waiverSigned: true,                   // legacy flag
-          waiverSignedAt: Timestamp.now(),      // modern field
-          waiverVersionSigned: waiverVersion,   // modern field
-          waiverVersion: waiverVersion,         // legacy version
-          waiverSnapshot: waiverText,           // snapshot of text
-        },
-        { merge: true }
-      );
 
-      // Optional redundant confirmation record
-      const confirmationId = `${businessId}_${userId}`;
+      // === Build waiverData dynamically per type ===
+      const waiverData: Record<string, unknown> = {};
+      if (waiverType === 'walker') {
+        waiverData.walkerWaiverSigned = true;
+        waiverData.walkerWaiverSignedAt = Timestamp.now();
+        waiverData.walkerWaiverVersion = waiverVersion;
+        waiverData.walkerWaiverSnapshot = waiverText;
+      } else if (waiverType === 'sitter') {
+        waiverData.sitterWaiverSigned = true;
+        waiverData.sitterWaiverSignedAt = Timestamp.now();
+        waiverData.sitterWaiverVersion = waiverVersion;
+        waiverData.sitterWaiverSnapshot = waiverText;
+      } else {
+        waiverData.waiverSigned = true;
+        waiverData.waiverSignedAt = Timestamp.now();
+        waiverData.waiverVersionSigned = waiverVersion;
+        waiverData.waiverVersion = waiverVersion;
+        waiverData.waiverSnapshot = waiverText;
+      }
+
+      // === Write to client doc ===
+      await setDoc(clientRef, waiverData, { merge: true });
+
+      // === Redundant confirmation update (same as iOS) ===
+      const confirmationUpdate: Record<string, unknown> = {};
+      if (waiverType === 'walker') {
+        confirmationUpdate.walkerWaiverSigned = true;
+        confirmationUpdate.walkerWaiverSignedAt = Timestamp.now();
+      } else if (waiverType === 'sitter') {
+        confirmationUpdate.sitterWaiverSigned = true;
+        confirmationUpdate.sitterWaiverSignedAt = Timestamp.now();
+      } else {
+        confirmationUpdate.waiverSigned = true;
+        confirmationUpdate.waiverSignedAt = Timestamp.now();
+      }
+
+      await setDoc(clientRef, confirmationUpdate, { merge: true });
+
+      // === Write to waiverConfirmations (for audit) ===
+      const confirmationId = `${businessId}_${userId}_${waiverType}`;
       await setDoc(
         doc(db, 'waiverConfirmations', confirmationId),
         {
           userId,
           businessId,
+          waiverType,
           waiverText,
           waiverVersion,
           signedAt: Timestamp.now(),
@@ -123,7 +200,7 @@ export default function WaiverAgreementPage() {
     } catch (err: unknown) {
       setErrorMsg(`${t('failed_to_submit')} ${errorMessage(err)}`);
     }
-  }, [userId, businessId, waiverText, waiverVersion, agreeChecked, t]);
+  }, [userId, businessId, waiverText, waiverVersion, agreeChecked, waiverType, t]);
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-foreground)] px-4 py-6">
@@ -173,8 +250,10 @@ export default function WaiverAgreementPage() {
 
         {success && (
           <div className="bg-green-100 text-green-800 p-3 rounded shadow text-center font-medium text-sm">
-            <p>{t('waiver_submitted_alert_title')}</p>
-            <p className="text-sm">{t('waiver_submitted_alert_message')}</p>
+            <p>{t('waiver_signed_success_title', { defaultValue: 'Waiver Signed!' })}</p>
+            <p className="text-sm">
+              {t('waiver_signed_success_message', { defaultValue: 'Your waiver has been successfully signed.' })}
+            </p>
             <button
               onClick={() => router.back()}
               className="mt-3 underline text-[var(--color-accent)]"

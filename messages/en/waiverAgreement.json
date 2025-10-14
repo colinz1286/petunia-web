@@ -10,5 +10,7 @@
   "waiver_submitted_alert_title": "Waiver Submitted",
   "waiver_submitted_alert_message": "Your waiver agreement has been saved successfully.",
   "failed_to_load": "Failed to load waiver:",
-  "failed_to_submit": "Failed to submit waiver:"
+  "failed_to_submit": "Failed to submit waiver:",
+  "waiver_signed_success_title": "Waiver Signed!",
+  "waiver_signed_success_message": "Your waiver has been successfully signed."
 }

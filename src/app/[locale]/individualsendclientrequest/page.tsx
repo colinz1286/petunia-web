@@ -66,6 +66,13 @@ export default function IndividualSendClientRequestPage() {
   const [waiverLastUpdated, setWaiverLastUpdated] = useState<Timestamp | null>(null);
   const [waiverSignedAt, setWaiverSignedAt] = useState<Date | null>(null);
 
+  // === Walker/Sitter Waiver State ===
+  const [walkerWaiverRequired, setWalkerWaiverRequired] = useState(false);
+  const [sitterWaiverRequired, setSitterWaiverRequired] = useState(false);
+
+  const [walkerWaiverSignedAt, setWalkerWaiverSignedAt] = useState<Date | null>(null);
+  const [sitterWaiverSignedAt, setSitterWaiverSignedAt] = useState<Date | null>(null);
+
   // === Breeder application state ===
   const [acceptsApplications, setAcceptsApplications] = useState(false);
   const [applicationQuestions, setApplicationQuestions] = useState<string[]>([]);
@@ -74,10 +81,24 @@ export default function IndividualSendClientRequestPage() {
     try {
       const clientDoc = await getDoc(doc(db, 'userApprovedBusinesses', businessId, 'clients', uid));
       if (clientDoc.exists()) {
+        const clientData = clientDoc.data() ?? {};
         setIsApprovedClient(true);
-        if (clientDoc.data()?.waiverSignedAt instanceof Timestamp) {
-          setWaiverSignedAt((clientDoc.data()?.waiverSignedAt as Timestamp).toDate());
+
+        // Legacy boarding/daycare waiver
+        if (clientData.waiverSignedAt instanceof Timestamp) {
+          setWaiverSignedAt((clientData.waiverSignedAt as Timestamp).toDate());
         }
+
+        // Walker waiver timestamp
+        if (clientData.walkerWaiverSignedAt instanceof Timestamp) {
+          setWalkerWaiverSignedAt((clientData.walkerWaiverSignedAt as Timestamp).toDate());
+        }
+
+        // Sitter waiver timestamp
+        if (clientData.sitterWaiverSignedAt instanceof Timestamp) {
+          setSitterWaiverSignedAt((clientData.sitterWaiverSignedAt as Timestamp).toDate());
+        }
+
         setIsLoadingStatus(false);
         return;
       }
@@ -102,6 +123,10 @@ export default function IndividualSendClientRequestPage() {
       const docSnap = await getDoc(doc(db, 'businesses', businessId));
       const data = docSnap.data();
       if (!data) return;
+
+      // Walker/Sitter Waiver Flags
+      setWalkerWaiverRequired(data.walkerWaiverRequired ?? false);
+      setSitterWaiverRequired(data.sitterWaiverRequired ?? false);
 
       const addr = data.businessAddress ?? {};
       const fullAddress = `${addr.street ?? ''}, ${addr.city ?? ''}, ${addr.state ?? ''} ${addr.zipCode ?? ''}`;
@@ -252,14 +277,15 @@ export default function IndividualSendClientRequestPage() {
               </div>
             )}
 
-            {/* Waiver Button (boarding/daycare businesses) */}
-            {waiverRequired && (
+            {/* === Boarding/Daycare Waiver (legacy) === */}
+            {waiverRequired && !walkerWaiverRequired && !sitterWaiverRequired && (
               <div className="space-y-2">
                 <button
                   onClick={() =>
                     router.push(`/${locale}/waiveragreement?businessId=${businessId}`)
                   }
-                  className="w-full bg-[#2c4a30] text-white font-semibold py-3 rounded-md shadow-md hover:bg-[#243d28]"
+                  disabled={!isApprovedClient}
+                  className="w-full bg-[#2c4a30] text-white font-semibold py-3 rounded-md shadow-md hover:bg-[#243d28] disabled:opacity-50"
                 >
                   {t('waiver_button_title', { defaultValue: 'Waiver' })}
                 </button>
@@ -270,6 +296,54 @@ export default function IndividualSendClientRequestPage() {
                       ? t('waiver_status_signed_on', { date: waiverSignedAt.toLocaleString() })
                       : t('waiver_status_not_signed')}
                 </p>
+              </div>
+            )}
+
+            {/* === Walker Waiver === */}
+            {walkerWaiverRequired && (
+              <div className="space-y-2">
+                <button
+                  onClick={() =>
+                    router.push(`/${locale}/waiveragreement?businessId=${businessId}&waiverType=walker`)
+                  }
+                  disabled={!isApprovedClient}
+                  className="w-full bg-[#2c4a30] text-white font-semibold py-3 rounded-md shadow-md hover:bg-[#243d28] disabled:opacity-50"
+                >
+                  Walker Waiver
+                </button>
+                {walkerWaiverSignedAt ? (
+                  <p className="text-xs text-gray-600 flex items-center gap-1">
+                    ✅ Signed on {walkerWaiverSignedAt.toLocaleString()}
+                  </p>
+                ) : (
+                  <p className="text-xs text-gray-600 flex items-center gap-1">
+                    ⚠️ Not signed
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* === Sitter Waiver === */}
+            {sitterWaiverRequired && (
+              <div className="space-y-2">
+                <button
+                  onClick={() =>
+                    router.push(`/${locale}/waiveragreement?businessId=${businessId}&waiverType=sitter`)
+                  }
+                  disabled={!isApprovedClient}
+                  className="w-full bg-[#2c4a30] text-white font-semibold py-3 rounded-md shadow-md hover:bg-[#243d28] disabled:opacity-50"
+                >
+                  Sitter Waiver
+                </button>
+                {sitterWaiverSignedAt ? (
+                  <p className="text-xs text-gray-600 flex items-center gap-1">
+                    ✅ Signed on {sitterWaiverSignedAt.toLocaleString()}
+                  </p>
+                ) : (
+                  <p className="text-xs text-gray-600 flex items-center gap-1">
+                    ⚠️ Not signed
+                  </p>
+                )}
               </div>
             )}
 
