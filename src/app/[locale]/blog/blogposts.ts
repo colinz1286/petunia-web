@@ -21,6 +21,24 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'akc-vs-designer-breeds-2025',
+        title: 'AKC Registration vs. Designer Breeds: What’s the Real Difference?',
+        date: 'October 18, 2025',
+        description:
+            'Explore the true differences between AKC-registered purebreds and designer crosses. Covers breed-club history, ethics, hybrid vigor, and how to educate buyers respectfully without alienation.',
+        component: () => import('./posts/akc-vs-designer-breeds-2025'),
+        categories: ['breeder', 'owner'],
+    },
+    {
+        slug: 'whelping-box-guide-2025',
+        title: 'Whelping Box Setup and Temperature Control Guide',
+        date: 'October 17, 2025',
+        description:
+            'A breeder’s complete guide to whelping box design, dimensions, and environmental control. Includes temperature and humidity charts, bedding safety, and week-by-week setup references with photo placeholders.',
+        component: () => import('./posts/whelping-box-guide-2025'),
+        categories: ['breeder'],
+    },
+    {
         slug: 'responsible-breeding-pairs-2025',
         title: 'How to Choose Responsible Breeding Pairs (Genetic Testing Explained)',
         date: 'October 16, 2025',
