@@ -21,6 +21,24 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'pet-insurance-dog-daycare-2025',
+        title: 'Pet Insurance and Dog Daycare: What’s Covered, What’s Not',
+        date: 'October 11, 2025',
+        description:
+            'Pet insurance can offset daycare-related accident and illness costs—but not daily fees. Learn what’s covered, what’s excluded, and how to choose the right plan with real examples from leading providers.',
+        component: () => import('./posts/pet-insurance-dog-daycare-2025'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'dog-socialization-daycare-2025',
+        title: 'Dog Socialization: How Daycare Improves Behavior and Reduces Aggression',
+        date: 'October 10, 2025',
+        description:
+            'Explore how structured daycare programs use behavioral science and trained supervision to build confidence, reduce reactivity, and improve social skills in dogs of all ages.',
+        component: () => import('./posts/dog-socialization-daycare-2025'),
+        categories: ['owner'],
+    },
+    {
         slug: 'choose-dog-boarding-facility-2025',
         title: 'How to Choose a Dog Boarding Facility You Can Trust',
         date: 'October 9, 2025',
