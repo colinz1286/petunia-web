@@ -21,6 +21,24 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'choose-dog-boarding-facility-2025',
+        title: 'How to Choose a Dog Boarding Facility You Can Trust',
+        date: 'October 9, 2025',
+        description:
+            'Discover how to evaluate dog boarding facilities for safety, cleanliness, and staff quality. Use our professional checklist and red-flag guide to ensure your dog’s stay is comfortable, healthy, and stress-free.',
+        component: () => import('./posts/choose-dog-boarding-facility-2025'),
+        categories: ['owner', 'boarding', 'vet'],
+    },
+    {
+        slug: 'boarding-vs-daycare-2025',
+        title: 'Dog Boarding vs. Dog Daycare — What’s the Difference and Which Is Right for Your Dog?',
+        date: 'October 8, 2025',
+        description:
+            'Learn the key differences between dog boarding and daycare, including costs, schedules, and behavior benefits. Discover which option fits your dog’s personality and lifestyle best, with expert tips from the Petunia team.',
+        component: () => import('./posts/boarding-vs-daycare-2025'),
+        categories: ['owner', 'boarding', 'daycare'],
+    },
+    {
         slug: 'decompression-boarding-2025',
         title: 'Decompression Boarding: How Quiet Spaces Help Dogs Relax After Drop-Off',
         date: 'October 7, 2025',
