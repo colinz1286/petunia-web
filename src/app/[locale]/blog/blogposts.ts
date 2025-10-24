@@ -21,6 +21,51 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'responsible-breeding-pairs-2025',
+        title: 'How to Choose Responsible Breeding Pairs (Genetic Testing Explained)',
+        date: 'October 16, 2025',
+        description:
+            'A complete guide for ethical dog breeders on selecting healthy, genetically diverse pairs. Includes OFA and Embark testing, common recessive traits, and real-world breeding ethics examples.',
+        component: () => import('./posts/responsible-breeding-pairs-2025'),
+        categories: ['breeder'],
+    },
+    {
+        slug: 'senior-dog-health-checklist-2025',
+        title: 'Senior Dog Health Checklist: Signs of Aging and When to See the Vet',
+        date: 'October 15, 2025',
+        description:
+            'Learn how to recognize and manage the signs of aging in senior dogs. Covers mobility, cognition, appetite, preventive testing, home adaptations, and nutritional support for long-term wellness.',
+        component: () => import('./posts/senior-dog-health-checklist-2025'),
+        categories: ['owner', 'vet'],
+    },
+    {
+        slug: 'gmb-tips-boarding-2025',
+        title: 'Top Google My Business Tips for Pet Boarding Facilities',
+        date: 'October 14, 2025',
+        description:
+            'Boost your pet boarding facility’s visibility with this step-by-step Google My Business optimization guide. Includes a GMB checklist, review strategy, reply templates, and tips for maintaining brand reputation.',
+        component: () => import('./posts/gmb-tips-boarding-2025'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'boarding-daycare-checklist-2025',
+        title: 'What to Pack for Dog Boarding and Daycare (Owner’s Checklist)',
+        date: 'October 13, 2025',
+        description:
+            'A detailed, printable checklist to help you pack everything your dog needs for boarding or daycare—from food and meds to comfort items and paperwork. Perfect for stress-free drop-offs.',
+        component: () => import('./posts/boarding-daycare-checklist-2025'),
+        categories: ['owner', 'boarding'],
+    },
+    {
+        slug: 'daycare-safety-standards-2025',
+        title: 'Dog Daycare Safety Standards and Staff Training Requirements',
+        date: 'October 12, 2025',
+        description:
+            'A practical, research-driven guide to daycare safety: vaccination rules, grouping, ratios, sanitation, incident response, and the staff training that keeps dogs safe every day.',
+        component: () => import('./posts/daycare-safety-standards-2025'),
+        categories: ['boarding'],
+    },
+    {
         slug: 'pet-insurance-dog-daycare-2025',
         title: 'Pet Insurance and Dog Daycare: What’s Covered, What’s Not',
         date: 'October 11, 2025',
