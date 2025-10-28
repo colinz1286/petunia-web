@@ -7,16 +7,19 @@ import {
   signOut,
   onAuthStateChanged,
 } from 'firebase/auth';
+
 import {
   getFirestore,
   doc,
   getDoc,
   collection,
+  collectionGroup,
   query,
   where,
   getDocs,
   updateDoc,
 } from 'firebase/firestore';
+
 import {
   getStorage,
   ref,
@@ -66,6 +69,8 @@ export default function IndividualDashboardPage() {
 
   const [reminderCount, setReminderCount] = useState(0);
   const [hasNewBusinessSignup, setHasNewBusinessSignup] = useState(false);
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false); // 🔴 new state
+
   const [isEmployee, setIsEmployee] = useState(false);
   const [invite, setInvite] = useState<InviteData | null>(null);
   const [inviteDocId, setInviteDocId] = useState('');
@@ -85,6 +90,7 @@ export default function IndividualDashboardPage() {
         loadReminders(uid),
         loadNotifications(uid),
         checkEmployeeStatus(email),
+        loadUnreadMessages(uid), // 🔴 new call
       ]);
     });
     return () => unsub();
@@ -114,6 +120,16 @@ export default function IndividualDashboardPage() {
     );
     const snapshot = await getDocs(q);
     setHasNewBusinessSignup(!snapshot.empty);
+  };
+
+  const loadUnreadMessages = async (uid: string) => {
+    const q = query(
+      collectionGroup(db, 'threadMessages'),
+      where('receiverId', '==', uid),
+      where('read', '==', false)
+    );
+    const snapshot = await getDocs(q);
+    setHasUnreadMessages(!snapshot.empty);
   };
 
   const checkEmployeeStatus = async (email: string) => {
@@ -213,6 +229,12 @@ export default function IndividualDashboardPage() {
         {/* Main Dashboard Links */}
         <DashboardLink href={`/${locale}/individualbookservices`} label={t('book_services_title')} />
         <DashboardLink href={`/${locale}/individualupcomingappointments`} label={t('upcoming_appointments')} />
+
+        <DotLink
+          href={`/${locale}/individualmessages`}
+          label={t('messages')}
+          showDot={hasUnreadMessages}
+        />
 
         <div className="space-y-3 mt-4">
           <BadgeLink href={`/${locale}/individualreminders`} label={t('reminders')} badge={reminderCount} />

@@ -1,0 +1,11 @@
+{
+  "title": "Messages",
+  "loading": "Loading conversations...",
+  "no_messages": "No messages yet.",
+  "empty_description": "When clients message your business, conversations will appear here.",
+  "delete": "Delete Chat",
+  "confirm_delete_title": "Delete this chat?",
+  "confirm_delete_message": "This will permanently remove the conversation from your view.",
+  "cancel": "Cancel",
+  "confirm": "Yes, Delete"
+}

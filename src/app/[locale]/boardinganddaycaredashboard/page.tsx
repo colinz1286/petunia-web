@@ -7,15 +7,19 @@ import {
   signOut,
   onAuthStateChanged,
 } from 'firebase/auth';
+
 import {
   getFirestore,
   collection,
+  collectionGroup,
   query,
   where,
   getDocs,
   doc,
   updateDoc,
+  onSnapshot,
 } from 'firebase/firestore';
+
 import {
   getStorage,
   ref,
@@ -63,6 +67,7 @@ export default function BoardingAndDaycareDashboardPage() {
 
   const [enableEmployeeManagement, setEnableEmployeeManagement] = useState(false);
   const [enableStatePaperwork, setEnableStatePaperwork] = useState(false);
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -71,6 +76,12 @@ export default function BoardingAndDaycareDashboardPage() {
         return;
       }
       await fetchBusinessInfo(user.uid);
+
+      // ✅ Once business info is loaded, attach unread listener
+      if (businessId) {
+        const unsubscribeMessages = listenForUnreadMessages(businessId);
+        return () => unsubscribeMessages(); // cleanup on unmount
+      }
     });
 
     return () => unsubscribe();
@@ -92,6 +103,21 @@ export default function BoardingAndDaycareDashboardPage() {
     const features = data.features || {};
     setEnableEmployeeManagement(features.enableEmployeeManagement || false);
     setEnableStatePaperwork(features.enableStatePaperwork || false);
+  };
+
+  // 🔴 Checks for unread client messages for this business
+  const listenForUnreadMessages = (businessId: string) => {
+    const q = query(
+      collectionGroup(db, 'threadMessages'),
+      where('receiverId', '==', businessId),
+      where('read', '==', false)
+    );
+
+    return onSnapshot(q, (snapshot) => {
+      const unreadCount = snapshot.docs.length;
+      setHasUnreadMessages(unreadCount > 0);
+      console.log(`📩 Unread messages for ${businessId}: ${unreadCount}`);
+    });
   };
 
   const handleLogoUpload = async () => {
@@ -194,10 +220,10 @@ export default function BoardingAndDaycareDashboardPage() {
             {isUploading ? t('uploading_logo') : t('upload_logo')}
           </button>
         )}
-
         {/* Dashboard Links */}
         <div className="space-y-3">
           <DashboardLink href="/boardinganddaycaredogsonproperty" label={t('dogs_on_property')} />
+
           {/* Upcoming Reservations */}
           <DashboardLink
             href="/boardinganddaycareupcomingreservations"
@@ -206,6 +232,14 @@ export default function BoardingAndDaycareDashboardPage() {
 
           <DashboardLink href="/boardinganddaycare-pendingrequests" label={t('pending_requests')} />
           <DashboardLink href="/boardinganddaycarenotificationsview" label={t('notifications')} />
+
+          {/* 📨 Messages button with red dot */}
+          <DotLink
+            href="/boardinganddaycaremessages"
+            label="Messages"
+            showDot={hasUnreadMessages}
+          />
+
           <DashboardLink href="/boardinganddaycare-clientmanagement" label={t('client_management')} />
 
           {enableEmployeeManagement && (
@@ -289,6 +323,33 @@ function DashboardLink({
     >
       {label}
     </Link>
+  );
+}
+
+function DotLink({
+  href,
+  label,
+  showDot,
+}: {
+  href: string;
+  label: string;
+  showDot: boolean;
+}) {
+  return (
+    <div className="relative">
+      <Link
+        href={href}
+        className="block w-full text-white bg-[#2c4a30] hover:opacity-90 py-2 px-4 rounded text-center"
+      >
+        {label}
+      </Link>
+      {showDot && (
+        <span
+          className="absolute top-2 right-4 w-3 h-3 bg-red-600 rounded-full"
+          aria-label="unread messages"
+        />
+      )}
+    </div>
   );
 }
 
