@@ -1,30 +1,8 @@
+'use client';
+
 import Image from 'next/image';
-import type { Metadata } from 'next';
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale?: string };
-}): Promise<Metadata> {
-  const locale = params?.locale ?? 'en';
-  const base = 'https://www.petuniapets.com';
-  return {
-    title: 'Contact Petunia Pets',
-    description:
-      "Reach out to Petunia Pets with questions, feedback, or support requests. We're always happy to hear from you.",
-    alternates: {
-      canonical: `${base}/${locale}/contact`,
-      languages: {
-        en: `${base}/en/contact`,
-        'x-default': `${base}/contact`,
-      },
-    },
-  };
-}
-
-// ✅ Works with Next.js app/[locale] routes and passes type checking
 export default function ContactPage() {
-
   return (
     <main className="min-h-screen bg-[#f6efe4] text-[#2c4a30] font-sans px-4 sm:px-6 py-20 flex flex-col items-center justify-center text-center">
       <div className="max-w-xl space-y-6">
@@ -47,7 +25,9 @@ export default function ContactPage() {
           </a>
           . We&rsquo;ll get back to you as soon as we can!
         </p>
-        <p className="text-lg italic text-[#444]">Thank you for being part of the Petunia community.</p>
+        <p className="text-lg italic text-[#444]">
+          Thank you for being part of the Petunia community.
+        </p>
       </div>
     </main>
   );
