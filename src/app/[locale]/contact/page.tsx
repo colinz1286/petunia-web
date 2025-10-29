@@ -21,8 +21,7 @@ export async function generateMetadata({
 }
 
 // ✅ Fix: correct prop typing
-export default function ContactPage({ params }: { params: { locale: string } }) {
-  const locale = params?.locale ?? 'en';
+export default function ContactPage() {
 
   return (
     <main className="min-h-screen bg-[#f6efe4] text-[#2c4a30] font-sans px-4 sm:px-6 py-20 flex flex-col items-center justify-center text-center">
