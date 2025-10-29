@@ -1,10 +1,33 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 
-export default function PrivacyPolicyPage() {
+// ✅ Tell Google which URL is authoritative and list language variants
+export async function generateMetadata({
+  params,
+}: { params: { locale: string } }): Promise<Metadata> {
+  const locale = params?.locale ?? 'en';
+  const base = 'https://www.petuniapets.com';
+  return {
+    title: 'Privacy Policy for Petunia Pets',
+    description:
+      'How Petunia Pets collects, uses, and protects your information across our app and website.',
+    alternates: {
+      canonical: `${base}/${locale}/privacypolicy`,
+      languages: {
+        en: `${base}/en/privacypolicy`,
+        'x-default': `${base}/privacypolicy`,
+      },
+    },
+  };
+}
+
+export default function PrivacyPolicyPage({
+  params,
+}: { params: { locale: string } }) {
+  const locale = params?.locale ?? 'en';
+
   return (
     <main className="min-h-screen bg-[#f6efe4] flex flex-col justify-between">
-      {/* ✅ DO NOT INCLUDE MANUAL HEADER HERE — Already included via shared layout */}
-
       {/* Privacy Policy Content */}
       <section className="flex-grow px-6 py-12 text-[#2c4a30]">
         <div className="max-w-3xl mx-auto">
@@ -12,11 +35,15 @@ export default function PrivacyPolicyPage() {
           <p className="text-sm italic mb-8">Last Updated: July 14, 2025</p>
 
           <p className="mb-6">
-            Berkley Creek Software LLC (“we,” “us,” or “our”) respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and protect information when you use the Petunia Pets mobile app or our website at <a href="http://www.petuniapets.com" target="_blank" rel="noopener noreferrer" className="underline">www.petuniapets.com</a>.
+            Berkley Creek Software LLC (“we,” “us,” or “our”) respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and protect information when you use the Petunia Pets mobile app or our website at{' '}
+            <a href="https://www.petuniapets.com" target="_blank" rel="noopener noreferrer" className="underline">
+              www.petuniapets.com
+            </a>.
           </p>
 
           <p className="mb-6">
-            Petunia Pets is owned and operated by Berkley Creek Software LLC, located at 544 Valencia Rd, Mars, PA 16046, United States. If you have any questions about this policy or how we handle your data, you can contact us at <a href="mailto:admin@petuniapets.com" className="underline">admin@petuniapets.com</a>.
+            Petunia Pets is owned and operated by Berkley Creek Software LLC, located at 544 Valencia Rd, Mars, PA 16046, United States. If you have any questions about this policy or how we handle your data, you can contact us at{' '}
+            <a href="mailto:admin@petuniapets.com" className="underline">admin@petuniapets.com</a>.
           </p>
 
           <p className="mb-6">
@@ -32,7 +59,8 @@ export default function PrivacyPolicyPage() {
           </p>
 
           <p className="mb-6">
-            As a user, you have full control over your personal information. You may access, update, or delete any data in your profile at any time. You may also delete your account whenever you choose. If you need help with data changes or account deletion, you can contact us directly at <a href="mailto:admin@petuniapets.com" className="underline">admin@petuniapets.com</a>.
+            As a user, you have full control over your personal information. You may access, update, or delete any data in your profile at any time. You may also delete your account whenever you choose. If you need help with data changes or account deletion, you can contact us directly at{' '}
+            <a href="mailto:admin@petuniapets.com" className="underline">admin@petuniapets.com</a>.
           </p>
 
           <p className="mb-6">
@@ -52,19 +80,19 @@ export default function PrivacyPolicyPage() {
           </p>
 
           <p className="mb-6">
-            If you have any questions or concerns about this policy or your personal data, please email us at <a href="mailto:admin@petuniapets.com" className="underline">admin@petuniapets.com</a>. You may also reach us by mail at Berkley Creek Software LLC, 544 Valencia Rd, Mars, PA 16046, USA.
+            If you have any questions or concerns about this policy or your personal data, please email us at{' '}
+            <a href="mailto:admin@petuniapets.com" className="underline">admin@petuniapets.com</a>. You may also reach us by mail at Berkley Creek Software LLC, 544 Valencia Rd, Mars, PA 16046, USA.
           </p>
         </div>
       </section>
 
-      {/* ✅ Keep Footer — it’s likely shared and expected */}
       <footer className="bg-[#2c4a30] text-white py-6 mt-12">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-4 px-6 text-sm">
           <div className="text-center sm:text-left">
             &copy; {new Date().getFullYear()} Petunia. All rights reserved.
           </div>
           <div className="flex gap-4">
-            <Link href="/contact" className="hover:underline">Contact</Link>
+            <Link href={`/${locale}/contact`} className="hover:underline">Contact</Link>
             <a
               href="https://www.facebook.com/profile.php?id=61575107920935"
               target="_blank"
@@ -81,7 +109,7 @@ export default function PrivacyPolicyPage() {
             >
               YouTube
             </a>
-            <Link href="/privacypolicy" className="hover:underline">Privacy Policy</Link>
+            <Link href={`/${locale}/privacypolicy`} className="hover:underline">Privacy Policy</Link>
           </div>
         </div>
       </footer>

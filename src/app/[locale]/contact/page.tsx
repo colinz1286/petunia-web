@@ -1,8 +1,31 @@
 'use client';
 
 import Image from 'next/image';
+import type { Metadata } from 'next';
 
-export default function ContactPage() {
+// ✅ Metadata for canonical + hreflang
+export async function generateMetadata({
+  params,
+}: { params: { locale: string } }): Promise<Metadata> {
+  const locale = params?.locale ?? 'en';
+  const base = 'https://www.petuniapets.com';
+  return {
+    title: "Contact Petunia Pets",
+    description:
+      "Reach out to Petunia Pets with questions, feedback, or support requests. We're always happy to hear from you.",
+    alternates: {
+      canonical: `${base}/${locale}/contact`,
+      languages: {
+        en: `${base}/en/contact`,
+        'x-default': `${base}/contact`,
+      },
+    },
+  };
+}
+
+export default function ContactPage({
+}: { params: { locale: string } }) {
+
   return (
     <main className="min-h-screen bg-[#f6efe4] text-[#2c4a30] font-sans px-4 sm:px-6 py-20 flex flex-col items-center justify-center text-center">
       <div className="max-w-xl space-y-6">

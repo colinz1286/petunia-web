@@ -21,6 +21,15 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'pa-dog-boarding-daycare-license-requirements-2025',
+        title: 'Pennsylvania Dog Boarding & Daycare License Requirements (2025 Guide)',
+        date: 'October 29, 2025',
+        description:
+            'Clear, state-specific breakdown of licensing, inspection and regulatory obligations for dog boarding and daycare operations in Pennsylvania, including what you must do, how to verify compliance, and why it matters.',
+        component: () => import('./posts/pa-dog-boarding-daycare-license-requirements-2025'),
+        categories: ['owner', 'boarding'],
+    },
+    {
         slug: 'akc-vs-designer-breeds-2025',
         title: 'AKC Registration vs. Designer Breeds: What’s the Real Difference?',
         date: 'October 18, 2025',

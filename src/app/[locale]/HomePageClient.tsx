@@ -38,6 +38,16 @@ export default function HomePageClient() {
                     name="description"
                     content="Create pet profiles, manage reservations, and run your pet care business from one place. Trusted by pet owners, sitters, shelters, and clinics."
                 />
+
+                {/* ✅ Canonical URL */}
+                <link
+                    rel="canonical"
+                    href={`https://www.petuniapets.com${locale ? `/${locale}` : '/en'}`}
+                />
+
+                {/* ✅ Language alternates */}
+                <link rel="alternate" hrefLang="en" href="https://www.petuniapets.com/en" />
+                <link rel="alternate" hrefLang="x-default" href="https://www.petuniapets.com/" />
             </Head>
 
             <main className="flex-grow flex flex-col items-center justify-start text-center px-4 mt-10">
