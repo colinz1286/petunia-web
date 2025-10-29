@@ -3,7 +3,9 @@ import type { Metadata } from 'next';
 
 export async function generateMetadata({
   params,
-}: { params: { locale: string } }): Promise<Metadata> {
+}: {
+  params: { locale?: string };
+}): Promise<Metadata> {
   const locale = params?.locale ?? 'en';
   const base = 'https://www.petuniapets.com';
   return {
@@ -20,7 +22,7 @@ export async function generateMetadata({
   };
 }
 
-// ✅ Fix: correct prop typing
+// ✅ Works with Next.js app/[locale] routes and passes type checking
 export default function ContactPage() {
 
   return (
