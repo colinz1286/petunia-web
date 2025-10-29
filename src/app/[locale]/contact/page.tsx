@@ -14,17 +14,24 @@ export default function ContactPage() {
           className="mx-auto w-[90%] sm:w-[80%] md:w-[60%] rounded-lg shadow-lg mb-8"
           priority
         />
+
         <h1 className="text-3xl sm:text-4xl font-bold">We&rsquo;d love to hear from you</h1>
+
         <p className="text-lg leading-relaxed">
           Whether you have a question, suggestion, or just want to say hello — we&rsquo;re always here.
         </p>
+
         <p className="text-lg leading-relaxed">
           Feel free to reach out anytime at{' '}
-          <a href="mailto:admin@petuniapets.com" className="underline text-[#2c4a30] font-medium">
+          <a
+            href="mailto:admin@petuniapets.com"
+            className="underline text-[#2c4a30] font-medium"
+          >
             admin@petuniapets.com
           </a>
           . We&rsquo;ll get back to you as soon as we can!
         </p>
+
         <p className="text-lg italic text-[#444]">
           Thank you for being part of the Petunia community.
         </p>
