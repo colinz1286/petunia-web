@@ -1,34 +1,11 @@
+'use client';
+
 import Link from 'next/link';
-import type { Metadata } from 'next';
+import Image from 'next/image';
 
-// ✅ Tell Google which URL is authoritative and list language variants
-export async function generateMetadata({
-  params,
-}: { params: { locale: string } }): Promise<Metadata> {
-  const locale = params?.locale ?? 'en';
-  const base = 'https://www.petuniapets.com';
-  return {
-    title: 'Privacy Policy for Petunia Pets',
-    description:
-      'How Petunia Pets collects, uses, and protects your information across our app and website.',
-    alternates: {
-      canonical: `${base}/${locale}/privacypolicy`,
-      languages: {
-        en: `${base}/en/privacypolicy`,
-        'x-default': `${base}/privacypolicy`,
-      },
-    },
-  };
-}
-
-export default function PrivacyPolicyPage({
-  params,
-}: { params: { locale: string } }) {
-  const locale = params?.locale ?? 'en';
-
+export default function PrivacyPolicyPage() {
   return (
     <main className="min-h-screen bg-[#f6efe4] flex flex-col justify-between">
-      {/* Privacy Policy Content */}
       <section className="flex-grow px-6 py-12 text-[#2c4a30]">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold mb-4">Privacy Policy for Petunia Pets</h1>
@@ -92,7 +69,7 @@ export default function PrivacyPolicyPage({
             &copy; {new Date().getFullYear()} Petunia. All rights reserved.
           </div>
           <div className="flex gap-4">
-            <Link href={`/${locale}/contact`} className="hover:underline">Contact</Link>
+            <Link href="/en/contact" className="hover:underline">Contact</Link>
             <a
               href="https://www.facebook.com/profile.php?id=61575107920935"
               target="_blank"
@@ -109,7 +86,7 @@ export default function PrivacyPolicyPage({
             >
               YouTube
             </a>
-            <Link href={`/${locale}/privacypolicy`} className="hover:underline">Privacy Policy</Link>
+            <Link href="/en/privacypolicy" className="hover:underline">Privacy Policy</Link>
           </div>
         </div>
       </footer>
