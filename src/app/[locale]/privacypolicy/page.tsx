@@ -1,7 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-
 export default function PrivacyPolicyPage() {
   return (
     <main className="min-h-screen bg-[#f6efe4] flex flex-col justify-between">

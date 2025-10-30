@@ -21,6 +21,70 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'leptospirosis-in-dogs-symptoms-prevention-2025',
+        title: 'Leptospirosis in Dogs: Symptoms, Transmission, and Protection (2025 Update)',
+        date: 'October 24, 2025',
+        description:
+            'Comprehensive overview of leptospirosis in dogs — symptoms, transmission, treatment, and 2025 prevention updates from the CDC, AVMA, and WSAVA.',
+        component: () => import('./posts/leptospirosis-in-dogs-symptoms-prevention-2025'),
+        categories: ['owner', 'vet'],
+    },
+    {
+        slug: 'boxer-mast-cell-tumors-2025',
+        title: 'Mast Cell Tumors in Boxers: Early Detection, Treatment, and Prognosis (2025 Guide)',
+        date: 'October 23, 2025',
+        description:
+            'Comprehensive overview of mast cell tumors in Boxers — causes, symptoms, diagnosis, and treatment options to ensure early detection and better outcomes.',
+        component: () => import('./posts/boxer-mast-cell-tumors-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+    },
+    {
+        slug: 'cfia-pet-import-rules-canada-2025',
+        title: 'CFIA Pet Import Rules for Canada (2025): Dogs & Cats — What Owners Must Know',
+        date: 'October 21, 2025',
+        description:
+            'Updated 2025 guidelines from the CFIA for importing dogs and cats into Canada — covering age, microchipping, rabies vaccination and what U.S.-based pet owners should prepare.',
+        component: () => import('./posts/cfia-pet-import-rules-canada-2025'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'ring-search-party-ai-update-oct22-2025',
+        title: 'Ring Search Party Update: Early Feedback & What’s Next (October 22 2025)',
+        date: 'October 22, 2025',
+        description:
+            'Latest news and user feedback on Ring’s AI-powered Search Party feature for lost dogs, including rollout details, privacy debate, and adoption tips.',
+        component: () => import('./posts/ring-search-party-ai-update-oct22-2025'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'extending-great-dane-lifespan-2025',
+        title: 'Extending the Life of Your Great Dane: Proven Strategies for a Healthier Giant Breed',
+        date: 'October 26, 2025',
+        description:
+            'Science-based strategies to extend Great Dane lifespan through nutrition, gut health, exercise, and preventive screenings.',
+        component: () => import('./posts/extending-great-dane-lifespan-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Great Dane',
+    },
+    {
+        slug: 'raw-vs-kibble-metabolic-health-2025',
+        title: 'Raw vs. Kibble: What the 2025 Helsinki Metabolic Study Reveals About Canine Health',
+        date: 'October 20, 2025',
+        description:
+            'Detailed summary of the 2025 University of Helsinki study comparing raw meat-based and kibble diets in dogs, highlighting metabolic effects and safety guidance.',
+        component: () => import('./posts/raw-vs-kibble-metabolic-health-2025'),
+        categories: ['owner', 'vet', 'boarding'],
+    },
+    {
+        slug: 'canine-nutrition-research-roundup-sept-oct-2025',
+        title: 'Canine Nutrition Research Roundup: September–October 2025',
+        date: 'October 19, 2025',
+        description:
+            'Evidence-based summary of canine nutrition research from Sept–Oct 2025, including nutrient profiles, sustainability, and kibble vs. raw metabolism.',
+        component: () => import('./posts/canine-nutrition-research-roundup-sept-oct-2025'),
+        categories: ['owner', 'vet', 'boarding'],
+    },
+    {
         slug: 'pa-dog-boarding-daycare-license-requirements-2025',
         title: 'Pennsylvania Dog Boarding & Daycare License Requirements (2025 Guide)',
         date: 'October 29, 2025',
