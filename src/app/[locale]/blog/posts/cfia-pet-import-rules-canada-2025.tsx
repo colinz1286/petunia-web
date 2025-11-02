@@ -8,7 +8,7 @@ export default function CfiaPetImportRulesCanada2025() {
   const locale = useLocale();
 
   const title = 'CFIA Pet Import Rules for Canada (2025): Dogs & Cats — What Owners Must Know';
-  const date = 'October 30, 2025';
+  const date = 'October 21, 2025';
   const description =
     'The Canadian Food Inspection Agency (CFIA) has updated its 2025 import rules for dogs and cats, including microchip and rabies antibody requirements. Learn what’s new and how to prepare before crossing the border.';
   const canonical = `https://www.petuniapets.com/${locale}/blog/cfia-pet-import-rules-canada-2025`;
