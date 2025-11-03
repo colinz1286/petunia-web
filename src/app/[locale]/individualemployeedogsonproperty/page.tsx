@@ -52,6 +52,8 @@ type CheckedInDog = {
     medicationDetails?: string;
     spayedNeutered?: string;
     isAssessment?: boolean;
+    currentFood?: string;
+    feedingAmount?: string;
 };
 
 type CheckedInDogLive = CheckedInDog & { dateKey: string };
@@ -123,6 +125,31 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
         return Number.isNaN(tms) ? 0 : tms;
     };
 
+    /** -------- Fetch feeding info from Firestore -------- */
+    async function fetchFeedingInfo(ownerName: string, dogId: string): Promise<{ currentFood?: string; feedingAmount?: string }> {
+        try {
+            const fs = getFirestore();
+            // Step 1 – get userId from joinRequests by owner name
+            const joinQ = query(collection(fs, 'joinRequests'), where('userName', '==', ownerName));
+            const joinSnap = await getDocs(joinQ);
+            if (joinSnap.empty) return {};
+            const ownerUid = joinSnap.docs[0].data().userId as string | undefined;
+            if (!ownerUid) return {};
+
+            // Step 2 – get that pet’s record
+            const petRef = doc(fs, 'users', ownerUid, 'pets', dogId);
+            const petSnap = await getDoc(petRef);
+            if (!petSnap.exists()) return {};
+            const data = petSnap.data() || {};
+            return {
+                currentFood: (data.currentFood as string) || '',
+                feedingAmount: (data.feedingAmount as string) || '',
+            };
+        } catch (err) {
+            console.error('⚠️ fetchFeedingInfo failed:', err);
+            return {};
+        }
+    }
     // ---------------------------------------------------------------------------
     // Auth -> Invite -> Business TZ -> Subscribe to ALL current check-ins
     // ---------------------------------------------------------------------------
@@ -224,7 +251,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
 
                         const dog: CheckedInDogLive = {
                             id: dogId,
-                            dateKey, // internal only, used for checkout path
+                            dateKey,
                             name: String(raw.name ?? ''),
                             owner: String(raw.owner ?? ''),
                             type: String(raw.type ?? ''),
@@ -237,6 +264,18 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                             spayedNeutered: raw.spayedNeutered ? String(raw.spayedNeutered) : undefined,
                             isAssessment: Boolean(raw.isAssessment),
                         };
+
+                        // 🧩 Fetch feeding info for this dog
+                        fetchFeedingInfo(dog.owner, dog.id).then((feed) => {
+                            if (feed.currentFood || feed.feedingAmount) {
+                                setDogsLive((prev) =>
+                                    prev.map((d) =>
+                                        d.id === dog.id ? { ...d, ...feed } : d
+                                    )
+                                );
+                            }
+                        });
+
                         list.push(dog);
                     });
                 });
@@ -491,6 +530,24 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                         ) : null}
 
                         {dog.pickUpDate ? <div className="mt-1">Pickup Date: {dog.pickUpDate}</div> : null}
+
+                        {/* 🆕 Feeding info */}
+                        {(dog.currentFood || dog.feedingAmount) && (
+                            <div className="mt-1">
+                                {dog.currentFood && (
+                                    <div>
+                                        <span className="font-medium">Current Food: </span>
+                                        {dog.currentFood}
+                                    </div>
+                                )}
+                                {dog.feedingAmount && (
+                                    <div>
+                                        <span className="font-medium">Feeding Amount: </span>
+                                        {dog.feedingAmount} cups
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {grooming ? (
                             <ClampText label="Grooming Services" text={dog.groomingAddOns.join(', ')} />

@@ -59,6 +59,8 @@ type Dog = {
   medicationDetails?: string | null;
   spayedNeutered?: string | null;
   isAssessment: boolean;
+  currentFood?: string | null;
+  feedingAmount?: string | null;
 };
 
 type FilterType = 'Daycare' | 'Boarding' | 'Grooming';
@@ -90,6 +92,31 @@ const formatCheckIn = (iso: string, locale: string) => {
   if (Number.isNaN(d.getTime())) return iso;
   return new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short' }).format(d);
 };
+
+/** -------- Fetch feeding info from Firestore -------- */
+async function fetchFeedingInfo(ownerName: string, dogId: string): Promise<{ currentFood?: string; feedingAmount?: string }> {
+  try {
+    // Step 1 – Find userId by owner name
+    const joinQ = query(collection(db, 'joinRequests'), where('userName', '==', ownerName));
+    const joinSnap = await getDocs(joinQ);
+    if (joinSnap.empty) return {};
+    const ownerUid = joinSnap.docs[0].data().userId as string | undefined;
+    if (!ownerUid) return {};
+
+    // Step 2 – Get that pet’s record
+    const petRef = doc(db, 'users', ownerUid, 'pets', dogId);
+    const petSnap = await getDoc(petRef);
+    if (!petSnap.exists()) return {};
+    const data = petSnap.data() || {};
+    return {
+      currentFood: (data.currentFood as string) || '',
+      feedingAmount: (data.feedingAmount as string) || '',
+    };
+  } catch (err) {
+    console.error('⚠️ fetchFeedingInfo failed:', err);
+    return {};
+  }
+}
 
 /** =========================
  *  Page
@@ -194,6 +221,19 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
               spayedNeutered: (v.spayedNeutered as string) || null,
               isAssessment: (v.isAssessment as boolean) ?? false,
             };
+
+            // 🧩 Immediately start Firestore lookup for feeding info
+            fetchFeedingInfo(owner, dog.id).then((feed) => {
+              if (feed.currentFood || feed.feedingAmount) {
+                setDogs((prev) => {
+                  const updated = prev.map((d) =>
+                    d.id === dog.id ? { ...d, ...feed } : d
+                  );
+                  return updated;
+                });
+              }
+            });
+
             list.push(dog);
           });
         });
@@ -454,6 +494,22 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
                         {dog.pickUpDate && (
                           <div>
                             <strong>{t('pickup_date_label')}:</strong> {dog.pickUpDate}
+                          </div>
+                        )}
+
+                        {/* 🆕 Feeding info */}
+                        {(dog.currentFood || dog.feedingAmount) && (
+                          <div className="text-gray-700">
+                            {dog.currentFood && (
+                              <div>
+                                <strong>Current Food:</strong> {dog.currentFood}
+                              </div>
+                            )}
+                            {dog.feedingAmount && (
+                              <div>
+                                <strong>Feeding Amount:</strong> {dog.feedingAmount} cups
+                              </div>
+                            )}
                           </div>
                         )}
 
