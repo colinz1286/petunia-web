@@ -1,0 +1,338 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import {
+    getFirestore,
+    doc,
+    getDoc,
+    collection,
+    getDocs,
+} from 'firebase/firestore';
+import {
+    getStorage,
+    ref,
+    listAll,
+    getDownloadURL,
+} from 'firebase/storage';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { useLocale } from 'next-intl';
+
+// ✅ Firebase initialization
+const firebaseConfig = {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
+};
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+interface VaccineRecord {
+    isVaccinated: boolean;
+    date?: string;
+}
+
+interface Pet {
+    id: string;
+    name: string;
+    breed: string;
+    age: string;
+    ageUnit: string;
+    weight: string;
+    vaccinationRecords: Record<string, VaccineRecord>;
+    fileCount: number;
+    vetName: string;
+    vetPhone: string;
+}
+
+type TimestampLike = { seconds: number; nanoseconds?: number };
+
+type VaccinationRaw = {
+  isVaccinated?: boolean;
+  date?: TimestampLike;
+};
+
+interface ClientData {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phoneNumber?: string;
+  address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+  };
+  emergencyContact?: {
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+  };
+  vetName?: string;
+  vetPhone?: string;
+}
+
+export default function BoardingAndDaycareIndividualClientPage() {
+    const locale = useLocale();
+    const router = useRouter();
+    const { userId } = useParams() as { userId: string };
+
+    const [client, setClient] = useState<ClientData | null>(null);
+    const [pets, setPets] = useState<Pet[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    // ✅ Load client + pet data
+    useEffect(() => {
+        const auth = getAuth(app);
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                router.push(`/${locale}/loginsignup`);
+                return;
+            }
+
+            try {
+                setLoading(true);
+                setError(null);
+
+                // --- Load client basic info
+                const clientRef = doc(db, 'users', userId);
+                const clientSnap = await getDoc(clientRef);
+                if (!clientSnap.exists()) {
+                    setError('Client not found');
+                    setLoading(false);
+                    return;
+                }
+                const clientData = clientSnap.data();
+
+                // ✅ Extract emergencyContact like iOS
+                let vetName = 'Unknown';
+                let vetPhone = 'Unknown';
+
+                if (clientData.emergencyContact) {
+                    const contact = clientData.emergencyContact;
+                    const first = contact.firstName || '';
+                    const last = contact.lastName || '';
+                    vetName = [first, last].filter(Boolean).join(' ').trim() || 'Unknown';
+                    vetPhone = contact.phoneNumber || 'Unknown';
+                }
+
+                // Store it alongside client
+                setClient({
+                    ...clientData,
+                    vetName,
+                    vetPhone
+                });
+
+                // --- Load pets
+                const petsSnap = await getDocs(collection(db, 'users', userId, 'pets'));
+                const petPromises = petsSnap.docs.map(async (petDoc) => {
+                    const data = petDoc.data();
+                    const id = petDoc.id;
+
+                    // Vaccination records
+                    const records = data.vaccinationRecords || {};
+                    const vaccineRecords: Record<string, VaccineRecord> = {};
+                    Object.entries(records as Record<string, VaccinationRaw>).forEach(([key, value]) => {
+                        vaccineRecords[key] = {
+                            isVaccinated: value.isVaccinated ?? false,
+                            date: value.date
+                                ? new Date(value.date.seconds * 1000).toLocaleDateString()
+                                : undefined,
+                        };
+                    });
+
+                    // --- Count vaccine files in Storage
+                    const folderRef = ref(storage, `vaccineRecords/${userId}`);
+                    const listResult = await listAll(folderRef);
+                    const fileCount = listResult.items.filter((item) =>
+                        item.name.startsWith(`${id}_`)
+                    ).length;
+
+                    return {
+                        id,
+                        name: data.petName || 'Unnamed Pet',
+                        breed: data.breed || 'Unknown',
+                        age: data.ageValue || '?',
+                        ageUnit: data.ageUnit || 'Years',
+                        weight: data.weight || '?',
+                        vaccinationRecords: vaccineRecords,
+                        fileCount,
+                        vetName: data.veterinarian || 'Unknown',
+                        vetPhone: data.veterinarianPhone || 'Unknown',
+                    };
+                });
+
+                const petsResolved = await Promise.all(petPromises);
+                setPets(petsResolved);
+            } catch (err) {
+                console.error('❌ Error loading client:', err);
+                setError('Error loading client data');
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        return () => unsubscribe();
+    }, [userId, locale, router]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
+                <p>Loading client details...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center text-red-600">
+                <p>{error}</p>
+                <button
+                    onClick={() => router.back()}
+                    className="mt-4 text-blue-600 underline"
+                >
+                    Go Back
+                </button>
+            </div>
+        );
+    }
+
+    if (!client) return null;
+
+    return (
+        <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)] px-4 py-8">
+            <div className="max-w-2xl mx-auto space-y-6">
+                <button
+                    onClick={() => router.back()}
+                    className="text-sm text-blue-600 underline hover:opacity-80"
+                >
+                    ← Back to Clients
+                </button>
+
+                <h1 className="text-3xl font-bold text-[color:var(--color-accent)]">
+                    {client.firstName || ''} {client.lastName || ''}
+                </h1>
+
+                <div className="space-y-1 text-sm">
+                    <p>📧 Email: {client.email || 'N/A'}</p>
+                    {client.phoneNumber ? (
+                        <p>
+                            📞 <a href={`tel:${client.phoneNumber}`} className="text-blue-600 underline hover:opacity-80">
+                                {client.phoneNumber}
+                            </a>
+                        </p>
+                    ) : (
+                        <p>📞 N/A</p>
+                    )}
+                    <p>📍 Address: {client.address?.street || ''}, {client.address?.city || ''} {client.address?.state || ''} {client.address?.zipCode || ''}</p>
+                </div>
+
+                <hr className="border-t border-gray-300" />
+
+                {/* Vet contact */}
+                <div>
+                    <h2 className="font-semibold text-lg mb-2">🏥 Veterinary Contact</h2>
+
+                    {/* ✅ Global client-level vet info (from emergencyContact) */}
+                    {client.vetName && client.vetPhone ? (
+                        <div className="mb-3 text-sm">
+                            <p><strong>{client.vetName}</strong></p>
+                            {client.vetPhone ? (
+                                <p>
+                                    📞 <a href={`tel:${client.vetPhone}`} className="text-blue-600 underline hover:opacity-80">
+                                        {client.vetPhone}
+                                    </a>
+                                </p>
+                            ) : (
+                                <p>📞 N/A</p>
+                            )}
+                        </div>
+                    ) : (
+                        <p className="text-gray-500 text-sm mb-3">No veterinary contact on file.</p>
+                    )}
+
+                    {/* ✅ Per-pet veterinary info */}
+                    {pets.length > 0 ? (
+                        pets.map((p) => (
+                            <div key={p.id} className="border rounded-md p-4 mb-4 bg-white text-black">
+                                <h3 className="font-bold text-lg mb-1">🐶 {p.name}</h3>
+                                <p>Breed: {p.breed}</p>
+                                <p>Age: {p.age} {p.ageUnit}</p>
+                                <p>Weight: {p.weight} lbs</p>
+                                <p>Vet: {p.vetName}</p>
+                                <p>Vet Phone: {p.vetPhone}</p>
+
+                                <hr className="my-3" />
+
+                                {/* Vaccine records */}
+                                {Object.entries(p.vaccinationRecords).map(([key, record]) => (
+                                    <div key={key} className="text-sm mb-1">
+                                        <span
+                                            className={`font-semibold ${record.isVaccinated ? 'text-green-600' : 'text-red-600'
+                                                }`}
+                                        >
+                                            💉 {key}: {record.isVaccinated ? 'Yes' : 'No'}
+                                        </span>
+                                        {record.date && (
+                                            <p className="text-xs text-gray-500 ml-5">
+                                                📅 Expires: {record.date}
+                                            </p>
+                                        )}
+                                    </div>
+                                ))}
+
+                                <hr className="my-3" />
+
+                                {/* Vaccine file section */}
+                                {p.fileCount > 0 ? (
+                                    <div className="space-y-2">
+                                        {Array.from({ length: p.fileCount }, (_, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={async () => {
+                                                    const extensions = ['pdf', 'jpg', 'jpeg', 'png', 'heic'];
+                                                    let found = false;
+
+                                                    for (const ext of extensions) {
+                                                        const path = `vaccineRecords/${userId}/${p.id}_${i + 1}.${ext}`;
+                                                        try {
+                                                            const url = await getDownloadURL(ref(storage, path));
+                                                            window.open(url, '_blank');
+                                                            found = true;
+                                                            break;
+                                                        } catch {
+                                                            // continue trying next extension
+                                                        }
+                                                    }
+
+                                                    if (!found) {
+                                                        alert('No accessible vaccine file found for this entry.');
+                                                    }
+                                                }}
+                                                className="text-blue-600 underline text-base font-semibold hover:opacity-80"
+                                            >
+                                                View Vaccine File {i + 1}
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-red-600 font-bold text-sm">
+                                        No vaccine files uploaded
+                                    </p>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        <p>No pets found for this client.</p>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
