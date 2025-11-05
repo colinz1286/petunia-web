@@ -9,7 +9,10 @@ import {
     getDoc,
     collection,
     getDocs,
+    query,
+    where,
 } from 'firebase/firestore';
+
 import {
     getStorage,
     ref,
@@ -53,28 +56,28 @@ interface Pet {
 type TimestampLike = { seconds: number; nanoseconds?: number };
 
 type VaccinationRaw = {
-  isVaccinated?: boolean;
-  date?: TimestampLike;
+    isVaccinated?: boolean;
+    date?: TimestampLike;
 };
 
 interface ClientData {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  phoneNumber?: string;
-  address?: {
-    street?: string;
-    city?: string;
-    state?: string;
-    zipCode?: string;
-  };
-  emergencyContact?: {
     firstName?: string;
     lastName?: string;
+    email?: string;
     phoneNumber?: string;
-  };
-  vetName?: string;
-  vetPhone?: string;
+    address?: {
+        street?: string;
+        city?: string;
+        state?: string;
+        zipCode?: string;
+    };
+    emergencyContact?: {
+        firstName?: string;
+        lastName?: string;
+        phoneNumber?: string;
+    };
+    vetName?: string;
+    vetPhone?: string;
 }
 
 export default function BoardingAndDaycareIndividualClientPage() {
@@ -86,6 +89,12 @@ export default function BoardingAndDaycareIndividualClientPage() {
     const [pets, setPets] = useState<Pet[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    // --- Waiver state ---
+    const [waiverRequired, setWaiverRequired] = useState(false);
+    const [waiverSignedAt, setWaiverSignedAt] = useState<string | null>(null);
+    const [waiverStatusError, setWaiverStatusError] = useState<string | null>(null);
+    const [isLoadingWaiver, setIsLoadingWaiver] = useState(false);
 
     // ✅ Load client + pet data
     useEffect(() => {
@@ -170,6 +179,71 @@ export default function BoardingAndDaycareIndividualClientPage() {
 
                 const petsResolved = await Promise.all(petPromises);
                 setPets(petsResolved);
+
+                // --- Fetch waiver requirement and client waiver status ---
+                setIsLoadingWaiver(true);
+                setWaiverStatusError(null);
+                setWaiverRequired(false);
+                setWaiverSignedAt(null);
+
+                try {
+                    // 1️⃣ Resolve businessId for the current owner
+                    const bizSnap = await getDocs(
+                        query(collection(db, 'businesses'), where('ownerId', '==', user.uid))
+                    );
+                    const businessDoc = bizSnap.docs[0];
+                    const businessId = businessDoc?.id;
+
+                    if (businessId) {
+                        // ✅ Fetch waiverRequired directly from /businesses/{businessId}
+                        const businessDocRef = doc(db, 'businesses', businessId);
+                        const businessSnap = await getDoc(businessDocRef);
+                        const businessData = businessSnap.exists() ? businessSnap.data() : {};
+                        const required = businessData.waiverRequired === true;
+                        setWaiverRequired(required);
+
+                        if (required) {
+                            // 3️⃣ Check waiver status for this client
+                            const clientRef = doc(db, 'userApprovedBusinesses', businessId, 'clients', userId);
+                            const clientSnap = await getDoc(clientRef);
+
+                            if (clientSnap.exists()) {
+                                const cdata = clientSnap.data();
+                                if (cdata.waiverSignedAt) {
+                                    const ts = cdata.waiverSignedAt;
+                                    const date = ts.seconds
+                                        ? new Date(ts.seconds * 1000).toLocaleDateString()
+                                        : null;
+                                    setWaiverSignedAt(date);
+                                }
+                            } else {
+                                // 4️⃣ Fallback: check joinRequests
+                                const joinSnap = await getDocs(
+                                    query(
+                                        collection(db, 'joinRequests'),
+                                        where('businessId', '==', businessId),
+                                        where('userId', '==', userId)
+                                    )
+                                );
+                                if (!joinSnap.empty) {
+                                    const joinData = joinSnap.docs[0].data();
+                                    if (joinData.waiverSignedAt) {
+                                        const ts = joinData.waiverSignedAt;
+                                        const date = ts.seconds
+                                            ? new Date(ts.seconds * 1000).toLocaleDateString()
+                                            : null;
+                                        setWaiverSignedAt(date);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (waiverErr) {
+                    console.error('❌ Waiver fetch error:', waiverErr);
+                    setWaiverStatusError('Failed to load waiver info');
+                } finally {
+                    setIsLoadingWaiver(false);
+                }
             } catch (err) {
                 console.error('❌ Error loading client:', err);
                 setError('Error loading client data');
@@ -232,6 +306,25 @@ export default function BoardingAndDaycareIndividualClientPage() {
                     )}
                     <p>📍 Address: {client.address?.street || ''}, {client.address?.city || ''} {client.address?.state || ''} {client.address?.zipCode || ''}</p>
                 </div>
+
+                {/* --- Waiver Section (shows before Veterinary Contact) --- */}
+                {waiverRequired && (
+                    <div className="bg-white border border-gray-200 rounded-md p-4 text-black">
+                        <h2 className="font-semibold text-lg mb-2">📝 Waiver</h2>
+
+                        {isLoadingWaiver ? (
+                            <p className="text-sm text-gray-500">Checking waiver status...</p>
+                        ) : waiverStatusError ? (
+                            <p className="text-sm text-red-600">❌ {waiverStatusError}</p>
+                        ) : waiverSignedAt ? (
+                            <p className="text-sm text-green-600 font-semibold">
+                                ✅ Signed on {waiverSignedAt}
+                            </p>
+                        ) : (
+                            <p className="text-sm text-red-600 font-semibold">⚠️ Not signed</p>
+                        )}
+                    </div>
+                )}
 
                 <hr className="border-t border-gray-300" />
 
