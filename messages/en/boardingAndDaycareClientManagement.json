@@ -15,9 +15,5 @@
   "vaccines_current": "Vaccines Current",
   "vaccines_not_current": "Vaccines Not Current",
   "no_information_entered": "No information entered",
-  "expiration_prefix": "Expiration:",
-
-  "unnamed_pet": "Unnamed Pet",
-  "view_file_1": "View Vaccine File 1",
-  "view_file_2": "View Vaccine File 2"
+  "expiration_prefix": "Expiration:"
 }

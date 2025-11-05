@@ -1,0 +1,10 @@
+{
+  "back_to_dashboard": "Back to Dashboard",
+  "clients_and_pets_title": "Clients & Pets",
+  "search_clients_placeholder": "Search by client name...",
+  "loading_clients_label": "Loading clients...",
+  "no_clients_found": "No clients found.",
+  "no_business_found": "No business found for this account.",
+  "error_loading_business": "Error loading business information.",
+  "view_more_info": "View More Info"
+}

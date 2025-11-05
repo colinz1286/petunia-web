@@ -99,7 +99,7 @@ export default function Page() {
                     />
 
                     <DashboardButton
-                        href={`/walkersitterdashboard/clientsandpets`}
+                        href={`/walkersitterclients`}
                         label={t('ws_clients_pets')}
                     />
 

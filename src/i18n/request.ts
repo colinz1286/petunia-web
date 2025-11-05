@@ -55,6 +55,7 @@ export default getRequestConfig(async ({ locale }) => {
     individualMessageBusiness: (await import(`../../messages/${safeLocale}/individualMessageBusiness.json`)).default,
     waiverAgreement: (await import(`../../messages/${safeLocale}/waiverAgreement.json`)).default,
     walkerSitterBusinessSettings: (await import(`../../messages/${safeLocale}/walkerSitterBusinessSettings.json`)).default,
+    walkerSitterClientManagement: (await import(`../../messages/${safeLocale}/walkerSitterClientManagement.json`)).default,
     walkerSitterDashboard: (await import(`../../messages/${safeLocale}/walkerSitterDashboard.json`)).default,
     walkerSitterPendingRequests: (await import(`../../messages/${safeLocale}/walkerSitterPendingRequests.json`)).default,
     walkerSitterTodayVisits: (await import(`../../messages/${safeLocale}/walkerSitterTodaysVisits.json`)).default
