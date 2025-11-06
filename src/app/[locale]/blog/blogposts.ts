@@ -21,6 +21,81 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'whelping-complications-every-breeder-should-know',
+        title: 'Whelping Complications Every Breeder Should Know: Early Warning Signs, Emergencies, and When to Call the Vet',
+        date: 'October 30, 2025',
+        description:
+            'Comprehensive guide to recognising and managing whelping emergencies — from dystocia and retained placenta to hypocalcaemia and postpartum infections — with clear vet-backed thresholds for intervention.',
+        component: () => import('./posts/whelping-complications-every-breeder-should-know'),
+        categories: ['breeder']
+    },
+    {
+        slug: 'dog-boarding-preparation-guide',
+        title: 'Dog Boarding Preparation Guide: How to Make Drop-Off Stress-Free for You and Your Pet',
+        date: 'October 31, 2025',
+        description:
+            'Practical guidance for reducing stress before boarding day — from scent-based packing to calm drop-offs and communication tips with staff.',
+        component: () => import('./posts/dog-boarding-preparation-guide'),
+        categories: ['owner', 'boarding']
+    },
+    {
+        slug: 'how-to-choose-dog-daycare-red-and-green-flags',
+        title: 'How to Choose the Right Dog Daycare: Red Flags, Green Flags, and Behavior-Based Standards',
+        date: 'November 1, 2025',
+        description:
+            'An evidence-based guide to identifying quality dog daycare facilities — learn the red flags of unsafe programs, the green flags of great care, and why behavioral science should guide your choice.',
+        component: () => import('./posts/how-to-choose-dog-daycare-red-and-green-flags'),
+        categories: ['owner']
+    },
+    {
+        slug: 'golden-retriever-cancer-rates-2025',
+        title: 'Golden Retriever Cancer Rates: What Every Owner Should Know in 2025',
+        date: 'November 2, 2025',
+        description:
+            'An evidence-based look at Golden Retriever cancer rates in 2025 — the latest research, early detection practices, and steps owners can take to reduce risk and improve outcomes.',
+        component: () => import('./posts/golden-retriever-cancer-rates-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Dachshund',
+    },
+    {
+        slug: 'ethics-of-dog-breeding-2025',
+        title: 'The Ethics of Dog Breeding in 2025: Balancing Profit, Purpose, and Preservation',
+        date: 'November 3, 2025',
+        description:
+            'Colin Zedreck examines how modern dog breeders in 2025 can ethically balance profit, purpose, and preservation to protect canine welfare and genetic diversity.',
+        component: () => import('./posts/ethics-of-dog-breeding-2025'),
+        categories: ['breeder', 'owner'],
+    },
+    {
+        slug: 'dog-boarding-software-costs',
+        title: 'Dog Boarding Software Doesn’t Need to Be Expensive',
+        date: 'November 4, 2025',
+        description:
+            'Colin Zedreck shares why dog boarding and daycare software should be affordable for every business — and why Petunia proves great tools don’t need high prices.',
+        component: () => import('./posts/dog-boarding-software-costs'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'french-bulldog-grooming-routine',
+        title: 'French Bulldog Grooming Routine: How Often to Bathe, Brush, and Clean Folds',
+        date: 'November 5, 2025',
+        description:
+            'Discover the best grooming schedule for your French Bulldog — how often to bathe, brush, and clean facial folds to prevent odor and skin infections.',
+        component: () => import('./posts/french-bulldog-grooming-routine'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'French Bulldog',
+    },
+    {
+        slug: 'cavalier-king-charles-spaniel-lifespan',
+        title: 'Cavalier King Charles Spaniel Lifespan: How to Help Your Dog Live Longer',
+        date: 'November 6, 2025',
+        description:
+            'Explore the average lifespan of Cavalier King Charles Spaniels and discover how nutrition, heart care, and responsible breeding can help your dog live longer and healthier.',
+        component: () => import('./posts/cavalier-king-charles-spaniel-lifespan'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Cavalier King Charles Spaniel',
+    },
+    {
         slug: 'leptospirosis-in-dogs-symptoms-prevention-2025',
         title: 'Leptospirosis in Dogs: Symptoms, Transmission, and Protection (2025 Update)',
         date: 'October 24, 2025',

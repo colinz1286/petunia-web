@@ -40,11 +40,11 @@ export default function DogBoardingSoftwarePage() {
           <p>Competitor &ndash; $79.99/mo</p>
           <p>Competitor &ndash; $55/mo</p>
           <p>Competitor &ndash; $40/mo</p>
-          <p className="font-bold text-green-700 text-lg pt-2">Petunia &ndash; $5/mo</p>
+          <p className="font-bold text-green-700 text-lg pt-2">Petunia &ndash; $3/mo</p>
         </div>
         <div className="mt-6 max-w-md mx-auto text-base text-gray-700">
           <p className="mt-4 font-semibold text-[#2c4a30]">
-            Petunia is <strong>$5/month</strong> after your free trial of 15 days. <strong>No contracts. Cancel anytime.</strong> Multi-location management is coming in April of 2026.
+            Petunia is <strong>$3/month</strong> after your free trial of 15 days. <strong>No contracts. Cancel anytime.</strong> Multi-location management is coming in April of 2026.
           </p>
         </div>
       </section>
