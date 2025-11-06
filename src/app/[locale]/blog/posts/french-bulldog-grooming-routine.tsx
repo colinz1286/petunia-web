@@ -25,7 +25,7 @@ export default function FrenchBulldogGroomingRoutine() {
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
-        <p className="text-sm text-gray-500 mb-4">Written on November&nbsp;6,&nbsp;2025</p>
+        <p className="text-sm text-gray-500 mb-4">Written on November&nbsp;5,&nbsp;2025</p>
 
         <h1 className="text-3xl font-bold mb-4">
           French Bulldog Grooming Routine: How Often to Bathe, Brush, and Clean Folds
