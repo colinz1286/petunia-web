@@ -120,11 +120,6 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
     const isAssessmentDaycare = (d: CheckedInDog): boolean =>
         d.type === 'Daycare' && Boolean(d.isAssessment);
 
-    const parseCheckInTime = (iso: string): number => {
-        const tms = Date.parse(iso);
-        return Number.isNaN(tms) ? 0 : tms;
-    };
-
     /** -------- Fetch feeding info from Firestore -------- */
     async function fetchFeedingInfo(ownerName: string, dogId: string): Promise<{ currentFood?: string; feedingAmount?: string }> {
         try {
@@ -223,7 +218,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
         if (userId) bootstrapForUser(userId);
     }, [userId, bootstrapForUser]);
 
-    const subscribeAll = (sanitizedBId: string) => {
+    const subscribeAll = useCallback((sanitizedBId: string) => {
         const db = getDatabase();
         const ref = rtdbRef(db, `checkIns/${sanitizedBId}`);
         const cb = (snap: DataSnapshot) => {
@@ -237,7 +232,6 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
 
                     Object.keys(bucket).forEach((dogId) => {
                         const raw = bucket[dogId] ?? {};
-                        // Normalize grooming add-ons to array of strings
                         let grooming: string[] = [];
                         if (Array.isArray(raw.groomingAddOns)) {
                             grooming = raw.groomingAddOns.filter(Boolean);
@@ -265,7 +259,6 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                             isAssessment: Boolean(raw.isAssessment),
                         };
 
-                        // 🧩 Fetch feeding info for this dog
                         fetchFeedingInfo(dog.owner, dog.id).then((feed) => {
                             if (feed.currentFood || feed.feedingAmount) {
                                 setDogsLive((prev) =>
@@ -287,7 +280,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
 
         onValue(ref, cb);
         listenerRef.current = { ref, cb };
-    };
+    }, []); // stable, no dependencies
 
     useEffect(() => {
         return () => {
@@ -305,13 +298,15 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
     // ---------------------------------------------------------------------------
     // Derived data
     // ---------------------------------------------------------------------------
+    // ✅ Sort alphabetically by dog name (A–Z) for stable, predictable order
+
     const filteredDogs = useMemo(() => {
         const f = dogsLive.filter((d) => {
             if (filter === 'daycare') return d.type === 'Daycare';
             if (filter === 'boarding') return d.type === 'Boarding';
             return hasGrooming(d);
         });
-        return f.sort((a, b) => parseCheckInTime(b.checkInTime) - parseCheckInTime(a.checkInTime));
+        return [...f].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
     }, [dogsLive, filter]);
 
     // ---------------------------------------------------------------------------

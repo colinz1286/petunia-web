@@ -260,12 +260,16 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
     };
   }, [businessIdSanitized, t]);
 
-  /** Filtering */
+  /** Filtering — now sorted alphabetically by dog name (A–Z) */
   const filteredDogs = useMemo(() => {
-    if (filter === 'Daycare') return dogs.filter((d) => d.type === 'Daycare');
-    if (filter === 'Boarding') return dogs.filter((d) => d.type === 'Boarding');
-    // Grooming = any dog with add-ons
-    return dogs.filter((d) => hasGrooming(d));
+    let list: Dog[];
+    if (filter === 'Daycare') list = dogs.filter((d) => d.type === 'Daycare');
+    else if (filter === 'Boarding') list = dogs.filter((d) => d.type === 'Boarding');
+    else list = dogs.filter((d) => hasGrooming(d));
+
+    return [...list].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+    );
   }, [dogs, filter]);
 
   /** Expand/collapse */
