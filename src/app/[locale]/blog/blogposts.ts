@@ -21,6 +21,15 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'xl-bully-policy-guide',
+        title: 'Understanding the XL Bully Ban in the UK: What Pet Owners & Boarding Facilities Need to Know',
+        date: 'November 13, 2025',
+        description:
+            'An objective overview of the UK regulation changes for XL Bully type dogs: what’s prohibited, what “exemption” means, and practical screening and safety advice for pet-care providers and owners.',
+        component: () => import('./posts/xl-bully-policy-guide'),
+        categories: ['owner', 'boarding']
+    },
+    {
         slug: 'whelping-complications-every-breeder-should-know',
         title: 'Whelping Complications Every Breeder Should Know: Early Warning Signs, Emergencies, and When to Call the Vet',
         date: 'October 30, 2025',
