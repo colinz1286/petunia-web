@@ -21,6 +21,19 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'why-dog-boarding-software-prices-are-dropping',
+        title:
+            'Why Dog Boarding & Daycare Software Costs Are Dropping While Subscription Prices Keep Going Up',
+        date: 'November 14, 2025',
+        description:
+            'Cloud infrastructure is cheaper than ever, yet software vendors continue raising prices. This article explains what actually got cheaper, why subscription fees climbed anyway, and how facility owners can protect margins using transparent TCO math.',
+        component: () =>
+            import('./posts/why-dog-boarding-software-prices-are-dropping') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'xl-bully-policy-guide',
         title: 'Understanding the XL Bully Ban in the UK: What Pet Owners & Boarding Facilities Need to Know',
         date: 'November 13, 2025',
