@@ -21,6 +21,19 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'from-clipboards-to-cloud-dog-daycare-management-software-2026',
+        title:
+            'From Clipboards to Cloud: A Data-Backed Look at How Dog Daycare Management Software Changes Daily Operations in 2026',
+        date: 'November 7, 2025',
+        description:
+            'A data-driven breakdown of how dog daycare management software transforms safety, workflow, staffing, and profitability for pet care facilities in 2026.',
+        component: () =>
+            import('./posts/from-clipboards-to-cloud-dog-daycare-management-software-2026') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'veterinary-emergency-care-shortage-2025',
         title:
             'When a Vet Can’t Get Help for Her Own Dog: The Emergency-Care Shortage in Veterinary Medicine',
