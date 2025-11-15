@@ -128,9 +128,8 @@ export default function HomePageClient() {
                         <section className="space-y-5 w-full max-w-xl">
                             <h3 className="text-2xl font-bold text-center">For Boarding & Daycare Facilities</h3>
                             <p className="text-lg text-balance">
-                                💡 Free for your first 30 days — just $3/month after. No contracts. No nonsense.
-                                <br /><br />
-                                <strong>PLEASE CONTINUE READING — we’ll explain exactly why our price is so low, and why it doesn’t come at the cost of quality.</strong>
+                                💡 Free for your first 60 days. We know from expreience that it takes an average of 30 days for your clients to enter their information into Petunia (there is very little data migration necessary when using our software because your clients add all the information for you!). Therefore, we are giving you 60 DAYS OF FREE USE! So, whether you are integrating software into your business for the first time, or switching from another system, we are taking into account the time it will take for everyone to get on boarded. After the 60 day period is up, our price is $29/month moving forward. No contracts. No nonsense.
+                                <br />
                             </p>
                             <p className="text-lg text-balance">
                                 The creators of Petunia are also owners of a boarding and daycare facility — that’s how we got our start in this industry back in 2017. We know the daily challenges firsthand, because we’ve lived them.
@@ -141,8 +140,7 @@ export default function HomePageClient() {
                                 Caring doesn’t mean overcharging; it means delivering the features that make your life easier, at a price that respects the work you do and the sacrifices you make. While families go away, they trust you to take care of their dog while they’re on vacation. That doesn’t mean you shouldn’t be able to afford a nice vacation as well!
                                 <br /><br />
                                 An incredibly small in-home boarding and daycare facility should not have to sacrifice features simply because they can’t afford them. And a large facility should not have to give up the fine-tuned features that smaller software packages offer. Right now, everyone on both sides of the fence is forced to compromise. We’re going to eliminate that.
-                                <br /><br />
-                                Today, Petunia already packs more features than most of the competition. Within the next 6–12 months, we will have enough features to exceed our competition. And as other companies continue to raise prices, we will be aiming to lower ours. Yes, that’s not a typo. The only question left that you have to ask yourself is: which company do you want to work with long-term?
+                                <br />
                             </p>
                             <p className="text-lg text-balance">
                                 💌 Questions or requests? Want a feature that we don&rsquo;t currently have? Email us at{" "}
@@ -189,12 +187,9 @@ export default function HomePageClient() {
                         <section className="space-y-5 w-full max-w-xl">
                             <h3 className="text-2xl font-bold text-center">For Rescues & Adoption Shelters</h3>
                             <p className="text-lg text-balance">
-                                Petunia will always be 100% free for rescue organizations and shelters.
+                                Software for rescue and shelter organizations coming in late 2026. When it goes live, it will cost $5/mo.
                             </p>
-                            <p className="text-lg text-balance">
-                                A one-time $2 transfer fee helps pass medical history and care notes to the new family at adoption.
-                            </p>
-                            <p className="text-lg text-balance">💚 Thank you for everything you do.</p>
+                            <p className="text-lg text-balance">💚 Thank you for everything you do in helping to give animals the life they deserve.</p>
                         </section>
                     )}
 
@@ -202,7 +197,7 @@ export default function HomePageClient() {
                         <section className="space-y-5 w-full max-w-xl">
                             <h3 className="text-2xl font-bold text-center">Veterinary Clinics</h3>
                             <p className="text-lg text-balance">
-                                Most clinic software is rigid and outdated. We&rsquo;re building something better — flexible, modern, and shaped around how real veterinary teams operate.
+                                Coming in 2027. Most clinic software is rigid and outdated. We&rsquo;re building something better — flexible, modern, and shaped around how real veterinary teams operate.
                             </p>
                             <p className="text-lg text-balance">
                                 Stay tuned as we expand support for multi-location practices and seamless pet record syncing.

@@ -26,6 +26,7 @@ export default function Header() {
           <Link href={`/${locale}/contact`} className="hover:underline">Contact</Link>
           <Link href={`/${locale}/blog`} className="hover:underline">Blog</Link>
           <Link href={`/${locale}/dog-boarding-software`} className="hover:underline">Dog Boarding And Daycare Software</Link>
+          <Link href={`/${locale}/tutorials`} className="hover:underline">Tutorials</Link>
           <a
             href="https://www.facebook.com/profile.php?id=61575107920935"
             target="_blank"

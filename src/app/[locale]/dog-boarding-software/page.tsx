@@ -8,24 +8,20 @@ export default function DogBoardingSoftwarePage() {
       {/* Hero Section */}
       <section className="py-10 px-4 bg-[#f0f7f2] rounded-xl shadow-sm text-center">
         <h1 className="text-3xl sm:text-4xl font-bold text-[#2c4a30] leading-tight mb-4">
-          Dog Boarding &amp; Daycare Software that&#39;s Fast, Simple, and Fairly Priced
+          Dog Boarding &amp; Daycare Software that&#39;s Fast, Simple, and Fairly Priced.
         </h1>
         <p className="text-base sm:text-lg text-gray-800 max-w-md mx-auto">
-          This isn&#39;t software. It&#39;s sanity. Run bookings, pet &amp; client profiles, vaccine tracking, waivers, reminders, and more in one calm, reliable place. Built for independents today, with multi-location support rolling out within six months. <strong>Free for 30 days, then just $5/month. No contracts. Cancel anytime.</strong>
+          This isn&#39;t software. It&#39;s sanity. Run bookings, pet &amp; client profiles, vaccine tracking, waivers, reminders, and more in one calm, reliable place. Built for independents today, with multi-location support rolling out within six months. <strong>Free for 60 days, then just $29/month. No contracts. Cancel anytime.</strong>
         </p>
       </section>
 
       {/* What Is Dog Boarding & Daycare Software? */}
       <section className="py-8 text-center">
         <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-[#2c4a30]">
-          Tools that give you peace of mind
+          IMPORTANT UPDATE!
         </h2>
         <p className="text-base leading-7 text-gray-700 max-w-md mx-auto">
-          The best dog boarding &amp; dog daycare software isn&#39;t about dashboards&mdash;it&#39;s about trust. Every reservation, every vaccine expiration, every allergy note and instruction lives where it should, ready when you are. No notebooks. No guesswork. No stress.
-        </p>
-        <p className="text-base leading-7 text-gray-700 mt-4 max-w-md mx-auto">
-          Whether you&#39;re caring for ten dogs or a hundred, Petunia thinks the way you do: simple, obvious, and humane. It&#39;s built for dog people who want the work to feel lighter.
-        </p>
+          Due to high demand, we now have a waiting list. If you wish to join our waiting list, please contact us at admin@petunia.com. One thing we understand more than anyone is that each business runs slightly differently. We promise our clients to give them the features they need. And we are building every single one of them! At the time of this publishing (November 14, 2025), our waiting list for on boarding currently extends into January, 2026. For anyone who signs up, we will extend your free trial period to begin the day that we are able to start assisting you in on boarding. We want to make sure that everyone is on boarded properly and we appreciate your patience as we continue to work through our waiting list. We sincerely appreciate your understanding.        </p>
       </section>
 
       {/* Pricing Comparison */}
@@ -34,17 +30,16 @@ export default function DogBoardingSoftwarePage() {
           The truth about software pricing
         </h2>
         <div className="max-w-md mx-auto space-y-3 text-base leading-7 text-gray-700">
-          <p>Competitor &ndash; $105/mo</p>
-          <p>Competitor &ndash; $150/mo</p>
-          <p>Competitor &ndash; $99.99/mo</p>
-          <p>Competitor &ndash; $79.99/mo</p>
-          <p>Competitor &ndash; $55/mo</p>
-          <p>Competitor &ndash; $40/mo</p>
-          <p className="font-bold text-green-700 text-lg pt-2">Petunia &ndash; $3/mo</p>
+          <p>Competitor &ndash; $299/mo</p>
+          <p>Competitor &ndash; $250/mo</p>
+          <p>Competitor &ndash; $189/mo</p>
+          <p>Competitor &ndash; $155/mo</p>
+          <p>Competitor &ndash; $99/mo</p>
+          <p className="font-bold text-green-700 text-lg pt-2">Petunia &ndash; $29/mo</p>
         </div>
         <div className="mt-6 max-w-md mx-auto text-base text-gray-700">
           <p className="mt-4 font-semibold text-[#2c4a30]">
-            Petunia is <strong>$3/month</strong> after your free trial of 15 days. <strong>No contracts. Cancel anytime.</strong> Multi-location management is coming in April of 2026.
+            We know from expreience that it takes an average of 30 days for your clients to enter their information into Petunia. Therefore, we are giving you 60 DAYS OF FREE USE! So, whether you are integrating software into your business for the first time, or switching from another system, we are taking into account the time it will take for everyone to get on boarded.
           </p>
         </div>
       </section>
@@ -68,7 +63,7 @@ export default function DogBoardingSoftwarePage() {
           <li><strong>Multi-Location Management (coming soon):</strong> Centralized visibility and controls for multi-site operators.</li>
           <li><strong>Payments &amp; Invoicing (coming soon):</strong> Take deposits and payments online with clear receipts.</li>
           <li><strong>Staff Scheduling (coming soon):</strong> Assign roles, manage availability, and cover shifts with ease.</li>
-          <li><strong>Transparent Pricing:</strong> $3/month after your free trial. <em>No contracts. Cancel anytime.</em></li>
+          <li><strong>Transparent Pricing:</strong> $29/month after your free trial. <em>No contracts. Cancel anytime.</em></li>
           <li><strong>Customer-Driven Roadmap:</strong> We run a poll every 60 days&mdash;<em>you vote, we build</em>.</li>
         </ul>
       </section>
@@ -111,7 +106,6 @@ export default function DogBoardingSoftwarePage() {
           <li>It meets you wherever your clients need you&mdash;desktop or phone.</li>
           <li>It remembers every dog, detail, and requirement so you don&#39;t have to.</li>
           <li>It&#39;s priced like a tool, not a tax on your hard-earned money.</li>
-          <li>It grows with you&mdash;from single-site to multi-location.</li>
           <li>Above all, it makes life simpler.</li>
         </ul>
         <p className="text-base leading-7 text-gray-700 mt-4 max-w-md mx-auto">
@@ -125,7 +119,7 @@ export default function DogBoardingSoftwarePage() {
           Ready to modernize your boarding &amp; daycare business?
         </h2>
         <p className="text-base text-gray-700 max-w-md mx-auto mb-6">
-          Start your <strong>30-day free trial</strong>. It&#39;s <strong>$3/month</strong> after that. <strong>No contracts. Cancel anytime.</strong>
+          Start your <strong>60-day free trial</strong>. It&#39;s <strong>$29/month</strong> after that. <strong>No contracts. Cancel anytime.</strong>
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
           <Link
