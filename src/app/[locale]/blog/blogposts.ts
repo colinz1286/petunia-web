@@ -21,6 +21,32 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'veterinary-emergency-care-shortage-2025',
+        title:
+            'When a Vet Can’t Get Help for Her Own Dog: The Emergency-Care Shortage in Veterinary Medicine',
+        date: 'November 15, 2025',
+        description:
+            'A Virginia veterinarian’s struggle to secure emergency care for her own dog highlights the broader staffing crisis affecting veterinary medicine in 2025.',
+        component: () =>
+            import('./posts/veterinary-emergency-care-shortage-2025') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['veterinary'],
+    },
+    {
+        slug: 'holiday-ideas-dog-boarding-daycare-2025',
+        title:
+            'Holiday Ideas for Dog Boarding & Daycare Facilities: 15 Festive Ways to Surprise and Delight Your Clients in 2025',
+        date: 'November 14, 2025',
+        description:
+            'Fifteen festive, creative, and low-cost holiday ideas for dog boarding and daycare facilities, including Santa photos, craft ornaments, themed enrichment, giveaways, and client appreciation activities for 2025.',
+        component: () =>
+            import('./posts/holiday-ideas-dog-boarding-daycare-2025') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'best-free-and-low-cost-dog-boarding-and-daycare-software-2026',
         title:
             'Best FREE and Low-Cost Dog Boarding & Daycare Software in 2026',
