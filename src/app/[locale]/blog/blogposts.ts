@@ -23,7 +23,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'best-free-and-low-cost-dog-boarding-and-daycare-software-2026',
         title:
-            'Best FREE and Low-Cost Dog Boarding & Daycare Software in 2026: What You Actually Need (And What You Don&#39;t)',
+            'Best FREE and Low-Cost Dog Boarding & Daycare Software in 2026',
         date: 'November 12, 2025',
         description:
             'A practical breakdown of free vs low-cost kennel software, hidden fees, must-have features, and how operators can choose tools that support margins instead of draining them.',
