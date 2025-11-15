@@ -21,6 +21,19 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'best-free-and-low-cost-dog-boarding-and-daycare-software-2026',
+        title:
+            'Best FREE and Low-Cost Dog Boarding & Daycare Software in 2026: What You Actually Need (And What You Don&#39;t)',
+        date: 'November 12, 2025',
+        description:
+            'A practical breakdown of free vs low-cost kennel software, hidden fees, must-have features, and how operators can choose tools that support margins instead of draining them.',
+        component: () =>
+            import('./posts/best-free-and-low-cost-dog-boarding-and-daycare-software-2026') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['boarding'],
+    },
+    {
         slug: 'why-dog-boarding-software-prices-are-dropping',
         title:
             'Why Dog Boarding & Daycare Software Costs Are Dropping While Subscription Prices Keep Going Up',
