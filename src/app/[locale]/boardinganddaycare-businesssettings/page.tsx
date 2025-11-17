@@ -10,7 +10,9 @@ import {
     query,
     where,
     updateDoc,
+    Timestamp
 } from 'firebase/firestore';
+
 import { initializeApp } from 'firebase/app';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
@@ -178,7 +180,8 @@ export default function BusinessSettingsPage() {
                 // Blackout Dates
                 if (Array.isArray(data.blackoutDates)) {
                     const parsed = data.blackoutDates
-                        .map((ts: any) => (ts?.seconds ? new Date(ts.seconds * 1000) : null))
+                        .map((ts: Timestamp) => (ts?.seconds ? new Date(ts.seconds * 1000) : null))
+
                         .filter((d: Date | null) => d !== null) as Date[];
                     parsed.sort((a, b) => a.getTime() - b.getTime());
                     setBlackoutDates(parsed);
