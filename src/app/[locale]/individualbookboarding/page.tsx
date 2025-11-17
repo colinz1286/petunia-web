@@ -85,6 +85,8 @@ type BusinessSettingsDoc = {
     waiverRequired?: boolean;
     waiverLastUpdated?: Timestamp;
 
+    blackoutDates?: Timestamp[];
+
     // ✅ NEW: After-hours pick-up
     afterHoursPickUpTimeRequired?: boolean;
     afterHoursPickUpTimes?: WeekdayMap;
@@ -226,6 +228,8 @@ export default function IndividualBookBoardingPage() {
     // Capacity
     const [capacityBoardingTotal, setCapacityBoardingTotal] = useState<number | null>(null);
     const [capacityBlockingNights, setCapacityBlockingNights] = useState<string[]>([]);
+    const [blackoutDates, setBlackoutDates] = useState<Set<string>>(new Set());
+
     const [maxPerTimeSlot, setMaxPerTimeSlot] = useState<number>(0);
 
     // Grooming
@@ -453,6 +457,17 @@ export default function IndividualBookBoardingPage() {
             // Grooming
             setGroomingAvailableAsAddOn(!!data.groomingAvailableAsAddOnToBoarding);
             setGroomingServices((data.groomingServices || []).map(s => (s || '').trim()).filter(Boolean));
+
+            // --- Blackout Dates (match iOS behavior)
+            if (Array.isArray(data.blackoutDates)) {
+                const formatted = data.blackoutDates.map((ts: Timestamp) => {
+                    const d = ts.toDate();
+                    return ymdKey(d, bizTZ);
+                });
+                setBlackoutDates(new Set(formatted));
+            } else {
+                setBlackoutDates(new Set());
+            }
 
             // ✅ After-hours
             const ahReq = !!data.afterHoursPickUpTimeRequired;
@@ -713,7 +728,15 @@ export default function IndividualBookBoardingPage() {
                         <label className="font-semibold text-center text-sm">{t('select_checkin_date')}</label>
                         <DatePicker
                             selected={checkInDate}
-                            onChange={(d: Date | null) => setCheckInDate(d)}
+                            onChange={(d: Date | null) => {
+                                if (!d) return;
+                                const key = ymdKey(d, bizTZ);
+                                if (blackoutDates.has(key)) {
+                                    alert(t('selected_date_is_blackout'));
+                                    return;
+                                }
+                                setCheckInDate(d);
+                            }}
                             dateFormat="MM/dd/yyyy"
                             className="w-full max-w-xs border p-2 rounded text-sm text-center"
                             placeholderText={t('select_date_placeholder')}
@@ -741,7 +764,15 @@ export default function IndividualBookBoardingPage() {
                         <label className="font-semibold text-center text-sm">{t('select_checkout_date')}</label>
                         <DatePicker
                             selected={checkOutDate}
-                            onChange={(d: Date | null) => setCheckOutDate(d)}
+                            onChange={(d: Date | null) => {
+                                if (!d) return;
+                                const key = ymdKey(d, bizTZ);
+                                if (blackoutDates.has(key)) {
+                                    alert(t('selected_date_is_blackout'));
+                                    return;
+                                }
+                                setCheckOutDate(d);
+                            }}
                             minDate={checkInDate || undefined}
                             dateFormat="MM/dd/yyyy"
                             className="w-full max-w-xs border p-2 rounded text-sm text-center"
@@ -839,6 +870,19 @@ export default function IndividualBookBoardingPage() {
     async function handleSubmit() {
         if (gatingActive) return;
         if (!userId || !businessId || !checkInDate || !checkOutDate) return;
+
+        // Block check-in on blackout date
+        if (blackoutDates.has(ymdKey(checkInDate, bizTZ))) {
+            alert(t('selected_date_is_blackout'));
+            return;
+        }
+
+        // Block check-out on blackout date
+        if (blackoutDates.has(ymdKey(checkOutDate, bizTZ))) {
+            alert(t('selected_date_is_blackout'));
+            return;
+        }
+
         if (checkInDate >= checkOutDate) return;
         if (selectedPetIds.size === 0) return;
         if (checkInTimeRequired && !checkInWindow) return;

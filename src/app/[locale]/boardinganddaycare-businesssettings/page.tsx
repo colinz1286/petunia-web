@@ -69,6 +69,12 @@ export default function BusinessSettingsPage() {
     const [noDaycareDays, setNoDaycareDays] = useState<Set<string>>(new Set());
     const [noBoardingDays, setNoBoardingDays] = useState<Set<string>>(new Set());
 
+    // Blackout Dates (matches iOS)
+    const [blackoutDates, setBlackoutDates] = useState<Date[]>([]);
+    const [selectedBlackoutDate, setSelectedBlackoutDate] = useState<string>(
+        new Date().toISOString().split('T')[0]
+    );
+
     // include afterhours section in collapse map
     const [collapsedDays, setCollapsedDays] = useState<Record<string, boolean>>(() => {
         const initial: Record<string, boolean> = {};
@@ -169,6 +175,15 @@ export default function BusinessSettingsPage() {
                 setNoDaycareDays(new Set(data.noDaycareDays || []));
                 setNoBoardingDays(new Set(data.noBoardingDays || []));
 
+                // Blackout Dates
+                if (Array.isArray(data.blackoutDates)) {
+                    const parsed = data.blackoutDates
+                        .map((ts: any) => (ts?.seconds ? new Date(ts.seconds * 1000) : null))
+                        .filter((d: Date | null) => d !== null) as Date[];
+                    parsed.sort((a, b) => a.getTime() - b.getTime());
+                    setBlackoutDates(parsed);
+                }
+
                 const features = data.features || { enableEmployeeManagement: false, enableStatePaperwork: false };
                 setOptionalFeatures({
                     employeeManagement: !!features.enableEmployeeManagement,
@@ -230,6 +245,12 @@ export default function BusinessSettingsPage() {
             // day disables
             noDaycareDays: Array.from(noDaycareDays),
             noBoardingDays: Array.from(noBoardingDays),
+
+            // Blackout Dates (iOS sync)
+            blackoutDates: blackoutDates.map((d) => ({
+                seconds: Math.floor(d.getTime() / 1000),
+                nanoseconds: 0,
+            })),
 
             // booking limit
             bookingLimits: { maxPerTimeSlot: maxAppointmentsPerSlot },
@@ -355,6 +376,68 @@ export default function BusinessSettingsPage() {
                         </div>
                     </div>
 
+                    {/* Blackout Dates */}
+                    <div className="mt-10 space-y-4">
+                        <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
+                            Blackout Dates
+                        </h2>
+
+                        {/* Date Picker */}
+                        <div>
+                            <label className="font-semibold text-sm block mb-1">Select a Date to Blackout</label>
+                            <input
+                                type="date"
+                                value={selectedBlackoutDate}
+                                onChange={(e) => setSelectedBlackoutDate(e.target.value)}
+                                className="w-full border px-3 py-2 rounded text-sm"
+                            />
+                        </div>
+
+                        {/* Add Button */}
+                        <button
+                            onClick={() => {
+                                const dateObj = new Date(selectedBlackoutDate + 'T00:00:00');
+                                const startOfDay = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+
+                                // Prevent duplicates
+                                if (!blackoutDates.some((d) => d.getTime() === startOfDay.getTime())) {
+                                    const updated = [...blackoutDates, startOfDay].sort(
+                                        (a, b) => a.getTime() - b.getTime()
+                                    );
+                                    setBlackoutDates(updated);
+                                }
+                            }}
+                            className="text-sm text-green-700 underline"
+                        >
+                            Add Blackout Date
+                        </button>
+
+                        {/* Blackout Dates List */}
+                        {blackoutDates.length === 0 ? (
+                            <p className="text-sm text-gray-500 text-center">No blackout dates set.</p>
+                        ) : (
+                            <ul className="space-y-2">
+                                {blackoutDates.map((d, idx) => (
+                                    <li
+                                        key={`blackout-${idx}`}
+                                        className="flex justify-between items-center border px-3 py-2 rounded text-sm"
+                                    >
+                                        <span>{d.toLocaleDateString()}</span>
+                                        <button
+                                            onClick={() => {
+                                                const updated = blackoutDates.filter((_, i) => i !== idx);
+                                                setBlackoutDates(updated);
+                                            }}
+                                            className="text-red-600 font-bold text-lg"
+                                        >
+                                            &times;
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                    
                     {/* Service offerings */}
                     <div className="space-y-4 mb-6">
                         <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
