@@ -73,7 +73,7 @@ type BusinessSettings = {
   dropOffTimesDaycare?: WeekdayMap;
   bookingLimits?: { maxPerTimeSlot?: number };
   requiredVaccinations?: Record<string, boolean>;
-  blackoutDates?: any[];
+  blackoutDates?: Timestamp[];
 
   // Grooming
   groomingAvailableAsAddOnToDaycare?: boolean;
@@ -378,18 +378,19 @@ export default function IndividualBookDaycarePage() {
         ? (data.bookingLimits!.maxPerTimeSlot as number)
         : 3);
 
-      // --- Blackout Dates
+        // --- Blackout Dates
       if (Array.isArray(data.blackoutDates)) {
         const keys = data.blackoutDates
-          .map((ts: any) => {
+          .map((ts: Timestamp | null) => {
+            if (!ts) return null;
             try {
-              // Firestore Timestamp → JS Date → business-TZ yyyy-MM-dd
               return ymdKey(ts.toDate(), bizTZ);
             } catch {
               return null;
             }
           })
           .filter((val): val is string => typeof val === "string");
+
         setBlackoutDates(new Set(keys));
       }
 
