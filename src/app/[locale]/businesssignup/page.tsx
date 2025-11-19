@@ -165,7 +165,7 @@ export default function BusinessSignUpPage() {
       const businessId = businessRef.id;
 
       await setDoc(businessRef, {
-
+        businessId,
         ownerId: user.uid,
         accountType: 'Business',
         firstName,
