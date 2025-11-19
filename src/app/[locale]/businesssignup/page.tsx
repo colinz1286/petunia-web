@@ -160,7 +160,7 @@ export default function BusinessSignUpPage() {
         // swallow; keep "unverified"
       }
 
-      // Write business doc (keep your existing schema)
+      // Write business doc (correct schema)
       const businessRef = doc(collection(db, 'businesses'));
       const businessId = businessRef.id;
 
@@ -178,8 +178,12 @@ export default function BusinessSignUpPage() {
           state,
           zipCode
         },
+
+        // ✅ Correct location of business name
+        businessName: businessName,
+
+        // ⬇️ businessDetails NO LONGER contains "name"
         businessDetails: {
-          name: businessName,
           type: businessType,
           phone: businessPhone,
           website: normalizeUrl(businessWebsite),
@@ -190,20 +194,21 @@ export default function BusinessSignUpPage() {
             zipCode: businessZip
           }
         },
-        // Extra fields to align with iOS without breaking current readers
+
         businessType:
           form.businessType === 'boardingDaycare'
             ? 'Boarding/Daycare'
             : form.businessType === 'breeder'
               ? 'Breeder'
               : form.businessType,
-        // flat copy
-        businessAddress: {                   // flat copy for iOS compatibility
+
+        businessAddress: {
           street: businessStreet,
           city: businessCity,
           state: businessState,
           zipCode: businessZip
         },
+
         businessPhone,
         businessWebsite: normalizeUrl(businessWebsite),
         isVerified: false,
