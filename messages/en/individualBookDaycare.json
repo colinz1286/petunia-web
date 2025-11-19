@@ -43,5 +43,6 @@
   "waiver_checkbox_label": "I agree to this facility’s terms and conditions.",
   "agree_button": "Agree",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "selected_date_is_blackout": "This date is unavailable for daycare."
 }

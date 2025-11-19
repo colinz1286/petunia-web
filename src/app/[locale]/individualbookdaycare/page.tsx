@@ -73,6 +73,8 @@ type BusinessSettings = {
   dropOffTimesDaycare?: WeekdayMap;
   bookingLimits?: { maxPerTimeSlot?: number };
   requiredVaccinations?: Record<string, boolean>;
+  blackoutDates?: any[];
+
   // Grooming
   groomingAvailableAsAddOnToDaycare?: boolean;
   groomingServices?: string[];
@@ -201,6 +203,9 @@ export default function IndividualBookDaycarePage() {
   const [includePendingInCapacity, setIncludePendingInCapacity] = useState(false);
   const [clientWritesRTDB, setClientWritesRTDB] = useState(true);
   const [temperamentTestRequired, setTemperamentTestRequired] = useState(false);
+  // Blackout dates (yyyy-MM-dd in business TZ)
+  const [blackoutDates, setBlackoutDates] = useState<Set<string>>(new Set());
+
   const [isAssessment, setIsAssessment] = useState(false);
 
   // Duplicate prevention
@@ -372,6 +377,21 @@ export default function IndividualBookDaycarePage() {
       setMaxPerTimeSlot(typeof data.bookingLimits?.maxPerTimeSlot === 'number'
         ? (data.bookingLimits!.maxPerTimeSlot as number)
         : 3);
+
+      // --- Blackout Dates
+      if (Array.isArray(data.blackoutDates)) {
+        const keys = data.blackoutDates
+          .map((ts: any) => {
+            try {
+              // Firestore Timestamp → JS Date → business-TZ yyyy-MM-dd
+              return ymdKey(ts.toDate(), bizTZ);
+            } catch {
+              return null;
+            }
+          })
+          .filter((val): val is string => typeof val === "string");
+        setBlackoutDates(new Set(keys));
+      }
 
       // Required vaccines
       const reqRaw = (data.requiredVaccinations || {});
@@ -566,6 +586,15 @@ export default function IndividualBookDaycarePage() {
   }, [pets]);
 
   const addBookingDraft = useCallback(() => {
+    // 🚫 BLACKOUT CHECK (add-to-list)
+    if (selectedDate) {
+      const key = ymdKey(selectedDate, bizTZ);
+      if (blackoutDates.has(key)) {
+        alert(t('selected_date_is_blackout') || 'This date is unavailable.');
+        return;
+      }
+    }
+
     if (!selectedDate || (dropOffTimeRequired && !selectedTime) || selectedPetIds.length === 0) return;
     if (hasExistingReservation) { alert(t('duplicate_daycare_message')); return; }
 
@@ -592,6 +621,15 @@ export default function IndividualBookDaycarePage() {
      Submit (Firestore + optional RTDB mirrors)
      ========================= */
   const submitAllReservations = useCallback(async () => {
+    // 🚫 BLACKOUT CHECK (final submission)
+    for (const b of draftBookings) {
+      const key = ymdKey(b.date, bizTZ);
+      if (blackoutDates.has(key)) {
+        alert(t('selected_date_is_blackout') || 'This date is unavailable.');
+        return;
+      }
+    }
+
     if (!userId || draftBookings.length === 0 || !businessId || !isValidFirebaseKey(businessId)) return;
 
     try {
@@ -705,6 +743,15 @@ export default function IndividualBookDaycarePage() {
             <DatePicker
               selected={selectedDate}
               onChange={async (date: Date | null) => {
+                // 🚫 BLACKOUT CHECK — block immediately
+                if (date) {
+                  const key = ymdKey(date, bizTZ);
+                  if (blackoutDates.has(key)) {
+                    alert(t('selected_date_is_blackout') || 'This date is unavailable.');
+                    return; // prevent selecting this date
+                  }
+                }
+
                 setSelectedDate(date);
                 if (date && userId) {
                   const day = weekdayName(date, bizTZ);
