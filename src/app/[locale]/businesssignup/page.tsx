@@ -13,7 +13,8 @@ import {
   getFirestore,
   setDoc,
   doc,
-  Timestamp
+  Timestamp,
+  collection
 } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 
@@ -53,8 +54,8 @@ export default function BusinessSignUpPage() {
     businessZip: '',
     businessPhone: '',
     businessWebsite: '',
-    // ⬇️ must be chosen (no default)
-    businessType: '',
+    // ⬇️ must be explicitly selected (null prevents accidental empty-string writes)
+    businessType: null as string | null,
   });
 
   const [error, setError] = useState<string | null>(null);
@@ -160,7 +161,11 @@ export default function BusinessSignUpPage() {
       }
 
       // Write business doc (keep your existing schema)
-      await setDoc(doc(db, 'businesses', user.uid), {
+      const businessRef = doc(collection(db, 'businesses'));
+      const businessId = businessRef.id;
+
+      await setDoc(businessRef, {
+
         ownerId: user.uid,
         accountType: 'Business',
         firstName,
@@ -186,7 +191,13 @@ export default function BusinessSignUpPage() {
           }
         },
         // Extra fields to align with iOS without breaking current readers
-        businessType,                        // flat copy
+        businessType:
+          form.businessType === 'boardingDaycare'
+            ? 'Boarding/Daycare'
+            : form.businessType === 'breeder'
+              ? 'Breeder'
+              : form.businessType,
+        // flat copy
         businessAddress: {                   // flat copy for iOS compatibility
           street: businessStreet,
           city: businessCity,
