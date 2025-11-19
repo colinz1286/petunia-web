@@ -21,6 +21,97 @@ export const blogPosts: BlogPostEntry[] = [
         breed: 'Dachshund',
     },
     {
+        slug: 'buying-a-dog-daycare-checklist',
+        title:
+            'Buying a Dog Daycare Checklist: What to Evaluate Before Purchasing a Daycare or Boarding Facility in 2026',
+        date: 'November 19, 2025',
+        description:
+            'A complete checklist for buying a dog daycare or boarding facility: financial due diligence, safety evaluation, staff review, zoning, licensing, and operational risks.',
+        component: () =>
+            import('./posts/buying-a-dog-daycare-checklist') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['boarding']
+    },
+    {
+        slug: 'do-dogs-need-canine-influenza-vaccine',
+        title:
+            'Do Dogs Need the Canine Influenza Vaccine?',
+        date: 'November 19, 2025',
+        description:
+            'Do dogs need the canine influenza vaccine? An evidence-based look at risk, safety, boarding rules, and when veterinarians recommend the dog flu shot.',
+        component: () =>
+            import('./posts/do-dogs-need-canine-influenza-vaccine') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner'],
+    },
+    {
+        slug: 'dog-daycare-booking-system',
+        title:
+            'Dog Daycare Booking System: How Modern Scheduling Software Streamlines Operations in 2026',
+        date: 'November 19, 2025',
+        description:
+            'A complete guide to dog daycare booking systems: features, automation, safety workflows, owner experience, and how modern software helps facilities scale efficiently.',
+        component: () =>
+            import('./posts/dog-daycare-booking-system') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['boarding']
+    },
+    {
+        slug: 'dog-boarding-vs-daycare',
+        title:
+            'Dog Boarding vs Daycare: How to Choose the Right Option for Your Dog',
+        date: 'November 19, 2025',
+        description:
+            'Dog boarding vs daycare explained: what each service includes, how to evaluate facility fit, costs, risks, benefits, and how to pick what’s right for your dog with confidence.',
+        component: () => import('./posts/dog-boarding-vs-daycare') as Promise<{
+            default: React.ComponentType<object>;
+        }>,
+        categories: ['owner'],
+    },
+    {
+        slug: 'anti-ageing-for-dogs',
+        title:
+            'Anti Ageing for Dogs in 2026: The Science, The New Dog Longevity Drug, FDA Milestones, and What Owners Should Know',
+        date: 'November 19, 2025',
+        description:
+            'Anti ageing for dogs: What the new anti-aging drug could mean for canine healthspan, recent FDA milestones, early study data, and proven ways to support senior dogs today.',
+        component: () =>
+            import('./posts/anti-ageing-for-dogs') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary'],
+    },
+    {
+        slug: 'how-long-do-golden-retrievers-live',
+        title:
+            'How Long Do Golden Retrievers Live? Average Lifespan, What Shortens or Extends Life, and Evidence-Based Care in 2026',
+        date: 'November 19, 2025',
+        description:
+            'How long do Golden Retrievers live? A complete guide to lifespan averages, cancer risk, orthopedic health, weight management, preventive care, and senior support.',
+        component: () =>
+            import('./posts/how-long-do-golden-retrievers-live') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Golden Retriever'
+    },
+    {
+        slug: 'average-age-of-labrador',
+        title: 'Average Age of a Labrador: Evidence-Based Lifespan, What Shortens or Extends Life, and How to Add Healthy Years in 2026',
+        date: 'November 19, 2025',
+        description:
+            'What is the average age of a Labrador? A data-backed breakdown of lifespan ranges, risk factors, genetics, orthopedic health, cancer awareness, senior care, and daily routines that add healthy years.',
+        component: () =>
+            import('./posts/average-age-of-labrador') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Labrador Retriever'
+    },
+    {
         slug: 'from-clipboards-to-cloud-dog-daycare-management-software-2026',
         title:
             'From Clipboards to Cloud: A Data-Backed Look at How Dog Daycare Management Software Changes Daily Operations in 2026',
