@@ -47,5 +47,6 @@
   "drop_off_time": "Drop-Off Time",
   "pick_up_time": "Pick-Up Time",
   "after_hours_fee_may_apply_suffix": "After Hours. Additional Fee May Apply",
-  "selected_date_is_blackout": "Sorry, this date is unavailable. Please choose a different day."
+  "selected_date_is_blackout": "Sorry, this date is unavailable. Please choose a different day.",
+  "boarding_blackout_overlap_forbidden": "This reservation cannot overlap with blackout dates set by the business."
 }

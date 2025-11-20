@@ -86,6 +86,7 @@ type BusinessSettingsDoc = {
     waiverLastUpdated?: Timestamp;
 
     blackoutDates?: Timestamp[];
+    prohibitBoardingOverlapWithBlackoutDates?: boolean;
 
     // ✅ NEW: After-hours pick-up
     afterHoursPickUpTimeRequired?: boolean;
@@ -229,6 +230,7 @@ export default function IndividualBookBoardingPage() {
     const [capacityBoardingTotal, setCapacityBoardingTotal] = useState<number | null>(null);
     const [capacityBlockingNights, setCapacityBlockingNights] = useState<string[]>([]);
     const [blackoutDates, setBlackoutDates] = useState<Set<string>>(new Set());
+    const [prohibitBoardingOverlapWithBlackoutDates, setProhibitBoardingOverlapWithBlackoutDates] = useState<boolean>(false);
 
     const [maxPerTimeSlot, setMaxPerTimeSlot] = useState<number>(0);
 
@@ -242,6 +244,8 @@ export default function IndividualBookBoardingPage() {
     const [depositRequired, setDepositRequired] = useState<boolean>(false);
     const [depositAcknowledged, setDepositAcknowledged] = useState<boolean>(false);
     const gatingActive = depositRequired && !depositAcknowledged;
+
+    const blackoutAlertShownRef = React.useRef(false);
 
     // Validation / flow
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -469,6 +473,11 @@ export default function IndividualBookBoardingPage() {
                 setBlackoutDates(new Set());
             }
 
+            // NEW: Prevent boarding reservations overlapping blackout dates
+            setProhibitBoardingOverlapWithBlackoutDates(
+                data.prohibitBoardingOverlapWithBlackoutDates || false
+            );
+
             // ✅ After-hours
             const ahReq = !!data.afterHoursPickUpTimeRequired;
             const ahMap = data.afterHoursPickUpTimes || {};
@@ -487,11 +496,38 @@ export default function IndividualBookBoardingPage() {
         }
     }, [refreshCheckInOptions, refreshCheckOutOptions]);
 
+
+    function checkBlackoutOverlapIfProhibited(): boolean {
+        if (!prohibitBoardingOverlapWithBlackoutDates) return false;
+        if (!checkInDate || !checkOutDate) return false;
+        if (checkInDate >= checkOutDate) return false;
+
+        const nights = nightsBetweenKeys(checkInDate, checkOutDate, bizTZ);
+
+        for (const n of nights) {
+            if (blackoutDates.has(n)) {
+                if (!blackoutAlertShownRef.current) {
+                    blackoutAlertShownRef.current = true;   // <-- synchronous, instant
+                    alert(t('boarding_blackout_overlap_forbidden'));
+                }
+                setOverlapDetected(true);
+                return true;
+            }
+        }
+
+        setOverlapDetected(false);
+        return false;
+    }
+
     /** =========================
      *  Validators (overlap, capacity, per-slot)
      *  ========================= */
     const revalidateAll = useCallback(async () => {
         if (suppressValidations) return;
+
+        const blackoutConflict = checkBlackoutOverlapIfProhibited();
+        if (blackoutConflict) return;
+
         await checkOverlapForSelectedRange();
         await checkCapacityForSelectedRange();
         await checkCheckInWindowCapacityIfNeeded();
@@ -735,6 +771,8 @@ export default function IndividualBookBoardingPage() {
                                     alert(t('selected_date_is_blackout'));
                                     return;
                                 }
+                                blackoutAlertShownRef.current = false;
+
                                 setCheckInDate(d);
                             }}
                             dateFormat="MM/dd/yyyy"
@@ -771,6 +809,8 @@ export default function IndividualBookBoardingPage() {
                                     alert(t('selected_date_is_blackout'));
                                     return;
                                 }
+                                blackoutAlertShownRef.current = false;
+
                                 setCheckOutDate(d);
                             }}
                             minDate={checkInDate || undefined}

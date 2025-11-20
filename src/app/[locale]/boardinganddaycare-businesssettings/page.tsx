@@ -52,6 +52,7 @@ export default function BusinessSettingsPage() {
     const [maxAppointmentsPerSlot, setMaxAppointmentsPerSlot] = useState(3);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
 
     const [dropOffTimeRequiredDaycare, setDropOffTimeRequiredDaycare] = useState(false);
     const [pickUpTimeRequiredDaycare, setPickUpTimeRequiredDaycare] = useState(false);
@@ -74,8 +75,14 @@ export default function BusinessSettingsPage() {
     // Blackout Dates (matches iOS)
     const [blackoutDates, setBlackoutDates] = useState<Date[]>([]);
     const [selectedBlackoutDate, setSelectedBlackoutDate] = useState<string>(
-        new Date().toISOString().split('T')[0]
+        (() => {
+            const d = new Date();
+            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+            return d.toISOString().split('T')[0];
+        })()
     );
+    // Match iOS: prohibit overlapping boarding reservations with blackout dates
+    const [prohibitBoardingOverlapWithBlackoutDates, setProhibitBoardingOverlapWithBlackoutDates] = useState(false);
 
     // include afterhours section in collapse map
     const [collapsedDays, setCollapsedDays] = useState<Record<string, boolean>>(() => {
@@ -180,12 +187,15 @@ export default function BusinessSettingsPage() {
                 // Blackout Dates
                 if (Array.isArray(data.blackoutDates)) {
                     const parsed = data.blackoutDates
-                        .map((ts: Timestamp) => (ts?.seconds ? new Date(ts.seconds * 1000) : null))
-
-                        .filter((d: Date | null) => d !== null) as Date[];
-                    parsed.sort((a, b) => a.getTime() - b.getTime());
+                        .map((ts: Timestamp) => new Date(ts.seconds * 1000))
+                        .sort((a, b) => a.getTime() - b.getTime());
                     setBlackoutDates(parsed);
                 }
+
+                // NEW: Do NOT allow boarding reservations to overlap blackout dates
+                setProhibitBoardingOverlapWithBlackoutDates(
+                    data.prohibitBoardingOverlapWithBlackoutDates || false
+                );
 
                 const features = data.features || { enableEmployeeManagement: false, enableStatePaperwork: false };
                 setOptionalFeatures({
@@ -250,10 +260,12 @@ export default function BusinessSettingsPage() {
             noBoardingDays: Array.from(noBoardingDays),
 
             // Blackout Dates (iOS sync)
-            blackoutDates: blackoutDates.map((d) => ({
-                seconds: Math.floor(d.getTime() / 1000),
-                nanoseconds: 0,
-            })),
+            blackoutDates: blackoutDates.map((d) =>
+                Timestamp.fromDate(new Date(d.getFullYear(), d.getMonth(), d.getDate()))
+            ),
+            
+            // NEW: Prevent overlapping boarding reservations with blackout dates
+            prohibitBoardingOverlapWithBlackoutDates,
 
             // booking limit
             bookingLimits: { maxPerTimeSlot: maxAppointmentsPerSlot },
@@ -274,6 +286,12 @@ export default function BusinessSettingsPage() {
         });
 
         setSaving(false);
+
+        // ⭐ NEW — show success banner for 3 seconds
+        setSaveSuccess(true);
+        setTimeout(() => {
+            setSaveSuccess(false);
+        }, 3000);
     };
 
     // ───────── Helpers ─────────
@@ -399,8 +417,8 @@ export default function BusinessSettingsPage() {
                         {/* Add Button */}
                         <button
                             onClick={() => {
-                                const dateObj = new Date(selectedBlackoutDate + 'T00:00:00');
-                                const startOfDay = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+                                const [year, month, day] = selectedBlackoutDate.split('-').map(Number);
+                                const startOfDay = new Date(year, month - 1, day);
 
                                 // Prevent duplicates
                                 if (!blackoutDates.some((d) => d.getTime() === startOfDay.getTime())) {
@@ -439,8 +457,17 @@ export default function BusinessSettingsPage() {
                                 ))}
                             </ul>
                         )}
+
+                        {/* Prevent overlapping boarding reservations with blackout dates */}
+                        <div className="mt-4">
+                            <Toggle
+                                label="Do NOT allow boarding reservations to overlap blackout dates"
+                                checked={prohibitBoardingOverlapWithBlackoutDates}
+                                onChange={setProhibitBoardingOverlapWithBlackoutDates}
+                            />
+                        </div>
                     </div>
-                    
+
                     {/* Service offerings */}
                     <div className="space-y-4 mb-6">
                         <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
@@ -774,6 +801,12 @@ export default function BusinessSettingsPage() {
                         </div>
 
                         {/* Save */}
+                        {saveSuccess && (
+                            <div className="w-full bg-green-600 text-white text-center py-2 rounded mb-3 text-sm font-medium">
+                                Changes are saved
+                            </div>
+                        )}
+
                         <button
                             onClick={updateSetting}
                             disabled={saving}
