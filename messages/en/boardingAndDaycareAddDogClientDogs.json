@@ -1,0 +1,22 @@
+{
+  "select_dog_title": "Select Dog",
+  "loading_dogs_label": "Loading dog list...",
+  "no_dogs_found": "No dogs found for this client.",
+
+  "breed_label": "Breed",
+  "medications_label": "Medications",
+  "current_food_label": "Current Food",
+  "feeding_amount_label": "Feeding Amount",
+
+  "add_dog_button": "Add Dog",
+  "select_checkin_type": "Select Check-In Type",
+  "daycare_button": "Daycare",
+  "boarding_button": "Boarding",
+  "cancel_button": "Cancel",
+  "back_button": "Back",
+
+  "error_business_not_found": "No business found for this account.",
+  "error_loading_business": "Error loading business information.",
+  "error_loading_dogs": "Error loading dogs.",
+  "error_adding_dog": "Failed to add dog."
+}

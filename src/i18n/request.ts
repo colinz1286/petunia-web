@@ -18,6 +18,8 @@ export default getRequestConfig(async ({ locale }) => {
     // Existing namespaces
     adoptionApplicationForm: (await import(`../../messages/${safeLocale}/adoptionApplicationForm.json`)).default,
     businessDashboard: (await import(`../../messages/${safeLocale}/businessDashboard.json`)).default,
+    boardingAndDaycareAddDogClientDogs: (await import(`../../messages/en/boardingAndDaycareAddDogClientDogs.json`)).default,
+    boardingAndDaycareAddDogClientList: (await import(`../../messages/${safeLocale}/boardingAndDaycareAddDogClientList.json`)).default,
     boardingAndDaycareBusinessSettings: (await import(`../../messages/${safeLocale}/boardingAndDaycareBusinessSettings.json`)).default,
     boardingAndDaycarePendingRequests: (await import(`../../messages/${safeLocale}/boardingAndDaycarePendingRequests.json`)).default,
     boardingAndDaycareClientManagement: (await import(`../../messages/${safeLocale}/boardingAndDaycareClientManagement.json`)).default,

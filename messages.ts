@@ -4,6 +4,8 @@ export default {
   en: () => ({
     adoptionApplicationForm: require('./messages/en/adoptionApplicationForm.json'),
     businessDashboard: require('./messages/en/businessDashboard.json'),
+    boardingAndDaycareAddDogClientDogs: require('./messages/en/boardingAndDaycareAddDogClientDogs.json'),
+    boardingAndDaycareAddDogClientList: require('./messages/en/boardingAndDaycareAddDogClientList.json'),
     boardingAndDaycareBusinessSettings: require('./messages/en/boardingAndDaycareBusinessSettings.json'),
     boardingAndDaycarePendingRequests: require('./messages/en/boardingAndDaycarePendingRequests.json'),
     boardingAndDaycareClientManagement: require('./messages/en/boardingAndDaycareClientManagement.json'),
