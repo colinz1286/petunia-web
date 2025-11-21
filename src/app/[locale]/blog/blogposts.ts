@@ -10,6 +10,56 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'yorkshire-terrier-living-with',
+        title: 'Living with a Yorkshire Terrier: Ideal Family Fit, Apartment Life and Lifestyle Considerations',
+        date: 'November 21, 2025',
+        description:
+            'A comprehensive guide to living with Yorkshire Terriers, covering family compatibility, apartment suitability, exercise needs, routines, travel habits, and lifestyle considerations.',
+        component: () => import('./posts/yorkshire-terrier-living-with'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Yorkshire Terrier',
+    },
+    {
+        slug: 'yorkshire-terrier-boarding-daycare',
+        title: 'Yorkshire Terrier in a Dog Boarding & Daycare Setting: How to Provide Safe, Enriching Care',
+        date: 'November 21, 2025',
+        description:
+            'A complete guide to Yorkshire Terrier care in daycare and boarding settings, including group play, feeding schedules, coat care, gentle handling, breed-specific health monitoring, and stress management.',
+        component: () => import('./posts/yorkshire-terrier-boarding-daycare'),
+        categories: ['owner', 'boarding', 'breed_specific_guides'],
+        breed: 'Yorkshire Terrier',
+    },
+    {
+        slug: 'yorkshire-terrier-health-lifespan',
+        title: 'Health & Lifespan of the Yorkshire Terrier: Common Conditions and How to Prevent Them',
+        date: 'November 21, 2025',
+        description:
+            'A comprehensive guide to Yorkshire Terrier health, including lifespan expectations, common medical conditions, preventive care, and breed-specific early warning signs.',
+        component: () => import('./posts/yorkshire-terrier-health-lifespan'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Yorkshire Terrier',
+    },
+    {
+        slug: 'yorkshire-terrier-training-guide',
+        title: 'Training a Yorkshire Terrier: Managing Terrier Tenacity and Toy Breed Challenges',
+        date: 'November 21, 2025',
+        description:
+            'A complete guide to training Yorkshire Terriers, covering barking control, crate training, socialization, mental enrichment, and terrier temperament management.',
+        component: () => import('./posts/yorkshire-terrier-training-guide'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Yorkshire Terrier',
+    },
+    {
+        slug: 'yorkshire-terrier-nutrition-feeding',
+        title: 'Yorkshire Terrier Nutrition & Feeding: What to Feed a Toy Breed with Big Personality',
+        date: 'November 21, 2025',
+        description:
+            'Discover the specific nutrition needs of Yorkshire Terrier puppies and adults. Learn feeding schedules, calorie guidelines, high-quality toy-breed food selection, and managing dental and metabolic risks in this feisty small breed.',
+        component: () => import('./posts/yorkshire-terrier-nutrition-feeding'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Yorkshire Terrier',
+    },
+    {
         slug: 'dog-daycare-packages-vs-monthly-memberships-a-balanced-look-at-two-common-pricing-models',
         title: 'Dog Daycare Packages vs. Monthly Memberships: A Balanced Look at Two Common Pricing Models',
         date: 'July 10, 2025',
@@ -19,6 +69,26 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/dog-daycare-packages-vs-monthly-memberships-a-balanced-look-at-two-common-pricing-models') as Promise<{ default: React.ComponentType<object> }>,
         categories: ['owner', 'breeder', 'breed specific guides'],
         breed: 'Dachshund',
+    },
+    {
+        slug: 'yorkshire-terrier-grooming-guide',
+        title: 'Yorkshire Terrier Grooming and Coat Maintenance: Tips for a Silky, Healthy Coat',
+        date: 'November 21, 2025',
+        description:
+            'Learn how to keep a Yorkshire Terrier’s coat silky and healthy with daily brushing routines, bathing tips, grooming schedules, and tangle prevention strategies.',
+        component: () => import('./posts/yorkshire-terrier-grooming-guide'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Yorkshire Terrier',
+    },
+    {
+        slug: 'yorkshire-terrier-puppy-care',
+        title: 'Yorkshire Terrier Puppy Care: A Complete First Year Guide',
+        date: 'November 21, 2025',
+        description:
+            'Learn how to raise a healthy, confident Yorkshire Terrier puppy. This first-year guide covers feeding, grooming, training, socialization, vaccinations, and toy breed safety tips.',
+        component: () => import('./posts/yorkshire-terrier-puppy-care'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Yorkshire Terrier',
     },
     {
         slug: 'buying-a-dog-daycare-checklist',
@@ -220,7 +290,7 @@ export const blogPosts: BlogPostEntry[] = [
             'An evidence-based look at Golden Retriever cancer rates in 2025 — the latest research, early detection practices, and steps owners can take to reduce risk and improve outcomes.',
         component: () => import('./posts/golden-retriever-cancer-rates-2025'),
         categories: ['owner', 'breed_specific_guides'],
-        breed: 'Dachshund',
+        breed: 'Golden Retriever',
     },
     {
         slug: 'ethics-of-dog-breeding-2025',
