@@ -16,6 +16,7 @@ import {
 import { initializeApp } from 'firebase/app';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
+import { setDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -263,7 +264,7 @@ export default function BusinessSettingsPage() {
             blackoutDates: blackoutDates.map((d) =>
                 Timestamp.fromDate(new Date(d.getFullYear(), d.getMonth(), d.getDate()))
             ),
-            
+
             // NEW: Prevent overlapping boarding reservations with blackout dates
             prohibitBoardingOverlapWithBlackoutDates,
 
@@ -279,11 +280,16 @@ export default function BusinessSettingsPage() {
 
         // keep waiver subdoc behavior simple/consistent
         const waiverRef = doc(db, 'businesses', businessId, 'settings', 'clientWaiver');
-        await updateDoc(waiverRef, {
-            waiverText,
-            waiverVersion: 1,
-            lastUpdated: new Date(),
-        });
+
+        await setDoc(
+            waiverRef,
+            {
+                waiverText,
+                waiverVersion: 1,
+                lastUpdated: new Date(),
+            },
+            { merge: true }
+        );
 
         setSaving(false);
 
