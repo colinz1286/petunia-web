@@ -46,5 +46,7 @@
   "business_bio_counter": "{used} / {limit}",
   "business_bio_too_long": "Bio must be 500 characters or fewer.",
   "business_bio_no_emoji": "Emojis are not allowed.",
-  "business_bio_emoji_blocked": "Please remove emojis from your bio."
+  "business_bio_emoji_blocked": "Please remove emojis from your bio.",
+  "required_vaccinations_header": "Required Vaccinations",
+  "additional_required_tests_header": "Additional Required Tests"
 }

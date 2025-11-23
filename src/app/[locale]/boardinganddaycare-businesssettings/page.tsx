@@ -100,6 +100,19 @@ export default function BusinessSettingsPage() {
         statePaperworkLog: false,
     });
 
+    // --- Required Vaccinations (matches iOS) ---
+    const [requiredVaccinations, setRequiredVaccinations] = useState<Record<string, boolean>>({
+        Rabies: false,
+        Distemper: false,
+        Bordetella: false,
+        'Canine Influenza': false,
+    });
+
+    // --- Additional Required Tests (matches iOS) ---
+    const [requiredTests, setRequiredTests] = useState<Record<string, boolean>>({
+        'Negative Fecal': false,
+    });
+
     // --- Business Bio (matches iOS) ---
     const BIO_LIMIT = 500;
     const [businessBio, setBusinessBio] = useState('');
@@ -170,6 +183,19 @@ export default function BusinessSettingsPage() {
                 setDropOffTimeRequiredBoarding(data.dropOffTimeRequiredBoarding || false);
                 setPickUpTimeRequiredBoarding(data.pickUpTimeRequiredBoarding || false);
 
+                setRequiredVaccinations(data.requiredVaccinations || {
+                    Rabies: false,
+                    Distemper: false,
+                    Bordetella: false,
+                    'Canine Influenza': false,
+                });
+
+                setRequiredTests(
+                    data.requiredTests || {
+                        'Negative Fecal': false,
+                    }
+                );
+
                 // ✅ NEW: After-hours fields
                 setAfterHoursPickUpTimeRequired(data.afterHoursPickUpTimeRequired || false);
                 setAfterHoursPickUpTimes(data.afterHoursPickUpTimes || {});
@@ -239,6 +265,9 @@ export default function BusinessSettingsPage() {
             businessBio: trimmedBio,
             waiverRequired,
             waiverText,
+
+            requiredVaccinations,
+            requiredTests,
 
             dropOffTimeRequiredDaycare,
             pickUpTimeRequiredDaycare,
@@ -509,6 +538,42 @@ export default function BusinessSettingsPage() {
                                 )}
                             </div>
                         )}
+                    </div>
+
+                    {/* Required Vaccinations */}
+                    <div className="mt-10">
+                        <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-4">
+                            {t('required_vaccinations_header')}
+                        </h2>
+
+                        {Object.keys(requiredVaccinations).sort().map((vaccine) => (
+                            <Toggle
+                                key={`vac-${vaccine}`}
+                                label={vaccine}
+                                checked={requiredVaccinations[vaccine]}
+                                onChange={(val) =>
+                                    setRequiredVaccinations((prev) => ({ ...prev, [vaccine]: val }))
+                                }
+                            />
+                        ))}
+                    </div>
+
+                    {/* Additional Required Tests */}
+                    <div className="mt-10">
+                        <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-4">
+                            {t('additional_required_tests_header')}
+                        </h2>
+
+                        {Object.keys(requiredTests).sort().map((test) => (
+                            <Toggle
+                                key={`test-${test}`}
+                                label={test}
+                                checked={requiredTests[test]}
+                                onChange={(val) =>
+                                    setRequiredTests((prev) => ({ ...prev, [test]: val }))
+                                }
+                            />
+                        ))}
                     </div>
 
                     {/* Waiver */}
