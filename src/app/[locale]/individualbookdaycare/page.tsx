@@ -69,6 +69,8 @@ type BusinessSettings = {
     clientWritesRTDB?: boolean;
   };
   dropOffTimeRequiredDaycare?: boolean;
+  pickUpTimeRequiredDaycare?: boolean;
+  pickUpTimesDaycare?: WeekdayMap;
   temperamentTestRequired?: boolean;
   dropOffTimesDaycare?: WeekdayMap;
   bookingLimits?: { maxPerTimeSlot?: number };
@@ -82,6 +84,7 @@ type BusinessSettings = {
 
 type RTDBUpcomingRow = {
   arrivalWindow?: string;
+  departureWindow?: string;
   status?: string;
   date?: string;
   dateBusinessTZ?: string;
@@ -94,6 +97,7 @@ type RTDBUpcomingWriteRow = {
   date: string;               // device TZ key (e.g., 2025-08-29)
   dateBusinessTZ: string;     // business TZ key
   arrivalWindow?: string;
+  departureWindow?: string;
   status: 'approved' | 'pending';
   userId: string;
   realtimeKey: string;
@@ -115,7 +119,8 @@ type DaycareReservationWrite = {
   petStatuses: Record<string, string>;
   date: Timestamp;                // Firestore Timestamp
   dateBusinessTZ: string;         // e.g., "2025-08-29"
-  arrivalWindow: string;          // "" allowed
+  arrivalWindow: string;
+  departureWindow?: string;          // "" allowed
   status: 'approved' | 'pending';
   realtimeKey: string;
   isAssessment?: boolean;
@@ -125,6 +130,7 @@ type DaycareReservationWrite = {
 type DraftBooking = {
   date: Date;                 // normalized (no time)
   dropOffTime: string;
+  pickUpTime: string;  // ⭐ NEW
   petIds: string[];
   isAssessment: boolean;
   groomingAddOns?: GroomingSelections;
@@ -199,6 +205,13 @@ export default function IndividualBookDaycarePage() {
   const [businessTimeZoneId, setBusinessTimeZoneId] = useState<string | null>(null);
   const [dropOffTimeRequired, setDropOffTimeRequired] = useState(false);
   const [dropOffTimesByWeekday, setDropOffTimesByWeekday] = useState<WeekdayMap>({});
+
+  // ⭐ NEW — Pickup time requirement + time map + options
+  const [pickUpTimeRequired, setPickUpTimeRequired] = useState(false);
+  const [pickUpTimesByWeekday, setPickUpTimesByWeekday] = useState<WeekdayMap>({});
+  const [pickUpTimeOptions, setPickUpTimeOptions] = useState<string[]>([]);
+  const [selectedPickUpTime, setSelectedPickUpTime] = useState('');
+
   const [maxPerTimeSlot, setMaxPerTimeSlot] = useState<number>(3);
   const [includePendingInCapacity, setIncludePendingInCapacity] = useState(false);
   const [clientWritesRTDB, setClientWritesRTDB] = useState(true);
@@ -363,6 +376,10 @@ export default function IndividualBookDaycarePage() {
 
       // Core flags
       setDropOffTimeRequired(!!data.dropOffTimeRequiredDaycare);
+
+      // ⭐ NEW — Pickup required flag
+      setPickUpTimeRequired(!!data.pickUpTimeRequiredDaycare);
+
       setTemperamentTestRequired(!!data.temperamentTestRequired);
 
       // Grooming
@@ -373,12 +390,17 @@ export default function IndividualBookDaycarePage() {
       const map = (data.dropOffTimesDaycare || {}) as WeekdayMap;
       if (Object.keys(map).length) setDropOffTimesByWeekday(map);
 
+      // ⭐ NEW — Load pickup weekday map
+      if (data.pickUpTimesDaycare) {
+        setPickUpTimesByWeekday(data.pickUpTimesDaycare);
+      }
+
       // Per-slot limit
       setMaxPerTimeSlot(typeof data.bookingLimits?.maxPerTimeSlot === 'number'
         ? (data.bookingLimits!.maxPerTimeSlot as number)
         : 3);
 
-        // --- Blackout Dates
+      // --- Blackout Dates
       if (Array.isArray(data.blackoutDates)) {
         const keys = data.blackoutDates
           .map((ts: Timestamp | null) => {
@@ -453,12 +475,18 @@ export default function IndividualBookDaycarePage() {
       const counts: Record<string, number> = {};
       Object.values(val).forEach((row) => {
         const window = row.arrivalWindow ?? '';
+        const departure = row.departureWindow ?? '';
+
         const status = row.status ?? '';
         const d1 = row.date ?? '';
         const dBiz = row.dateBusinessTZ ?? '';
         const sameDay = dBiz === dayKeyBiz || d1 === dayKeyBiz || d1 === dayKeyDevice;
         const countable = status === 'approved' || (includePendingInCapacity && status === 'pending');
         if (sameDay && countable && window) counts[window] = (counts[window] ?? 0) + 1;
+        // ⭐ NEW — count pickup
+        if (sameDay && countable && departure) {
+          counts[departure] = (counts[departure] ?? 0) + 1;
+        }
       });
 
       // Hide past times in business TZ (for today)
@@ -519,6 +547,12 @@ export default function IndividualBookDaycarePage() {
       const day = weekdayName(selectedDate, bizTZ);
       const raw = sortTimeStrings((dropOffTimesByWeekday[day] || []).map((s) => s || ''));
       const filtered = await filterUnavailableTimes(selectedDate, raw);
+
+      // ⭐ NEW — pickup options for this weekday
+      const rawPickup = sortTimeStrings((pickUpTimesByWeekday[day] || []).map((s) => s || ''));
+      const filteredPickup = await filterUnavailableTimes(selectedDate, rawPickup);
+      setPickUpTimeOptions(filteredPickup);
+      setSelectedPickUpTime(filteredPickup[0] || '');
 
       // If there are configured times for this day, but none remain after filtering,
       // auto-advance to the next available day.
@@ -584,6 +618,7 @@ export default function IndividualBookDaycarePage() {
     setSelectedTime('');
     setTimeOptions((prev) => [...prev]); // keep list, empty selection
     setSelectedPetIds(pets.map((p) => p.id));
+    setPickUpTimeOptions((prev) => [...prev]);
   }, [pets]);
 
   const addBookingDraft = useCallback(() => {
@@ -596,12 +631,19 @@ export default function IndividualBookDaycarePage() {
       }
     }
 
-    if (!selectedDate || (dropOffTimeRequired && !selectedTime) || selectedPetIds.length === 0) return;
+    if (
+      !selectedDate ||
+      (dropOffTimeRequired && !selectedTime) ||
+      (pickUpTimeRequired && !selectedPickUpTime) ||
+      selectedPetIds.length === 0
+    ) return;
+
     if (hasExistingReservation) { alert(t('duplicate_daycare_message')); return; }
 
     const draft: DraftBooking = {
       date: normalizeDate(selectedDate),
-      dropOffTime: selectedTime,
+      dropOffTime: dropOffTimeRequired ? selectedTime : "",      // ✅ only required if business requires it
+      pickUpTime: pickUpTimeRequired ? selectedPickUpTime : "",  // ✅ only required if business requires it
       petIds: [...selectedPetIds],
       isAssessment,
     };
@@ -661,6 +703,7 @@ export default function IndividualBookDaycarePage() {
           date: Timestamp.fromDate(booking.date), // legacy TS
           dateBusinessTZ: dateBizKey,            // biz TZ key
           arrivalWindow: booking.dropOffTime,
+          departureWindow: booking.pickUpTime,
           status: 'approved',
           realtimeKey,
         };
@@ -685,6 +728,7 @@ export default function IndividualBookDaycarePage() {
               date: deviceKey,         // legacy (device TZ)
               dateBusinessTZ: dateBizKey,
               arrivalWindow: booking.dropOffTime,
+              departureWindow: booking.pickUpTime,
               status: 'approved',
               userId,
               realtimeKey,
@@ -759,6 +803,12 @@ export default function IndividualBookDaycarePage() {
                   const raw = sortTimeStrings((dropOffTimesByWeekday[day] || []).map((s) => s || ''));
                   const filtered = await filterUnavailableTimes(date, raw);
 
+                  // ⭐ NEW — recompute pickup options for this date
+                  const rawPickup = sortTimeStrings((pickUpTimesByWeekday[day] || []).map((s) => s || ''));
+                  const filteredPickup = await filterUnavailableTimes(date, rawPickup);
+                  setPickUpTimeOptions(filteredPickup);
+                  setSelectedPickUpTime(filteredPickup[0] || '');
+
                   if (raw.length > 0 && filtered.length === 0) {
                     const next = await findNextAvailableDate(date);
                     if (next) {
@@ -789,7 +839,7 @@ export default function IndividualBookDaycarePage() {
           )}
 
           {/* Time */}
-          {(!dropOffTimeRequired || timeOptions.length > 0) && (
+          {dropOffTimeRequired && (
             <div className="flex flex-col items-center space-y-1 w-full">
               <label className="font-semibold text-center text-sm">{t('select_time')}</label>
               <select
@@ -802,6 +852,23 @@ export default function IndividualBookDaycarePage() {
                   <option key={opt || 'none'} value={opt}>
                     {opt || t('no_specific_time')}
                   </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* ⭐ NEW — Pickup Time Selector */}
+          {pickUpTimeRequired && (
+            <div className="flex flex-col items-center space-y-1 w-full">
+              <label className="font-semibold text-center text-sm">{t('select_pickup_time')}</label>
+              <select
+                className="w-full max-w-xs border p-2 rounded text-sm"
+                value={selectedPickUpTime}
+                onChange={(e) => setSelectedPickUpTime(e.target.value)}
+                disabled={pickUpTimeOptions.length === 0}
+              >
+                {pickUpTimeOptions.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
                 ))}
               </select>
             </div>
@@ -896,7 +963,8 @@ export default function IndividualBookDaycarePage() {
                 hasExistingReservation ||
                 !selectedDate ||
                 (dropOffTimeRequired && !selectedTime) ||
-                selectedPetIds.length === 0
+                selectedPetIds.length === 0 ||
+                (pickUpTimeRequired && !selectedPickUpTime)
               }
               title={hasExistingReservation ? t('duplicate_daycare_message') : undefined}
             >
@@ -991,6 +1059,7 @@ export default function IndividualBookDaycarePage() {
                   >
                     <p><strong>📅</strong> {b.date.toLocaleDateString()}</p>
                     <p><strong>⏰</strong> {b.dropOffTime || t('no_specific_time')}</p>
+                    <p><strong>📤</strong> {b.pickUpTime || t('no_specific_time')}</p>
                     <p><strong>🐶</strong> {petNames}</p>
                     {isAssessment && <p className="italic text-gray-600 mt-1">{t('assessment_badge')}</p>}
                     {hasGroom && (

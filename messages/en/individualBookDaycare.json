@@ -11,6 +11,7 @@
   "select_date": "Select a Date",
   "select_date_placeholder": "Select a date",
   "select_time": "Select a Drop-Off Time",
+  "select_pickup_time": "Select a Pick-Up Time",
   "no_specific_time": "No specific time",
   "select_pets": "Select Pets",
 

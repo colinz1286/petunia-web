@@ -74,7 +74,7 @@ type Reservation = {
 };
 
 /** ============== Helpers ============== */
-const isBoarding = (r: Reservation) => !r.arrivalWindow || r.arrivalWindow === 'N/A';
+const isBoarding = (r: Reservation) => r.pickUpDate != null;
 
 const endOfDay = (d: Date) => {
   const x = new Date(d);
