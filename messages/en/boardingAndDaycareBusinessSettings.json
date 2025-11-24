@@ -48,5 +48,8 @@
   "business_bio_no_emoji": "Emojis are not allowed.",
   "business_bio_emoji_blocked": "Please remove emojis from your bio.",
   "required_vaccinations_header": "Required Vaccinations",
-  "additional_required_tests_header": "Additional Required Tests"
+  "additional_required_tests_header": "Additional Required Tests",
+  "booking_policy_header": "Booking Policies",
+  "require_daycare_approval_toggle": "Require Approval for Daycare Reservations",
+  "require_boarding_approval_toggle": "Require Approval for Boarding Reservations"
 }

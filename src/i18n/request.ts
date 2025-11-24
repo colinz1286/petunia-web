@@ -60,7 +60,7 @@ export default getRequestConfig(async ({ locale }) => {
     walkerSitterClientManagement: (await import(`../../messages/${safeLocale}/walkerSitterClientManagement.json`)).default,
     walkerSitterDashboard: (await import(`../../messages/${safeLocale}/walkerSitterDashboard.json`)).default,
     walkerSitterPendingRequests: (await import(`../../messages/${safeLocale}/walkerSitterPendingRequests.json`)).default,
-    walkerSitterTodayVisits: (await import(`../../messages/${safeLocale}/walkerSitterTodaysVisits.json`)).default
+     walkerSitterTodayVisits: (await import(`../../messages/${safeLocale}/walkerSitterTodaysVisits.json`)).default
   } as const;
 
   return {

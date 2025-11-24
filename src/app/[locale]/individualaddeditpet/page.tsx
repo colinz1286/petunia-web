@@ -137,6 +137,12 @@ export default function AddEditPetPage() {
     const [afraidOfAnything, setAfraidOfAnything] = useState<'Yes' | 'No'>('No');
     const [fearDetails, setFearDetails] = useState<string>('');
 
+    // --- Additional Tests: Fecal Test ---
+    const [fecalTest, setFecalTest] = useState<boolean>(false);
+    const [fecalTestExamDate, setFecalTestExamDate] = useState<string>(''); // YYYY-MM-DD
+    const [fecalRemoteFiles, setFecalRemoteFiles] = useState<{ index: 1 | 2; name: string; url: string; ext: string }[]>([]);
+    const [newFecalFiles, setNewFecalFiles] = useState<File[]>([]); // upload up to 2 files
+
     // Vaccination UI state mirrors iOS keys
     const [vaccinationRecords, setVaccinationRecords] = useState<VaccinationUI>({
         Rabies: { isVaccinated: false, expirationDate: '' },
@@ -253,6 +259,10 @@ export default function AddEditPetPage() {
         setAfraidOfAnything((data.afraidOfAnything as 'Yes' | 'No') || 'No');
         setFearDetails(data.fearDetails || '');
 
+        // --- Additional Tests: Fecal Test ---
+        setFecalTest(!!data.fecalTest);
+        setFecalTestExamDate(formatDateFromAny(data.fecalTestExamDate));
+
         // Vaccination records
         type VaccinationInfo = { date?: unknown; expirationDate?: unknown; isVaccinated?: boolean };
         const getDateStr = (obj?: VaccinationInfo): string => {
@@ -300,6 +310,26 @@ export default function AddEditPetPage() {
             }
         }
         setRemoteVaccineFiles(Array.from(foundByIndex.values()));
+
+        // --- Load fecal test files (up to 2, any allowed extension) ---
+        const fecalFound = new Map<number, { index: 1 | 2; name: string; url: string; ext: string }>();
+
+        for (const index of [1, 2] as const) {
+            for (const ext of VACCINE_EXTS) {
+                const path = `fecalTests/${uid}/${id}_${index}.${ext}`;
+                try {
+                    const url = await getDownloadURL(storageRef(storage, path));
+                    if (!fecalFound.has(index)) {
+                        fecalFound.set(index, { index, name: `${id}_${index}.${ext}`, url, ext });
+                    }
+                    break;
+                } catch {
+                    // Continue trying other extensions
+                }
+            }
+        }
+
+        setFecalRemoteFiles(Array.from(fecalFound.values()));
     }, [formatDateFromAny]);
 
     // ---------- Auth + initial load ----------
@@ -409,6 +439,23 @@ export default function AddEditPetPage() {
         await uploadBytes(ref, file, { contentType: contentTypeForExt(ext) });
     };
 
+    // --- Fecal Test Helpers (mirror iOS logic) ---
+    const deleteAllFecalExtensionsForIndex = async (docId: string, index: 1 | 2) => {
+        await Promise.allSettled(
+            (['pdf', 'jpg', 'jpeg', 'png', 'heic'] as const).map(ext =>
+                deleteObject(storageRef(storage, `fecalTests/${userId}/${docId}_${index}.${ext}`))
+            )
+        );
+    };
+
+    const uploadFecalFileToIndex = async (docId: string, index: 1 | 2, file: File) => {
+        const ext = extOf(file.name) || 'pdf';
+        const path = `fecalTests/${userId}/${docId}_${index}.${ext}`;
+        await uploadBytes(storageRef(storage, path), file, {
+            contentType: contentTypeForExt(ext),
+        });
+    };
+
     const buildFeedingSchedule = () => ({
         breakfast: { enabled: receivesBreakfast, instructions: receivesBreakfast ? breakfastInstructions : '' },
         lunch: { enabled: receivesLunch, instructions: receivesLunch ? lunchInstructions : '' },
@@ -467,6 +514,8 @@ export default function AddEditPetPage() {
                 vaccinationRecords: vaxPayload,
                 dateOfBirth: toTimestampOrNull(dateOfBirth) ?? null,
                 lastAnnualVetVisit: toTimestampOrNull(lastAnnualVetVisit) ?? null,
+                fecalTest,
+                fecalTestExamDate: toTimestampOrNull(fecalTestExamDate) ?? null,
                 createdAt: Timestamp.now(),
             };
 
@@ -487,6 +536,14 @@ export default function AddEditPetPage() {
                 const index = (i + 1) as 1 | 2;
                 await deleteAllExtensionsForIndex(docId, index);
                 await uploadFileToIndex(docId, index, toUpload[i]);
+            }
+
+            // ---- Fecal Files ----
+            const fecalToUpload = newFecalFiles.slice(0, 2);
+            for (let i = 0; i < fecalToUpload.length; i++) {
+                const index = (i + 1) as 1 | 2;
+                await deleteAllFecalExtensionsForIndex(docId, index);
+                await uploadFecalFileToIndex(docId, index, fecalToUpload[i]);
             }
 
             router.push(`/${locale}/individualmypets`);
@@ -854,6 +911,132 @@ export default function AddEditPetPage() {
                                 )}
                             </div>
                         ))}
+                    </div>
+
+                    {/* Additional Tests */}
+                    <div>
+                        <label className="block font-semibold mb-2 text-sm text-[#2c4a30] text-center">
+                            Additional Tests
+                        </label>
+
+                        {/* Fecal Test Toggle */}
+                        <label className={CHECK_LABEL}>
+                            <input
+                                type="checkbox"
+                                className="accent-[#2c4a30]"
+                                checked={fecalTest}
+                                onChange={(e) => {
+                                    setFecalTest(e.target.checked);
+                                    if (!e.target.checked) setFecalTestExamDate('');
+                                }}
+                            />
+                            Fecal Test
+                        </label>
+
+                        {fecalTest && (
+                            <div className="mt-2 space-y-3">
+
+                                {/* Exam Date */}
+                                {fecalTestExamDate && (
+                                    <p className="text-xs text-gray-600">
+                                        📅 Exam performed on: {fecalTestExamDate}
+                                    </p>
+                                )}
+
+                                <label className={LABEL}>Select Exam Date</label>
+                                <input
+                                    type="date"
+                                    className={INPUT}
+                                    value={fecalTestExamDate}
+                                    onChange={(e) => setFecalTestExamDate(e.target.value)}
+                                />
+
+                                {/* Upload Fecal Test */}
+                                <div className="mt-4">
+                                    <label
+                                        htmlFor="fecal-uploads"
+                                        className="underline cursor-pointer text-sm text-[#2c4a30] hover:text-[#1f3523]"
+                                    >
+                                        Upload Fecal Test (Image or PDF)
+                                    </label>
+                                    <input
+                                        id="fecal-uploads"
+                                        type="file"
+                                        accept=".pdf,image/*,.heic"
+                                        multiple
+                                        onChange={(e) => {
+                                            const files = e.target.files;
+                                            if (!files) return;
+                                            const next = [...newFecalFiles];
+
+                                            for (const f of Array.from(files)) {
+                                                if (next.length >= 2) break;
+                                                next.push(f);
+                                            }
+                                            setNewFecalFiles(next.slice(0, 2));
+                                        }}
+                                        className="hidden"
+                                    />
+                                </div>
+
+                                {/* Remote fecal files */}
+                                {fecalRemoteFiles.length > 0 && (
+                                    <div className="space-y-2 mt-3">
+                                        {fecalRemoteFiles.map((rf) => (
+                                            <div
+                                                key={`${rf.index}-${rf.name}`}
+                                                className="flex items-center justify-between bg-[#f7f3e9] border border-[#2c4a30] p-2 rounded text-sm"
+                                            >
+                                                <span className="truncate">{rf.name}</span>
+                                                <div className="flex items-center gap-4">
+                                                    <a
+                                                        href={rf.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="underline text-[#2c4a30] hover:text-[#1f3523]"
+                                                    >
+                                                        View File
+                                                    </a>
+                                                    <button
+                                                        type="button"
+                                                        onClick={async () => {
+                                                            await deleteObject(storageRef(storage, `fecalTests/${userId}/${rf.name}`));
+                                                            setFecalRemoteFiles(prev => prev.filter(x => x.name !== rf.name));
+                                                        }}
+                                                        className="text-red-600 underline"
+                                                    >
+                                                        Remove
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Local pending fecal files */}
+                                {newFecalFiles.length > 0 && (
+                                    <div className="space-y-2 mt-3">
+                                        {newFecalFiles.map((f, idx) => (
+                                            <div
+                                                key={idx}
+                                                className="flex items-center justify-between bg-[#fbf9f3] border border-[#2c4a30] p-2 rounded text-sm"
+                                            >
+                                                <span className="truncate">{f.name}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setNewFecalFiles(prev => prev.filter((_, i) => i !== idx));
+                                                    }}
+                                                    className="text-red-600 underline"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {/* Submit */}

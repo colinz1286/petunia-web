@@ -50,6 +50,9 @@ export default function BusinessSettingsPage() {
     const [waiverRequired, setWaiverRequired] = useState(false);
     const [waiverText, setWaiverText] = useState('');
 
+    const [requireDaycareReservationApproval, setRequireDaycareReservationApproval] = useState(false);
+    const [requireBoardingReservationApproval, setRequireBoardingReservationApproval] = useState(false);
+
     const [maxAppointmentsPerSlot, setMaxAppointmentsPerSlot] = useState(3);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -183,6 +186,14 @@ export default function BusinessSettingsPage() {
                 setDropOffTimeRequiredBoarding(data.dropOffTimeRequiredBoarding || false);
                 setPickUpTimeRequiredBoarding(data.pickUpTimeRequiredBoarding || false);
 
+                setRequireDaycareReservationApproval(
+                    data.requireDaycareReservationApproval || false
+                );
+
+                setRequireBoardingReservationApproval(
+                    data.requireBoardingReservationApproval || false
+                );
+
                 setRequiredVaccinations(data.requiredVaccinations || {
                     Rabies: false,
                     Distemper: false,
@@ -261,6 +272,10 @@ export default function BusinessSettingsPage() {
             offersDaycare,
             offersGrooming,
             offersTraining,
+
+            requireDaycareReservationApproval,
+            requireBoardingReservationApproval,
+
             groomingServices: groomingServices.filter((s) => s.trim() !== ''),
             businessBio: trimmedBio,
             waiverRequired,
@@ -598,6 +613,25 @@ export default function BusinessSettingsPage() {
                                     onChange={(e) => setWaiverText(e.target.value)}
                                 />
                             </div>
+                        </div>
+
+                        {/* Booking policies (reservation approval settings) */}
+                        <div className="mt-10 space-y-3">
+                            <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-2">
+                                {t('booking_policy_header')}
+                            </h2>
+
+                            <Toggle
+                                label={t('require_daycare_approval_toggle')}
+                                checked={requireDaycareReservationApproval}
+                                onChange={setRequireDaycareReservationApproval}
+                            />
+
+                            <Toggle
+                                label={t('require_boarding_approval_toggle')}
+                                checked={requireBoardingReservationApproval}
+                                onChange={setRequireBoardingReservationApproval}
+                            />
                         </div>
 
                         {/* Booking limits */}
