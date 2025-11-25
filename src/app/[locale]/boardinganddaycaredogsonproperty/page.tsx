@@ -26,6 +26,7 @@ import {
   remove as rtdbRemove,
   DataSnapshot,
 } from 'firebase/database';
+import { set } from 'firebase/database';
 
 /** =========================
  *  Firebase init (guarded)
@@ -149,6 +150,16 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
   const [assessmentError, setAssessmentError] = useState<string | null>(null);
   const [assessmentSaveMsg, setAssessmentSaveMsg] = useState<string | null>(null);
 
+  /** -------- Grooming Modal State -------- */
+  const [showGroomingModal, setShowGroomingModal] = useState(false);
+  const [groomingDog, setGroomingDog] = useState<Dog | null>(null);
+  const [groomingOptions, setGroomingOptions] = useState<string[]>([]);
+  const [groomingSaving, setGroomingSaving] = useState(false);
+  const [groomingError, setGroomingError] = useState<string | null>(null);
+
+  /** -------- Business Grooming Services (Dynamic From Firestore) -------- */
+  const [availableGroomingServices, setAvailableGroomingServices] = useState<string[]>([]);
+
   /** Auth + businessId resolution */
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
@@ -175,6 +186,15 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
         }
         setBusinessIdRaw(rawId);
         setBusinessIdSanitized(sanitized);
+
+        // Load grooming services for this business (same behavior as iOS)
+        const groomingRef = doc(db, 'businesses', rawId);
+        const groomingSnap = await getDoc(groomingRef);
+        const data = groomingSnap.data();
+        const services = (data?.groomingServices as string[]) || [];
+
+        setAvailableGroomingServices(services);
+
       } catch (e) {
         console.error('❌ Business lookup failed:', e);
         setErrorMsg(t('error_business_not_found'));
@@ -312,6 +332,64 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
     }
   }, [businessIdSanitized]);
 
+  /** -------- Save Grooming Add-Ons -------- */
+  const saveGrooming = useCallback(async () => {
+    try {
+      if (!groomingDog || !businessIdSanitized) return;
+
+      setGroomingSaving(true);
+      setGroomingError(null);
+
+      // Step 1: Find RTDB date bucket containing this dog
+      const root = rtdbRef(rtdb, `checkIns/${businessIdSanitized}`);
+      const snap = await rtdbGet(root);
+
+      if (!snap.exists()) {
+        setGroomingError('Could not locate dog in RTDB.');
+        setGroomingSaving(false);
+        return;
+      }
+
+      let targetDate: string | null = null;
+
+      snap.forEach((dateNode) => {
+        if (dateNode.hasChild(groomingDog.id)) {
+          targetDate = dateNode.key!;
+        }
+      });
+
+      if (!targetDate) {
+        setGroomingError('Could not find date bucket for this dog.');
+        setGroomingSaving(false);
+        return;
+      }
+
+      // Step 2: Write to RTDB
+      const updateRef = rtdbRef(
+        rtdb,
+        `checkIns/${businessIdSanitized}/${targetDate}/${groomingDog.id}/groomingAddOns`
+      );
+
+      await rtdbRemove(updateRef); // clear existing
+      await set(updateRef, groomingOptions); // write new array
+
+      // Step 3: Optimistic UI update
+      setDogs((prev) =>
+        prev.map((d) =>
+          d.id === groomingDog.id ? { ...d, groomingAddOns: groomingOptions } : d
+        )
+      );
+
+      setShowGroomingModal(false);
+      setGroomingDog(null);
+    } catch (err) {
+      console.error('❌ saveGrooming failed:', err);
+      setGroomingError('Failed to save grooming services.');
+    } finally {
+      setGroomingSaving(false);
+    }
+  }, [groomingDog, groomingOptions, businessIdSanitized]);
+
   /** -------- Assessment Modal actions -------- */
   const openAssessment = useCallback(async (dog: Dog) => {
     try {
@@ -344,6 +422,14 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
       setAssessmentLoading(false);
     }
   }, [businessIdRaw, router, locale]);
+
+  /** -------- Open Grooming Modal -------- */
+  const openGrooming = useCallback((dog: Dog) => {
+    setGroomingDog(dog);
+    setGroomingOptions(dog.groomingAddOns ?? []);
+    setGroomingError(null);
+    setShowGroomingModal(true);
+  }, []);
 
   const closeAssessment = useCallback(() => {
     setShowAssessmentModal(false);
@@ -547,7 +633,8 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
                       </div>
 
                       <div className="mt-3 flex gap-2">
-                        {/* ✅ Always-visible View Assessment button -> opens modal */}
+
+                        {/* View Assessment */}
                         <button
                           onClick={() => void openAssessment(dog)}
                           className="px-3 py-2 rounded border border-blue-600 text-blue-700 text-sm hover:bg-blue-50"
@@ -555,11 +642,18 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
                           {t('view_assessment_button')}
                         </button>
 
+                        {/* Grooming */}
+                        <button
+                          onClick={() => openGrooming(dog)}
+                          className="px-3 py-2 rounded border border-purple-600 text-purple-700 text-sm hover:bg-purple-50"
+                        >
+                          {t('grooming_button')}
+                        </button>
+
                         {/* Check Out */}
                         <button
                           onClick={() => void checkOutDog(dog)}
                           className="px-3 py-2 rounded bg-green-700 text-white text-sm hover:bg-green-600"
-                          title={t('check_out_button')}
                         >
                           {t('check_out_button')}
                         </button>
@@ -636,6 +730,78 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
                 onClick={() => void saveAssessment()}
                 disabled={assessmentLoading || assessmentNotes.trim().length === 0}
                 className={`px-3 py-2 rounded text-sm text-white ${assessmentLoading || assessmentNotes.trim().length === 0 ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'}`}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* -------- Grooming Modal -------- */}
+      {showGroomingModal && groomingDog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setShowGroomingModal(false)}
+          />
+          <div className="relative z-10 w-full max-w-xl mx-4 rounded-xl bg-white shadow-xl border border-gray-200">
+
+            <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-lg font-semibold">
+                Grooming for {groomingDog.name}
+              </h2>
+              <button
+                onClick={() => setShowGroomingModal(false)}
+                className="text-gray-600 hover:text-gray-800"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="px-5 py-4 space-y-3 text-sm">
+              {availableGroomingServices.length === 0 ? (
+                <p className="text-sm text-gray-500">No grooming services configured.</p>
+              ) : (
+                availableGroomingServices.map((service) => (
+                  <label key={service} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={groomingOptions.includes(service)}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setGroomingOptions((prev) =>
+                          checked
+                            ? [...prev, service]
+                            : prev.filter((x) => x !== service)
+                        );
+                      }}
+                    />
+                    {service}
+                  </label>
+                ))
+              )}
+
+              {/* Add more options as needed */}
+
+              {groomingError && (
+                <p className="text-sm text-red-600">❌ {groomingError}</p>
+              )}
+            </div>
+
+            <div className="px-5 py-3 border-t border-gray-200 flex justify-end gap-2">
+              <button
+                onClick={() => setShowGroomingModal(false)}
+                className="px-3 py-2 rounded border border-gray-300 text-gray-700 text-sm hover:bg-gray-50"
+              >
+                Close
+              </button>
+
+              <button
+                onClick={() => void saveGrooming()}
+                disabled={groomingSaving}
+                className={`px-3 py-2 rounded text-sm text-white ${groomingSaving ? 'bg-purple-300' : 'bg-purple-600 hover:bg-purple-500'
+                  }`}
               >
                 Save
               </button>
