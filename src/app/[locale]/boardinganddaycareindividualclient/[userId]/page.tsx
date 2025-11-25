@@ -51,7 +51,11 @@ interface Pet {
     fileCount: number;
     vetName: string;
     vetPhone: string;
+    fecalTest: boolean;
+    fecalTestExamDate?: string | null;
+    fecalFileCount: number;
 }
+
 
 type TimestampLike = { seconds: number; nanoseconds?: number };
 
@@ -144,6 +148,14 @@ export default function BoardingAndDaycareIndividualClientPage() {
                     const data = petDoc.data();
                     const id = petDoc.id;
 
+                    // NEW — fecal test fields
+                    const fecalTest = data.fecalTest === true;
+                    let fecalTestExamDate: string | null = null;
+
+                    if (data.fecalTestExamDate?.seconds) {
+                        fecalTestExamDate = new Date(data.fecalTestExamDate.seconds * 1000).toLocaleDateString();
+                    }
+
                     // Vaccination records
                     const records = data.vaccinationRecords || {};
                     const vaccineRecords: Record<string, VaccineRecord> = {};
@@ -163,6 +175,13 @@ export default function BoardingAndDaycareIndividualClientPage() {
                         item.name.startsWith(`${id}_`)
                     ).length;
 
+                    // NEW — Count fecal test files in Storage
+                    const fecalFolderRef = ref(storage, `fecalTests/${userId}`);
+                    const fecalList = await listAll(fecalFolderRef);
+                    const fecalFileCount = fecalList.items.filter((item) =>
+                        item.name.startsWith(`${id}_`)
+                    ).length;
+
                     return {
                         id,
                         name: data.petName || 'Unnamed Pet',
@@ -174,6 +193,11 @@ export default function BoardingAndDaycareIndividualClientPage() {
                         fileCount,
                         vetName: data.veterinarian || 'Unknown',
                         vetPhone: data.veterinarianPhone || 'Unknown',
+
+                        // NEW
+                        fecalTest,
+                        fecalTestExamDate,
+                        fecalFileCount
                     };
                 });
 
@@ -332,7 +356,6 @@ export default function BoardingAndDaycareIndividualClientPage() {
                 <div>
                     <h2 className="font-semibold text-lg mb-2">🏥 Veterinary Contact</h2>
 
-                    {/* ✅ Global client-level vet info (from emergencyContact) */}
                     {client.vetName && client.vetPhone ? (
                         <div className="mb-3 text-sm">
                             <p><strong>{client.vetName}</strong></p>
@@ -350,7 +373,7 @@ export default function BoardingAndDaycareIndividualClientPage() {
                         <p className="text-gray-500 text-sm mb-3">No veterinary contact on file.</p>
                     )}
 
-                    {/* ✅ Per-pet veterinary info */}
+                    {/* Per-pet veterinary info */}
                     {pets.length > 0 ? (
                         pets.map((p) => (
                             <div key={p.id} className="border rounded-md p-4 mb-4 bg-white text-black">
@@ -399,9 +422,7 @@ export default function BoardingAndDaycareIndividualClientPage() {
                                                             window.open(url, '_blank');
                                                             found = true;
                                                             break;
-                                                        } catch {
-                                                            // continue trying next extension
-                                                        }
+                                                        } catch { }
                                                     }
 
                                                     if (!found) {
@@ -419,6 +440,72 @@ export default function BoardingAndDaycareIndividualClientPage() {
                                         No vaccine files uploaded
                                     </p>
                                 )}
+
+                                <button
+                                    onClick={() => {
+                                        router.push(`/${locale}/boardinganddaycareuploadvaccinefile/${userId}/${p.id}`);
+                                    }}
+                                    className="mt-3 w-full bg-green-700 text-white font-semibold py-2 rounded hover:opacity-90"
+                                >
+                                    {p.fileCount > 0 ? 'Upload or Replace Vaccine File' : 'Upload Vaccine File'}
+                                </button>
+
+                                <hr className="my-3" />
+
+                                {/* NEW — Fecal Test Info */}
+                                <div className="text-sm mb-2">
+                                    <span className={`font-semibold ${p.fecalTest ? 'text-green-600' : 'text-red-600'}`}>
+                                        🧪 Fecal Test: {p.fecalTest ? 'Yes' : 'No'}
+                                    </span>
+
+                                    {p.fecalTestExamDate && (
+                                        <p className="text-xs text-gray-500 ml-5">
+                                            📅 Exam Date: {p.fecalTestExamDate}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* NEW — Fecal File Section */}
+                                {p.fecalFileCount > 0 ? (
+                                    <div className="space-y-2">
+                                        {Array.from({ length: p.fecalFileCount }, (_, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={async () => {
+                                                    const extensions = ['pdf', 'jpg', 'jpeg', 'png', 'heic'];
+                                                    let found = false;
+
+                                                    for (const ext of extensions) {
+                                                        const path = `fecalTests/${userId}/${p.id}_${i + 1}.${ext}`;
+                                                        try {
+                                                            const url = await getDownloadURL(ref(storage, path));
+                                                            window.open(url, '_blank');
+                                                            found = true;
+                                                            break;
+                                                        } catch { }
+                                                    }
+
+                                                    if (!found) alert('No accessible fecal file found for this entry.');
+                                                }}
+                                                className="text-blue-600 underline text-base font-semibold hover:opacity-80"
+                                            >
+                                                View Fecal File {i + 1}
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-red-600 font-bold text-sm">No fecal test files uploaded</p>
+                                )}
+
+                                <button
+                                    onClick={() => {
+                                        router.push(`/${locale}/boardinganddaycareuploadfecalfile/${userId}/${p.id}`);
+                                    }}
+                                    className="mt-2 w-full bg-green-700 text-white font-semibold py-2 rounded hover:opacity-90"
+                                >
+                                    {p.fecalFileCount > 0 ? 'Upload or Replace Fecal Test File' : 'Upload Fecal Test File'}
+                                </button>
+
                             </div>
                         ))
                     ) : (

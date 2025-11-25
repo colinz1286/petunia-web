@@ -1,0 +1,25 @@
+{
+  "back_to_client": "← Back to Client",
+  "loading_page": "Loading fecal test files...",
+  "manage_fecal_files_title": "Manage Fecal Test Files",
+
+  "client_label": "Client:",
+  "pet_label": "Pet:",
+
+  "existing_files_title": "Existing Fecal Test Files",
+  "no_files_uploaded": "No fecal test files uploaded for this pet.",
+  "delete_button": "Delete",
+
+  "upload_new_files": "Upload New Files",
+  "upload_instructions": "Accepted formats: PDF, JPG, JPEG, PNG, HEIC. Maximum of 2 files, up to 25MB each.",
+
+  "select_files_button": "Select Fecal Test File(s)",
+  "files_selected_label": "Files Selected (not yet uploaded):",
+
+  "upload_files_button": "Upload Selected Files",
+  "uploading_label": "Uploading…",
+
+  "error_loading": "Failed to load fecal test files.",
+  "error_uploading": "Failed to upload fecal test files. Please try again.",
+  "error_deleting": "Failed to delete fecal test file. Please try again."
+}

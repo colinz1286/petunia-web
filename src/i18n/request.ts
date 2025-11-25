@@ -26,7 +26,8 @@ export default getRequestConfig(async ({ locale }) => {
     boardingAndDaycareIndividualClient: (await import(`../../messages/${safeLocale}/boardingAndDaycareIndividualClient.json`)).default,
     boardingAndDaycareDogsOnProperty: (await import(`../../messages/${safeLocale}/boardingAndDaycareDogsOnProperty.json`)).default,
     boardingAndDaycareUpcomingReservations: (await import(`../../messages/${safeLocale}/boardingAndDaycareUpcomingReservations.json`)).default,
-    boardingAndDaycareMessages: (await import(`../../messages/${safeLocale}/boardingAndDaycareMessages.json`)).default,
+    boardingAndDaycareUploadVaccineFile: (await import(`../../messages/${safeLocale}/boardingAndDaycareUploadVaccineFile.json`)).default,
+    boardingAndDaycareUploadFecalFile: (await import(`../../messages/${safeLocale}/boardingAndDaycareUploadFecalFile.json`)).default,
     boardingAndDaycareMessageClient: (await import(`../../messages/${safeLocale}/boardingAndDaycareMessageClient.json`)).default,
     breederBusinessSettings: (await import(`../../messages/${safeLocale}/breederBusinessSettings.json`)).default,
     breederClientManagement: (await import(`../../messages/${safeLocale}/breederClientManagement.json`)).default,
@@ -60,7 +61,7 @@ export default getRequestConfig(async ({ locale }) => {
     walkerSitterClientManagement: (await import(`../../messages/${safeLocale}/walkerSitterClientManagement.json`)).default,
     walkerSitterDashboard: (await import(`../../messages/${safeLocale}/walkerSitterDashboard.json`)).default,
     walkerSitterPendingRequests: (await import(`../../messages/${safeLocale}/walkerSitterPendingRequests.json`)).default,
-     walkerSitterTodayVisits: (await import(`../../messages/${safeLocale}/walkerSitterTodaysVisits.json`)).default
+    walkerSitterTodayVisits: (await import(`../../messages/${safeLocale}/walkerSitterTodaysVisits.json`)).default
   } as const;
 
   return {
