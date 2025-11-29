@@ -128,7 +128,7 @@ export default function HomePageClient() {
                         <section className="space-y-5 w-full max-w-xl">
                             <h3 className="text-2xl font-bold text-center">For Boarding & Daycare Facilities</h3>
                             <p className="text-lg text-balance">
-                                💡 Free for your first 60 days. We know from expreience that it takes an average of 30 days for your clients to enter their information into Petunia (there is very little data migration necessary when using our software because your clients add all the information for you!). Therefore, we are giving you 60 DAYS OF FREE USE! So, whether you are integrating software into your business for the first time, or switching from another system, we are taking into account the time it will take for everyone to get on boarded. After the 60 day period is up, our price is $29/month moving forward. No contracts. No nonsense.
+                                💡 Free for your first 60 days. We know from expreience that it takes an average of 30 days for your clients to enter their information into Petunia (there is very little data migration necessary when using our software because your clients add all the information for you!). Therefore, we are giving you 60 DAYS OF FREE USE! So, whether you are integrating software into your business for the first time, or switching from another system, we are taking into account the time it will take for everyone to get on boarded. After the 60 day period is up, our price is 5/month moving forward. No contracts. No nonsense.
                                 <br />
                             </p>
                             <p className="text-lg text-balance">

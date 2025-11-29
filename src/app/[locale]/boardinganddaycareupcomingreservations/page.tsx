@@ -198,16 +198,21 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // UI selections
-  const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
-  const [selected, setSelected] = useState<Reservation | null>(null);
+  // NEW — Reservation approval requirements
+  const [requireDaycareReservationApproval, setRequireDaycareReservationApproval] = useState(false);
+  const [requireBoardingReservationApproval, setRequireBoardingReservationApproval] = useState(false);
 
-  // Action dialogs
-  const [showActionDialog, setShowActionDialog] = useState(false); // Drop-off actions: Check-In / No-Show
-  const [showPickupDialog, setShowPickupDialog] = useState(false); // Pickup actions: Check-Out
-  const [confirmCheckIn, setConfirmCheckIn] = useState(false);
-  const [confirmNoShow, setConfirmNoShow] = useState(false);
-  const [confirmCheckOut, setConfirmCheckOut] = useState(false);
+  // NEW — Which reservations the business owner has acknowledged (UI-only)
+  const [acknowledged, setAcknowledged] = useState<Set<string>>(new Set());
+
+  // NEW — expanded date sections for accordion
+  const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
+
+  // NEW — For confirmation alerts (Approve / Decline / Check In / No Show / Check Out)
+  const [confirmAction, setConfirmAction] = useState<null | {
+    type: 'approve' | 'decline' | 'checkin' | 'noshow' | 'checkout',
+    reservation: Reservation
+  }>(null);
 
   // RTDB listener handle
   const rtdbSubRef = useRef<ReturnType<typeof rtdbRef> | null>(null);
@@ -270,7 +275,18 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
           setIsLoading(false);
           return;
         }
+
+        // NEW — Load approval toggles from Firestore
+        const data = first.data();
+        setRequireDaycareReservationApproval(
+          data.requireDaycareReservationApproval === true
+        );
+        setRequireBoardingReservationApproval(
+          data.requireBoardingReservationApproval === true
+        );
+
         setBusinessId(bizId);
+
       } catch (e) {
         console.error('❌ Business lookup failed:', e);
         setErrorMsg(t('error_load_business'));
@@ -514,7 +530,6 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
         // remove from UI
         setReservations((prev) => prev.filter((x) => x.id !== r.id));
       }
-      setSelected(null);
 
       // Firestore petStatuses update
       const col = r.type === 'Boarding' ? 'boardingReservations' : 'daycareReservations';
@@ -544,21 +559,32 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
     const baseKey = `${r.realtimeKey}-${petId}`;
 
     try {
+      // Remove from RTDB
       await rtdbRemove(rtdbRef(rtdb, `upcomingReservations/${businessId}/${baseKey}`));
-      // Optimistic: remove both base and its pickup clone from UI
-      setReservations((prev) => prev.filter((x) => x.id !== baseKey && x.id !== `${baseKey}-pickup`));
-      setSelected(null);
 
+      // Remove drop-off + pickup from UI
+      setReservations((prev) =>
+        prev.filter((x) => x.id !== baseKey && x.id !== `${baseKey}-pickup`)
+      );
+
+      // Firestore update
       const col = r.type === 'Boarding' ? 'boardingReservations' : 'daycareReservations';
       const fsRef = doc(db, col, r.realtimeKey);
       const snap = await getDoc(fsRef);
       const data = snap.data() as ReservationFS | undefined;
+
       if (data?.petStatuses) {
         data.petStatuses[petId] = 'noShow';
         const values = Object.values(data.petStatuses);
-        const allFinalized = values.every((v) => v === 'checkedIn' || v === 'noShow');
-        if (allFinalized) await deleteDoc(fsRef);
-        else await updateDoc(fsRef, { petStatuses: data.petStatuses });
+        const allFinal = values.every(
+          (v) => v === 'checkedIn' || v === 'noShow'
+        );
+
+        if (allFinal) {
+          await deleteDoc(fsRef);
+        } else {
+          await updateDoc(fsRef, { petStatuses: data.petStatuses });
+        }
       }
     } catch (e) {
       console.error('❌ markNoShow failed:', e);
@@ -595,7 +621,6 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
       await rtdbSet(outPath, payload);
       // Optimistic UI: remove both drop-off and pickup rows
       setReservations((prev) => prev.filter((x) => x.id !== baseKey && x.id !== `${baseKey}-pickup`));
-      setSelected(null);
 
       await rtdbRemove(rtdbRef(rtdb, `upcomingReservations/${businessId}/${upKey}`));
 
@@ -618,9 +643,65 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
     }
   }, [businessId]);
 
+  // NEW — Unified decline logic (Daycare + Boarding) — mirrors iOS
+  const declineReservation = useCallback(async (r: Reservation) => {
+    try {
+      const petId = r.id.split('-').pop()!;
+      const dropKey = `${r.realtimeKey}-${petId}`;
+      const pickupKey = `${dropKey}-pickup`;
+
+      // 1️⃣ Remove RTDB upcoming reservations (drop-off)
+      await rtdbRemove(rtdbRef(rtdb,
+        `upcomingReservations/${businessId}/${dropKey}`
+      ));
+
+      // Boarding: also remove pickup clone
+      if (r.type === 'Boarding') {
+        await rtdbRemove(rtdbRef(rtdb,
+          `upcomingReservations/${businessId}/${pickupKey}`
+        ));
+      }
+
+      // 2️⃣ Firestore: update petStatuses
+      const col = r.type === 'Boarding'
+        ? 'boardingReservations'
+        : 'daycareReservations';
+      const fsRef = doc(db, col, r.realtimeKey);
+
+      const snap = await getDoc(fsRef);
+      const data = snap.data() as ReservationFS | undefined;
+      if (data?.petStatuses) {
+        data.petStatuses[petId] = 'declined';
+
+        const allFinal = Object.values(data.petStatuses).every((v) => {
+          const s = String(v).trim().toLowerCase();
+          return (
+            s === 'declined' ||
+            s === 'noshow' ||
+            s === 'checkedin' ||
+            s === 'checkedout'
+          );
+        });
+
+        if (allFinal) {
+          await deleteDoc(fsRef);
+        } else {
+          await updateDoc(fsRef, { petStatuses: data.petStatuses, status: 'declined' });
+        }
+      }
+
+      // 3️⃣ Remove from UI (drop-off + pickup if Boarding)
+      setReservations((prev) =>
+        prev.filter((x) => x.realtimeKey !== r.realtimeKey)
+      );
+    } catch (e) {
+      console.error('❌ declineReservation failed:', e);
+    }
+  }, [businessId]);
+
   /** =========================
-   * UI
-   * ========================= */
+ * UI
+ * ========================= */
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <main className="max-w-3xl mx-auto px-4 py-6">
@@ -662,14 +743,10 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                     {grouped[dateKey].map((r) => (
                       <div
                         key={r.id}
-                        className="rounded-xl border border-[color:var(--color-accent)] bg-white p-3 mb-3 cursor-pointer"
-                        onClick={() => {
-                          setSelected(r);
-                          if (r.isPickup) setShowPickupDialog(true);
-                          else setShowActionDialog(true);
-                        }}
+                        className="rounded-xl border border-[color:var(--color-accent)] bg-white p-3 mb-3"
                       >
-                        <div className="flex items-center gap-2">
+
+                        <div className="flex items-center gap-2 mb-1">
                           <div className="font-semibold">🐶 {r.dogName}</div>
 
                           {isIntact(r) && (
@@ -678,7 +755,7 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                             </span>
                           )}
 
-                          {hasMedications(r) && <span title={t('medications_label')}>💊</span>}
+                          {hasMedications(r) && <span>💊</span>}
 
                           {r.isAssessment && (
                             <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 text-[10px] font-bold">
@@ -687,13 +764,9 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                           )}
                         </div>
 
-                        <div className="text-[13px] text-gray-700 mt-1">
-                          <div>
-                            <strong>{t('owner_label')}:</strong> {r.ownerName}
-                          </div>
-                          <div>
-                            <strong>{t('type_label')}:</strong> {r.type}
-                          </div>
+                        <div className="text-[13px] text-gray-700">
+                          <div><strong>{t('owner_label')}:</strong> {r.ownerName}</div>
+                          <div><strong>{t('type_label')}:</strong> {r.type}</div>
 
                           {r.type === 'Boarding' ? (
                             <>
@@ -704,6 +777,7 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                                   ? ` (${r.boardingCheckInWindow})`
                                   : ''}
                               </div>
+
                               {r.boardingCheckOutDate && (
                                 <div>
                                   <strong>{t('check_out_label')}:</strong>{' '}
@@ -713,6 +787,7 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                                     : ''}
                                 </div>
                               )}
+
                               {typeof r.nights === 'number' && (
                                 <div>
                                   <strong>{t('nights_label')}:</strong> {r.nights}
@@ -740,11 +815,109 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                             </div>
                           )}
 
-                          <div className="text-gray-500 text-[12px] mt-1">
+                          <div className="text-gray-500 text-[12px] mt-1 mb-3">
                             <strong>{t('status_label')}:</strong>{' '}
                             {r.status.charAt(0).toUpperCase() + r.status.slice(1)}
                           </div>
                         </div>
+
+                        {!r.isPickup && (
+                          <>
+                            {(r.type === 'Daycare' && requireDaycareReservationApproval) ||
+                              (r.type === 'Boarding' && requireBoardingReservationApproval) ? (
+                              <>
+                                {r.status.toLowerCase() === 'declined' && (
+                                  <p className="text-[12px] text-red-600 mb-2">
+                                    This reservation has been declined.
+                                  </p>
+                                )}
+
+                                {acknowledged.has(r.id) && r.status.toLowerCase() !== 'declined' && (
+                                  <p className="text-[12px] text-green-700 mb-2">
+                                    Approved. You may now check in this dog.
+                                  </p>
+                                )}
+
+                                {!acknowledged.has(r.id) && r.status.toLowerCase() !== 'declined' && (
+                                  <>
+                                    <button
+                                      className="w-full px-4 py-2 rounded bg-green-600 hover:bg-green-500 text-white text-sm mb-2"
+                                      onClick={() =>
+                                        setConfirmAction({ type: 'approve', reservation: r })
+                                      }
+                                    >
+                                      Approve
+                                    </button>
+
+                                    <button
+                                      className="w-full px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white text-sm mb-3"
+                                      onClick={() =>
+                                        setConfirmAction({ type: 'decline', reservation: r })
+                                      }
+                                    >
+                                      Decline
+                                    </button>
+                                  </>
+                                )}
+                              </>
+                            ) : null}
+                          </>
+                        )}
+
+                        {/* PICKUP ROW — Check Out ONLY */}
+                        {r.isPickup && r.type === 'Boarding' && (
+                          <button
+                            className="w-full px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white text-sm mb-2"
+                            onClick={() => setConfirmAction({ type: 'checkout', reservation: r })}
+                          >
+                            {t('check_out_button')}
+                          </button>
+                        )}
+
+                        {/* DROP-OFF ROW — Check In / No Show */}
+                        {!r.isPickup && (
+                          <>
+                            <button
+                              className="w-full px-4 py-2 rounded bg-green-700 hover:bg-green-600 text-white text-sm mb-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                              disabled={
+                                (
+                                  r.type === 'Daycare' &&
+                                  requireDaycareReservationApproval &&
+                                  !acknowledged.has(r.id)
+                                ) ||
+                                (
+                                  r.type === 'Boarding' &&
+                                  requireBoardingReservationApproval &&
+                                  !acknowledged.has(r.id)
+                                ) ||
+                                r.status.toLowerCase() === 'declined'
+                              }
+                              onClick={() => setConfirmAction({ type: 'checkin', reservation: r })}
+                            >
+                              {t('check_in_button')}
+                            </button>
+
+                            <button
+                              className="w-full px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white text-sm mb-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                              disabled={
+                                (
+                                  r.type === 'Daycare' &&
+                                  requireDaycareReservationApproval &&
+                                  !acknowledged.has(r.id)
+                                ) ||
+                                (
+                                  r.type === 'Boarding' &&
+                                  requireBoardingReservationApproval &&
+                                  !acknowledged.has(r.id)
+                                ) ||
+                                r.status.toLowerCase() === 'declined'
+                              }
+                              onClick={() => setConfirmAction({ type: 'noshow', reservation: r })}
+                            >
+                              {t('mark_no_show_button')}
+                            </button>
+                          </>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -755,124 +928,76 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
         )}
       </main>
 
-      {/* Drop-off actions dialog */}
-      {showActionDialog && selected && !selected.isPickup && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-          <div className="bg-white rounded-xl shadow-md w-full max-w-sm p-5 space-y-3">
-            <h2 className="text-lg font-semibold">{t('reservation_options_title')}</h2>
-            <div className="flex flex-col gap-2">
-              <button
-                className="px-4 py-2 rounded bg-green-700 hover:bg-green-600 text-white text-sm"
-                onClick={() => { setShowActionDialog(false); setConfirmCheckIn(true); }}
-              >
-                {t('check_in_button')}
-              </button>
-              <button
-                className="px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white text-sm"
-                onClick={() => { setShowActionDialog(false); setConfirmNoShow(true); }}
-              >
-                {t('mark_no_show_button')}
-              </button>
-              <button
-                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-sm"
-                onClick={() => { setShowActionDialog(false); setSelected(null); }}
-              >
-                {t('cancel_button')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Pickup actions dialog */}
-      {showPickupDialog && selected?.isPickup && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-          <div className="bg-white rounded-xl shadow-md w-full max-w-sm p-5 space-y-3">
-            <h2 className="text-lg font-semibold">{t('pickup_options_title')}</h2>
-            <div className="flex flex-col gap-2">
-              <button
-                className="px-4 py-2 rounded bg-green-700 hover:bg-green-600 text-white text-sm"
-                onClick={() => { setShowPickupDialog(false); setConfirmCheckOut(true); }}
-              >
-                {t('check_out_button')}
-              </button>
-              <button
-                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-sm"
-                onClick={() => { setShowPickupDialog(false); setSelected(null); }}
-              >
-                {t('cancel_button')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Confirmations */}
-      {confirmCheckIn && selected && (
+      {/* ============================================================
+          CONFIRMATION MODAL (Approve / Decline / Check In / No Show / Check Out)
+      ============================================================ */}
+      {confirmAction && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-md w-full max-w-sm p-5 space-y-4">
-            <h3 className="text-lg font-semibold">{t('check_in_alert_title')}</h3>
+
+            <h3 className="text-lg font-semibold">
+              {confirmAction.type === 'approve' && 'Approve Reservation?'}
+              {confirmAction.type === 'decline' && 'Decline Reservation?'}
+              {confirmAction.type === 'checkin' && t('check_in_alert_title')}
+              {confirmAction.type === 'noshow' && t('no_show_alert_title')}
+              {confirmAction.type === 'checkout' && t('check_out_alert_title')}
+            </h3>
+
             <div className="flex justify-end gap-2">
               <button
                 className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-sm"
-                onClick={() => setConfirmCheckIn(false)}
+                onClick={() => setConfirmAction(null)}
               >
                 {t('no_button')}
               </button>
+
               <button
                 className="px-4 py-2 rounded bg-green-700 hover:bg-green-600 text-white text-sm"
-                onClick={async () => { setConfirmCheckIn(false); await checkIn(selected); }}
+                onClick={async () => {
+                  const action = confirmAction;
+                  setConfirmAction(null);
+
+                  if (!action) return;
+
+                  if (action.type === 'approve') {
+                    // UI-only approval
+                    setAcknowledged(prev => {
+                      const next = new Set(prev);
+                      next.add(action.reservation.id);
+                      return next;
+                    });
+                    return;
+                  }
+
+                  if (action.type === 'decline') {
+                    await declineReservation(action.reservation);
+                    return;
+                  }
+
+                  if (action.type === 'checkin') {
+                    await checkIn(action.reservation);
+                    return;
+                  }
+
+                  if (action.type === 'noshow') {
+                    await markNoShow(action.reservation);
+                    return;
+                  }
+
+                  if (action.type === 'checkout') {
+                    await checkOut(action.reservation);
+                    return;
+                  }
+                }}
               >
                 {t('yes_button')}
               </button>
             </div>
+
           </div>
         </div>
       )}
 
-      {confirmNoShow && selected && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-          <div className="bg-white rounded-xl shadow-md w-full max-w-sm p-5 space-y-4">
-            <h3 className="text-lg font-semibold">{t('no_show_alert_title')}</h3>
-            <div className="flex justify-end gap-2">
-              <button
-                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-sm"
-                onClick={() => setConfirmNoShow(false)}
-              >
-                {t('no_button')}
-              </button>
-              <button
-                className="px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white text-sm"
-                onClick={async () => { setConfirmNoShow(false); await markNoShow(selected); }}
-              >
-                {t('yes_button')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {confirmCheckOut && selected && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-          <div className="bg-white rounded-xl shadow-md w-full max-w-sm p-5 space-y-4">
-            <h3 className="text-lg font-semibold">{t('check_out_alert_title')}</h3>
-            <div className="flex justify-end gap-2">
-              <button
-                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-sm"
-                onClick={() => setConfirmCheckOut(false)}
-              >
-                {t('no_button')}
-              </button>
-              <button
-                className="px-4 py-2 rounded bg-green-700 hover:bg-green-600 text-white text-sm"
-                onClick={async () => { setConfirmCheckOut(false); await checkOut(selected); }}
-              >
-                {t('yes_button')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
