@@ -16,7 +16,10 @@ import {
   doc,
   updateDoc,
   deleteDoc,
+  Timestamp,
+  serverTimestamp,
 } from 'firebase/firestore';
+
 import {
   getDatabase,
   ref as rtdbRef,
@@ -183,6 +186,49 @@ const startMinute = (r: Reservation): number => {
   return minuteFromWindow(r.arrivalWindow);
 };
 
+// NEW — nights helper (mirrors iOS nightsBetween)
+const nightsBetween = (startISO: string, endISO: string): number => {
+  const toDate = (iso: string) => new Date(`${iso}T00:00:00Z`);
+  const start = toDate(startISO);
+  const end = toDate(endISO);
+  const diffMs = end.getTime() - start.getTime();
+  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+  return Math.max(1, diffDays || 1);
+};
+
+// NEW — convert minutes since midnight -> "HH:MM" (24h) for <input type="time">
+const minutesToHtmlTime = (mins: number): string => {
+  let h = Math.floor(mins / 60);
+  let m = mins % 60;
+  if (h < 0) h = 0;
+  if (h > 23) h = 23;
+  if (m < 0) m = 0;
+  if (m > 59) m = 59;
+  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+};
+
+// NEW — map an arrival/check-in window string to HTML "HH:MM" time
+const windowToHtmlTime = (window?: string | null): string => {
+  const mins = minuteFromWindow(window);
+  return minutesToHtmlTime(mins);
+};
+
+// NEW — convert "HH:MM" (24h) to display window "h:mm AM/PM"
+const htmlTimeToWindow = (time: string): string => {
+  // expect "HH:MM"
+  const [hhStr, mmStr] = time.split(':');
+  const hh = Number(hhStr);
+  const mm = Number(mmStr);
+
+  if (Number.isNaN(hh) || Number.isNaN(mm)) return time;
+
+  const ampm = hh >= 12 ? 'PM' : 'AM';
+  let h12 = hh % 12;
+  if (h12 === 0) h12 = 12;
+
+  return `${h12}:${mm.toString().padStart(2, '0')} ${ampm}`;
+};
+
 // Keep pickups after drop-offs if times tie
 const pickupBit = (r: Reservation) => (r.isPickup ? 1 : 0);
 
@@ -212,6 +258,17 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
   const [confirmAction, setConfirmAction] = useState<null | {
     type: 'approve' | 'decline' | 'checkin' | 'noshow' | 'checkout',
     reservation: Reservation
+  }>(null);
+
+  // NEW — Edit appointment modal state
+  const [editModal, setEditModal] = useState<null | {
+    reservation: Reservation;
+    checkInDate: string;
+    checkOutDate: string;
+    checkInTime: string;
+    checkOutTime: string;
+    applyToAllPets: boolean;
+    checkInLocked: boolean;
   }>(null);
 
   // RTDB listener handle
@@ -369,8 +426,13 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
           const hasPetId = child.key.includes('-');
           if (!hasPetId) return;
 
-          // 1) Drop-off row (hide once finalized)
-          if (cin && !(statusLower === 'checkedin' || statusLower === 'checkedout' || statusLower === 'noshow')) {
+          // Boarding drop-off row — ONLY if not checkedin/checkedout/noshow
+          if (
+            cin &&
+            statusLower !== 'checkedin' &&
+            statusLower !== 'checkedout' &&
+            statusLower !== 'noshow'
+          ) {
             list.push({
               id: child.key,
               realtimeKey,
@@ -395,8 +457,12 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
             });
           }
 
-          // 2) Pickup clone (hide if noshow or already checkedout)
-          if (cout && statusLower !== 'noshow' && statusLower !== 'checkedout') {
+          // Boarding pickup row — ONLY if not noshow/checkedout
+          if (
+            cout &&
+            statusLower !== 'noshow' &&
+            statusLower !== 'checkedout'
+          ) {
             list.push({
               id: `${child.key}-pickup`,
               realtimeKey,
@@ -420,6 +486,7 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
               isAssessment,
             });
           }
+
         } else {
           // Daycare: requires date + arrivalWindow
           const date = (val['date'] as string) || '';
@@ -643,6 +710,161 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
     }
   }, [businessId]);
 
+  /** =========================
+ * Actions: Change Dates/Times
+ * ========================= */
+
+  const changeBoardingDates = useCallback(async (opts: {
+    reservation: Reservation;
+    newCheckInISO: string | null;
+    newCheckOutISO: string;
+    newCheckInWindow: string | null;
+    newCheckOutWindow: string;
+    applyToAllPets: boolean;
+  }) => {
+    const { reservation, newCheckInISO, newCheckOutISO, newCheckInWindow, newCheckOutWindow, applyToAllPets } = opts;
+    if (!businessId || !isValidFirebaseKey(businessId)) return;
+    if (reservation.type !== 'Boarding') return;
+
+    const lockedInISO = reservation.boardingCheckInDate || reservation.groupDateKey;
+    const effectiveInISO = newCheckInISO || lockedInISO;
+    const effectiveInWindow = newCheckInWindow || reservation.boardingCheckInWindow || null;
+
+    const end = newCheckOutISO;
+    const newNights = nightsBetween(effectiveInISO, end);
+
+    const keysToUpdate = new Set<string>();
+    if (applyToAllPets) {
+      reservations.forEach((x) => {
+        if (x.realtimeKey === reservation.realtimeKey && x.type === 'Boarding') {
+          const baseId = x.id.endsWith('-pickup') ? x.id.slice(0, -7) : x.id;
+          keysToUpdate.add(baseId);
+        }
+      });
+    } else {
+      const baseId = reservation.id.endsWith('-pickup') ? reservation.id.slice(0, -7) : reservation.id;
+      keysToUpdate.add(baseId);
+    }
+
+    const updates: Record<string, unknown> = {};
+    keysToUpdate.forEach((baseKey) => {
+      if (newCheckInISO) updates[`upcomingReservations/${businessId}/${baseKey}/checkInDate`] = newCheckInISO;
+      if (newCheckInWindow) updates[`upcomingReservations/${businessId}/${baseKey}/checkInWindow`] = newCheckInWindow;
+      updates[`upcomingReservations/${businessId}/${baseKey}/checkOutDate`] = end;
+      updates[`upcomingReservations/${businessId}/${baseKey}/checkOutWindow`] = newCheckOutWindow;
+      updates[`upcomingReservations/${businessId}/${baseKey}/nights`] = newNights;
+    });
+
+    try {
+      await rtdbUpdate(rtdbRef(rtdb), updates);
+
+      const fsRef = doc(db, 'boardingReservations', reservation.realtimeKey);
+      await updateDoc(fsRef, {
+        checkInDate: Timestamp.fromDate(new Date(`${effectiveInISO}T00:00:00Z`)),
+        checkOutDate: Timestamp.fromDate(new Date(`${end}T00:00:00Z`)),
+        checkInDateBusinessTZ: effectiveInISO,
+        checkOutDateBusinessTZ: end,
+        checkOutWindow: newCheckOutWindow,
+        nights: newNights,
+        modifiedAt: serverTimestamp(),
+        ...(newCheckInWindow ? { checkInWindow: newCheckInWindow } : {}),
+      });
+
+      setReservations((prev) => {
+        const updated = prev.map((x) => {
+          if (x.type !== 'Boarding' || x.realtimeKey !== reservation.realtimeKey) return x;
+
+          const baseId = x.id.endsWith('-pickup') ? x.id.slice(0, -7) : x.id;
+          if (!keysToUpdate.has(baseId)) return x;
+
+          const updatedIn = newCheckInISO ?? x.boardingCheckInDate ?? effectiveInISO;
+          const updatedOut = end;
+          const updatedInWin = newCheckInWindow ?? x.boardingCheckInWindow ?? effectiveInWindow;
+          const updatedOutWin = newCheckOutWindow;
+
+          return {
+            ...x,
+            groupDateKey: x.isPickup ? updatedOut : updatedIn,
+            boardingCheckInDate: updatedIn,
+            boardingCheckOutDate: updatedOut,
+            boardingCheckInWindow: updatedInWin,
+            boardingCheckOutWindow: updatedOutWin,
+            nights: newNights,
+          };
+        });
+
+        return [...updated].sort((a, b) => {
+          if (a.groupDateKey !== b.groupDateKey) return a.groupDateKey < b.groupDateKey ? -1 : 1;
+          const la = startMinute(a), lb = startMinute(b);
+          if (la !== lb) return la - lb;
+          const pa = pickupBit(a) - pickupBit(b);
+          if (pa !== 0) return pa;
+          const oa = a.ownerName.toLowerCase();
+          const ob = b.ownerName.toLowerCase();
+          if (oa !== ob) return oa < ob ? -1 : 1;
+          const da = a.dogName.toLowerCase(), db = b.dogName.toLowerCase();
+          return da < db ? -1 : da > db ? 1 : 0;
+        });
+      });
+
+    } catch (e) {
+      console.error('❌ changeBoardingDates failed:', e);
+    }
+  }, [businessId, reservations]);
+
+  const changeDaycareDate = useCallback(async (opts: {
+    reservation: Reservation;
+    newDateISO: string;
+    newWindow: string;
+  }) => {
+    const { reservation, newDateISO, newWindow } = opts;
+    if (!businessId || !isValidFirebaseKey(businessId)) return;
+    if (reservation.type !== 'Daycare') return;
+
+    try {
+      await rtdbUpdate(
+        rtdbRef(rtdb, `upcomingReservations/${businessId}/${reservation.id}`),
+        { date: newDateISO, arrivalWindow: newWindow }
+      );
+
+      await updateDoc(doc(db, 'daycareReservations', reservation.realtimeKey), {
+        date: newDateISO,
+        arrivalWindow: newWindow,
+        dateBusinessTZ: newDateISO,
+        modifiedAt: serverTimestamp(),
+      });
+
+      setReservations((prev) =>
+        prev
+          .map((x) =>
+            x.id === reservation.id
+              ? {
+                ...x,
+                groupDateKey: newDateISO,
+                daycareDate: newDateISO,
+                arrivalWindow: newWindow,
+              }
+              : x
+          )
+          .sort((a, b) => {
+            if (a.groupDateKey !== b.groupDateKey) return a.groupDateKey < b.groupDateKey ? -1 : 1;
+            const la = startMinute(a), lb = startMinute(b);
+            if (la !== lb) return la - lb;
+            const pa = pickupBit(a) - pickupBit(b);
+            if (pa !== 0) return pa;
+            const oa = a.ownerName.toLowerCase();
+            const ob = b.ownerName.toLowerCase();
+            if (oa !== ob) return oa < ob ? -1 : 1;
+            const da = a.dogName.toLowerCase();
+            const db = b.dogName.toLowerCase();
+            return da < db ? -1 : da > db ? 1 : 0;
+          })
+      );
+    } catch (e) {
+      console.error('❌ changeDaycareDate failed:', e);
+    }
+  }, [businessId]);
+
   // NEW — Unified decline logic (Daycare + Boarding) — mirrors iOS
   const declineReservation = useCallback(async (r: Reservation) => {
     try {
@@ -721,6 +943,7 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
           <div className="space-y-4">
             {Object.keys(grouped).sort().map((dateKey) => (
               <section key={dateKey} className="rounded-xl bg-white/70 shadow-sm">
+                {/* DATE HEADER */}
                 <button
                   className="w-full flex items-center justify-between px-4 py-3"
                   onClick={() => {
@@ -735,191 +958,254 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                   <span className="text-base font-semibold text-[color:var(--color-foreground)]">
                     {formatISOToLong(dateKey)}
                   </span>
-                  <span className="text-gray-500">{expandedDates.has(dateKey) ? '▴' : '▾'}</span>
+                  <span className="text-gray-500">
+                    {expandedDates.has(dateKey) ? '▴' : '▾'}
+                  </span>
                 </button>
 
                 {expandedDates.has(dateKey) && (
                   <div className="px-3 pb-3">
-                    {grouped[dateKey].map((r) => (
-                      <div
-                        key={r.id}
-                        className="rounded-xl border border-[color:var(--color-accent)] bg-white p-3 mb-3"
-                      >
+                    {grouped[dateKey].map((r) => {
+                      const statusLower = r.status.toLowerCase();
 
-                        <div className="flex items-center gap-2 mb-1">
-                          <div className="font-semibold">🐶 {r.dogName}</div>
+                      const needsApproval =
+                        (r.type === 'Daycare' && requireDaycareReservationApproval) ||
+                        (r.type === 'Boarding' && requireBoardingReservationApproval);
 
-                          {isIntact(r) && (
-                            <span className="text-red-600 text-[11px] font-bold">
-                              {t('intact_label')}
-                            </span>
-                          )}
+                      const isAcknowledged = acknowledged.has(r.id);
+                      const disabledByApproval = needsApproval && !isAcknowledged;
 
-                          {hasMedications(r) && <span>💊</span>}
+                      return (
+                        <div
+                          key={r.id}
+                          className="rounded-xl border border-[color:var(--color-accent)] bg-white p-3 mb-3"
+                        >
+                          {/* HEADER */}
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="font-semibold">🐶 {r.dogName}</div>
 
-                          {r.isAssessment && (
-                            <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 text-[10px] font-bold">
-                              {t('assessment_badge_short')}
-                            </span>
-                          )}
-                        </div>
+                            {isIntact(r) && (
+                              <span className="text-red-600 text-[11px] font-bold">
+                                {t('intact_label')}
+                              </span>
+                            )}
 
-                        <div className="text-[13px] text-gray-700">
-                          <div><strong>{t('owner_label')}:</strong> {r.ownerName}</div>
-                          <div><strong>{t('type_label')}:</strong> {r.type}</div>
+                            {hasMedications(r) && <span>💊</span>}
 
-                          {r.type === 'Boarding' ? (
-                            <>
-                              <div>
-                                <strong>{t('check_in_label')}:</strong>{' '}
-                                {formatISOToLong(r.boardingCheckInDate || null)}
-                                {r.boardingCheckInWindow?.trim()
-                                  ? ` (${r.boardingCheckInWindow})`
-                                  : ''}
-                              </div>
+                            {r.isAssessment && (
+                              <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 text-[10px] font-bold">
+                                {t('assessment_badge_short')}
+                              </span>
+                            )}
+                          </div>
 
-                              {r.boardingCheckOutDate && (
+                          {/* DETAILS */}
+                          <div className="text-[13px] text-gray-700">
+                            <div>
+                              <strong>{t('owner_label')}:</strong> {r.ownerName}
+                            </div>
+                            <div>
+                              <strong>{t('type_label')}:</strong> {r.type}
+                            </div>
+
+                            {r.type === 'Boarding' ? (
+                              <>
                                 <div>
-                                  <strong>{t('check_out_label')}:</strong>{' '}
-                                  {formatISOToLong(r.boardingCheckOutDate)}
-                                  {r.boardingCheckOutWindow?.trim()
-                                    ? ` (${r.boardingCheckOutWindow})`
+                                  <strong>{t('check_in_label')}:</strong>{' '}
+                                  {formatISOToLong(r.boardingCheckInDate || null)}
+                                  {r.boardingCheckInWindow?.trim()
+                                    ? ` (${r.boardingCheckInWindow})`
                                     : ''}
                                 </div>
-                              )}
 
-                              {typeof r.nights === 'number' && (
-                                <div>
-                                  <strong>{t('nights_label')}:</strong> {r.nights}
-                                </div>
-                              )}
-                            </>
-                          ) : (
-                            <div>
-                              <strong>{t('arrival_label')}:</strong>{' '}
-                              {r.arrivalWindow || '—'}
-                            </div>
-                          )}
-
-                          {r.groomingAddOns?.length ? (
-                            <div className="text-gray-600 text-[12px] mt-1">
-                              🧼 <strong>{t('grooming_label')}:</strong>{' '}
-                              {r.groomingAddOns.join(', ')}
-                            </div>
-                          ) : null}
-
-                          {hasMedications(r) && r.medicationDetails?.trim() && (
-                            <div className="text-gray-600 text-[12px] mt-1">
-                              <strong>{t('medications_label')}:</strong>{' '}
-                              {r.medicationDetails}
-                            </div>
-                          )}
-
-                          <div className="text-gray-500 text-[12px] mt-1 mb-3">
-                            <strong>{t('status_label')}:</strong>{' '}
-                            {r.status.charAt(0).toUpperCase() + r.status.slice(1)}
-                          </div>
-                        </div>
-
-                        {!r.isPickup && (
-                          <>
-                            {(r.type === 'Daycare' && requireDaycareReservationApproval) ||
-                              (r.type === 'Boarding' && requireBoardingReservationApproval) ? (
-                              <>
-                                {r.status.toLowerCase() === 'declined' && (
-                                  <p className="text-[12px] text-red-600 mb-2">
-                                    This reservation has been declined.
-                                  </p>
+                                {r.boardingCheckOutDate && (
+                                  <div>
+                                    <strong>{t('check_out_label')}:</strong>{' '}
+                                    {formatISOToLong(r.boardingCheckOutDate)}
+                                    {r.boardingCheckOutWindow?.trim()
+                                      ? ` (${r.boardingCheckOutWindow})`
+                                      : ''}
+                                  </div>
                                 )}
 
-                                {acknowledged.has(r.id) && r.status.toLowerCase() !== 'declined' && (
-                                  <p className="text-[12px] text-green-700 mb-2">
-                                    Approved. You may now check in this dog.
-                                  </p>
-                                )}
-
-                                {!acknowledged.has(r.id) && r.status.toLowerCase() !== 'declined' && (
-                                  <>
-                                    <button
-                                      className="w-full px-4 py-2 rounded bg-green-600 hover:bg-green-500 text-white text-sm mb-2"
-                                      onClick={() =>
-                                        setConfirmAction({ type: 'approve', reservation: r })
-                                      }
-                                    >
-                                      Approve
-                                    </button>
-
-                                    <button
-                                      className="w-full px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white text-sm mb-3"
-                                      onClick={() =>
-                                        setConfirmAction({ type: 'decline', reservation: r })
-                                      }
-                                    >
-                                      Decline
-                                    </button>
-                                  </>
+                                {typeof r.nights === 'number' && (
+                                  <div>
+                                    <strong>{t('nights_label')}:</strong> {r.nights}
+                                  </div>
                                 )}
                               </>
+                            ) : (
+                              <div>
+                                <strong>{t('arrival_label')}:</strong>{' '}
+                                {r.arrivalWindow || '—'}
+                              </div>
+                            )}
+
+                            {r.groomingAddOns?.length ? (
+                              <div className="text-gray-600 text-[12px] mt-1">
+                                🧼 <strong>{t('grooming_label')}:</strong>{' '}
+                                {r.groomingAddOns.join(', ')}
+                              </div>
                             ) : null}
-                          </>
-                        )}
 
-                        {/* PICKUP ROW — Check Out ONLY */}
-                        {r.isPickup && r.type === 'Boarding' && (
+                            {hasMedications(r) && r.medicationDetails?.trim() && (
+                              <div className="text-gray-600 text-[12px] mt-1">
+                                <strong>{t('medications_label')}:</strong>{' '}
+                                {r.medicationDetails}
+                              </div>
+                            )}
+
+                            <div className="text-gray-500 text-[12px] mt-1 mb-3">
+                              <strong>{t('status_label')}:</strong>{' '}
+                              {r.status.charAt(0).toUpperCase() + r.status.slice(1)}
+                            </div>
+                          </div>
+
+                          {/* ================================
+                       BUTTONS — MATCH iOS EXACTLY
+                       ================================ */}
+
+                          {/* DROP-OFF: ALWAYS show Check In + No Show if not pickup */}
+                          {!r.isPickup && (
+                            <>
+                              <button
+                                className="w-full px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 text-white text-sm mb-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                                disabled={disabledByApproval}
+                                onClick={() =>
+                                  setConfirmAction({ type: 'checkin', reservation: r })
+                                }
+                              >
+                                {t('check_in_button')}
+                              </button>
+
+                              <button
+                                className="w-full px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white text-sm mb-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                                disabled={disabledByApproval}
+                                onClick={() =>
+                                  setConfirmAction({ type: 'noshow', reservation: r })
+                                }
+                              >
+                                {t('mark_no_show_button')}
+                              </button>
+                            </>
+                          )}
+
+                          {/* CHANGE APPOINTMENT TIME — ALWAYS for ALL reservations */}
                           <button
-                            className="w-full px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white text-sm mb-2"
-                            onClick={() => setConfirmAction({ type: 'checkout', reservation: r })}
+                            className={`
+                        w-full px-4 py-2 rounded text-white text-sm mb-2
+                        ${disabledByApproval
+                                ? 'bg-orange-300 cursor-not-allowed'
+                                : 'bg-orange-500 hover:bg-orange-400'}
+                      `}
+                            disabled={disabledByApproval}
+                            onClick={() => {
+                              const checkInDate =
+                                r.type === 'Boarding'
+                                  ? (r.boardingCheckInDate || r.groupDateKey)
+                                  : (r.daycareDate || r.groupDateKey);
+
+                              const checkOutDate =
+                                r.type === 'Boarding'
+                                  ? (r.boardingCheckOutDate || checkInDate)
+                                  : checkInDate;
+
+                              const checkInTime =
+                                r.type === 'Boarding'
+                                  ? windowToHtmlTime(r.boardingCheckInWindow || undefined)
+                                  : windowToHtmlTime(r.arrivalWindow || undefined);
+
+                              const checkOutTime =
+                                r.type === 'Boarding'
+                                  ? windowToHtmlTime(r.boardingCheckOutWindow || undefined)
+                                  : checkInTime;
+
+                              const checkInLocked =
+                                r.status.toLowerCase() === 'checkedin' ||
+                                r.status.toLowerCase() === 'checkedout';
+
+                              setEditModal({
+                                reservation: r,
+                                checkInDate,
+                                checkOutDate,
+                                checkInTime,
+                                checkOutTime,
+                                applyToAllPets: r.type === 'Boarding',
+                                checkInLocked,
+                              });
+                            }}
                           >
-                            {t('check_out_button')}
+                            {t('change_appointment_time_button')}
                           </button>
-                        )}
 
-                        {/* DROP-OFF ROW — Check In / No Show */}
-                        {!r.isPickup && (
-                          <>
-                            <button
-                              className="w-full px-4 py-2 rounded bg-green-700 hover:bg-green-600 text-white text-sm mb-2 disabled:opacity-40 disabled:cursor-not-allowed"
-                              disabled={
-                                (
-                                  r.type === 'Daycare' &&
-                                  requireDaycareReservationApproval &&
-                                  !acknowledged.has(r.id)
-                                ) ||
-                                (
-                                  r.type === 'Boarding' &&
-                                  requireBoardingReservationApproval &&
-                                  !acknowledged.has(r.id)
-                                ) ||
-                                r.status.toLowerCase() === 'declined'
-                              }
-                              onClick={() => setConfirmAction({ type: 'checkin', reservation: r })}
-                            >
-                              {t('check_in_button')}
-                            </button>
+                          {/* APPROVAL UI (unchanged) */}
+                          {!r.isPickup && (
+                            <>
+                              {(r.type === 'Daycare' &&
+                                requireDaycareReservationApproval) ||
+                                (r.type === 'Boarding' &&
+                                  requireBoardingReservationApproval) ? (
+                                <>
+                                  {statusLower === 'declined' && (
+                                    <p className="text-[12px] text-red-600 mb-2">
+                                      This reservation has been declined.
+                                    </p>
+                                  )}
 
+                                  {isAcknowledged &&
+                                    statusLower !== 'declined' && (
+                                      <p className="text-[12px] text-green-700 mb-2">
+                                        Approved. You may now check in this dog.
+                                      </p>
+                                    )}
+
+                                  {!isAcknowledged &&
+                                    statusLower !== 'declined' && (
+                                      <>
+                                        <button
+                                          className="w-full px-4 py-2 rounded bg-green-600 hover:bg-green-500 text-white text-sm mb-2"
+                                          onClick={() =>
+                                            setConfirmAction({
+                                              type: 'approve',
+                                              reservation: r,
+                                            })
+                                          }
+                                        >
+                                          Approve
+                                        </button>
+
+                                        <button
+                                          className="w-full px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white text-sm mb-3"
+                                          onClick={() =>
+                                            setConfirmAction({
+                                              type: 'decline',
+                                              reservation: r,
+                                            })
+                                          }
+                                        >
+                                          Decline
+                                        </button>
+                                      </>
+                                    )}
+                                </>
+                              ) : null}
+                            </>
+                          )}
+
+                          {/* PICKUP ROW — Check Out ALWAYS for boarding pickup */}
+                          {r.isPickup && r.type === 'Boarding' && (
                             <button
-                              className="w-full px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white text-sm mb-2 disabled:opacity-40 disabled:cursor-not-allowed"
-                              disabled={
-                                (
-                                  r.type === 'Daycare' &&
-                                  requireDaycareReservationApproval &&
-                                  !acknowledged.has(r.id)
-                                ) ||
-                                (
-                                  r.type === 'Boarding' &&
-                                  requireBoardingReservationApproval &&
-                                  !acknowledged.has(r.id)
-                                ) ||
-                                r.status.toLowerCase() === 'declined'
+                              className="w-full px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white text-sm mb-2"
+                              onClick={() =>
+                                setConfirmAction({ type: 'checkout', reservation: r })
                               }
-                              onClick={() => setConfirmAction({ type: 'noshow', reservation: r })}
                             >
-                              {t('mark_no_show_button')}
+                              {t('check_out_button')}
                             </button>
-                          </>
-                        )}
-                      </div>
-                    ))}
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </section>
@@ -927,6 +1213,154 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
           </div>
         )}
       </main>
+
+      {/* ============================================================
+      EDIT APPOINTMENT MODAL (Boarding + Daycare)
+      ============================================================ */}
+      {editModal && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+          <div className="bg-white rounded-xl shadow-md w-full max-w-md p-5 space-y-4">
+
+            <h3 className="text-lg font-semibold">
+              {t('change_appointment_time_button')}
+            </h3>
+
+            <div className="text-sm border rounded-lg p-3 bg-gray-50 space-y-1">
+              <div>🐶 <strong>{editModal.reservation.dogName}</strong></div>
+              <div><strong>{t('owner_label')}:</strong> {editModal.reservation.ownerName}</div>
+              <div><strong>{t('status_label')}:</strong> {editModal.reservation.status}</div>
+            </div>
+
+            {/* DATES */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-semibold text-gray-500 uppercase">
+                {t('change_dates_title')}
+              </h4>
+
+              {editModal.reservation.type === 'Boarding' && (
+                <label className="flex items-center justify-between">
+                  <span>{t('check_in_label')}</span>
+                  <input
+                    type="date"
+                    className="border rounded px-2 py-1"
+                    disabled={editModal.checkInLocked}
+                    value={editModal.checkInDate}
+                    onChange={(e) =>
+                      setEditModal((p) => p ? { ...p, checkInDate: e.target.value } : p)
+                    }
+                  />
+                </label>
+              )}
+
+              <label className="flex items-center justify-between">
+                <span>
+                  {editModal.reservation.type === 'Boarding'
+                    ? t('check_out_label')
+                    : t('check_in_label')}
+                </span>
+                <input
+                  type="date"
+                  className="border rounded px-2 py-1"
+                  value={editModal.checkOutDate}
+                  onChange={(e) =>
+                    setEditModal((p) => p ? { ...p, checkOutDate: e.target.value } : p)
+                  }
+                />
+              </label>
+            </div>
+
+            {/* TIMES */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-semibold text-gray-500 uppercase">
+                {t('change_times_title')}
+              </h4>
+
+              <label className="flex items-center justify-between">
+                <span>{t('check_in_time_label')}</span>
+                <input
+                  type="time"
+                  className="border rounded px-2 py-1"
+                  disabled={editModal.checkInLocked}
+                  value={editModal.checkInTime}
+                  onChange={(e) =>
+                    setEditModal((p) => p ? { ...p, checkInTime: e.target.value } : p)
+                  }
+                />
+              </label>
+
+              {editModal.reservation.type === 'Boarding' && (
+                <label className="flex items-center justify-between">
+                  <span>{t('check_out_time_label')}</span>
+                  <input
+                    type="time"
+                    className="border rounded px-2 py-1"
+                    value={editModal.checkOutTime}
+                    onChange={(e) =>
+                      setEditModal((p) =>
+                        p ? { ...p, checkOutTime: e.target.value } : p
+                      )
+                    }
+                  />
+                </label>
+              )}
+            </div>
+
+            {/* APPLY TO ALL PETS */}
+            {editModal.reservation.type === 'Boarding' && (
+              <label className="flex items-center justify-between">
+                <span>{t('apply_to_all_pets_toggle')}</span>
+                <input
+                  type="checkbox"
+                  checked={editModal.applyToAllPets}
+                  onChange={(e) =>
+                    setEditModal((p) =>
+                      p ? { ...p, applyToAllPets: e.target.checked } : p
+                    )
+                  }
+                />
+              </label>
+            )}
+
+            {/* ACTION BUTTONS */}
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+                onClick={() => setEditModal(null)}
+              >
+                {t('cancel_button')}
+              </button>
+
+              <button
+                className="px-4 py-2 rounded bg-green-700 hover:bg-green-600 text-white"
+                onClick={async () => {
+                  const r = editModal.reservation;
+
+                  if (r.type === 'Boarding') {
+                    await changeBoardingDates({
+                      reservation: r,
+                      newCheckInISO: editModal.checkInLocked ? null : editModal.checkInDate,
+                      newCheckOutISO: editModal.checkOutDate,
+                      newCheckInWindow: editModal.checkInLocked ? null : htmlTimeToWindow(editModal.checkInTime),
+                      newCheckOutWindow: htmlTimeToWindow(editModal.checkOutTime),
+                      applyToAllPets: editModal.applyToAllPets,
+                    });
+                  } else {
+                    await changeDaycareDate({
+                      reservation: r,
+                      newDateISO: editModal.checkOutDate,
+                      newWindow: htmlTimeToWindow(editModal.checkInTime),
+                    });
+                  }
+
+                  setEditModal(null);
+                }}
+              >
+                {t('save_button')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ============================================================
           CONFIRMATION MODAL (Approve / Decline / Check In / No Show / Check Out)

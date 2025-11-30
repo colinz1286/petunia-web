@@ -2,30 +2,25 @@
   "upcoming_reservations_title": "Upcoming Reservations",
   "loading_indicator": "Loading reservations...",
   "no_reservations_found": "No upcoming reservations were found.",
-
   "error_load_business": "We couldn’t load your business record.",
   "error_no_business_record": "No business record was found for this account.",
   "error_invalid_business_key": "The business identifier is invalid.",
   "error_parse_snapshot": "We couldn’t parse reservation data.",
-
   "reservation_options_title": "Reservation Options",
   "pickup_options_title": "Pickup Options",
   "check_in_button": "Check In",
   "mark_no_show_button": "Mark as No Show",
   "check_out_button": "Check Out",
   "cancel_button": "Cancel",
-
   "check_in_alert_title": "Check this dog in?",
   "no_show_alert_title": "Mark this dog as a No Show?",
   "check_out_alert_title": "Check this dog out?",
   "yes_button": "Yes",
   "no_button": "No",
-
   "unknown_dog": "Unknown Dog",
   "unknown_owner": "Unknown Owner",
   "intact_label": "INTACT",
   "assessment_badge_short": "ASSESSMENT",
-
   "owner_label": "Owner",
   "type_label": "Type",
   "check_in_label": "Check-In",
@@ -34,5 +29,12 @@
   "arrival_label": "Arrival Window",
   "grooming_label": "Grooming",
   "medications_label": "Medications",
-  "status_label": "Status"
+  "status_label": "Status",
+  "change_appointment_time_button": "Change Appointment Time",
+  "change_dates_title": "Change Dates",
+  "change_times_title": "Change Times",
+  "check_in_time_label": "Check-In Time",
+  "check_out_time_label": "Check-Out Time",
+  "apply_to_all_pets_toggle": "Apply to all pets on this booking",
+  "save_button": "Save"
 }
