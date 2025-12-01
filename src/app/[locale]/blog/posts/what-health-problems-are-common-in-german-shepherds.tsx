@@ -114,7 +114,7 @@ export default function WhatHealthProblemsAreCommonInGermanShepherds() {
           <h2 className="text-2xl font-semibold mb-3">How to Think About GSD Health (Systems, Not Surprises)</h2>
           <p className="mb-3">
             Shepherds are built to work. Their bodies and brains thrive with <strong>structured exercise, training,
-            and lean body condition</strong>. The same drive and athleticism, however, magnify the consequences of
+              and lean body condition</strong>. The same drive and athleticism, however, magnify the consequences of
             poor socialization, excessive jump/impact while growth plates are open, or unrecognized genetic
             predispositions. Your job is not to memorize every disease—it&rsquo;s to <em>run a system</em>:
           </p>
@@ -404,7 +404,71 @@ export default function WhatHealthProblemsAreCommonInGermanShepherds() {
           </p>
         </section>
 
-         <Link href={`/${locale}/blog`} className="underline text-[#2c4a30] font-medium hover:opacity-80">
+        {/* Related German Shepherd Articles */}
+        <div className="mt-16 border-t border-[#d9cfc2] pt-8">
+          <h2 className="text-xl font-semibold mb-4 text-[#2c4a30]">
+            More German Shepherd Guides You May Like
+          </h2>
+
+          <ul className="list-disc pl-6 space-y-2 text-[#2c4a30]">
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/fun-facts-about-german-shepherds"
+                className="underline hover:opacity-80"
+              >
+                Fun Facts About German Shepherds
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/do-german-shepherds-shed-a-lot"
+                className="underline hover:opacity-80"
+              >
+                Do German Shepherds Shed a Lot?
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/how-long-do-german-shepherds-live"
+                className="underline hover:opacity-80"
+              >
+                How Long Do German Shepherds Live?
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/how-much-does-a-german-shepherd-cost"
+                className="underline hover:opacity-80"
+              >
+                How Much Does a German Shepherd Cost?
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/are-german-shepherds-aggressive-or-dangerous"
+                className="underline hover:opacity-80"
+              >
+                Are German Shepherds Aggressive or Dangerous?
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/are-german-shepherds-good-with-kids"
+                className="underline hover:opacity-80"
+              >
+                Are German Shepherds Good with Kids?
+              </Link>
+            </li>
+
+          </ul>
+        </div>
+
+        <Link href={`/${locale}/blog`} className="underline text-[#2c4a30] font-medium hover:opacity-80">
           ← Back to Blog
         </Link>
       </main>

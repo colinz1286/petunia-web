@@ -85,7 +85,7 @@ export default function DoGermanShepherdsShedALot() {
             heavier seasonal “coat blows.” You can keep it manageable with a <strong>weekly baseline brush</strong> (daily during coat blows), a
             <strong> once-monthly bath + de-shed</strong> cycle (adjust to lifestyle and vet guidance), and a <strong>home routine</strong> that includes
             HEPA-grade cleaning and washable fabrics. Avoid shaving the double coat except for medical reasons. Pair grooming with <strong>skin-healthy
-            nutrition</strong> and watch for <strong>red flags</strong> (itch, bald patches, dull/brittle hair) that call for a vet visit.
+              nutrition</strong> and watch for <strong>red flags</strong> (itch, bald patches, dull/brittle hair) that call for a vet visit.
           </p>
           <div className="rounded-md border border-[#d9cfc2] bg-[#f6efe4] p-4 text-sm">
             <strong>Petunia tip:</strong> Save your dog’s <em>brush/bath calendar, tool list, and “shed-storm” cleaning plan</em> in Petunia so every
@@ -416,6 +416,69 @@ export default function DoGermanShepherdsShedALot() {
             Educational content only. Always consult your veterinarian or a board-certified veterinary dermatologist for individualized diagnosis and treatment.
           </p>
         </section>
+
+        {/* Related German Shepherd Articles */}
+        <div className="mt-16 border-t border-[#d9cfc2] pt-8">
+          <h2 className="text-xl font-semibold mb-4 text-[#2c4a30]">
+            More German Shepherd Guides You May Like
+          </h2>
+
+          <ul className="list-disc pl-6 space-y-2 text-[#2c4a30]">
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/fun-facts-about-german-shepherds"
+                className="underline hover:opacity-80"
+              >
+                Fun Facts About German Shepherds
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/how-long-do-german-shepherds-live"
+                className="underline hover:opacity-80"
+              >
+                How Long Do German Shepherds Live?
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/how-much-does-a-german-shepherd-cost"
+                className="underline hover:opacity-80"
+              >
+                How Much Does a German Shepherd Cost?
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/are-german-shepherds-aggressive-or-dangerous"
+                className="underline hover:opacity-80"
+              >
+                Are German Shepherds Aggressive or Dangerous?
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/are-german-shepherds-good-with-kids"
+                className="underline hover:opacity-80"
+              >
+                Are German Shepherds Good with Kids?
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/what-health-problems-are-common-in-german-shepherds"
+                className="underline hover:opacity-80"
+              >
+                What Health Problems Are Common in German Shepherds?
+              </Link>
+            </li>
+          </ul>
+        </div>
 
         <Link
           href={`/${locale}/blog`}

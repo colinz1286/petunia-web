@@ -91,7 +91,7 @@ export default function HowMuchDoesAGermanShepherdCost() {
           </p>
           <div className="rounded-md border border-[#d9cfc2] bg-[#f6efe4] p-4 text-sm">
             <strong>Petunia tip:</strong> The cheapest line on a GSD budget is “purchase price.” The budget busters are <em>food, veterinary care,
-            training, and paid exercise/boarding</em>—all of which scale with a large, high-drive dog. Build a monthly pet sinking fund and automate it.
+              training, and paid exercise/boarding</em>—all of which scale with a large, high-drive dog. Build a monthly pet sinking fund and automate it.
           </div>
         </section>
 
@@ -253,7 +253,7 @@ export default function HowMuchDoesAGermanShepherdCost() {
           <h2 className="text-2xl font-semibold mb-3">Regional Costs (U.S.): What Changes by City</h2>
           <p className="mb-3">
             Prices for veterinary services, pet insurance, daycare/boarding, and even food vary by metro. As a rule, expect <strong>higher fees in coastal
-            cities</strong> and tourist hubs, and <strong>lower</strong> in smaller metros/suburbs. A few illustrative ranges:
+              cities</strong> and tourist hubs, and <strong>lower</strong> in smaller metros/suburbs. A few illustrative ranges:
           </p>
           <ul className="list-disc pl-5 space-y-1">
             <li><strong>New York City:</strong> Daycare commonly ~<strong>$45–$50/day</strong>; boarding often <strong>$64–$108+/night</strong>; walkers around <strong>$25–$35/30-min</strong>.</li>
@@ -416,6 +416,69 @@ export default function HowMuchDoesAGermanShepherdCost() {
             Educational content only. Always consult your veterinarian, trainer, and insurer for individualized medical and financial planning.
           </p>
         </section>
+
+        {/* Related German Shepherd Articles */}
+        <div className="mt-16 border-t border-[#d9cfc2] pt-8">
+          <h2 className="text-xl font-semibold mb-4 text-[#2c4a30]">
+            More German Shepherd Guides You May Like
+          </h2>
+
+          <ul className="list-disc pl-6 space-y-2 text-[#2c4a30]">
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/fun-facts-about-german-shepherds"
+                className="underline hover:opacity-80"
+              >
+                Fun Facts About German Shepherds
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/do-german-shepherds-shed-a-lot"
+                className="underline hover:opacity-80"
+              >
+                Do German Shepherds Shed a Lot?
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/how-long-do-german-shepherds-live"
+                className="underline hover:opacity-80"
+              >
+                How Long Do German Shepherds Live?
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/are-german-shepherds-aggressive-or-dangerous"
+                className="underline hover:opacity-80"
+              >
+                Are German Shepherds Aggressive or Dangerous?
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/are-german-shepherds-good-with-kids"
+                className="underline hover:opacity-80"
+              >
+                Are German Shepherds Good with Kids?
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/what-health-problems-are-common-in-german-shepherds"
+                className="underline hover:opacity-80"
+              >
+                What Health Problems Are Common in German Shepherds?
+              </Link>
+            </li>
+          </ul>
+        </div>
 
         <Link
           href={`/${locale}/blog`}

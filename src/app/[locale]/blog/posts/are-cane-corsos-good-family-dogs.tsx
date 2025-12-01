@@ -89,7 +89,7 @@ export default function AreCaneCorsosGoodFamilyDogs() {
             Cane Corsos can be <strong>loyal, affectionate family guardians</strong> when raised and managed with excellent socialization, consistent
             training, and thoughtful household systems. They are also <strong>large, powerful working dogs</strong> with protective instincts that demand
             adult leadership, structure, and active supervision with children. Families who thrive with Corsos usually have <strong>time for daily
-            training</strong>, comfort setting rules for visitors and play, and a plan for safe management at home and in public. If your household is
+              training</strong>, comfort setting rules for visitors and play, and a plan for safe management at home and in public. If your household is
             chaotic, frequently full of new guests, or short on time for training, another breed may be a better fit.
           </p>
           <div className="rounded-md border border-[#d9cfc2] bg-[#f6efe4] p-4 text-sm">
@@ -147,7 +147,7 @@ export default function AreCaneCorsosGoodFamilyDogs() {
           <h3 className="text-lg font-semibold mt-2 mb-1">Babies (0–12 months)</h3>
           <p className="mb-3">
             New parents are tired, schedules shift, and visitors come and go. A Corso can be loving and gentle, but the <strong>combination of sleep-deprived
-            adults and a large adolescent dog</strong> needs a plan. Use <strong>barriers</strong> (baby gates, exercise pens) to define calm zones. Teach &quot;place&quot; early so the dog
+              adults and a large adolescent dog</strong> needs a plan. Use <strong>barriers</strong> (baby gates, exercise pens) to define calm zones. Teach &quot;place&quot; early so the dog
             can relax at a distance during diaper changes and feeding. No unsupervised contact with the baby, ever. Reward quiet observation and provide
             durable chews for self-soothing when routines change.
           </p>
@@ -227,7 +227,7 @@ export default function AreCaneCorsosGoodFamilyDogs() {
           <p className="mb-3">
             They are <strong>very trainable</strong> and often eager to work with their people, but they are <strong>not forgiving of unclear rules</strong>. Corsos notice patterns and
             will fill leadership gaps. Harsh handling can create conflict; permissiveness creates pushy behavior. The sweet spot is <strong>calm, clear, reward-based
-            training with consistent boundaries</strong>. Think matter-of-fact, not macho.
+              training with consistent boundaries</strong>. Think matter-of-fact, not macho.
           </p>
           <h3 className="text-lg font-semibold mt-2 mb-1">Core skills for family life</h3>
           <ul className="list-disc pl-5 space-y-1 mb-3">
@@ -556,6 +556,56 @@ export default function AreCaneCorsosGoodFamilyDogs() {
             Sources are provided for general education. Local laws and insurance policies vary by region; verify requirements in your area.
           </p>
         </section>
+
+        {/* Related Cane Corso Articles */}
+        <div className="mt-16 border-t border-[#d9cfc2] pt-8">
+          <h2 className="text-xl font-semibold mb-4 text-[#2c4a30]">
+            More Cane Corso Guides You May Like
+          </h2>
+
+          <ul className="list-disc pl-6 space-y-2 text-[#2c4a30]">
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/what-is-the-bite-force-of-a-cane-corso"
+                className="underline hover:opacity-80"
+              >
+                What Is the Bite Force of a Cane Corso?
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/do-cane-corsos-have-health-issues"
+                className="underline hover:opacity-80"
+              >
+                Do Cane Corsos Have Common Health Issues?
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/are-cane-corsos-an-active-breed"
+                className="underline hover:opacity-80"
+              >
+                Are Cane Corsos an Active Breed?
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/how-big-are-cane-corsos"
+                className="underline hover:opacity-80"
+              >
+                How Big Are Cane Corsos?
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/how-much-does-a-cane-corso-cost-to-own"
+                className="underline hover:opacity-80"
+              >
+                How Much Does a Cane Corso Cost to Own?
+              </Link>
+            </li>
+          </ul>
+        </div>
 
         <Link
           href={`/${locale}/blog`}

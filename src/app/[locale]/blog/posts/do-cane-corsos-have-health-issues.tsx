@@ -109,7 +109,7 @@ export default function DoCaneCorsosHaveHealthIssues() {
           <h2 className="text-2xl font-semibold mb-3">The Big Picture: What Health Means for a Guardian Breed</h2>
           <p className="mb-3">
             When people ask whether Cane Corsos have health issues, they often expect a simple yes or no. A better framing is: <em>what
-            health topics are most relevant for a large guardian breed, and how do we stack the odds in our favor</em>? Genetics set a baseline,
+              health topics are most relevant for a large guardian breed, and how do we stack the odds in our favor</em>? Genetics set a baseline,
             but daily habits move the needle. The most powerful levers you control are body weight, nutrition quality, strength and mobility
             work, dental care, parasite prevention, and a screening schedule that catches trouble early when it is cheaper and easier to
             address.
@@ -132,7 +132,7 @@ export default function DoCaneCorsosHaveHealthIssues() {
           <p className="mb-3">
             The first year isn&#39;t just cute photos. It is orthopedics, socialization, and gut health. Corsos grow quickly and put mass on
             powerful frames. Rapid growth and excess calories make joint stress more likely, so the goal is <strong>steady growth at a lean body
-            condition</strong>. Choose a complete food formulated for large-breed puppies or an all-life-stage food with appropriate calcium and
+              condition</strong>. Choose a complete food formulated for large-breed puppies or an all-life-stage food with appropriate calcium and
             energy density. Measure meals to calories rather than scoops, and re-check amounts every two weeks based on weight trend and
             body condition.
           </p>
@@ -585,6 +585,55 @@ export default function DoCaneCorsosHaveHealthIssues() {
           </p>
         </section>
 
+        {/* Related Cane Corso Articles */}
+        <div className="mt-16 border-t border-[#d9cfc2] pt-8">
+          <h2 className="text-xl font-semibold mb-4 text-[#2c4a30]">
+            More Cane Corso Guides You May Like
+          </h2>
+
+          <ul className="list-disc pl-6 space-y-2 text-[#2c4a30]">
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/what-is-the-bite-force-of-a-cane-corso"
+                className="underline hover:opacity-80"
+              >
+                What Is the Bite Force of a Cane Corso?
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/are-cane-corsos-good-family-dogs"
+                className="underline hover:opacity-80"
+              >
+                Are Cane Corsos Good Family Dogs?
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/are-cane-corsos-an-active-breed"
+                className="underline hover:opacity-80"
+              >
+                Are Cane Corsos an Active Breed?
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/how-big-are-cane-corsos"
+                className="underline hover:opacity-80"
+              >
+                How Big Are Cane Corsos?
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/how-much-does-a-cane-corso-cost-to-own"
+                className="underline hover:opacity-80"
+              >
+                How Much Does a Cane Corso Cost to Own?
+              </Link>
+            </li>
+          </ul>
+        </div>
         <Link
           href={`/${locale}/blog`}
           className="underline text-[#2c4a30] font-medium hover:opacity-80"

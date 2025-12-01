@@ -427,6 +427,56 @@ export default function HowMuchDoesACaneCorsoCostToOwn() {
           </p>
         </section>
 
+        {/* Related Cane Corso Articles */}
+        <div className="mt-16 border-t border-[#d9cfc2] pt-8">
+          <h2 className="text-xl font-semibold mb-4 text-[#2c4a30]">
+            More Cane Corso Guides You May Like
+          </h2>
+
+          <ul className="list-disc pl-6 space-y-2 text-[#2c4a30]">
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/what-is-the-bite-force-of-a-cane-corso"
+                className="underline hover:opacity-80"
+              >
+                What Is the Bite Force of a Cane Corso?
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/are-cane-corsos-good-family-dogs"
+                className="underline hover:opacity-80"
+              >
+                Are Cane Corsos Good Family Dogs?
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/do-cane-corsos-have-health-issues"
+                className="underline hover:opacity-80"
+              >
+                Do Cane Corsos Have Common Health Issues?
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/are-cane-corsos-an-active-breed"
+                className="underline hover:opacity-80"
+              >
+                Are Cane Corsos an Active Breed?
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.petuniapets.com/en/blog/how-big-are-cane-corsos"
+                className="underline hover:opacity-80"
+              >
+                How Big Are Cane Corsos?
+              </Link>
+            </li>
+          </ul>
+        </div>
+
         <Link
           href={`/${locale}/blog`}
           className="underline text-[#2c4a30] font-medium hover:opacity-80"
