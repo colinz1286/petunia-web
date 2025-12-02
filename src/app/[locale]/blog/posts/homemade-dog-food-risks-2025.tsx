@@ -8,7 +8,7 @@ export default function HomemadeDogFoodRisks2025() {
   const locale = useLocale();
 
   const title = 'Homemade Dog Food: What New Research Reveals About Nutrient Gaps';
-  const date = 'December 3, 2025';
+  const date = 'December 2, 2025';
   const categories = ['owner', 'health', 'nutrition'] as const;
 
   const categoryLabels: Record<string, string> = {

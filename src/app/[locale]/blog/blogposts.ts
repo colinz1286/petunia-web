@@ -12,7 +12,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'homemade-dog-food-risks-2025',
         title: 'Homemade Dog Food: What the Latest Study Means for Your Dog’s Nutrition',
-        date: 'December 3, 2025',
+        date: 'December 2, 2025',
         description:
             'New large-scale research shows that the vast majority of homemade dog diets fail to meet essential nutrient requirements — a must-read for any dog owner considering DIY meals.',
         component: () => import('./posts/homemade-dog-food-risks-2025'),
