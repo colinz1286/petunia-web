@@ -10,6 +10,86 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'cbd-dogs-aggression-study-2025',
+        title:
+            'Study Finds CBD Supplements May Reduce Aggression in Aging Dogs: What the Research Really Says',
+        date: 'November 22, 2025',
+        description:
+            'A clear, research-backed explanation of a new large-scale study suggesting CBD supplementation may help reduce aggression intensity in older dogs, including limitations and what owners should know.',
+        component: () =>
+            import('./posts/cbd-dogs-aggression-study-2025') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'boarding']
+    },
+    {
+        slug: 'kennel-cough-new-vaccine-guide',
+        title:
+            'New Injectable Vaccine for Kennel Cough: What Dog Owners & Daycare/Boarding Facilities Need to Know',
+        date: 'November 22, 2025',
+        description:
+            'An overview of the new injectable Bordetella (kennel cough) vaccine — how it works, who should get it, what it means for daycare/boarding facilities, and how to implement it responsibly.',
+        component: () =>
+            import('./posts/kennel-cough-new-vaccine-guide') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'boarding']
+    },
+    {
+        slug: 'labrador-shampoo-conditioner-guide',
+        title:
+            'Best Shampoos & Conditioners for Labrador Retrievers: Coat Care, Skin Concerns & Grooming Tips',
+        date: 'November 22, 2025',
+        description:
+            'Learn how to choose the right shampoos and conditioners for a Labrador Retriever — covering coat type, common skin issues, important ingredients to use and avoid, and a full grooming routine for healthy skin and coat.',
+        component: () =>
+            import('./posts/labrador-shampoo-conditioner-guide') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Labrador Retriever'
+    },
+    {
+        slug: 'hypoallergenic-dog-breeds-guide',
+        title:
+            'Which Dog Breeds Are Truly Hypoallergenic? A Helpful Guide for Families Seeking Low-Shedding Dogs',
+        date: 'November 22, 2025',
+        description:
+            'A practical, evidence-based guide to hypoallergenic dog breeds, how allergies actually work, and which low-shedding dogs may be better for families with sensitivities.',
+        component: () =>
+            import('./posts/hypoallergenic-dog-breeds-guide') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner']
+    },
+    {
+        slug: 'great-dane-top-health-issues',
+        title:
+            'The 3 Most Common Health Problems in Great Danes: A Practical Guide for Owners',
+        date: 'November 22, 2025',
+        description:
+            'A clear, practical overview of the three most common health problems in Great Danes—bloat (GDV), cardiomyopathy, and orthopedic disease—plus symptoms, risk factors and prevention tips for owners.',
+        component: () =>
+            import('./posts/great-dane-top-health-issues') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Great Dane'
+    },
+    {
+        slug: 'temperament-testing-dogs-boarding-daycare',
+        title:
+            'How to Temperament Test Dogs for Boarding & Daycare: A Step-By-Step Professional Evaluation Guide',
+        date: 'December 1, 2025',
+        description:
+            'A complete step-by-step temperament testing procedure for boarding and daycare facilities, including body language evaluation, play style assessment, social tolerance, energy matching, and safety considerations.',
+        component: () =>
+            import('./posts/temperament-testing-dogs-boarding-daycare') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['boarding']
+    },
+    {
         slug: 'yorkshire-terrier-living-with',
         title: 'Living with a Yorkshire Terrier: Ideal Family Fit, Apartment Life and Lifestyle Considerations',
         date: 'November 21, 2025',
