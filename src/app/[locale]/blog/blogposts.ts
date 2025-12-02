@@ -10,6 +10,51 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'homemade-dog-food-risks-2025',
+        title: 'Homemade Dog Food: What the Latest Study Means for Your Dog’s Nutrition',
+        date: 'December 3, 2025',
+        description:
+            'New large-scale research shows that the vast majority of homemade dog diets fail to meet essential nutrient requirements — a must-read for any dog owner considering DIY meals.',
+        component: () => import('./posts/homemade-dog-food-risks-2025'),
+        categories: ['owner', 'food', 'vet']
+    },
+    {
+        slug: 'should-your-dog-use-daycare-2025',
+        title: 'Should Your Dog Use Daycare? How to Tell If Daycare Could Benefit Your Pup',
+        date: 'December 2, 2025',
+        description:
+            'A practical guide for pet owners to evaluate whether their dog might benefit from daycare — looking at behaviour, energy level, social skills, and lifestyle needs.',
+        component: () => import('./posts/should-your-dog-use-daycare-2025'),
+        categories: ['owner', 'boarding'],
+    },
+    {
+        slug: 'holiday-specials-dog-boarding-daycare-2025',
+        title: 'Holiday-Friendly Specials & Events for Dog Boarding and Daycare Facilities',
+        date: 'December 2, 2025',
+        description:
+            'Creative holiday-season ideas — themed events, crafts, promos — that boarding/daycare facilities can implement to delight owners, engage dogs, and generate extra revenue during festive periods.',
+        component: () => import('./posts/holiday-specials-dog-boarding-daycare-2025'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'texas-dog-boarding-daycare-laws-2025',
+        title: 'Dog Boarding & Daycare Laws in Texas (2025 Guide for Owners & Facilities)',
+        date: 'December 2, 2025',
+        description:
+            'Plain-language guide to the 2025 Texas kennel law, informed-consent requirements, dangerous-dog rules, and local permits that affect dog boarding and daycare facilities across the state.',
+        component: () => import('./posts/texas-dog-boarding-daycare-laws-2025'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'dog-daycare-safety-standards-staff-training-2025',
+        title: 'Dog Daycare Safety Standards & Staff Training Requirements',
+        date: 'December 2, 2025',
+        description:
+            'A clear, owner-first breakdown of the safety standards, sanitation protocols, supervision practices, and staff training requirements that make dog daycares and boarding facilities truly safe.',
+        component: () => import('./posts/dog-daycare-safety-standards-staff-training-2025'),
+        categories: ['boarding'],
+    },
+    {
         slug: 'cbd-dogs-aggression-study-2025',
         title:
             'Study Finds CBD Supplements May Reduce Aggression in Aging Dogs: What the Research Really Says',
@@ -580,7 +625,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'Learn the key differences between dog boarding and daycare, including costs, schedules, and behavior benefits. Discover which option fits your dog’s personality and lifestyle best, with expert tips from the Petunia team.',
         component: () => import('./posts/boarding-vs-daycare-2025'),
-        categories: ['owner', 'boarding', 'daycare'],
+        categories: ['owner', 'boarding'],
     },
     {
         slug: 'decompression-boarding-2025',
