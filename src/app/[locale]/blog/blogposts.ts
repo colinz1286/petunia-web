@@ -10,6 +10,174 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'dog-boarding-vaccination-requirements-2025',
+        title: 'Vaccination & Health Requirements for Dog Daycare & Boarding (2025): Rabies, Distemper, Bordetella, Records & State Rules',
+        date: 'November 24, 2025',
+        description:
+            'A complete 2025 guide to required vaccinations for dog daycare and boarding, including Rabies, DHPP, Bordetella, and Influenza, plus health records, state rules, inspection expectations, and how owners can verify compliance.',
+        component: () => import('./posts/dog-boarding-vaccination-requirements-2025'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'dog-boarding-inspection-standards-2025',
+        title: 'Dog Boarding Inspection Standards: What States Look For & How Owners Can Spot Red Flags (2025)',
+        date: 'November 24, 2025',
+        description:
+            'A practical 2025 guide to dog daycare and boarding inspection standards: sanitation, safety, grouping, housing, emergency procedures, and how owners can recognize warning signs during tours or evaluations.',
+        component: () => import('./posts/dog-boarding-inspection-standards-2025'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'dog-daycare-license-requirements-2025',
+        title: 'Dog Daycare License Requirements: How Facilities Get Approved & How You Can Verify Them (2025)',
+        date: 'November 24, 2025',
+        description:
+            'A clear, step-by-step 2025 guide to how dog daycare facilities get licensed in the U.S., what inspectors evaluate, what documents are required, and how owners can quickly verify any facility online or in person.',
+        component: () => import('./posts/dog-daycare-license-requirements-2025'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'colorado-dog-boarding-daycare-laws-2025',
+        title: 'Dog Boarding Laws in Colorado (2025): Permits, Inspections, Facility Requirements & Owner Rights',
+        date: 'November 24, 2025',
+        description:
+            'A clear, owner-first breakdown of Colorado boarding and daycare laws under PACFA: licensing rules, inspections, sanitation standards, emergency protocols, and how to verify any facility in the state.',
+        component: () => import('./posts/colorado-dog-boarding-daycare-laws-2025'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'dog-daycare-boarding-requirements-2025',
+        title: 'Dog Daycare & Boarding Requirements: Complete 2025 U.S. Guide (Vaccines, Ratios, Records, Facility Rules)',
+        date: 'November 24, 2025',
+        description:
+            'A complete, plain-English 2025 guide to U.S. daycare and boarding facility requirements: vaccines, staffing ratios, sanitation standards, records, inspections, and how owners can verify licenses and compliance.',
+        component: () => import('./posts/dog-daycare-boarding-requirements-2025'),
+        categories: ['owner', 'boarding', 'daycare'],
+    },
+    {
+        slug: 'border-collie-training-guide',
+        title:
+            'Border Collie Training Guide: Obedience, Recall, Mental Stimulation, and Herding Instincts',
+        date: 'November 23, 2025',
+        description:
+            'A complete Border Collie training guide covering obedience, recall training, herding instinct management, mental stimulation, crate training, socialization, and behavior prevention.',
+        component: () => import('./posts/border-collie-training-guide'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Border Collie',
+    },
+    {
+        slug: 'border-collie-behavior-problems',
+        title:
+            'Border Collie Behavior Problems: Nipping, Herding, Reactivity, and How to Manage Them',
+        date: 'November 23, 2025',
+        description:
+            'A complete guide to Border Collie behavior problems—nipping, herding, reactivity, barking, chasing, and more—plus evidence-based solutions to manage and prevent them.',
+        component: () => import('./posts/border-collie-behavior-problems'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Border Collie',
+    },
+    {
+        slug: 'border-collie-grooming-guide',
+        title:
+            'Border Collie Grooming Guide: Coat Types, Shedding, Bathing, and Brushing Schedule',
+        date: 'November 23, 2025',
+        description:
+            'A complete Border Collie grooming guide covering coat types, brushing schedules, shedding patterns, bathing routine, ear care, nail trimming, and long-term skin health.',
+        component: () => import('./posts/border-collie-grooming-guide'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Border Collie',
+    },
+    {
+        slug: 'why-are-border-collies-so-smart',
+        title: 'Why Are Border Collies So Smart? Understanding Their Intelligence and Mental Needs',
+        date: 'November 23, 2025',
+        description:
+            'Learn why Border Collies are considered the smartest dog breed, including cognitive ability, working intelligence, mental needs, and advanced problem-solving skills.',
+        component: () => import('./posts/why-are-border-collies-so-smart'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Border Collie',
+    },
+    {
+        slug: 'border-collie-exercise-requirements',
+        title: 'How Much Exercise Do Border Collies Need? Daily Activity, Mental Work, and Energy Levels',
+        date: 'November 23, 2025',
+        description:
+            'Learn how much exercise Border Collies need, including physical activity, mental stimulation, enrichment, and working-style exercises ideal for high-drive dogs.',
+        component: () => import('./posts/border-collie-exercise-requirements'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Border Collie',
+    },
+    {
+        slug: 'are-border-collies-good-family-dogs',
+        title: 'Are Border Collies Good Family Dogs? Temperament, Behavior, and Suitability for Kids',
+        date: 'November 23, 2025',
+        description:
+            'Are Border Collies good family dogs? Explore their temperament, intelligence, training needs, behavior around kids, and suitability for active households.',
+        component: () => import('./posts/are-border-collies-good-family-dogs'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Border Collie',
+    },
+    {
+        slug: 'beagle-weight-guide',
+        title: 'Beagle Weight Guide: Healthy Ranges, Feeding Charts, and Preventing Obesity',
+        date: 'December 3, 2025',
+        description:
+            'A complete Beagle weight guide covering ideal ranges, feeding charts, portion recommendations, exercise needs, obesity prevention, and how weight impacts health.',
+        component: () => import('./posts/beagle-weight-guide'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Beagle',
+    },
+    {
+        slug: 'are-beagles-good-family-dogs',
+        title: 'Are Beagles Good Family Dogs? Temperament, Training, and Suitability for Kids',
+        date: 'December 3, 2025',
+        description:
+            'Are Beagles good family dogs? Explore their temperament, behavior with children, training needs, energy levels, shedding, and long-term suitability for family life.',
+        component: () => import('./posts/are-beagles-good-family-dogs'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Beagle',
+    },
+    {
+        slug: 'beagle-grooming-guide',
+        title: 'Beagle Grooming Guide: Coat Care, Ear Cleaning, Bathing, and Nail Trimming',
+        date: 'December 3, 2025',
+        description:
+            'A complete Beagle grooming guide covering coat maintenance, ear care, bathing, nail trimming, skin health, tools, and preventive care for long-term wellbeing.',
+        component: () => import('./posts/beagle-grooming-guide'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Beagle',
+    },
+    {
+        slug: 'beagle-health-problems',
+        title: 'Beagle Health Problems: The Most Common Conditions Owners Should Watch For',
+        date: 'December 3, 2025',
+        description:
+            'Learn the most common Beagle health problems, including obesity, allergies, ear infections, thyroid disorders, and genetic conditions. Evidence-based guidance for early detection and prevention.',
+        component: () => import('./posts/beagle-health-problems'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Beagle',
+    },
+    {
+        slug: 'beagle-exercise-requirements',
+        title: 'Beagle Exercise Requirements: How Much Activity Do They Really Need?',
+        date: 'December 3, 2025',
+        description:
+            'Learn how much exercise Beagles really need, why they are such energetic dogs, and how proper activity prevents behavior issues, obesity, and excess shedding.',
+        component: () => import('./posts/beagle-exercise-requirements'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Beagle',
+    },
+    {
+        slug: 'beagle-howling',
+        title: 'Why Do Beagles Howl? Understanding Their Vocal Behavior and What It Means',
+        date: 'December 3, 2025',
+        description:
+            'Why do Beagles howl? Learn why Beagles are such vocal dogs, what their howls mean, and how to manage excessive howling using science-backed behavior guidance.',
+        component: () => import('./posts/beagle-howling'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Beagle',
+    },
+    {
         slug: 'homemade-dog-food-risks-2025',
         title: 'Homemade Dog Food: What the Latest Study Means for Your Dog’s Nutrition',
         date: 'December 2, 2025',
