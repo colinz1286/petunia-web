@@ -47,6 +47,10 @@ export default function BusinessSettingsPage() {
     const [offersTraining, setOffersTraining] = useState(false);
     const [groomingServices, setGroomingServices] = useState<string[]>(['']);
 
+    // NEW — Boarding “What To Bring” lists (matches iOS)
+    const [boardingRequiredItems, setBoardingRequiredItems] = useState<string[]>(['']);
+    const [boardingProhibitedItems, setBoardingProhibitedItems] = useState<string[]>(['']);
+
     const [waiverRequired, setWaiverRequired] = useState(false);
     const [waiverText, setWaiverText] = useState('');
 
@@ -178,6 +182,10 @@ export default function BusinessSettingsPage() {
                 setOffersTraining(data.offersTraining || false);
                 setGroomingServices(data.groomingServices || ['']);
 
+                // NEW — What To Bring (Boarding only)
+                setBoardingRequiredItems(data.boardingRequiredItems || ['']);
+                setBoardingProhibitedItems(data.boardingProhibitedItems || ['']);
+
                 setWaiverRequired(data.waiverRequired || false);
                 setWaiverText(data.waiverText || '');
 
@@ -277,6 +285,11 @@ export default function BusinessSettingsPage() {
             requireBoardingReservationApproval,
 
             groomingServices: groomingServices.filter((s) => s.trim() !== ''),
+
+            // NEW — What To Bring lists
+            boardingRequiredItems: boardingRequiredItems.filter((s) => s.trim() !== ''),
+            boardingProhibitedItems: boardingProhibitedItems.filter((s) => s.trim() !== ''),
+
             businessBio: trimmedBio,
             waiverRequired,
             waiverText,
@@ -554,6 +567,128 @@ export default function BusinessSettingsPage() {
                             </div>
                         )}
                     </div>
+
+                    {/* What To Bring With You (Boarding only) */}
+                    {offersBoarding && (
+                        <div className="mt-10">
+
+                            <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-4">
+                                {t('what_to_bring_header')}
+                            </h2>
+
+                            {/* Required Items */}
+                            <div className="mb-6">
+                                <label className="font-semibold text-sm block mb-1">
+                                    {t('boarding_required_items_label')}
+                                </label>
+
+                                {boardingRequiredItems.map((item, idx) => (
+                                    <div key={`req-${idx}`} className="mb-3">
+
+                                        <div className="relative">
+                                            {item.trim() === '' && (
+                                                <span className="absolute top-2 left-3 text-gray-400 pointer-events-none text-sm">
+                                                    {t('boarding_required_item_placeholder', { num: idx + 1 })}
+                                                </span>
+                                            )}
+
+                                            <textarea
+                                                value={item}
+                                                onChange={(e) => {
+                                                    const updated = [...boardingRequiredItems];
+                                                    updated[idx] = e.target.value.slice(0, 150);
+                                                    setBoardingRequiredItems(updated);
+                                                }}
+                                                className="w-full min-h-[80px] border px-3 py-2 rounded text-sm resize-none"
+                                            />
+                                        </div>
+
+                                        {/* Character Counter */}
+                                        <div className="flex justify-end text-xs mt-1">
+                                            <span className={`${item.length >= 150 ? 'text-red-600' : 'text-gray-500'}`}>
+                                                {item.length} / 150
+                                            </span>
+                                        </div>
+
+                                        {/* Delete button */}
+                                        {boardingRequiredItems.length > 1 && (
+                                            <button
+                                                onClick={() =>
+                                                    setBoardingRequiredItems(prev => prev.filter((_, i) => i !== idx))
+                                                }
+                                                className="text-red-600 font-bold text-lg mt-1"
+                                            >
+                                                &times;
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+
+                                <button
+                                    onClick={() => setBoardingRequiredItems(prev => [...prev, ''])}
+                                    className="text-sm text-blue-600 underline mt-1"
+                                >
+                                    {t('add_boarding_required_item_button')}
+                                </button>
+                            </div>
+
+                            {/* Prohibited Items */}
+                            <div>
+                                <label className="font-semibold text-sm block mb-1">
+                                    {t('boarding_prohibited_items_label')}
+                                </label>
+
+                                {boardingProhibitedItems.map((item, idx) => (
+                                    <div key={`pro-${idx}`} className="mb-3">
+
+                                        <div className="relative">
+                                            {item.trim() === '' && (
+                                                <span className="absolute top-2 left-3 text-gray-400 pointer-events-none text-sm">
+                                                    {t('boarding_prohibited_item_placeholder', { num: idx + 1 })}
+                                                </span>
+                                            )}
+
+                                            <textarea
+                                                value={item}
+                                                onChange={(e) => {
+                                                    const updated = [...boardingProhibitedItems];
+                                                    updated[idx] = e.target.value.slice(0, 150);
+                                                    setBoardingProhibitedItems(updated);
+                                                }}
+                                                className="w-full min-h-[80px] border px-3 py-2 rounded text-sm resize-none"
+                                            />
+                                        </div>
+
+                                        {/* Character Counter */}
+                                        <div className="flex justify-end text-xs mt-1">
+                                            <span className={`${item.length >= 150 ? 'text-red-600' : 'text-gray-500'}`}>
+                                                {item.length} / 150
+                                            </span>
+                                        </div>
+
+                                        {/* Delete button */}
+                                        {boardingProhibitedItems.length > 1 && (
+                                            <button
+                                                onClick={() =>
+                                                    setBoardingProhibitedItems(prev => prev.filter((_, i) => i !== idx))
+                                                }
+                                                className="text-red-600 font-bold text-lg mt-1"
+                                            >
+                                                &times;
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+
+                                <button
+                                    onClick={() => setBoardingProhibitedItems(prev => [...prev, ''])}
+                                    className="text-sm text-blue-600 underline mt-1"
+                                >
+                                    {t('add_boarding_prohibited_item_button')}
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Required Vaccinations */}
                     <div className="mt-10">

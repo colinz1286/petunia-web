@@ -51,5 +51,12 @@
   "additional_required_tests_header": "Additional Required Tests",
   "booking_policy_header": "Booking Policies",
   "require_daycare_approval_toggle": "Require Approval for Daycare Reservations",
-  "require_boarding_approval_toggle": "Require Approval for Boarding Reservations"
+  "require_boarding_approval_toggle": "Require Approval for Boarding Reservations",
+  "what_to_bring_header": "What To Bring With You",
+  "boarding_required_items_label": "Items Clients Should Bring:",
+  "boarding_prohibited_items_label": "Items Clients Should NOT Bring:",
+  "boarding_required_item_placeholder": "Required Item {num}",
+  "boarding_prohibited_item_placeholder": "Prohibited Item {num}",
+  "add_boarding_required_item_button": "Add Required Item",
+  "add_boarding_prohibited_item_button": "Add Prohibited Item"
 }
