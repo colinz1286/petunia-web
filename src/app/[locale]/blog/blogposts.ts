@@ -36,7 +36,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'A complete guide to Boston Terrier exercise needs by age, including walking routines, playtime, mental enrichment, signs of under-exercising, activities to avoid, and safe indoor options for extreme weather.',
         component: () => import('./posts/boston-terrier-exercise-requirements'),
-        categories: ['owner', 'breed_specific-guides'],
+        categories: ['owner', 'breed_specific_guides'],
         breed: 'Boston Terrier',
     },
     {
