@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { useLocale } from 'next-intl';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import Head from 'next/head';
@@ -92,16 +93,58 @@ function titleCase(s: string) {
 
 export default function BlogPage() {
   const locale = useLocale();
-  const [selectedCategories, setSelectedCategories] = useState<CategoryKey[]>([]);
-  const [selectedBreed, setSelectedBreed] = useState<string>(''); // dropdown value
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // ---- Initialize filters from URL query params (if present) ----
+  const initialBreedParam = searchParams.get('breed') ?? '';
+  const initialCategoriesParam = searchParams.get('categories') ?? '';
+
+  const initialCategoriesFromUrl: CategoryKey[] = initialCategoriesParam
+    ? initialCategoriesParam
+      .split(',')
+      .map((c) => c.trim())
+      .filter((c): c is CategoryKey => CATEGORY_KEYS.includes(c as CategoryKey))
+    : [];
+
+  const [selectedCategories, setSelectedCategories] = useState<CategoryKey[]>(
+    initialCategoriesFromUrl
+  );
+  const [selectedBreed, setSelectedBreed] = useState<string>(initialBreedParam); // dropdown value
   const [visibleCount, setVisibleCount] = useState<number>(PAGE_SIZE);
 
+  // ---- Helper to build URL with current filters ----
+  const buildBlogUrl = (categories: CategoryKey[], breed: string) => {
+    const params = new URLSearchParams();
+
+    if (categories.length > 0) {
+      params.set('categories', categories.join(','));
+    }
+
+    if (breed) {
+      params.set('breed', breed);
+    }
+
+    const queryString = params.toString();
+    return queryString ? `/${locale}/blog?${queryString}` : `/${locale}/blog`;
+  };
+
+  const updateUrlWithFilters = (categories: CategoryKey[], breed: string) => {
+    const targetUrl = buildBlogUrl(categories, breed);
+    router.replace(targetUrl);
+  };
+
+  // Only ONE category active at a time
   const toggleCategory = (category: CategoryKey) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((cat) => cat !== category)
-        : [...prev, category]
-    );
+    // Selecting ANY category clears breed filter entirely
+    setSelectedBreed('');
+
+    // Replace the entire list with the newly selected category
+    const nextCategories: CategoryKey[] = [category];
+    setSelectedCategories(nextCategories);
+
+    // Sync URL to reflect single active category and no breed
+    updateUrlWithFilters(nextCategories, '');
   };
 
   // Reset pagination whenever filters change
@@ -164,6 +207,7 @@ export default function BlogPage() {
     setSelectedCategories([]);
     setSelectedBreed('');
     setVisibleCount(PAGE_SIZE);
+    router.replace(`/${locale}/blog`);
   };
 
   const canLoadMore = visibleCount < filteredPosts.length;
@@ -203,11 +247,10 @@ export default function BlogPage() {
               <button
                 key={key}
                 onClick={() => toggleCategory(key)}
-                className={`px-4 py-1.5 rounded-full text-sm font-bold transition border-[3px] ${
-                  isActive
-                    ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
-                    : 'text-[#2c4a30] border-[#2c4a30] hover:bg-[#e4dbcb]'
-                }`}
+                className={`px-4 py-1.5 rounded-full text-sm font-bold transition border-[3px] ${isActive
+                  ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
+                  : 'text-[#2c4a30] border-[#2c4a30] hover:bg-[#e4dbcb]'
+                  }`}
               >
                 {CATEGORY_MAP[key]}
               </button>
@@ -223,11 +266,10 @@ export default function BlogPage() {
               <button
                 key={key}
                 onClick={() => toggleCategory(key)}
-                className={`px-4 py-1.5 rounded-full text-sm font-bold transition border-[3px] ${
-                  isActive
-                    ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
-                    : 'text-[#2c4a30] border-[#2c4a30] hover:bg-[#e4dbcb]'
-                }`}
+                className={`px-4 py-1.5 rounded-full text-sm font-bold transition border-[3px] ${isActive
+                  ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
+                  : 'text-[#2c4a30] border-[#2c4a30] hover:bg-[#e4dbcb]'
+                  }`}
               >
                 {CATEGORY_MAP[key]}
               </button>
@@ -243,11 +285,10 @@ export default function BlogPage() {
               <button
                 key={key}
                 onClick={() => toggleCategory(key)}
-                className={`px-4 py-1.5 rounded-full text-sm font-bold transition border-[3px] ${
-                  isActive
-                    ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
-                    : 'text-[#2c4a30] border-[#2c4a30] hover:bg-[#e4dbcb]'
-                }`}
+                className={`px-4 py-1.5 rounded-full text-sm font-bold transition border-[3px] ${isActive
+                  ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
+                  : 'text-[#2c4a30] border-[#2c4a30] hover:bg-[#e4dbcb]'
+                  }`}
               >
                 {CATEGORY_MAP[key]}
               </button>
@@ -265,7 +306,18 @@ export default function BlogPage() {
               <select
                 id="breedFilter"
                 value={selectedBreed}
-                onChange={(e) => setSelectedBreed(e.target.value)}
+                onChange={(e) => {
+                  const nextBreed = e.target.value;
+
+                  // Selecting a breed clears ALL categories
+                  setSelectedCategories([]);
+
+                  // Set the new breed
+                  setSelectedBreed(nextBreed);
+
+                  // Sync URL (no categories, only breed)
+                  updateUrlWithFilters([], nextBreed);
+                }}
                 className="text-sm rounded-full border-[3px] border-[#2c4a30] bg-white px-3 py-1.5 text-[#2c4a30] hover:bg-[#e4dbcb] cursor-pointer"
               >
                 <option value="">All Breeds</option>
