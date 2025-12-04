@@ -10,6 +10,146 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'how-to-stop-a-boston-terrier-from-barking-2025',
+        title: 'How to Stop a Boston Terrier from Barking (2025): Root Causes, Quiet Training, Environmental Fixes & Red Flags',
+        date: 'November 20, 2025',
+        description:
+            'A complete 2025 guide to stopping barking in Boston Terriers, covering alert, boredom, demand, and anxiety barking, identifying root causes, environmental adjustments, behavior modification, what not to do, and deeper issues behind excessive barking.',
+        component: () => import('./posts/how-to-stop-a-boston-terrier-from-barking-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-socialization-guide-2025',
+        title: 'Boston Terrier Socialization Guide (2025): Confidence Building, Safe Exposure, Play Sessions & Adult Socialization',
+        date: 'November 19, 2025',
+        description:
+            'A complete 2025 socialization guide for Boston Terriers covering timing windows, exposure checklists, confidence building, safe vs overwhelming experiences, structured play, common mistakes, and adult socialization strategies.',
+        component: () => import('./posts/boston-terrier-socialization-guide-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'how-to-train-a-boston-terrier-puppy-2025',
+        title: 'How to Train a Boston Terrier Puppy (2025): First 30 Days, Basic Commands, Socialization & Reward-Based Learning',
+        date: 'November 18, 2025',
+        description:
+            'A complete 2025 guide explaining how to train a Boston Terrier puppy, covering the first 30 days of bonding and routine formation, name recognition, sit/stay/come basics, leash introduction, socialization roadmap, reward-based shaping, and age-appropriate session durations.',
+        component: () => import('./posts/how-to-train-a-boston-terrier-puppy-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-potty-training-2025',
+        title: 'Boston Terrier Potty Training (2025): Schedules, Regression Fixes, Reinforcement & Indoor/Outdoor Setup Tips',
+        date: 'November 17, 2025',
+        description:
+            'A complete 2025 guide to Boston Terrier potty training, covering why the breed is slow to train, ideal schedules, crate-interval timing, reinforcement windows, accidents, regression periods, and indoor vs outdoor potty setups.',
+        component: () => import('./posts/boston-terrier-potty-training-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-crate-training-2025',
+        title: 'Boston Terrier Crate Training (2025): Routines, Troubleshooting, Age Schedules & Positive Conditioning',
+        date: 'November 16, 2025',
+        description:
+            'A complete 2025 crate training guide for Boston Terriers, covering the benefits for anxiety and safety, positive conditioning steps, nighttime routines, puppy and adult schedules, troubleshooting barking or refusal, and preventing crate overuse.',
+        component: () => import('./posts/boston-terrier-crate-training-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-reactivity-around-dogs-2025',
+        title: 'Boston Terrier Reactivity Around Dogs (2025): Causes, Triggers, Safe Training Protocols & When to Seek Help',
+        date: 'November 15, 2025',
+        description:
+            'A 2025 guide explaining why some Boston Terriers are reactive around other dogs, how to distinguish reactivity from aggression, what triggers to avoid, step-by-step desensitization, safe-distance walking, setback prevention, and when to involve a professional.',
+        component: () => import('./posts/boston-terrier-reactivity-around-dogs-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-puppy-biting-nipping-2025',
+        title: 'Boston Terrier Puppy Biting & Nipping (2025): Teething Timeline, Bite Inhibition & Training Strategies',
+        date: 'November 14, 2025',
+        description:
+            'A 2025 guide to Boston Terrier puppy biting covering normal vs problematic nipping, teething stages, redirection methods, bite inhibition, the role of socialization, and what not to do.',
+        component: () => import('./posts/boston-terrier-puppy-biting-nipping-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-aggression-2025',
+        title: 'Boston Terrier Aggression (2025): Causes, Triggers, Early Intervention & Behavior Modification Strategies',
+        date: 'November 13, 2025',
+        description:
+            'A comprehensive 2025 guide explaining the types of aggression seen in Boston Terriers, common triggers, genetics vs environment, desensitization, counterconditioning, breed compatibility, and when aggression signals a deeper behavioral or medical issue.',
+        component: () => import('./posts/boston-terrier-aggression-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-separation-anxiety-2025',
+        title: 'Boston Terrier Separation Anxiety (2025): Causes, Warning Signs, Training Protocols & When to Seek Help',
+        date: 'November 12, 2025',
+        description:
+            'A 2025 separation anxiety guide for Boston Terriers covering causes, early warning signs, stages of anxiety, desensitization training, crate conditioning, enrichment, and when to consult a vet or behaviorist.',
+        component: () => import('./posts/boston-terrier-separation-anxiety-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'why-is-my-boston-terrier-so-hyper-2025',
+        title: 'Why Is My Boston Terrier So Hyper? Understanding Normal Energy, Overstimulation & When to Worry (2025 Guide)',
+        date: 'November 11, 2025',
+        description:
+            'A complete 2025 guide explaining why Boston Terriers seem hyper, how to distinguish normal energy from problematic behavior, overstimulation signs, calming methods, exercise needs, and medical causes.',
+        component: () => import('./posts/why-is-my-boston-terrier-so-hyper-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-diet-guide-2025',
+        title: 'Boston Terrier Diet Guide (2025): Nutrition, Feeding Schedules, Allergies & Sensitive Stomach Tips',
+        date: 'November 10, 2025',
+        description:
+            'A complete 2025 Boston Terrier diet guide covering macronutrients, sensitive stomach issues, food types, allergies, treat limits, portion sizes, and daily feeding schedules.',
+        component: () => import('./posts/boston-terrier-diet-guide-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-grooming-guide-2025',
+        title: 'Boston Terrier Grooming Guide (2025): Brushing, Bathing, Facial Folds, Nails & Shedding Patterns',
+        date: 'November 9, 2025',
+        description:
+            'A complete 2025 grooming guide for Boston Terriers covering brushing routines, bathing schedule, facial folds, ears, nails, shedding, and skin red flags.',
+        component: () => import('./posts/boston-terrier-grooming-guide-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-puppy-guide-2025',
+        title: 'Boston Terrier Puppy Guide (2025): Growth Milestones, Training, Feeding, Socialization & Vet Schedule',
+        date: 'November 8, 2025',
+        description:
+            'A complete 2025 Boston Terrier puppy guide covering growth milestones, crate training, feeding charts, socialization windows, vet care, and safe exercise limits.',
+        component: () => import('./posts/boston-terrier-puppy-guide-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-behavior-problems-2025',
+        title: 'Boston Terrier Behavior Problems: Hyperactivity, Barking, Reactivity & Training Challenges (2025 Guide)',
+        date: 'November 7, 2025',
+        description:
+            'A 2025 behavior guide for Boston Terriers covering hyperactivity, barking, stubbornness, separation anxiety, reactivity, attention-seeking behaviors, and red flags that require intervention.',
+        component: () => import('./posts/boston-terrier-behavior-problems-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
         slug: 'how-much-do-boston-terriers-cost-2025',
         title: 'How Much Do Boston Terriers Cost in 2025? Upfront, Yearly & Lifetime Expenses',
         date: 'November 6, 2025',
