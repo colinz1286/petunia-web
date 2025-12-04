@@ -10,6 +10,66 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'how-much-do-boston-terriers-cost-2025',
+        title: 'How Much Do Boston Terriers Cost in 2025? Upfront, Yearly & Lifetime Expenses',
+        date: 'November 6, 2025',
+        description:
+            'A full 2025 breakdown of Boston Terrier costs, including breeder vs rescue prices, yearly medical expenses, food, grooming, training, insurance, senior-year costs, and commonly overlooked expenses.',
+        component: () => import('./posts/how-much-do-boston-terriers-cost-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier',
+    },
+    {
+        slug: 'boston-terrier-training-101',
+        title: 'Boston Terrier Training 101: Techniques, Rewards, Structure & Age Milestones',
+        date: 'November 5, 2025',
+        description:
+            'A beginner-friendly guide to training Boston Terriers, covering temperament, rewards, core commands, stubbornness, reinforcement techniques, common mistakes, and age-by-age expectations.',
+        component: () => import('./posts/boston-terrier-training-101'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier',
+    },
+    {
+        slug: 'boston-terrier-exercise-requirements',
+        title: 'Boston Terrier Exercise Requirements: Daily Needs, Mental Work & Weather Safety',
+        date: 'November 4, 2025',
+        description:
+            'A complete guide to Boston Terrier exercise needs by age, including walking routines, playtime, mental enrichment, signs of under-exercising, activities to avoid, and safe indoor options for extreme weather.',
+        component: () => import('./posts/boston-terrier-exercise-requirements'),
+        categories: ['owner', 'breed_specific-guides'],
+        breed: 'Boston Terrier',
+    },
+    {
+        slug: 'boston-terrier-health-problems',
+        title: 'Boston Terrier Health Problems: Eyes, Breathing, Allergies & Wellness',
+        date: 'November 3, 2025',
+        description:
+            'Learn about the most common Boston Terrier health problems, including eye disease, brachycephalic breathing issues, allergies, joint disorders, temperature sensitivity, and preventive care schedules.',
+        component: () => import('./posts/boston-terrier-health-problems'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier',
+    },
+    {
+        slug: 'boston-terrier-temperament',
+        title: 'Boston Terrier Temperament: Personality, Sensitivity, Social Behavior & Training',
+        date: 'November 2, 2025',
+        description:
+            'Learn what makes the Boston Terrier unique in temperament, including personality traits, bonding tendencies, social behavior, emotional sensitivity, early socialization needs, and red flags to watch for.',
+        component: () => import('./posts/boston-terrier-temperament'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier',
+    },
+    {
+        slug: 'boston-terrier-breed-guide-2025',
+        title: 'Boston Terrier Breed Guide 2025: Temperament, Care, Health & Training',
+        date: 'Noevmber 1, 2025',
+        description:
+            'A complete 2025 guide to the Boston Terrier breed. Learn about temperament, size, activity needs, health risks, ideal homes, training expectations, and long-term care.',
+        component: () => import('./posts/boston-terrier-breed-guide-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier',
+    },
+    {
         slug: 'dog-boarding-vaccination-requirements-2025',
         title: 'Vaccination & Health Requirements for Dog Daycare & Boarding (2025): Rabies, Distemper, Bordetella, Records & State Rules',
         date: 'November 24, 2025',
