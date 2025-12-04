@@ -36,5 +36,6 @@
   "check_in_time_label": "Check-In Time",
   "check_out_time_label": "Check-Out Time",
   "apply_to_all_pets_toggle": "Apply to all pets on this booking",
-  "save_button": "Save"
+  "save_button": "Save",
+  "pickup_label": "Pick-Up:"
 }

@@ -49,8 +49,9 @@ type Reservation = {
   businessId: string;
   petIds: string[];
 
-  // Daycare only (boarding keeps 'N/A' / empty)
+  // Daycare
   arrivalWindow: string;
+  departureWindow?: string | null;   // ⭐ NEW (mirrors iOS)
 
   // Firestore field used to target RTDB nodes (combined with petId)
   realtimeKey: string;
@@ -149,6 +150,7 @@ export default function IndividualUpcomingAppointmentsPage() {
         businessId: (data['businessId'] as string) || '',
         petIds: (data['petIds'] as string[]) || [],
         arrivalWindow: (data['arrivalWindow'] as string) || 'N/A',
+        departureWindow: (data['departureWindow'] as string) || null,   // ⭐ NEW
         realtimeKey: (data['realtimeKey'] as string) || '',
         groomingAddOns: grooming,
         pickUpDate: null,
@@ -455,22 +457,38 @@ function AppointmentCard({
           <div>
             <span className="font-medium">{t('boarding_start_label')} </span>
             {formatDate(res.date)}
-            {res.checkInWindow && res.checkInWindow.trim() ? ` (${res.checkInWindow})` : ''}
+            {res.checkInWindow && res.checkInWindow.trim()
+              ? ` (${res.checkInWindow})`
+              : ''}
           </div>
+
           {res.pickUpDate && (
             <div>
               <span className="font-medium">{t('boarding_end_label')} </span>
               {formatDate(res.pickUpDate)}
-              {res.checkOutWindow && res.checkOutWindow.trim() ? ` (${res.checkOutWindow})` : ''}
+              {res.checkOutWindow && res.checkOutWindow.trim()
+                ? ` (${res.checkOutWindow})`
+                : ''}
             </div>
           )}
         </div>
       ) : (
-        <div className="text-sm">
-          {t('daycare_date_window_label', {
-            date: formatDate(res.date),
-            window: res.arrivalWindow,
-          })}
+        <div className="text-sm space-y-1">
+          <div>
+            {t('daycare_date_window_label', {
+              date: formatDate(res.date),
+              window: res.arrivalWindow,
+            })}
+          </div>
+
+          {/* ⭐ NEW: Show daycare pick-up time if provided */}
+          {res.departureWindow &&
+            res.departureWindow.trim() !== '' && (
+              <div>
+                <span className="font-medium">{t('pickup_label')} </span>
+                {res.departureWindow}
+              </div>
+            )}
         </div>
       )}
 

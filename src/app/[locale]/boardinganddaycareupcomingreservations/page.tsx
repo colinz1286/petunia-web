@@ -67,6 +67,7 @@ type Reservation = {
   // Daycare
   daycareDate?: string | null;
   arrivalWindow?: string | null;
+  departureWindow?: string | null;
 
   // Boarding
   boardingCheckInDate?: string | null;
@@ -491,6 +492,8 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
           // Daycare: requires date + arrivalWindow
           const date = (val['date'] as string) || '';
           const arrive = (val['arrivalWindow'] as string) || '';
+          const depart = (val['departureWindow'] as string) || null;
+
           if (!date || !arrive) return;
 
           list.push({
@@ -504,6 +507,7 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
             status: statusRaw,
             daycareDate: date,
             arrivalWindow: arrive,
+            departureWindow: depart,
             boardingCheckInDate: null,
             boardingCheckOutDate: null,
             boardingCheckInWindow: null,
@@ -1035,10 +1039,21 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                                 )}
                               </>
                             ) : (
-                              <div>
-                                <strong>{t('arrival_label')}:</strong>{' '}
-                                {r.arrivalWindow || '—'}
-                              </div>
+                              <>
+                                <div>
+                                  <strong>{t('arrival_label')}:</strong>{' '}
+                                  {r.arrivalWindow || '—'}
+                                </div>
+
+                                {/* ⭐ NEW: Daycare pick-up / departure window */}
+                                {r.departureWindow &&
+                                  r.departureWindow.trim() !== '' && (
+                                    <div>
+                                      <strong>{t('pickup_label')}:</strong>{' '}
+                                      {r.departureWindow}
+                                    </div>
+                                  )}
+                              </>
                             )}
 
                             {r.groomingAddOns?.length ? (
