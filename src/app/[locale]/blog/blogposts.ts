@@ -10,6 +10,166 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'adult-boston-terrier-care-2025',
+        title: 'Adult Boston Terrier Care (2025): Daily Routine, Weight Maintenance, Joint Health & Preventive Vet Care',
+        date: 'December 2, 2025',
+        description:
+            'A complete guide to adult Boston Terrier care, including daily schedules, feeding and enrichment, ideal weight management, adult behavioral expectations, dental and preventive vet care, joint support, and when to adjust exercise intensity.',
+        component: () => import('./posts/adult-boston-terrier-care-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-adolescence-6-18-months-2025',
+        title: 'Boston Terrier Adolescence (6–18 Months) (2025): Behavior Changes, Training Regression, Energy Levels & Structure',
+        date: 'December 2, 2025',
+        description:
+            'A complete guide to Boston Terrier adolescence (6–18 months), explaining why this stage is challenging, hormonal behavior shifts, normal training regression, increased energy needs, ideal exercise routines, and how to prevent bad habits from forming.',
+        component: () => import('./posts/boston-terrier-adolescence-6-18-months-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'best-grooming-tools-for-boston-terriers-2025',
+        title: 'Best Grooming Tools for Boston Terriers (2025): Brushes, Wipes, Nail Trimmers, Sensitive Skin Tools & At-Home Routine',
+        date: 'December 2, 2025',
+        description:
+            'A complete 2025 guide to the best grooming tools for Boston Terriers, including brushes, deshedding tools, wipes, nail trimmers, sensitive-skin tools, what not to use, recommended grooming kits, frequency chart, and a simple at-home routine.',
+        component: () => import('./posts/best-grooming-tools-for-boston-terriers-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-paw-and-nail-care-guide-2025',
+        title: 'Boston Terrier Paw & Nail Care Guide (2025): Trimming Schedule, Paw Pad Health, Seasonal Risks & Allergy Warning Signs',
+        date: 'December 1, 2025',
+        description:
+            'A complete guide to Boston Terrier paw and nail care, covering nail growth patterns, age-specific trimming frequency, step-by-step nail trimming, paw pad health, seasonal hazards, and when paw discomfort signals allergies or injury.',
+        component: () => import('./posts/boston-terrier-paw-and-nail-care-guide-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-shedding-guide-2025',
+        title: 'Boston Terrier Shedding Guide (2025): Year-Round Shedding, Grooming Tools, Diet Links & When to See a Vet',
+        date: 'December 1, 2025',
+        description:
+            'A complete guide to Boston Terrier shedding, including year-round expectations, seasonal changes, best brushes, techniques to reduce shedding, diet and allergy connections, and signs of abnormal shedding that require veterinary care.',
+        component: () => import('./posts/boston-terrier-shedding-guide-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'how-often-should-you-bathe-a-boston-terrier-2025',
+        title: 'How Often Should You Bathe a Boston Terrier? (2025): Bathing Frequency, Skin Care & Safe Bath Routine',
+        date: 'December 1, 2025',
+        description:
+            'A complete guide to bathing a Boston Terrier, including ideal frequency by age, signs they need a bath, best shampoos for sensitive skin, step-by-step safe bathing routine, overbathing risks, and when medicated baths are appropriate.',
+        component: () => import('./posts/how-often-should-you-bathe-a-boston-terrier-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-lifespan-2025',
+        title: 'Boston Terrier Lifespan (2025): Longevity, Leading Health Risks & How to Extend Your Dog’s Life',
+        date: 'November 30, 2025',
+        description:
+            'A complete 2025 guide to Boston Terrier lifespan, covering average longevity, genetics vs lifestyle influences, leading causes of death, how to extend lifespan, essential senior health screens, and behavioral changes in aging Bostons.',
+        component: () => import('./posts/boston-terrier-lifespan-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-ear-care-2025',
+        title: 'Boston Terrier Ear Care (2025): Cleaning Routine, Infection Signs, Allergies & Prevention',
+        date: 'November 29, 2025',
+        description:
+            'A complete guide to Boston Terrier ear care, including anatomy, signs of infection, step-by-step cleaning routine, how allergies cause ear inflammation, when vet care is needed, and long-term prevention.',
+        component: () => import('./posts/boston-terrier-ear-care-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'are-boston-terriers-prone-to-seizures-2025',
+        title: 'Are Boston Terriers Prone to Seizures? (2025): Causes, Symptoms, Emergency Care & Long-Term Management',
+        date: 'November 28, 2025',
+        description:
+            'A complete guide to seizure risk in Boston Terriers, covering idiopathic epilepsy, genetics, triggers, seizure symptoms, emergency steps, diagnostics, and long-term treatment options.',
+        component: () => import('./posts/are-boston-terriers-prone-to-seizures-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'senior-boston-terrier-care-2025',
+        title: 'Senior Boston Terrier Care (2025): Mobility, Cognition, Breathing, Diet & End-of-Life Comfort',
+        date: 'November 27, 2025',
+        description:
+            'A complete 2025 guide to senior Boston Terrier care, including lifespan expectations, arthritis, cognitive decline, worsening eye and breathing issues, senior diet adjustments, safe exercise plans, and compassionate end-of-life planning.',
+        component: () => import('./posts/senior-boston-terrier-care-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-weight-chart-and-puppy-growth-2025',
+        title: 'Boston Terrier Weight Chart & Puppy Growth (2025): Normal Ranges, Warning Signs & Nutrition Tips',
+        date: 'November 26, 2025',
+        description:
+            'A complete 2025 guide to Boston Terrier puppy growth, including weight charts, healthy ranges, under/overweight signs, diet and genetic factors, growth stalls, and transitioning from puppy to adult food.',
+        component: () => import('./posts/boston-terrier-weight-chart-and-puppy-growth-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'do-boston-terriers-get-cold-easily-2025',
+        title: 'Do Boston Terriers Get Cold Easily? (2025): Cold Tolerance, Winter Safety, Gear & Warning Signs',
+        date: 'November 25, 2025',
+        description:
+            'A complete 2025 guide explaining Boston Terrier cold sensitivity, early signs of discomfort, winter exercise limits, outdoor gear, home heating adjustments, and when cold sensitivity indicates a health issue.',
+        component: () => import('./posts/do-boston-terriers-get-cold-easily-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-heat-sensitivity-2025',
+        title: 'Boston Terrier Heat Sensitivity (2025): Overheating Risks, Early Warning Signs, Safe Temperatures & Cooling Strategies',
+        date: 'November 24, 2025',
+        description:
+            'A complete 2025 guide to Boston Terrier heat sensitivity, explaining why they overheat quickly, early heat stress signs, temperature thresholds, cooling strategies, dangerous activities, and emergency heatstroke steps.',
+        component: () => import('./posts/boston-terrier-heat-sensitivity-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-allergies-2025',
+        title: 'Boston Terrier Allergies (2025): Food, Seasonal, Environmental Triggers, Itching Patterns & Treatment Options',
+        date: 'November 23, 2025',
+        description:
+            'A complete 2025 guide to Boston Terrier allergies, including food, environmental, and seasonal allergies, unique itching patterns, common triggers, home care strategies, vet treatment options, and how allergies lead to secondary infections.',
+        component: () => import('./posts/boston-terrier-allergies-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-breathing-issues-2025',
+        title: 'Boston Terrier Breathing Issues (2025): BOAS Warning Signs, Noisy Breathing, Heat Risks & Vet Solutions',
+        date: 'November 22, 2025',
+        description:
+            'A complete 2025 guide to Boston Terrier breathing issues, including BOAS signs, noisy vs dangerous breathing, heat intolerance, exercise limitations, nighttime choking episodes, and vet treatment options.',
+        component: () => import('./posts/boston-terrier-breathing-issues-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-eye-problems-2025',
+        title: 'Boston Terrier Eye Problems (2025): Cherry Eye, Ulcers, Cataracts, Red Flags & Long-Term Care',
+        date: 'November 21, 2025',
+        description:
+            'A complete 2025 guide to Boston Terrier eye problems, including cherry eye, corneal ulcers, cataracts, red-flag symptoms, at-home care, emergency signs, prevention, and long-term management.',
+        component: () => import('./posts/boston-terrier-eye-problems-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
         slug: 'how-to-stop-a-boston-terrier-from-barking-2025',
         title: 'How to Stop a Boston Terrier from Barking (2025): Root Causes, Quiet Training, Environmental Fixes & Red Flags',
         date: 'November 20, 2025',
