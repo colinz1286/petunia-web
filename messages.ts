@@ -1,5 +1,3 @@
-import IndividualEmployeeDogsOnPropertyPage from "@/app/[locale]/individualemployeedogsonproperty/page";
-
 export default {
   en: () => ({
     adoptionApplicationForm: require('./messages/en/adoptionApplicationForm.json'),
