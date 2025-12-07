@@ -10,6 +10,240 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'psychology-of-hope-in-canine-longevity',
+        title:
+            'The Psychology of Hope in Longevity Medicine: Why Owners Want Anti-Ageing Solutions — and How to Stay Grounded in Science',
+        date: 'December 7, 2025',
+        description:
+            'A deep exploration of the emotional drivers behind longevity medicine for dogs, including grief avoidance, attachment psychology, marketing risks, red flags, rational evaluation of claims, and the ethical difference between extending life and extending suffering.',
+        component: () =>
+            import('./posts/psychology-of-hope-in-canine-longevity') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
+        slug: 'do-dog-anti-ageing-drugs-really-work',
+        title:
+            'Do Anti-Ageing Drugs for Dogs Really Work? A Critical Review of the Evidence, Trials, and What Is Still Unknown',
+        date: 'December 6, 2025',
+        description:
+            'A critical examination of canine anti-ageing drugs, reviewing FDA standards, early trial data, metabolic markers, safety questions, placebo effects, breed-specific gaps, and the difference between scientific optimism and proven outcomes.',
+        component: () =>
+            import('./posts/do-dog-anti-ageing-drugs-really-work') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
+        slug: 'companies-behind-canine-longevity',
+        title:
+            'The Companies Behind Canine Longevity: Who They’re Developing, and How Their Science Holds Up',
+        date: 'December 5, 2025',
+        description:
+            'A deep dive into the biotech and research groups shaping the future of canine longevity, including Loyal, Embark, the Dog Ageing Project, university laboratories, funding transparency, scientific rigor, and realistic expectations for anti-ageing breakthroughs.',
+        component: () =>
+            import('./posts/companies-behind-canine-longevity') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
+        slug: 'ethics-of-extending-dog-lifespan',
+        title:
+            'The Ethics of Extending Canine Lifespan: Owner Expectations, Quality of Life, and the Future of Ageing Science',
+        date: 'December 4, 2025',
+        description:
+            'An in-depth exploration of the ethical questions surrounding canine lifespan extension, including owner expectations, quality-of-life considerations, veterinary counseling, accessibility challenges, and humane decision-making in the era of longevity medicine.',
+        component: () =>
+            import('./posts/ethics-of-extending-dog-lifespan') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
+        slug: 'prepare-home-for-ageing-dog',
+        title:
+            'How to Prepare Your Home for an Ageing Dog: Surfaces, Lighting, Temperature, and Safety Layouts',
+        date: 'December 3, 2025',
+        description:
+            'A complete guide to preparing your home for an ageing dog, including flooring solutions, lighting adjustments, temperature control, safe layouts, fall prevention, and practical modifications for comfort and safety.',
+        component: () =>
+            import('./posts/prepare-home-for-ageing-dog') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
+        slug: 'large-breed-dog-longevity-guide',
+        title:
+            'Longevity for Large Breeds: Why Big Dogs Age Faster and Practical Ways to Slow the Decline',
+        date: 'December 2, 2025',
+        description:
+            'A science-backed guide explaining why large dog breeds age faster and practical longevity strategies including growth rate management, joint protection, muscle maintenance, nutrition, mobility work, cardiovascular care, and breed-specific risk factors.',
+        component: () =>
+            import('./posts/large-breed-dog-longevity-guide') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary', 'breed_specific_guides']
+    },
+    {
+        slug: 'longest-living-dog-breeds-longevity-lessons',
+        title:
+            'Breeds With the Longest Lifespans: What We Can Learn From Them About Ageing',
+        date: 'December 1, 2025',
+        description:
+            'A scientific look at dog breeds with exceptionally long lifespans, examining genetic factors, metabolic traits, lifestyle patterns, growth speed, and lessons all owners can apply to support healthy ageing.',
+        component: () =>
+            import('./posts/longest-living-dog-breeds-longevity-lessons') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary', 'breed_specific_guides']
+    },
+    {
+        slug: 'dog-stress-sleep-environment-lifespan',
+        title:
+            'How Stress, Sleep, and Environment Affect Dog Lifespan: Daily Habits That Increase Healthspan',
+        date: 'November 30, 2025',
+        description:
+            'A veterinarian-informed guide to how stress, sleep quality, circadian rhythm, and environmental design influence canine lifespan, including daily habits and enrichment techniques that support longevity.',
+        component: () =>
+            import('./posts/dog-stress-sleep-environment-lifespan') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
+        slug: 'dog-longevity-supplements-evidence',
+        title:
+            'Dog Longevity Supplements: What Works, What Doesn’t, and What Owners Should Avoid',
+        date: 'November 29, 2025',
+        description:
+            'A scientific guide to dog longevity supplements, including evidence-supported ingredients, promising emerging compounds, ineffective products, safety considerations, and how to work with your veterinarian to build a smart supplementation plan.',
+        component: () =>
+            import('./posts/dog-longevity-supplements-evidence') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
+        slug: 'dog-cognitive-decline-ccd-guide',
+        title:
+            'Understanding Dog Cognitive Decline: Early Symptoms, Science-Based Interventions, and Quality-of-Life Planning',
+        date: 'November 28, 2025',
+        description:
+            'A veterinarian-supported guide explaining canine cognitive dysfunction (CCD), early symptoms, environmental and nutritional interventions, enrichment plans, sensory decline differentiation, and long-term quality-of-life planning.',
+        component: () =>
+            import('./posts/dog-cognitive-decline-ccd-guide') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
+        slug: 'dog-mobility-and-joint-preservation',
+        title:
+            'Mobility and Joint Preservation: How to Prevent Arthritis, Muscle Loss, and Balance Decline in Ageing Dogs',
+        date: 'November 27, 2025',
+        description:
+            'A veterinarian-supported guide to preventing arthritis, muscle loss, and balance decline in ageing dogs, including flooring solutions, strength exercises, complementary therapies, nutrition, and daily movement routines.',
+        component: () =>
+            import('./posts/dog-mobility-and-joint-preservation') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
+        slug: 'conditions-that-shorten-dog-lifespan',
+        title:
+            'Conditions That Shorten a Dog’s Lifespan — And How Owners Can Slow Them Down',
+        date: 'November 26, 2025',
+        description:
+            'A science-backed examination of the most common conditions that shorten canine lifespan, including obesity, arthritis, dental disease, kidney disease, heart disease, and strategies owners can use to slow disease progression and improve longevity.',
+        component: () =>
+            import('./posts/conditions-that-shorten-dog-lifespan') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
+        slug: 'future-of-dog-longevity-medicine',
+        title:
+            'The Future of Veterinary Longevity Medicine: Senolytics, Gene Therapy, and What’s Coming After LOY-002',
+        date: 'November 25, 2025',
+        description:
+            'A forward-looking examination of senolytics, gene therapy, microbiome modulation, metabolic switching, regulatory milestones after LOY-002, realistic timelines, and ethical considerations shaping the future of canine longevity medicine.',
+        component: () =>
+            import('./posts/future-of-dog-longevity-medicine') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
+        slug: 'senior-dog-screening-guide-2026',
+        title:
+            'Senior Dog Screening Guide (2026): Bloodwork, Mobility Tests, Cognitive Assessments, Early Detection',
+        date: 'November 24, 2025',
+        description:
+            'A veterinarian-backed 2026 guide to senior dog screenings, including bloodwork, mobility exams, cognitive assessments, early-detection red flags, and what owners should prioritize for healthy ageing.',
+        component: () =>
+            import('./posts/senior-dog-screening-guide-2026') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
+        slug: 'dog-weight-and-lifespan-data-analysis',
+        title:
+            'How Weight Impacts Lifespan: Why Lean Dogs Live Up to 2.5 Years Longer (Data Breakdown)',
+        date: 'November 23, 2025',
+        description:
+            'A detailed analysis of how body weight affects canine lifespan, including the Purina study, inflammation pathways, metabolic disease risk, body condition scoring, and safe weight reduction strategies.',
+        component: () =>
+            import('./posts/dog-weight-and-lifespan-data-analysis') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
+        slug: 'dog-exercise-for-longevity-daily-routines',
+        title:
+            'Exercise and Longevity: The Exact Daily Routines That Help Dogs Live Longer, According to Research',
+        date: 'November 22, 2025',
+        description:
+            'A science-backed guide to the daily exercise routines that support dog longevity, including cardio, strength, mobility, cognitive work, and breed-specific needs for healthy ageing.',
+        component: () =>
+            import('./posts/dog-exercise-for-longevity-daily-routines') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
+        slug: 'dog-longevity-diet-metabolic-health',
+        title:
+            'Dog Longevity Diets: What Science Says About Nutrition, Metabolic Health, and Anti-Ageing Foods',
+        date: 'November 21, 2025',
+        description:
+            'A research-based guide to how caloric density, macronutrients, omega-3s, antioxidants, feeding patterns, and emerging supplements influence dog longevity, metabolic health, and ageing.',
+        component: () =>
+            import('./posts/dog-longevity-diet-metabolic-health') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
+        slug: 'dog-ageing-science-cellular-pathways',
+        title:
+            'How Dog Ageing Actually Works: Cellular Pathways, Inflammation, and Metabolic Decline Explained',
+        date: 'November 20, 2025',
+        description:
+            'A scientific, veterinarian-supported breakdown of how dogs age: inflammation, metabolic slowdown, mitochondrial decline, immune weakening, and how new longevity medicine targets ageing pathways at the cellular level.',
+        component: () =>
+            import('./posts/dog-ageing-science-cellular-pathways') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner', 'veterinary']
+    },
+    {
         slug: 'adult-boston-terrier-care-2025',
         title: 'Adult Boston Terrier Care (2025): Daily Routine, Weight Maintenance, Joint Health & Preventive Vet Care',
         date: 'December 2, 2025',

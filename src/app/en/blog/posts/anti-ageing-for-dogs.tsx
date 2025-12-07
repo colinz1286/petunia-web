@@ -10,7 +10,7 @@ export default function AntiAgeingForDogs() {
   const title =
     'Anti Ageing for Dogs in 2026: The Science, The New Dog Longevity Drug, FDA Milestones, and What Owners Should Know';
   const date = 'November 19, 2025';
-  const categories = ['owner', 'breed_specific_guides'] as const;
+  const categories = ['owner'] as const;
 
   const categoryLabels: Record<string, string> = {
     owner: 'Pet Owners',

@@ -1,5 +1,169 @@
 [
     {
+        "slug": "psychology-of-hope-in-canine-longevity",
+        "title": "The Psychology of Hope in Longevity Medicine: Why Owners Want Anti-Ageing Solutions — and How to Stay Grounded in Science",
+        "date": "December 7, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "do-dog-anti-ageing-drugs-really-work",
+        "title": "Do Anti-Ageing Drugs for Dogs Really Work? A Critical Review of the Evidence, Trials, and What Is Still Unknown",
+        "date": "December 6, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "companies-behind-canine-longevity",
+        "title": "The Companies Behind Canine Longevity: Who They’re Developing, and How Their Science Holds Up",
+        "date": "December 5, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "ethics-of-extending-dog-lifespan",
+        "title": "The Ethics of Extending Canine Lifespan: Owner Expectations, Quality of Life, and the Future of Ageing Science",
+        "date": "December 4, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "prepare-home-for-ageing-dog",
+        "title": "How to Prepare Your Home for an Ageing Dog: Surfaces, Lighting, Temperature, and Safety Layouts",
+        "date": "December 3, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "large-breed-dog-longevity-guide",
+        "title": "Longevity for Large Breeds: Why Big Dogs Age Faster and Practical Ways to Slow the Decline",
+        "date": "December 2, 2025",
+        "categories": [
+            "owner",
+            "veterinary",
+            "breed_specific_guides"
+        ]
+    },
+    {
+        "slug": "longest-living-dog-breeds-longevity-lessons",
+        "title": "Breeds With the Longest Lifespans: What We Can Learn From Them About Ageing",
+        "date": "December 1, 2025",
+        "categories": [
+            "owner",
+            "veterinary",
+            "breed_specific_guides"
+        ]
+    },
+    {
+        "slug": "dog-stress-sleep-environment-lifespan",
+        "title": "How Stress, Sleep, and Environment Affect Dog Lifespan: Daily Habits That Increase Healthspan",
+        "date": "November 30, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "dog-longevity-supplements-evidence",
+        "title": "Dog Longevity Supplements: What Works, What Doesn’t, and What Owners Should Avoid",
+        "date": "November 29, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "dog-cognitive-decline-ccd-guide",
+        "title": "Understanding Dog Cognitive Decline: Early Symptoms, Science-Based Interventions, and Quality-of-Life Planning",
+        "date": "November 28, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "dog-mobility-and-joint-preservation",
+        "title": "Mobility and Joint Preservation: How to Prevent Arthritis, Muscle Loss, and Balance Decline in Ageing Dogs",
+        "date": "November 27, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "conditions-that-shorten-dog-lifespan",
+        "title": "Conditions That Shorten a Dog’s Lifespan — And How Owners Can Slow Them Down",
+        "date": "November 26, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "future-of-dog-longevity-medicine",
+        "title": "The Future of Veterinary Longevity Medicine: Senolytics, Gene Therapy, and What’s Coming After LOY-002",
+        "date": "November 25, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "senior-dog-screening-guide-2026",
+        "title": "Senior Dog Screening Guide (2026): Bloodwork, Mobility Tests, Cognitive Assessments, Early Detection",
+        "date": "November 24, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "dog-weight-and-lifespan-data-analysis",
+        "title": "How Weight Impacts Lifespan: Why Lean Dogs Live Up to 2.5 Years Longer (Data Breakdown)",
+        "date": "November 23, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "dog-exercise-for-longevity-daily-routines",
+        "title": "Exercise and Longevity: The Exact Daily Routines That Help Dogs Live Longer, According to Research",
+        "date": "November 22, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "dog-longevity-diet-metabolic-health",
+        "title": "Dog Longevity Diets: What Science Says About Nutrition, Metabolic Health, and Anti-Ageing Foods",
+        "date": "November 21, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "dog-ageing-science-cellular-pathways",
+        "title": "How Dog Ageing Actually Works: Cellular Pathways, Inflammation, and Metabolic Decline Explained",
+        "date": "November 20, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
         "slug": "adult-boston-terrier-care-2025",
         "title": "Adult Boston Terrier Care (2025): Daily Routine, Weight Maintenance, Joint Health & Preventive Vet Care",
         "date": "December 2, 2025",
