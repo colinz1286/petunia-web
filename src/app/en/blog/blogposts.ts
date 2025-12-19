@@ -10,6 +10,15 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'the-ultimate-guide-to-raw-dog-food',
+        title: 'The Ultimate Guide to Raw Dog Food: What Every Dog Owner Needs to Know',
+        date: 'December 3, 2025',
+        description:
+            'A practical, evidence-based guide to raw feeding: what it is, common styles (BARF and prey-model), nutrition basics, who it may fit, key risks, and safer decision steps.',
+        component: () => import('./posts/the-ultimate-guide-to-raw-dog-food'),
+        categories: ['owner','food'],
+    },
+    {
         slug: 'psychology-of-hope-in-canine-longevity',
         title:
             'The Psychology of Hope in Longevity Medicine: Why Owners Want Anti-Ageing Solutions — and How to Stay Grounded in Science',
