@@ -170,7 +170,7 @@ export default function IndividualBookServicesPage() {
     }, []);
 
     // ⬇️ REPLACE your existing loadWaiverContent with this
-    const loadWaiverContent = useCallback(async (bizId: string) => {
+    const _loadWaiverContent = useCallback(async (bizId: string) => {
         setWaiverLoading(true);
         setWaiverExpanded(false);
         try {
@@ -212,6 +212,8 @@ export default function IndividualBookServicesPage() {
             setWaiverLoading(false);
         }
     }, []);
+
+    void _loadWaiverContent;
 
     const routeToSelectService = useCallback(
         (biz: Business) => {
