@@ -10,13 +10,141 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'is-raw-dog-food-worth-the-cost',
+        title: 'Is Raw Dog Food Worth the Cost? Budgeting & Long-Term Value Explained',
+        date: 'December 17, 2025',
+        description:
+            'A practical cost breakdown of raw feeding: commercial vs homemade budgets, comparisons to premium kibble and fresh food, hidden costs (storage, prep, supplements), and how to decide if raw is worth it long term.',
+        component: () => import('./posts/is-raw-dog-food-worth-the-cost'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'raw-diet-troubleshooting-common-issues',
+        title: 'Raw Diet Troubleshooting: Common Issues and How to Fix Them',
+        date: 'December 16, 2025',
+        description:
+            'A practical troubleshooting guide for common raw diet problems: diarrhea, constipation, picky eating, weight changes, skin or coat issues, fat balance, bone-related stool problems, and when to seek professional help.',
+        component: () => import('./posts/raw-diet-troubleshooting-common-issues'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'how-to-evaluate-raw-food-labels-and-ingredients',
+        title: 'How to Evaluate Raw Food Labels & Ingredients (Avoid Hidden Risks)',
+        date: 'December 15, 2025',
+        description:
+            'A practical guide to understanding raw dog food labels, ingredient lists, nutrient balance statements, misleading marketing terms, red flags, and how to compare raw foods objectively.',
+        component: () =>
+            import('./posts/how-to-evaluate-raw-food-labels-and-ingredients'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'veterinarian-perspectives-on-raw-feeding',
+        title: 'Veterinary Perspectives on Raw Diets: What Your Vet May Not Tell You',
+        date: 'December 14, 2025',
+        description:
+            'A clear, evidence-based look at why many veterinarians oppose raw diets, how nutrition training varies, public health and liability pressures, and how to have productive raw-feeding conversations with your vet.',
+        component: () => import('./posts/veterinarian-perspectives-on-raw-feeding'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'top-myths-about-raw-feeding-debunked',
+        title: 'Top Myths About Raw Feeding — Debunked by Experts',
+        date: 'December 13, 2025',
+        description:
+            'A myth-busting, evidence-based guide to raw feeding: what experts agree on, what the research actually shows, common misinformation patterns, and a practical checklist for evaluating raw diet claims safely.',
+        component: () => import('./posts/top-myths-about-raw-feeding-debunked'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'raw-bones-and-dogs-benefits-risks-safe-chewing-tips',
+        title: 'Raw Bones & Dogs: Benefits, Risks & Safe Chewing Tips',
+        date: 'December 12, 2025',
+        description:
+            'An evidence-based guide to raw bones for dogs, covering benefits, risks, raw vs cooked bones, safety guidelines, and alternatives for dogs who should not chew bones.',
+        component: () =>
+            import('./posts/raw-bones-and-dogs-benefits-risks-safe-chewing-tips'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'raw-food-vs-kibble-vs-fresh-food',
+        title: 'Raw Food vs. Kibble vs. Fresh Food: Which Diet Is Best for Your Dog?',
+        date: 'December 11, 2025',
+        description:
+            'A practical comparison of raw, kibble, and fresh cooked diets: digestibility, ingredient quality, cost, convenience, safety, and which option fits different dogs and households best.',
+        component: () => import('./posts/raw-food-vs-kibble-vs-fresh-food'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'best-raw-dog-food-brands-reviewed',
+        title: 'Best Raw Dog Food Brands Reviewed (Current Year Edition)',
+        date: 'December 10, 2025',
+        description:
+            'A credibility-first guide to evaluating raw dog food brands: sourcing, transparency, AAFCO statements, safety steps like HPP and third-party testing, cost/value trade-offs, and who commercial raw fits best.',
+        component: () => import('./posts/best-raw-dog-food-brands-reviewed'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'raw-food-diet-for-puppies-is-it-safe',
+        title: 'Raw Food Diet for Puppies: Is It Safe and What You Should Know',
+        date: 'December 9, 2025',
+        description:
+            'A high-stakes, evidence-first guide to raw feeding puppies: growth nutrition basics, calcium and phosphorus risks, commercial vs homemade considerations, and when raw is not recommended.',
+        component: () => import('./posts/raw-food-diet-for-puppies-is-it-safe'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'raw-dog-food-recipes-you-can-make-at-home',
+        title: 'Raw Dog Food Recipes You Can Make at Home (Balanced & Nutritious)',
+        date: 'December 8, 2025',
+        description:
+            'A practical, safety-first guide to homemade raw feeding: what a balanced recipe must include, simple meal frameworks, common supplements, portion sizing basics, and the risks of DIY feeding without formulation support.',
+        component: () => import('./posts/raw-dog-food-recipes-you-can-make-at-home'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'how-to-transition-your-dog-to-a-raw-food-diet',
+        title: 'Step-by-Step: How to Transition Your Dog to a Raw Food Diet',
+        date: 'December 7, 2025',
+        description:
+            'A practical, step-by-step transition guide for switching dogs to raw food: readiness signs, gradual vs rapid methods, expected stool changes, common digestive issues, timelines, and when to pause or reconsider.',
+        component: () => import('./posts/how-to-transition-your-dog-to-a-raw-food-diet'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'barf-diet-explained',
+        title: 'BARF Diet Explained: The Complete Beginner’s Guide',
+        date: 'December 6, 2025',
+        description:
+            'A beginner-friendly BARF guide: what it means, typical components and ratios, how it differs from prey-model raw, common mistakes, pros and limitations, and how to decide if it fits long term.',
+        component: () => import('./posts/barf-diet-explained'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'raw-food-diet-pros-and-cons',
+        title: 'Raw Food Diet Pros & Cons: What Science and Vets Say',
+        date: 'December 5, 2025',
+        description:
+            'A balanced, evidence-driven review of raw dog food diets: claimed benefits, what research supports or does not support, common veterinary concerns, nutrition risks, and how owners can decide responsibly.',
+        component: () => import('./posts/raw-food-diet-pros-and-cons'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'raw-dog-food-safety',
+        title: 'Raw Dog Food Safety: How to Handle & Prepare Raw Diets Without Risk',
+        date: 'December 4, 2025',
+        description:
+            'A practical, owner-first safety guide for raw feeding: shopping, storage, thawing, prep, sanitation, household precautions, and what to do if someone gets sick.',
+        component: () => import('./posts/raw-dog-food-safety'),
+        categories: ['owner', 'food'],
+    },
+    {
         slug: 'the-ultimate-guide-to-raw-dog-food',
         title: 'The Ultimate Guide to Raw Dog Food: What Every Dog Owner Needs to Know',
         date: 'December 3, 2025',
         description:
             'A practical, evidence-based guide to raw feeding: what it is, common styles (BARF and prey-model), nutrition basics, who it may fit, key risks, and safer decision steps.',
         component: () => import('./posts/the-ultimate-guide-to-raw-dog-food'),
-        categories: ['owner','food'],
+        categories: ['owner', 'food'],
     },
     {
         slug: 'psychology-of-hope-in-canine-longevity',
