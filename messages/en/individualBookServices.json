@@ -2,5 +2,8 @@
   "book_services_title": "Book Services",
   "loading_approved_businesses": "Loading your approved businesses...",
   "no_approved_businesses": "You have no approved businesses at this time.",
-  "back_to_dashboard": "Back to Dashboard"
+  "back_to_dashboard": "Back to Dashboard",
+  "waiver_block_text_before_link": "You have not signed the waiver for this business. Please complete that before trying to book. If you need a tutorial video to help you sign the waiver, please visit the",
+  "waiver_block_link_text": "tutorials section",
+  "waiver_block_text_after_link": "of the app. You can find this on your main Dashboard. Thank you!"
 }

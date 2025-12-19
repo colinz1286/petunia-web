@@ -48,6 +48,9 @@ export default function IndividualBookServicesPage() {
     const [businesses, setBusinesses] = useState<Business[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    // === NEW: Waiver gating per business (iOS parity: disable selection if required and not signed)
+    const [waiverGateByBusiness, setWaiverGateByBusiness] = useState<Record<string, { required: boolean; signed: boolean }>>({});
+
     // Waiver modal state
     const [showWaiverModal, setShowWaiverModal] = useState(false);
     const [waiverAgreeChecked, setWaiverAgreeChecked] = useState(false);
@@ -83,9 +86,14 @@ export default function IndividualBookServicesPage() {
     const fetchApprovedBusinesses = async (uid: string) => {
         try {
             setIsLoading(true);
+
+            // Reset gates on refresh
+            setWaiverGateByBusiness({});
+
             const querySnap = await getDocs(collection(db, 'businesses'));
 
             const result: Business[] = [];
+            const gateMap: Record<string, { required: boolean; signed: boolean }> = {};
 
             // NOTE: sequential read is fine at this scale; can parallelize later if needed
             for (const docSnap of querySnap.docs) {
@@ -95,13 +103,25 @@ export default function IndividualBookServicesPage() {
                 const bizId = docSnap.id;
                 const bizName = (data['businessName'] as string) || 'Unnamed Business';
 
+                // Must be an approved client to appear here
                 const clientSnap = await getDoc(doc(db, 'userApprovedBusinesses', bizId, 'clients', uid));
-                if (clientSnap.exists() && Object.keys(clientSnap.data() || {}).length > 0) {
-                    result.push({ id: bizId, name: bizName });
-                }
+                if (!(clientSnap.exists() && Object.keys(clientSnap.data() || {}).length > 0)) continue;
+
+                result.push({ id: bizId, name: bizName });
+
+                // === NEW: Waiver gating logic ===
+                // Required flag lives on the business doc
+                const required = !!(data['waiverRequired'] as boolean);
+
+                // Signed lives on the approved client doc (same as iOS gating you built)
+                const c = (clientSnap.data() || {}) as FSMap;
+                const signed = !required ? true : c['waiverSignedAt'] != null;
+
+                gateMap[bizId] = { required, signed };
             }
 
             setBusinesses(result);
+            setWaiverGateByBusiness(gateMap);
         } catch (err) {
             console.error('❌ Failed to fetch businesses:', err);
         } finally {
@@ -219,9 +239,18 @@ export default function IndividualBookServicesPage() {
             // }
 
             // Always allow navigation during the temporary window
+            const uid = uidRef.current;
+            if (!uid) return;
+
+            // === NEW: hard block if waiver required and not signed (matches iOS behavior) ===
+            const gate = waiverGateByBusiness[bizId];
+            if (gate?.required && !gate.signed) {
+                return;
+            }
+
             routeToSelectService({ id: bizId, name: bizName });
         },
-        [readWaiverGate, routeToSelectService, loadWaiverContent]
+        [waiverGateByBusiness, routeToSelectService]
     );
 
     const handleAgree = useCallback(async () => {
@@ -277,17 +306,46 @@ export default function IndividualBookServicesPage() {
                     <p className="text-center text-gray-500 text-sm">{t('no_approved_businesses')}</p>
                 ) : (
                     <div className="space-y-4">
-                        {businesses.map((biz) => (
-                            <button
-                                key={biz.id}
-                                onClick={() => handleBusinessClick(biz.id, biz.name)}
-                                className="flex items-center w-full px-4 py-3 bg-white rounded shadow hover:bg-gray-50 border border-gray-300"
-                            >
-                                <span className="text-3xl mr-4 text-[color:var(--color-accent)]">🐾</span>
-                                <span className="flex-1 text-left font-semibold text-base sm:text-lg">{biz.name}</span>
-                                <span className="text-gray-400 text-xl">›</span>
-                            </button>
-                        ))}
+                        {businesses.map((biz) => {
+                            // === NEW: Waiver gating (disable selection if waiver required and not signed) ===
+                            const gate = waiverGateByBusiness?.[biz.id];
+                            const bookingBlocked = !!(gate?.required && !gate.signed);
+
+                            return (
+                                <div key={biz.id} className="space-y-1">
+                                    <button
+                                        onClick={() => handleBusinessClick(biz.id, biz.name)}
+                                        disabled={bookingBlocked}
+                                        className={`flex items-center w-full px-4 py-3 bg-white rounded shadow border border-gray-300 ${bookingBlocked ? 'opacity-60 cursor-not-allowed' : 'hover:bg-gray-50'
+                                            }`}
+                                    >
+                                        <span
+                                            className={`text-3xl mr-4 ${bookingBlocked ? 'text-gray-400' : 'text-[color:var(--color-accent)]'
+                                                }`}
+                                        >
+                                            🐾
+                                        </span>
+                                        <span className="flex-1 text-left font-semibold text-base sm:text-lg">{biz.name}</span>
+                                        <span className="text-gray-400 text-xl">›</span>
+                                    </button>
+
+                                    {bookingBlocked && (
+                                        <p className="text-sm text-red-600 px-1">
+                                            {t('waiver_block_text_before_link')}{' '}
+                                            <a
+                                                href="https://www.petuniapets.com/en/tutorialsindividuals"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="underline text-red-700 hover:text-red-800"
+                                            >
+                                                {t('waiver_block_link_text')}
+                                            </a>{' '}
+                                            {t('waiver_block_text_after_link')}
+                                        </p>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
             </div>
@@ -296,9 +354,7 @@ export default function IndividualBookServicesPage() {
             {showWaiverModal && activeBiz && (
                 <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-3">
                     <div className="bg-white p-6 rounded-xl shadow-md max-w-md w-full space-y-4">
-                        <h2 className="text-lg font-semibold text-center text-[color:var(--color-accent)]">
-                            Waiver Required
-                        </h2>
+                        <h2 className="text-lg font-semibold text-center text-[color:var(--color-accent)]">Waiver Required</h2>
 
                         <p className="text-sm text-gray-700">
                             To book with <strong>{activeBiz.name}</strong>, you need to agree to the business&apos;s client waiver.
@@ -361,9 +417,7 @@ export default function IndividualBookServicesPage() {
                             <button
                                 onClick={handleAgree}
                                 disabled={!waiverAgreeChecked || isProcessingWaiver}
-                                className={`px-4 py-2 rounded text-sm text-white ${waiverAgreeChecked && !isProcessingWaiver
-                                    ? 'bg-green-700 hover:bg-green-600'
-                                    : 'bg-gray-400 cursor-not-allowed'
+                                className={`px-4 py-2 rounded text-sm text-white ${waiverAgreeChecked && !isProcessingWaiver ? 'bg-green-700 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'
                                     }`}
                             >
                                 {isProcessingWaiver ? 'Saving…' : 'Agree'}
