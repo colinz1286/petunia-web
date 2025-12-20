@@ -10,6 +10,96 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'intestinal-blockage-dogs-symptoms',
+        title: 'Intestinal Blockages in Dogs: Early Warning Signs, Vomiting Patterns, Diagnosis, and Treatment',
+        date: 'December 19, 2025',
+        description:
+            'Intestinal blockages in dogs can become life-threatening quickly. Learn common objects dogs swallow, early warning signs owners miss, why vomiting without diarrhea is concerning, and how veterinarians diagnose and treat obstructions.',
+        component: () => import('./posts/intestinal-blockage-dogs-symptoms'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'gut-dysbiosis-in-dogs',
+        title: 'Gut Dysbiosis in Dogs: Microbiome Imbalance, Symptoms, and Evidence-Based Recovery',
+        date: 'December 18, 2025',
+        description:
+            'Gut dysbiosis is an imbalance of the canine gut microbiome that can drive chronic diarrhea, gas, and digestive instability. Learn causes, diagnostic limits, and evidence-based recovery strategies.',
+        component: () => import('./posts/gut-dysbiosis-in-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'pancreatitis-and-fatty-foods-in-dogs',
+        title: 'Pancreatitis and High-Fat Foods in Dogs: Symptoms, Risks, Treatment, and Prevention',
+        date: 'December 17, 2025',
+        description:
+            'Pancreatitis is a painful and potentially serious condition in dogs, often triggered by high-fat foods. Learn symptoms, diagnosis, treatment, and how to prevent recurrence.',
+        component: () => import('./posts/pancreatitis-and-fatty-foods-in-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'poor-dog-food-digestive-problems',
+        title: 'Poor-Quality Dog Food and Digestive Problems: Digestibility, Stool Quality, and Better Choices',
+        date: 'December 16, 2025',
+        description:
+            'Digestive issues are often blamed on sensitive stomachs, but food quality and digestibility play a major role. Learn how poor-quality dog food affects stool, gut health, and how to upgrade diets safely.',
+        component: () => import('./posts/poor-dog-food-digestive-problems'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'stress-colitis-in-dogs',
+        title: 'Stress-Induced Colitis in Dogs: Mucus, Blood, Diarrhea, and How to Prevent Flare-Ups',
+        date: 'December 15, 2025',
+        description:
+            'Stress colitis can cause sudden diarrhea with mucus or bright red blood, often after boarding, travel, or routine changes. Learn symptoms, rule-outs, and prevention strategies.',
+        component: () => import('./posts/stress-colitis-in-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'intestinal-parasites-causing-diarrhea-dogs',
+        title: 'Intestinal Parasites Causing Diarrhea in Dogs: Symptoms, Testing, Treatment, and Prevention',
+        date: 'December 14, 2025',
+        description:
+            'Parasites are a common, treatable cause of diarrhea in dogs. Learn which intestinal parasites matter most, how dogs get infected, how fecal testing works, and how to prevent reinfection and household spread.',
+        component: () => import('./posts/intestinal-parasites-causing-diarrhea-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'food-intolerance-allergies-dogs-gi-symptoms',
+        title: 'Food Intolerance vs Food Allergy in Dogs: GI Symptoms, Triggers, and the Elimination Diet Plan',
+        date: 'December 13, 2025',
+        description:
+            'Food intolerance and food allergy can both cause vomiting, diarrhea, gas, and chronic soft stool in dogs. Learn the difference, common triggers, elimination diet steps, and why many limited-ingredient foods fail.',
+        component: () => import('./posts/food-intolerance-allergies-dogs-gi-symptoms'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'sudden-diet-changes-gi-upset-dogs',
+        title: 'Sudden Diet Changes and GI Upset in Dogs: Symptoms, Timelines, and Safe Transitions',
+        date: 'December 12, 2025',
+        description:
+            'Sudden food changes often trigger vomiting, diarrhea, gas, or soft stools in dogs. Learn why transitions upset digestion, how to switch foods safely, and when symptoms mean something else.',
+        component: () => import('./posts/sudden-diet-changes-gi-upset-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'dietary-indiscretion-in-dogs',
+        title: 'Dietary Indiscretion in Dogs: Causes, Symptoms, Risks, and Prevention',
+        date: 'December 11, 2025',
+        description:
+            'Dietary indiscretion is one of the most common causes of vomiting and diarrhea in dogs. Learn why dogs scavenge, what they ingest, warning signs of obstruction, and how to prevent repeat episodes.',
+        component: () => import('./posts/dietary-indiscretion-in-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'common-gi-problems-in-dogs',
+        title: 'Common Gastrointestinal (GI) Problems in Dogs: Symptoms, Causes, and When to Worry',
+        date: 'December 10, 2025',
+        description:
+            'Vomiting, diarrhea, gas, appetite changes, and abnormal stools are among the most common GI problems in dogs. Learn what causes digestive distress, which symptoms require urgent care, and how veterinarians evaluate gastrointestinal disease.',
+        component: () => import('./posts/common-gi-problems-in-dogs'),
+        categories: ['owner'],
+    },
+    {
         slug: 'traveling-with-a-boston-terrier-2025',
         title:
             'Traveling With a Boston Terrier (2025): Air, Car, Heat Safety & Stress-Free Trips',
