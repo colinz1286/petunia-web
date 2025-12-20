@@ -8,7 +8,7 @@ export default function RawDogFoodSafety() {
   const locale = useLocale();
 
   const title = 'Raw Dog Food Safety: How to Handle & Prepare Raw Diets Without Risk';
-  const date = 'December 3, 2025';
+  const date = 'December 4, 2025';
   const categories = ['owner','food'] as const;
 
   const categoryLabels: Record<string, string> = {

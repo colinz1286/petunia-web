@@ -10,6 +10,173 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'traveling-with-a-boston-terrier-2025',
+        title:
+            'Traveling With a Boston Terrier (2025): Air, Car, Heat Safety & Stress-Free Trips',
+        date: 'December 16, 2025',
+        description:
+            'A safety-first guide to traveling with a Boston Terrier, covering airline restrictions, car restraint systems, hotel etiquette, overheating prevention, packing checklists, and managing anxious travelers.',
+        component: () =>
+            import('./posts/traveling-with-a-boston-terrier-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'best-dog-sports-for-boston-terriers-2025',
+        title:
+            'Best Dog Sports for Boston Terriers (2025): Agility, Rally, Obedience & Confidence Building',
+        date: 'December 15, 2025',
+        description:
+            'A practical guide to the best dog sports for Boston Terriers, covering agility, rally, obedience, unsafe sports for brachycephalic dogs, beginner options, confidence building, competition expectations, and behavior benefits.',
+        component: () =>
+            import('./posts/best-dog-sports-for-boston-terriers-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'leash-training-a-boston-terrier-2025',
+        title:
+            'Leash Training a Boston Terrier (2025): Loose-Leash Walking, Gear, Reactivity & Realistic Routines',
+        date: 'December 14, 2025',
+        description:
+            'A practical guide to leash training a Boston Terrier, covering loose-leash walking, harness selection for brachycephalic dogs, training progression, reactivity prevention, and puppy versus adult routines.',
+        component: () =>
+            import('./posts/leash-training-a-boston-terrier-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-recall-training-2025',
+        title:
+            'Boston Terrier Recall Training (2025): Step-by-Step Protocol for Reliable Off-Leash Safety',
+        date: 'December 13, 2025',
+        description:
+            'A realistic, step-by-step guide to Boston Terrier recall training, covering indoor foundations, yard and long-line work, off-leash safety, reinforcement systems, common mistakes, and distraction proofing.',
+        component: () =>
+            import('./posts/boston-terrier-recall-training-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-trick-training-2025',
+        title:
+            'Boston Terrier Trick Training (2025): From Beginner Tricks to Advanced Chains',
+        date: 'December 12, 2025',
+        description:
+            'A step-by-step guide to Boston Terrier trick training, covering why the breed excels, foundational skills, beginner and intermediate tricks, behavior chaining, and long-term reward strategies.',
+        component: () =>
+            import('./posts/boston-terrier-trick-training-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-vs-bulldog-breeds-2025',
+        title:
+            'Boston Terrier vs Bulldog Breeds (2025): English, French & American Compared',
+        date: 'December 11, 2025',
+        description:
+            'A detailed comparison of Boston Terriers versus English, French, and American Bulldogs, covering structure, personality, breathing, heat sensitivity, care costs, and lifestyle fit.',
+        component: () =>
+            import('./posts/boston-terrier-vs-bulldog-breeds-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-vs-pug-2025',
+        title:
+            'Boston Terrier vs Pug (2025): Temperament, Health, Grooming & Lifestyle Fit',
+        date: 'December 10, 2025',
+        description:
+            'A side-by-side comparison of Boston Terriers and Pugs, covering temperament, grooming and shedding, health risks, exercise needs, recent demand trends, and which lifestyle each breed fits best.',
+        component: () =>
+            import('./posts/boston-terrier-vs-pug-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-vs-french-bulldog-2025',
+        title:
+            'Boston Terrier vs French Bulldog (2025): Personality, Health, Cost & Lifestyle Fit',
+        date: 'December 9, 2025',
+        description:
+            'A side-by-side comparison of Boston Terriers and French Bulldogs, covering personality, energy level, health risks, lifespan, ownership costs, and lifestyle compatibility.',
+        component: () =>
+            import('./posts/boston-terrier-vs-french-bulldog-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'are-boston-terriers-good-for-first-time-owners-2025',
+        title:
+            'Are Boston Terriers Good for First-Time Owners? (2025): Pros, Challenges & Real Expectations',
+        date: 'December 8, 2025',
+        description:
+            'A realistic guide for first-time dog owners considering a Boston Terrier, covering beginner-friendly traits, common challenges, training needs, costs, behavior pitfalls, and first-year expectations.',
+        component: () =>
+            import('./posts/are-boston-terriers-good-for-first-time-owners-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'is-a-boston-terrier-the-right-dog-for-you-2025',
+        title:
+            'Is a Boston Terrier the Right Dog for You? (2025): Personality, Lifestyle Fit & Real Expectations',
+        date: 'December 7, 2025',
+        description:
+            'An honest guide to whether a Boston Terrier fits your lifestyle, covering personality traits, home compatibility, daily needs, pros and cons, and realistic expectations for new owners.',
+        component: () =>
+            import('./posts/is-a-boston-terrier-the-right-dog-for-you-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-puppy-exercise-needs-2025',
+        title:
+            'Boston Terrier Puppy Exercise Needs (2025): Safe Activity, Joint Protection & Calm Development',
+        date: 'December 6, 2025',
+        description:
+            'A veterinarian-aligned guide to Boston Terrier puppy exercise needs, covering age-based limits, safe and unsafe activities, indoor alternatives, early leash training, joint protection, and preventing overstimulation.',
+        component: () =>
+            import('./posts/boston-terrier-puppy-exercise-needs-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-enrichment-and-mental-games-2025',
+        title:
+            'Boston Terrier Enrichment & Mental Games (2025): Reduce Hyperactivity, Build Confidence & Calm the Home',
+        date: 'December 5, 2025',
+        description:
+            'A practical guide to Boston Terrier mental enrichment, including puzzle toys, scent games, indoor activities, confidence-building exercises, daily enrichment schedules, and safe difficulty progression.',
+        component: () =>
+            import('./posts/boston-terrier-enrichment-and-mental-games-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'boston-terrier-house-rules-2025',
+        title:
+            'Boston Terrier House Rules (2025): Jumping, Begging, Boundaries & Creating a Calm Home',
+        date: 'December 4, 2025',
+        description:
+            'A practical guide to Boston Terrier house rules, covering jumping, counter-surfing, door manners, furniture boundaries, table begging, consistency strategies, and reinforcing calm indoor behavior.',
+        component: () => import('./posts/boston-terrier-house-rules-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
+        slug: 'bringing-home-a-boston-terrier-puppy-2025',
+        title:
+            'Bringing Home a Boston Terrier Puppy (2025): First Day Setup, Safety, Feeding & the First 48 Hours',
+        date: 'December 3, 2025',
+        description:
+            'A complete first-time owner guide to bringing home a Boston Terrier puppy, covering first-day preparation, safe home setup, introductions, feeding schedules, first-night expectations, and what to do in the first 48 hours.',
+        component: () =>
+            import('./posts/bringing-home-a-boston-terrier-puppy-2025'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Boston Terrier'
+    },
+    {
         slug: 'is-raw-dog-food-worth-the-cost',
         title: 'Is Raw Dog Food Worth the Cost? Budgeting & Long-Term Value Explained',
         date: 'December 17, 2025',
