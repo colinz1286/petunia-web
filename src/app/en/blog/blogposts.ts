@@ -10,6 +10,69 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'maropitant-for-dogs',
+        title: 'Maropitant for Dogs: Uses, Side Effects, and When It Should Be Avoided',
+        date: 'December 13, 2025',
+        description:
+            'Maropitant (commonly known as Cerenia®) is a widely used anti-nausea and anti-vomiting medication for dogs. Learn how it works, common situations where it is prescribed, potential side effects, contraindications, and when veterinary guidance is essential.',
+        component: () => import('./posts/maropitant-for-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'lethargy-metronidazole-dogs',
+        title: 'Lethargy in Dogs on Metronidazole: Causes, Risks, and When to Worry',
+        date: 'December 16, 2025',
+        description:
+            'Dogs taking metronidazole or similar GI medications may appear lethargic or unusually tired. Learn why this happens, what is occurring physiologically, how to support recovery at home, and when lethargy signals a veterinary emergency.',
+        component: () => import('./posts/lethargy-metronidazole-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'excessive-drooling-metronidazole-dogs',
+        title: 'Excessive Drooling in Dogs on Metronidazole: Causes, Risks, and When It’s an Emergency',
+        date: 'December 15, 2025',
+        description:
+            'Dogs taking metronidazole or similar GI medications may drool excessively due to bitterness, nausea, reflux, or (rarely) neurologic toxicity. Learn what causes drooling, what you can do at home, and when to call a veterinarian.',
+        component: () => import('./posts/excessive-drooling-metronidazole-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'nausea-vomiting-metronidazole-dogs',
+        title: 'What to Do If Your Dog Has Nausea or Vomiting While on Metronidazole',
+        date: 'December 14, 2025',
+        description:
+            'Dogs taking metronidazole or similar GI medications may experience nausea or vomiting. Learn why this happens, what you can safely do at home, when to call your veterinarian, signs of dehydration or toxicity, and when vomiting becomes a medical emergency.',
+        component: () => import('./posts/nausea-vomiting-metronidazole-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'help-dog-eat-while-on-metronidazole',
+        title: 'How to Help a Dog Eat While on Metronidazole or Other GI Medications',
+        date: 'December 13, 2025',
+        description:
+            'Dogs taking metronidazole or other GI medications may experience reduced appetite or nausea. Learn safe grocery-store food options, what to avoid, when bland diets help, and when appetite loss requires veterinary attention.',
+        component: () => import('./posts/help-dog-eat-while-on-metronidazole'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'metronidazole-for-dogs',
+        title: 'Metronidazole for Dogs: Uses, Side Effects, and When to Be Concerned',
+        date: 'December 12, 2025',
+        description:
+            'Metronidazole is commonly prescribed for dogs with diarrhea, colitis, and certain infections. Learn what this medication is used for, how long it is prescribed, potential side effects, warning signs of toxicity, and when to contact your veterinarian.',
+        component: () => import('./posts/metronidazole-for-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'gi-medications-for-dogs',
+        title: 'Common GI Medications for Dogs: What Vets Prescribe and Why',
+        date: 'December 11, 2025',
+        description:
+            'Veterinarians prescribe different gastrointestinal medications for dogs based on symptoms like vomiting, diarrhea, nausea, acid reflux, and inflammation. Learn which medications are commonly used, how long they are prescribed for, and what underlying conditions they treat.',
+        component: () => import('./posts/gi-medications-for-dogs'),
+        categories: ['owner'],
+    },
+    {
         slug: 'intestinal-blockage-dogs-symptoms',
         title: 'Intestinal Blockages in Dogs: Early Warning Signs, Vomiting Patterns, Diagnosis, and Treatment',
         date: 'December 19, 2025',
