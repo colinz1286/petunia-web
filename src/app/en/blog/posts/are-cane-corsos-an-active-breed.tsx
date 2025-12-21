@@ -57,6 +57,7 @@ export default function AreCaneCorsosAnActiveBreed() {
               {categoryLabels[key] ?? key}
             </span>
           ))}
+          
         </div>
 
         {/* Local anchor nav */}

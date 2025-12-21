@@ -38,6 +38,7 @@ export default function AllergySkinIssues() {
           <span className="inline-block bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
             Health
           </span>
+          
         </div>
 
         <nav className="mb-6">

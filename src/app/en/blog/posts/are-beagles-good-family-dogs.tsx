@@ -39,6 +39,7 @@ export default function AreBeaglesGoodFamilyDogs() {
           <span className="inline-block bg-red-100 text-red-800 text-xs px-3 py-1 rounded-full">
             Breed-Specific Guides
           </span>
+          
         </div>
 
         <nav className="mb-6">

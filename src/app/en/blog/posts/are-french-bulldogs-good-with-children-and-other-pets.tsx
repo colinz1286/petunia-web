@@ -56,6 +56,7 @@ export default function AreFrenchBulldogsGoodWithChildrenAndOtherPets() {
               {categoryLabels[key] ?? key}
             </span>
           ))}
+          
         </div>
 
         {/* Local anchor nav */}

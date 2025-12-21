@@ -55,6 +55,7 @@ export default function AreBostonTerriersProneToSeizures2025() {
               {categoryLabels[key] ?? key}
             </span>
           ))}
+          
         </div>
 
         {/* Navigation */}

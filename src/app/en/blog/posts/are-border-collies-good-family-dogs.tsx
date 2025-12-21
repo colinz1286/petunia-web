@@ -39,6 +39,7 @@ export default function AreBorderColliesGoodFamilyDogs() {
           <span className="inline-block bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
             Breed-Specific Guides
           </span>
+          
         </div>
 
         {/* Table of Contents */}

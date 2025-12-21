@@ -210,6 +210,7 @@ export default function AverageAgeOfLabrador() {
           <h2 className="text-2xl font-semibold mb-3">Daily Routines &amp; Preventive Care</h2>
           <p className="mb-3">
             Longevity is built in the daily rhythms: regular exercise, predictable routines, dental care, parasite prevention, good sleep, and stress management.
+            
           </p>
           <ul className="list-disc pl-5 space-y-1">
             <li>Brush teeth daily when possible.</li>

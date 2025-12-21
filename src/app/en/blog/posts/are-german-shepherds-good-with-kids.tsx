@@ -59,6 +59,7 @@ export default function AreGermanShepherdsGoodWithKids() {
               {categoryLabels[key] ?? key}
             </span>
           ))}
+          
         </div>
 
         {/* Local anchor nav */}

@@ -56,6 +56,7 @@ export default function AreThereDifferentTypesOfFrenchBulldogs() {
               {categoryLabels[key] ?? key}
             </span>
           ))}
+          
         </div>
 
         {/* Local anchor nav */}

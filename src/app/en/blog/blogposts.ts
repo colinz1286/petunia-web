@@ -10,6 +10,42 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'allergic-reactions-maropitant-dogs',
+        title: 'Allergic Reactions to Maropitant (Cerenia®) in Dogs: Facial Swelling, Hives, and What to Do',
+        date: 'December 21, 2025',
+        description:
+            'Although uncommon, maropitant (Cerenia®) can cause allergic reactions in dogs, including facial swelling, hives, and itching. Learn what these reactions look like, when emergency care is required, whether over-the-counter medications are safe, and what alternatives exist.',
+        component: () => import('./posts/allergic-reactions-maropitant-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'behavior-changes-disorientation-maropitant-dogs',
+        title: 'Maropitant (Cerenia®) and Disorientation in Dogs: Signs, Risks, and When It’s an Emergency',
+        date: 'December 20, 2025',
+        description:
+            'Some dogs may show behavior changes or disorientation after maropitant (Cerenia®). Learn observable signs, why it can happen, which dogs are higher risk, when to seek emergency care, and alternatives if maropitant is stopped.',
+        component: () => import('./posts/behavior-changes-disorientation-maropitant-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'collapse-lethargy-maropitant-dogs',
+        title: 'Severe Lethargy or Collapse in Dogs on Maropitant: Causes, Emergencies, and What to Do',
+        date: 'December 19, 2025',
+        description:
+            'In rare cases, dogs taking maropitant (Cerenia®) can develop severe lethargy or collapse. Learn the physiologic mechanisms involved, warning signs that signal an emergency, immediate steps owners can take, and how veterinarians treat these reactions.',
+        component: () => import('./posts/collapse-lethargy-maropitant-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'persistent-vomiting-despite-maropitant-dogs',
+        title: 'Why Dogs Can Continue Vomiting Despite Maropitant (Cerenia®)',
+        date: 'December 18, 2025',
+        description:
+            'Some dogs continue vomiting despite treatment with maropitant (Cerenia®). Learn why this happens, the physiologic pathways involved, warning signs that require emergency care, and what veterinarians do when anti-nausea therapy fails.',
+        component: () => import('./posts/persistent-vomiting-despite-maropitant-dogs'),
+        categories: ['owner'],
+    },
+    {
         slug: 'maropitant-for-dogs',
         title: 'Maropitant for Dogs: Uses, Side Effects, and When It Should Be Avoided',
         date: 'December 13, 2025',

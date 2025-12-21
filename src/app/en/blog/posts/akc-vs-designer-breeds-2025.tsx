@@ -46,6 +46,7 @@ export default function AkcVsDesignerBreeds2025() {
               {categoryLabels[key]}
             </span>
           ))}
+          
         </div>
 
         {/* INTRO */}

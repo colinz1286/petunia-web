@@ -59,6 +59,7 @@ export default function AddisonsDiseaseDogs() {
               {categoryLabels[key] ?? key}
             </span>
           ))}
+          
         </div>
 
         {/* Local anchor nav */}

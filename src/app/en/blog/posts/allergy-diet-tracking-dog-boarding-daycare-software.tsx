@@ -58,6 +58,7 @@ export default function AllergyDietTrackingDogBoardingDaycareSoftware() {
               {categoryLabels[key] ?? key}
             </span>
           ))}
+          
         </div>
 
         {/* Local anchor nav */}

@@ -47,6 +47,7 @@ export default function AirlinePetTravel2025ItalyInCabinLargeDogsWhatItMeansUS()
               {categoryLabels[key]}
             </span>
           ))}
+          
         </div>
 
         {/* INTRO */}

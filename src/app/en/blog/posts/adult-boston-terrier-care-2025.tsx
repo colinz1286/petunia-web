@@ -55,6 +55,7 @@ export default function AdultBostonTerrierCare2025() {
               {categoryLabels[key]}
             </span>
           ))}
+          
         </div>
 
         {/* NAVIGATION */}
