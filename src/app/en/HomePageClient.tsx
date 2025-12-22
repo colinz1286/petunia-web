@@ -201,7 +201,7 @@ export default function HomePageClient() {
                                 This part of Petunia is coming in the first half of 2026! We&rsquo;re rolling out tools built specifically for sitters and walkers.
                             </p>
                             <p className="text-lg text-balance">
-                                $1/month. No commissions, ever. Bring your existing clients and grow from there. Why should you be paying obscene prices for software, and then giving out your personal phone number so you don't lose significant portions of your hard earned money to larger software companies? Of course, you will encourage people to book directly through you so you can make more money! But you shouldn't have to do this at the sacrifice of your own personal privacy.
+                                $1/month. No commissions, ever. Bring your existing clients and grow from there. Why should you be paying obscene prices for software, and then giving out your personal phone number so you don&rsquo;t lose significant portions of your hard earned money to larger software companies? Of course, you will encourage people to book directly through you so you can make more money! But you shouldn&rsquo;t have to do this at the sacrifice of your own personal privacy.
                             </p>
                             <p className="text-lg text-balance">
                                 If you&rsquo;re wondering how we keep pricing so low, we want to be clear that we do not sell your data or personal information — you can learn more by reviewing our{' '}
