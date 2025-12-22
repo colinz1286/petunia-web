@@ -16,7 +16,7 @@ export default function PrivacyPolicyPage() {
           </p>
 
           <p className="mb-6">
-            Petunia Pets is owned and operated by Berkley Creek Software LLC, located at 544 Valencia Rd, Mars, PA 16046, United States. If you have any questions about this policy or how we handle your data, you can contact us at{' '}
+            Petunia Pets is owned and operated by Berkley Creek Software LLC. If you have any questions about this policy or how we handle your data, you can contact us at{' '}
             <a href="mailto:admin@petuniapets.com" className="underline">admin@petuniapets.com</a>.
           </p>
 
@@ -26,10 +26,6 @@ export default function PrivacyPolicyPage() {
 
           <p className="mb-6">
             The information you provide is used only to support the functionality of the app. This includes enabling account creation, managing pet profiles, facilitating reservations, and supporting general app features. We do not use your information for advertising, analytics, or any other purposes. Your data is never sold, rented, or shared with any third parties. No external companies or marketing services have access to your information.
-          </p>
-
-          <p className="mb-6">
-            All data is securely stored using Google Cloud infrastructure and Firebase services. These systems offer secure, encrypted storage both in transit and at rest. We are committed to maintaining strong security practices to keep your information safe.
           </p>
 
           <p className="mb-6">
@@ -46,7 +42,7 @@ export default function PrivacyPolicyPage() {
           </p>
 
           <p className="mb-6">
-            Although we do not currently target users in California or the European Union, we strive to follow principles consistent with privacy laws such as the California Consumer Privacy Act (CCPA) and the General Data Protection Regulation (GDPR). We use your data only with your consent and never sell your information under any circumstances.
+            We follow principles consistent with privacy laws such as the California Consumer Privacy Act (CCPA) and the General Data Protection Regulation (GDPR). We use your data only with your consent and never sell your information under any circumstances.
           </p>
 
           <p className="mb-6">

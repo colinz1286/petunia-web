@@ -67,6 +67,22 @@ export default function HomePageClient() {
                     The perfect world for your pet.
                 </p>
 
+                <div className="w-full max-w-md mb-6">
+                    <p className="text-sm text-gray-600 mb-3 text-balance">
+                        If you&rsquo;re an iOS user (meaning you have an Apple iPhone) and would like to use the Petunia app on your device, it&rsquo;s currently available in the following countries. The Petunia website, however, is accessible worldwide for anyone who speaks English.
+                    </p>
+
+                    {/* Countries We Serve */}
+                    <div className="flex items-center justify-center gap-4 text-3xl">
+                        <span aria-label="Canada" title="Canada">🇨🇦</span>
+                        <span aria-label="United States" title="United States">🇺🇸</span>
+                        <span aria-label="Ireland" title="Ireland">🇮🇪</span>
+                        <span aria-label="United Kingdom" title="United Kingdom">🇬🇧</span>
+                        <span aria-label="New Zealand" title="New Zealand">🇳🇿</span>
+                        <span aria-label="Australia" title="Australia">🇦🇺</span>
+                    </div>
+                </div>
+
                 {/* Headline */}
                 <h2 className="text-2xl font-bold mb-6 text-[#2c4a30] tracking-wide text-balance">
                     Are You a Current or Prospective&hellip;
@@ -101,6 +117,15 @@ export default function HomePageClient() {
                                 Create personalized profiles for each of your pets, upload important records like vaccine certificates, and book services from trusted providers — all in one place.
                             </p>
                             <p className="text-lg text-balance">
+                                If you&rsquo;re curious how Petunia stays free, we want to reassure you that we do not sell your personal information — you can learn more by reviewing our{' '}
+                                <a
+                                    href="http://localhost:3000/en/privacypolicy"
+                                    className="underline font-medium"
+                                >
+                                    Privacy Policy
+                                </a>.
+                            </p>
+                            <p className="text-lg text-balance">
                                 Our reminders keep you on top of things like annual vet visits and expiring vaccines. We&rsquo;ve built everything with love, ease, and your pet&rsquo;s safety in mind.
                             </p>
                             <p className="text-lg text-balance">
@@ -128,8 +153,17 @@ export default function HomePageClient() {
                         <section className="space-y-5 w-full max-w-xl">
                             <h3 className="text-2xl font-bold text-center">For Boarding & Daycare Facilities</h3>
                             <p className="text-lg text-balance">
-                                💡 Free for your first 60 days. We know from expreience that it takes an average of 30 days for your clients to enter their information into Petunia (there is very little data migration necessary when using our software because your clients add all the information for you!). Therefore, we are giving you 60 DAYS OF FREE USE! So, whether you are integrating software into your business for the first time, or switching from another system, we are taking into account the time it will take for everyone to get on boarded. After the 60 day period is up, our price is 5/month moving forward. No contracts. No nonsense.
+                                💡 Free for your first 60 days. We know from expreience that it takes an average of 30 days for your clients to enter their information into Petunia (there is very little data migration necessary when using our software because your clients add all the information for you!). So, whether you are integrating software into your business for the first time, or switching from another system, we are taking into account the time it will take for everyone to get on boarded. After the 60 day period is up, our price is $1/month moving forward.
                                 <br />
+                            </p>
+                            <p className="text-lg text-balance">
+                                If you&rsquo;re concerned about how we&rsquo;re able to keep pricing so low, we want to be clear that we do not sell your data or personal information — you can learn more by reviewing our{' '}
+                                <a
+                                    href="http://localhost:3000/en/privacypolicy"
+                                    className="underline font-medium"
+                                >
+                                    Privacy Policy
+                                </a>.
                             </p>
                             <p className="text-lg text-balance">
                                 The creators of Petunia are also owners of a boarding and daycare facility — that’s how we got our start in this industry back in 2017. We know the daily challenges firsthand, because we’ve lived them.
@@ -164,14 +198,21 @@ export default function HomePageClient() {
                         <section className="space-y-5 w-full max-w-xl">
                             <h3 className="text-2xl font-bold text-center">Pet Sitters & Dog Walkers</h3>
                             <p className="text-lg text-balance">
-                                This part of Petunia is coming soon! We&rsquo;re rolling out tools built specifically for sitters and walkers.
+                                This part of Petunia is coming in the first half of 2026! We&rsquo;re rolling out tools built specifically for sitters and walkers.
                             </p>
                             <p className="text-lg text-balance">
-                                $5/month. No commissions, ever. Bring your existing clients and grow from there.
+                                $1/month. No commissions, ever. Bring your existing clients and grow from there. Why should you be paying obscene prices for software, and then giving out your personal phone number so you don't lose significant portions of your hard earned money to larger software companies? Of course, you will encourage people to book directly through you so you can make more money! But you shouldn't have to do this at the sacrifice of your own personal privacy.
                             </p>
                             <p className="text-lg text-balance">
-                                You’ve worked hard to build trust. Every walk, every visit, every tail wag — it all adds up to something real.
-                                <br /><br />
+                                If you&rsquo;re wondering how we keep pricing so low, we want to be clear that we do not sell your data or personal information — you can learn more by reviewing our{' '}
+                                <a
+                                    href="http://localhost:3000/en/privacypolicy"
+                                    className="underline font-medium"
+                                >
+                                    Privacy Policy
+                                </a>.
+                            </p>
+                            <p className="text-lg text-balance">
                                 If you have clients on other platforms, don’t leave your reputation behind. Invite them to join you here. Once they sign up and you approve them as a past client, they can write you a review — so your history doesn’t disappear, and your momentum doesn’t miss a step.
                             </p>
                             <p className="text-lg text-balance">
@@ -187,7 +228,16 @@ export default function HomePageClient() {
                         <section className="space-y-5 w-full max-w-xl">
                             <h3 className="text-2xl font-bold text-center">For Rescues & Adoption Shelters</h3>
                             <p className="text-lg text-balance">
-                                Software for rescue and shelter organizations coming in late 2026. When it goes live, it will cost $5/mo.
+                                Software for rescue and shelter organizations coming in mid to late 2026. When it goes live, it will cost $1/mo.
+                            </p>
+                            <p className="text-lg text-balance">
+                                If you’re concerned about how we’re able to keep pricing so low, rest assured we do not sell your data or personal information — you can learn more by reviewing our{' '}
+                                <a
+                                    href="http://localhost:3000/en/privacypolicy"
+                                    className="underline font-medium"
+                                >
+                                    Privacy Policy
+                                </a>.
                             </p>
                             <p className="text-lg text-balance">💚 Thank you for everything you do in helping to give animals the life they deserve.</p>
                         </section>
