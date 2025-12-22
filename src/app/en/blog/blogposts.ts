@@ -10,6 +10,51 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'christmas-tree-holiday-decor-dogs',
+        title: 'Christmas Tree & Holiday Decor Dangers for Dogs: Tinsel, Ornaments, Tree Water, and What to Do',
+        date: 'December 22, 2025',
+        description:
+            'A comprehensive Christmas safety guide covering the most common holiday decor dangers for dogs, including tinsel, ornament hooks, tree water, lights and cords, toxic plants, ingestion symptoms, and clear guidance on when emergency care is needed.',
+        component: () => import('./posts/christmas-tree-holiday-decor-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'holiday-ingestion-risks-dogs-christmas',
+        title: 'Holiday Ingestion Risks for Dogs: Christmas Foods, Wrappers, Toys, Symptoms, and When to Go to the ER',
+        date: 'December 22, 2025',
+        description:
+            'A thorough Christmas safety guide to what dogs commonly swallow over the holidays (dangerous foods, wrappers, ribbons, batteries, toys), the warning signs to watch for, and clear guidance on when emergency care is needed.',
+        component: () => import('./posts/holiday-ingestion-risks-dogs-christmas'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'homemade-christmas-dog-treats-recipes',
+        title: 'Homemade Christmas Dog Treats: Safe Recipes, Portions, and Holiday Prep Tips',
+        date: 'December 22, 2025',
+        description:
+            'A practical, safety-first guide to homemade Christmas treats for dogs, including simple recipes, safe ingredient swaps, portion guidance by dog size, storage tips, and what holiday foods to avoid.',
+        component: () => import('./posts/homemade-christmas-dog-treats-recipes'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'christmas-foods-dogs-should-not-eat',
+        title: 'Christmas Foods Dogs Should Not Eat: Holiday Hazards, Symptoms, and What to Do',
+        date: 'December 22, 2025',
+        description:
+            'A practical Christmas safety guide to the foods and ingredients that are dangerous for dogs, why they are risky, common holiday symptoms to watch for, and what to do right away to avoid ER visits.',
+        component: () => import('./posts/christmas-foods-dogs-should-not-eat'),
+        categories: ['owner', 'food'],
+    },
+    {
+        slug: 'what-dogs-can-eat-on-christmas',
+        title: 'What Can Dogs Eat on Christmas? Safe Holiday Foods, Portion Sizes, and What to Avoid',
+        date: 'December 22, 2025',
+        description:
+            'A practical Christmas guide to safe dog-friendly holiday foods, how much is okay by dog size, simple prep tips, and which festive ingredients to avoid to reduce vomiting, diarrhea, pancreatitis, and ER visits.',
+        component: () => import('./posts/what-dogs-can-eat-on-christmas'),
+        categories: ['owner', 'food'],
+    },
+    {
         slug: 'allergic-reactions-maropitant-dogs',
         title: 'Allergic Reactions to Maropitant (Cerenia®) in Dogs: Facial Swelling, Hives, and What to Do',
         date: 'December 21, 2025',
