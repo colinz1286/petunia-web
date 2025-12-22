@@ -69,7 +69,7 @@ export default function HomePageClient() {
 
                 <div className="w-full max-w-md mb-6">
                     <p className="text-sm text-gray-600 mb-3 text-balance">
-                        If you&rsquo;re an iOS user (meaning you have an Apple iPhone) and would like to use the Petunia app on your device, it&rsquo;s currently available in the following countries. The Petunia website, however, is accessible worldwide for anyone who speaks English.
+                        If you&rsquo;re an iOS user (meaning you have an Apple iPhone) and would like to use the Petunia app on your device, it&rsquo;s currently available in the following countries (Canada, United States, Ireland, United Kindom, New Zealand, Australia). The Petunia website, however, is accessible worldwide for anyone who speaks English.
                     </p>
 
                     {/* Countries We Serve */}
