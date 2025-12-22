@@ -10,6 +10,112 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'boarding-anxiety-vs-separation-anxiety-similar-symptoms-different-plans',
+        title: 'Boarding Anxiety vs Separation Anxiety: Similar Symptoms, Different Plans',
+        date: 'December 22, 2025',
+        description:
+            'How to tell boarding anxiety from separation anxiety in dogs, why symptoms overlap, and the right plan for each—environmental routine fixes vs alone-time training and veterinary behavior support.',
+        component: () =>
+            import('./posts/boarding-anxiety-vs-separation-anxiety-similar-symptoms-different-plans'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'what-to-pack-for-a-nervous-dog-scent-items-sleep-setup-and-familiar-cues',
+        title: 'What to Pack for a Nervous Dog: Scent Items, Sleep Setup, and Familiar Cues',
+        date: 'December 22, 2025',
+        description:
+            'A thorough packing guide for nervous boarding dogs: which scent items help most, how to set up sleep and routine cues, and what to avoid to prevent stress and GI upset.',
+        component: () =>
+            import('./posts/what-to-pack-for-a-nervous-dog-scent-items-sleep-setup-and-familiar-cues'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'tracking-welfare-settle-score-notes-system',
+        title: 'Tracking Welfare Without Fancy Tools: A Simple “Settle Score” and Notes System',
+        date: 'December 22, 2025',
+        description:
+            'A practical settle score and notes system to track kennel welfare: simple metrics, clear scoring, and repeatable logs that improve routines, noise control, and outcomes.',
+        component: () => import('./posts/tracking-welfare-settle-score-notes-system'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'enrichment-menus-rotate-lick-chew-sniff-without-overstimulating-dogs',
+        title: 'Enrichment Menus: Rotating Lick/Chew/Sniff Activities Without Overstimulating Dogs',
+        date: 'December 22, 2025',
+        description:
+            'A practical, evidence-informed enrichment menu for boarding and daycare: how to rotate lick, chew, and sniff activities to support calm behavior without triggering overstimulation.',
+        component: () =>
+            import('./posts/enrichment-menus-rotate-lick-chew-sniff-without-overstimulating-dogs'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'designing-quiet-zones-visual-barriers-spacing-and-settle-friendly-setups',
+        title: 'Designing Quiet Zones: Visual Barriers, Spacing, and Settle-Friendly Setups',
+        date: 'December 22, 2025',
+        description:
+            'How to design quiet zones in boarding and daycare: visual barriers, spacing, traffic patterns, and settle-friendly setups that reduce barking loops and support rest.',
+        component: () =>
+            import('./posts/designing-quiet-zones-visual-barriers-spacing-and-settle-friendly-setups'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'noise-barking-loops-and-kennel-reactivity-how-environment-shapes-behavior',
+        title: 'Noise, Barking Loops, and Kennel Reactivity: How Environment Shapes Behavior',
+        date: 'December 22, 2025',
+        description:
+            'An evidence-informed guide to kennel noise and barking loops—why dogs spiral into reactivity, how environment drives behavior, and practical ways to reduce barking and stress.',
+        component: () =>
+            import('./posts/noise-barking-loops-and-kennel-reactivity-how-environment-shapes-behavior'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'decompression-after-boarding-why-dogs-seem-tired-clingy-or-off-at-home',
+        title: 'Decompression After Boarding: Why Some Dogs Seem Tired, Clingy, or “Off” at Home',
+        date: 'December 22, 2025',
+        description:
+            'Why some dogs seem tired, clingy, restless, or “off” after boarding—and a practical decompression plan for the first 72 hours plus red flags to watch.',
+        component: () =>
+            import('./posts/decompression-after-boarding-why-dogs-seem-tired-clingy-or-off-at-home'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'predictability-beats-extra-attention-why-consistent-routines-calm-nervous-boarders',
+        title: 'Predictability Beats “Extra Attention”: Why Consistent Routines Calm Nervous Boarders',
+        date: 'December 22, 2025',
+        description:
+            'A practical, evidence-informed guide to why predictable routines calm nervous boarding dogs—and how to build a simple daily rhythm that reduces stress and barking.',
+        component: () =>
+            import('./posts/predictability-beats-extra-attention-why-consistent-routines-calm-nervous-boarders'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'scent-enrichment-for-dogs-research-safe',
+        title: 'Scent Enrichment for Dogs: What Research Looks At (and How to Do It Safely)',
+        date: 'December 22, 2025',
+        description:
+            'A comprehensive, evidence-informed guide to scent enrichment for dogs—what shelter and kennel research suggests, which approaches are safest, how to run low-risk sniff activities, and how to avoid common pitfalls like concentrated essential oils.',
+        component: () => import('./posts/scent-enrichment-for-dogs-research-safe'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'music-for-kennelled-dogs-studies-habituation',
+        title: 'Music for Kennelled Dogs: What Studies Suggest, and Why Dogs Can Habituate',
+        date: 'December 22, 2025',
+        description:
+            'An evidence-informed guide to using music as auditory enrichment for kenneled dogs, including what studies show, why effects can fade from habituation, genre considerations, practical scheduling and volume rules, and how to measure results safely.',
+        component: () => import('./posts/music-for-kennelled-dogs-studies-habituation'),
+        categories: ['boarding'],
+    },
+    {
+        slug: 'reducing-boarding-stress-sound-scent-routine-choice',
+        title: 'Reducing Boarding Stress: Evidence-Informed Enrichment (Sound, Scent, Routine, and Choice)',
+        date: 'December 22, 2025',
+        description:
+            'A practical, evidence-informed guide to reducing kennel stress using sound and scent enrichment, predictable routines, and choice-based handling—plus clear do’s and don’ts, implementation checklists, and welfare tracking tips.',
+        component: () => import('./posts/reducing-boarding-stress-sound-scent-routine-choice'),
+        categories: ['boarding'],
+    },
+    {
         slug: 'christmas-tree-holiday-decor-dogs',
         title: 'Christmas Tree & Holiday Decor Dangers for Dogs: Tinsel, Ornaments, Tree Water, and What to Do',
         date: 'December 22, 2025',
