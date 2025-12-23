@@ -20,7 +20,7 @@ export const blogPosts: BlogPostEntry[] = [
     },
     {
         slug: 'emergency-specialty-vet-pricing-rising-2025',
-        title: 'Emergency and Specialty Vet Prices Are Rising Fast: What&#39;s Driving It, What the Data Shows, and How Owners Can Prepare (2025)',
+        title: "Emergency and Specialty Vet Prices Are Rising Fast: What's Driving It, What the Data Shows, and How Owners Can Prepare (2025)",
         date: 'December 23, 2025',
         description:
             'A factual, owner-first breakdown of why emergency and specialty veterinary bills have jumped: staffing and overhead, advanced medicine, market structure, and what pet parents can do to reduce surprise costs.',
@@ -56,10 +56,10 @@ export const blogPosts: BlogPostEntry[] = [
     },
     {
         slug: 'arizona-bite-and-run-dog-bite-law-2025',
-        title: 'Arizona&#39;s &#34;Bite and Run&#34; Dog Bite Law (2025): What Owners Must Do, Penalties, and Why Other States May Follow',
+        title: 'Arizona\'s "Bite and Run" Dog Bite Law (2025): What Owners Must Do, Penalties, and Why Other States May Follow',
         date: 'December 23, 2025',
         description:
-            'A plain-English guide to Arizona&#39;s 2025 &#34;Bite and Run&#34; law: when owners must share contact info after a dog bite, penalties, and how similar accountability laws could spread.',
+            'A plain-English guide to Arizona\'s 2025 "Bite and Run" law: when owners must share contact info after a dog bite, penalties, and how similar accountability laws could spread.',
         component: () => import('./posts/arizona-bite-and-run-dog-bite-law-2025'),
         categories: ['owner'],
     },
