@@ -10,6 +10,78 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'vet-affordability-pet-costs-financial-stress-2025',
+        title: 'Why Pet Owners Are Struggling With Vet Affordability: New Data on Costs, Financial Stress, and What Helps (2025)',
+        date: 'December 23, 2025',
+        description:
+            'New surveys and spending data show many pet owners feel financial stress about veterinary costs. Here is what the data says, what drives prices, and practical ways to plan.',
+        component: () => import('./posts/vet-affordability-pet-costs-financial-stress-2025'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'emergency-specialty-vet-pricing-rising-2025',
+        title: 'Emergency and Specialty Vet Prices Are Rising Fast: What&#39;s Driving It, What the Data Shows, and How Owners Can Prepare (2025)',
+        date: 'December 23, 2025',
+        description:
+            'A factual, owner-first breakdown of why emergency and specialty veterinary bills have jumped: staffing and overhead, advanced medicine, market structure, and what pet parents can do to reduce surprise costs.',
+        component: () => import('./posts/emergency-specialty-vet-pricing-rising-2025'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'private-equity-veterinary-clinic-consolidation-prices-continuity',
+        title: 'Private Equity in Veterinary Clinics: How Consolidation Can Affect Prices and Continuity of Care',
+        date: 'December 23, 2025',
+        description:
+            'A factual, owner-first guide to private-equity consolidation in veterinary care: what consolidation is, what credible evidence suggests about pricing and transparency, and how to protect continuity.',
+        component: () => import('./posts/private-equity-veterinary-clinic-consolidation-prices-continuity'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'nih-cat-experiments-funding-controversy-2025',
+        title: 'NIH Funding for New Cat Experiments (2025): What Was Reported, What NIH Actually Announced, and What Could Change Next',
+        date: 'December 23, 2025',
+        description:
+            'A factual, plain-English explainer of the December 2025 reporting that NIH funded new cat experiments: what was alleged, what NIH policy changes actually say, how NIH grants work, and what outcomes are realistic.',
+        component: () => import('./posts/nih-cat-experiments-funding-controversy-2025'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'chennai-bans-pitbull-rottweiler-licences-2025',
+        title: 'Chennai Bans New Pit Bull and Rottweiler Licences: What the GCC Decision Says, Fines, and What Happens Next (2025)',
+        date: 'December 23, 2025',
+        description:
+            'A factual guide to the Greater Chennai Corporation&#39;s Dec 2025 decision limiting Pit Bull and Rottweiler licences, including fines, rules for current owners, and what other cities may do next.',
+        component: () => import('./posts/chennai-bans-pitbull-rottweiler-licences-2025'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'arizona-bite-and-run-dog-bite-law-2025',
+        title: 'Arizona&#39;s &#34;Bite and Run&#34; Dog Bite Law (2025): What Owners Must Do, Penalties, and Why Other States May Follow',
+        date: 'December 23, 2025',
+        description:
+            'A plain-English guide to Arizona&#39;s 2025 &#34;Bite and Run&#34; law: when owners must share contact info after a dog bite, penalties, and how similar accountability laws could spread.',
+        component: () => import('./posts/arizona-bite-and-run-dog-bite-law-2025'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'dog-tax-dependent-irs-lawsuit-2025',
+        title: 'Can You Claim a Dog as a Tax Dependent? The New York IRS Lawsuit Explained (2025)',
+        date: 'December 23, 2025',
+        description:
+            'A plain-English breakdown of the 2025 lawsuit arguing a Golden Retriever should qualify as a federal tax dependent: what the complaint claims, what IRS dependent rules require, and what outcomes are realistic.',
+        component: () => import('./posts/dog-tax-dependent-irs-lawsuit-2025'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'uk-animal-welfare-reforms-puppy-farms-2025',
+        title: 'UK Animal Welfare Reforms (2025): Puppy Farm Crackdown, Pet Protections, and What Changes Next',
+        date: 'December 23, 2025',
+        description:
+            'A plain-English guide to the UK’s December 2025 animal welfare reforms, focusing on the puppy farm crackdown, breeder oversight, import controls, and what these changes mean for dog owners and pet-care businesses.',
+        component: () => import('./posts/uk-animal-welfare-reforms-puppy-farms-2025'),
+        categories: ['owner', 'breeder']
+    },
+    {
         slug: 'boarding-anxiety-vs-separation-anxiety-similar-symptoms-different-plans',
         title: 'Boarding Anxiety vs Separation Anxiety: Similar Symptoms, Different Plans',
         date: 'December 22, 2025',
