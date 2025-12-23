@@ -56,12 +56,18 @@ export default function TutorialsPage() {
                 How to Book Your Assessment Day
               </a>
             </li>
+
+            <li>
+              <a href="#vaccine-expiration-dates" className="text-blue-700 underline">
+                How to Enter Vaccine Expiration Dates
+              </a>
+            </li>
           </ul>
         </div>
 
         {/* ------------------------------
-  Tutorial Section
- ------------------------------ */}
+        Tutorial Section
+        ------------------------------ */}
         <div className="space-y-8">
 
           {/* Tutorial 1 */}
@@ -265,6 +271,41 @@ export default function TutorialsPage() {
             <div className="mt-4">
               <a
                 href="https://www.youtube.com/shorts/fStLxc-WkmU"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-700"
+              >
+                Watch directly on YouTube
+              </a>
+            </div>
+          </div>
+
+          {/* Tutorial 7 */}
+          <div
+            id="vaccine-expiration-dates"
+            className="bg-white border border-[#d9cfc2] rounded-lg p-5 shadow-sm"
+          >
+            <h2 className="text-xl font-semibold mb-3">
+              How to Enter Vaccine Expiration Dates
+            </h2>
+
+            <p className="mb-4">
+              This video shows how to correctly enter vaccine expiration dates for your pet so records stay up to date and compliant.
+            </p>
+
+            <div className="w-full rounded-lg overflow-hidden">
+              <iframe
+                className="w-full h-80 rounded-lg"
+                src="https://www.youtube.com/embed/5t_2XM5Q0Nc"
+                title="How to Enter Vaccine Expiration Dates"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+
+            <div className="mt-4">
+              <a
+                href="https://www.youtube.com/shorts/5t_2XM5Q0Nc"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline text-blue-700"
