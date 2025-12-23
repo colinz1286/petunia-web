@@ -552,30 +552,3 @@ export default function UKAnimalWelfareReformsPuppyFarms2025() {
     </>
   );
 }
-
-/* -----------------------------
-   Metadata Snippet 1 (JSON)
------------------------------- */
-export const metadataSnippet1 = {
-  slug: 'uk-animal-welfare-reforms-puppy-farms-2025',
-  title:
-    'UK Animal Welfare Reforms (2025): Puppy Farm Crackdown, Pet Protections, and What Changes Next',
-  date: 'December 23, 2025',
-  categories: ['owner', 'boarding', 'daycare'],
-  breed: null,
-};
-
-/* -----------------------------
-   Metadata Snippet 2 (registry)
------------------------------- */
-export const metadataSnippet2 = {
-  slug: 'uk-animal-welfare-reforms-puppy-farms-2025',
-  title:
-    'UK Animal Welfare Reforms (2025): Puppy Farm Crackdown, Pet Protections, and What Changes Next',
-  date: 'December 23, 2025',
-  description:
-    'A plain-English guide to the UK&#39;s Dec 2025 animal welfare strategy, focusing on the puppy farm crackdown: what reforms are planned, how enforcement may change, and how to buy a puppy safely.',
-  component: () => import('./posts/uk-animal-welfare-reforms-puppy-farms-2025'),
-  categories: ['owner', 'boarding', 'daycare'],
-  breed: null,
-};
