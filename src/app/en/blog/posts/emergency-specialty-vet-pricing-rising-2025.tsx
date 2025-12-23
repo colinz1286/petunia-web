@@ -8,7 +8,7 @@ export default function EmergencySpecialtyVetPricingRising2025() {
   const locale = useLocale();
 
   const title =
-    'Emergency and Specialty Vet Prices Are Rising Fast: What&apos;s Driving It, What the Data Shows, and How Owners Can Prepare (2025)';
+    'Emergency and Specialty Vet Prices Are Rising Fast: What Is Driving It, What the Data Shows, and How Owners Can Prepare (2025)';
   const date = 'December 23, 2025';
   const categories = ['owner'] as const;
 

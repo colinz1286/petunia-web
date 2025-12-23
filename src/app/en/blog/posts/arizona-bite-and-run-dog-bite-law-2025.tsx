@@ -8,7 +8,7 @@ export default function ArizonaBiteAndRunDogBiteLaw2025() {
   const locale = useLocale();
 
   const title =
-    'Arizona&#39;s &#34;Bite and Run&#34; Dog Bite Law (2025): What Owners Must Do, Penalties, and Why Other States May Follow';
+    'Arizona Bite and Run; Dog Bite Law (2025): What Owners Must Do, Penalties, and Why Other States May Follow';
   const date = 'December 23, 2025';
   const categories = ['owner'] as const;
 
