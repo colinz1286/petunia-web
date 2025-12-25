@@ -1,5 +1,64 @@
 [
     {
+        "slug": "senolytics-for-dogs-explained",
+        "title": "Senolytics for Dogs Explained: What They Are, What They Claim to Do, What Evidence Exists, Safety Concerns, and What Is Still Unknown",
+        "date": "December 25, 2025",
+        "categories": [
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "supplements-vs-drugs-dog-longevity",
+        "title": "Supplements vs Drugs in Dog Longevity: How Owners Can Tell the Difference, Avoid Marketing Traps, and Make Safer Decisions",
+        "date": "December 25, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "should-you-join-dog-longevity-study",
+        "title": "Should You Enroll Your Dog in a Longevity Study? A Clear, Owner-First Checklist for Safety, Endpoints, Costs, and Real Expectations",
+        "date": "December 25, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "rapamycin-longevity-research-dogs",
+        "title": "Rapamycin-Style Longevity Research in Dogs: What Studies Measure, Potential Benefits, Safety Risks, Who It May Fit, and What Is Still Unknown",
+        "date": "December 25, 2025",
+        "categories": [
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "loyal-loy-002-explained",
+        "title": "LOY-002 Explained: What It Is, Who It Is For, What the FDA Milestone Actually Means, What Trials Measure, and What Is Still Unknown",
+        "date": "December 25, 2025",
+        "categories": [
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "dog-longevity-biomarkers-guide",
+        "title": "Dog Longevity Biomarkers: Which Ones Matter, Which Ones Mislead, and How Owners Can Interpret Healthy Aging Claims",
+        "date": "December 25, 2025",
+        "categories": [
+            "veterinary"
+        ]
+    },
+    {
+        "slug": "fda-veterinary-longevity-claims",
+        "title": "How the FDA Evaluates Veterinary Longevity Claims: Conditional Approval, Reasonable Expectation of Effectiveness, Endpoints, and What Owners Should Understand",
+        "date": "December 25, 2025",
+        "categories": [
+            "owner",
+            "veterinary"
+        ]
+    },
+    {
         "slug": "gdv-bloat-emergency-plan-large-dogs",
         "title": "GDV (Bloat) Emergency Plan for Large Dogs: What to Do in the First 10 Minutes, What the ER Will Do, and How to Reduce Risk",
         "date": "December 25, 2025",
@@ -687,7 +746,7 @@
     {
         "slug": "do-dog-anti-ageing-drugs-really-work",
         "title": "Do Anti-Ageing Drugs for Dogs Really Work? A Critical Review of the Evidence, Trials, and What Is Still Unknown",
-        "date": "December 6, 2025",
+        "date": "December 25, 2025",
         "categories": [
             "owner",
             "veterinary"

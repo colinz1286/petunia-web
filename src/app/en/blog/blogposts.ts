@@ -10,6 +10,76 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'senolytics-for-dogs-explained',
+        title:
+            'Senolytics for Dogs Explained: What They Are, What They Claim to Do, What Evidence Exists, Safety Concerns, and What Is Still Unknown',
+        date: 'December 25, 2025',
+        description:
+            'A comprehensive, owner-first guide to senolytics in dogs, explaining cellular senescence, why senolytics are studied for healthy aging, what outcomes researchers measure, how biomarker claims can mislead, the most important safety and interaction concerns for senior dogs, and what remains unknown.',
+        component: () => import('./posts/senolytics-for-dogs-explained'),
+        categories: ['veterinary'],
+    },
+    {
+        slug: 'supplements-vs-drugs-dog-longevity',
+        title:
+            'Supplements vs Drugs in Dog Longevity: How Owners Can Tell the Difference, Avoid Marketing Traps, and Make Safer Decisions',
+        date: 'December 25, 2025',
+        description:
+            'A comprehensive, owner-first guide explaining the real differences between supplements and prescription drugs in dog longevity, including regulatory standards, evidence requirements, biomarker pitfalls, quality and contamination risks, drug interactions, and how to make safer, veterinarian-guided decisions.',
+        component: () => import('./posts/supplements-vs-drugs-dog-longevity'),
+        categories: ['owner', 'veterinary'],
+    },
+    {
+        slug: 'should-you-join-dog-longevity-study',
+        title:
+            'Should You Enroll Your Dog in a Longevity Study? A Clear, Owner-First Checklist for Safety, Endpoints, Costs, and Real Expectations',
+        date: 'December 25, 2025',
+        description:
+            'A thorough, owner-first guide to deciding whether to enroll a dog in a longevity study, covering endpoints, placebo and blinding, safety monitoring, withdrawal rules, costs, logistics, data privacy, and how to make a calm, evidence-driven decision when you feel hopeful or anxious.',
+        component: () => import('./posts/should-you-join-dog-longevity-study'),
+        categories: ['owner', 'veterinary'],
+    },
+    {
+        slug: 'rapamycin-longevity-research-dogs',
+        title:
+            'Rapamycin-Style Longevity Research in Dogs: What Studies Measure, Potential Benefits, Safety Risks, Who It May Fit, and What Is Still Unknown',
+        date: 'December 25, 2025',
+        description:
+            'A comprehensive, owner-first guide to rapamycin in dog aging research: what rapamycin is, why scientists study it for healthspan, what major dog trials like TRIAD aim to measure, the most important safety risks and monitoring questions for senior dogs, and why owners should not self-source or experiment outside veterinary supervision.',
+        component: () => import('./posts/rapamycin-longevity-research-dogs'),
+        categories: ['veterinary'],
+    },
+    {
+        slug: 'loyal-loy-002-explained',
+        title:
+            'LOY-002 Explained: What It Is, Who It Is For, What the FDA Milestone Actually Means, What Trials Measure, and What Is Still Unknown',
+        date: 'December 25, 2025',
+        description:
+            'A comprehensive, owner-first deep dive into LOY-002: what it is designed to do, who it is intended for, how FDA milestone language like reasonable expectation of effectiveness is commonly misunderstood, what endpoints trials actually measure, what safety questions matter most for senior dogs, and what remains unknown.',
+        component: () => import('./posts/loyal-loy-002-explained'),
+        categories: ['veterinary'],
+    },
+    {
+        slug: 'dog-longevity-biomarkers-guide',
+        title:
+            'Dog Longevity Biomarkers: Which Ones Matter, Which Ones Mislead, and How Owners Can Interpret Healthy Aging Claims',
+        date: 'December 25, 2025',
+        description:
+            'A practical, owner-first guide to dog longevity biomarkers: what biomarkers are, why surrogate endpoints can mislead, which categories are most meaningful, how trials use biomarkers, and how owners can evaluate biomarker-based aging and longevity claims responsibly.',
+        component: () => import('./posts/dog-longevity-biomarkers-guide'),
+        categories: ['veterinary'],
+    },
+    {
+        slug: 'fda-veterinary-longevity-claims',
+        title:
+            'How the FDA Evaluates Veterinary Longevity Claims: Conditional Approval, Reasonable Expectation of Effectiveness, Endpoints, and What Owners Should Understand',
+        date: 'December 25, 2025',
+        description:
+            'A clear, owner-first explanation of how the FDA’s Center for Veterinary Medicine evaluates longevity-style veterinary drug claims, what conditional approval and reasonable expectation of effectiveness really mean, which endpoints matter, and how to read regulatory milestones without being misled.',
+        component: () => import('./posts/fda-veterinary-longevity-claims'),
+        categories: ['owner', 'veterinary'],
+    },
+    {
         slug: 'gdv-bloat-emergency-plan-large-dogs',
         title:
             'GDV (Bloat) Emergency Plan for Large Dogs: What to Do in the First 10 Minutes, What the ER Will Do, and How to Reduce Risk',
@@ -785,7 +855,7 @@ export const blogPosts: BlogPostEntry[] = [
         slug: 'do-dog-anti-ageing-drugs-really-work',
         title:
             'Do Anti-Ageing Drugs for Dogs Really Work? A Critical Review of the Evidence, Trials, and What Is Still Unknown',
-        date: 'December 6, 2025',
+        date: 'December 25, 2025',
         description:
             'A critical examination of canine anti-ageing drugs, reviewing FDA standards, early trial data, metabolic markers, safety questions, placebo effects, breed-specific gaps, and the difference between scientific optimism and proven outcomes.',
         component: () =>
