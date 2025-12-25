@@ -10,6 +10,49 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'gdv-bloat-emergency-plan-large-dogs',
+        title:
+            'GDV (Bloat) Emergency Plan for Large Dogs: What to Do in the First 10 Minutes, What the ER Will Do, and How to Reduce Risk',
+        date: 'December 25, 2025',
+        description:
+            'A calm, practical emergency guide to GDV (bloat) in dogs: the exact signs to treat as an emergency, what to do immediately, what not to do, what the ER typically does, gastropexy explained, and risk-reduction steps.',
+        component: () => import('./posts/gdv-bloat-emergency-plan-large-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'epi-in-german-shepherds-owner-guide',
+        title:
+            'EPI in German Shepherds: The Practical Owner Guide (Symptoms, Testing, Enzymes, B12, Diet, and Troubleshooting)',
+        date: 'December 25, 2025',
+        description:
+            'A clear, step-by-step guide to exocrine pancreatic insufficiency (EPI) in German Shepherds: hallmark signs, cTLI testing, enzyme dosing routines, B12 support, diet choices, monitoring, and why some dogs do not improve right away.',
+        component: () => import('./posts/epi-in-german-shepherds-owner-guide'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'German Shepherd',
+    },
+    {
+        slug: 'vomiting-vs-regurgitation-in-dogs',
+        title:
+            'Vomiting vs Regurgitation in Dogs: How to Tell the Difference, What It Means, and When It’s an Emergency',
+        date: 'December 25, 2025',
+        description:
+            'A practical, calm guide for worried owners: how to distinguish vomiting from regurgitation, why the difference matters (aspiration risk, obstruction, megaesophagus), what to track, and clear ER thresholds.',
+        component: () => import('./posts/vomiting-vs-regurgitation-in-dogs'),
+        categories: ['owner']
+    },
+    {
+        slug: 'german-shepherd-hind-end-weakness-dm-vs-arthritis-vs-dlss',
+        title:
+            'German Shepherd Hind-End Weakness: DM vs Arthritis vs DLSS vs Injury (A Practical Owner Triage Guide)',
+        date: 'December 25, 2025',
+        description:
+            'A practical, calm, step-by-step guide to hind-end weakness in German Shepherds: how to tell pain vs nerve weakness, common causes (arthritis, cruciate injury, DLSS, DM), what to track at home, and when to seek urgent care.',
+        component: () =>
+            import('./posts/german-shepherd-hind-end-weakness-dm-vs-arthritis-vs-dlss'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'German Shepherd',
+    },
+    {
         slug: 'vet-affordability-pet-costs-financial-stress-2025',
         title: 'Why Pet Owners Are Struggling With Vet Affordability: New Data on Costs, Financial Stress, and What Helps (2025)',
         date: 'December 23, 2025',
@@ -3344,7 +3387,7 @@ export const blogPosts: BlogPostEntry[] = [
         slug: 'what-health-problems-are-common-in-german-shepherds',
         title:
             'What Health Problems Are Common in German Shepherds? A Practical, Evidence-Informed Owner’s Guide (Screens, Prevention & When to See the Vet)',
-        date: 'July 18, 2025',
+        date: 'December 25, 2025',
         description:
             'A deep, owner-friendly dive into common GSD health issues—hips/elbows, spine (lumbosacral stenosis), degenerative myelopathy, GI diseases (EPI, IBD, megaesophagus), bloat/GDV, skin & immune disease (atopy, pyoderma, perianal fistulas), eye disease (pannus), cancers (e.g., hemangiosarcoma), and rarer conditions (pituitary dwarfism)—plus prevention, screening timelines, and red-flag checklists.',
         component: () => import('./posts/what-health-problems-are-common-in-german-shepherds'),

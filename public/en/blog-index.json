@@ -1,5 +1,41 @@
 [
     {
+        "slug": "gdv-bloat-emergency-plan-large-dogs",
+        "title": "GDV (Bloat) Emergency Plan for Large Dogs: What to Do in the First 10 Minutes, What the ER Will Do, and How to Reduce Risk",
+        "date": "December 25, 2025",
+        "categories": [
+            "owner"
+        ]
+    },
+    {
+        "slug": "epi-in-german-shepherds-owner-guide",
+        "title": "EPI in German Shepherds: The Practical Owner Guide (Symptoms, Testing, Enzymes, B12, Diet, and Troubleshooting)",
+        "date": "December 25, 2025",
+        "categories": [
+            "owner",
+            "breed_specific_guides"
+        ],
+        "breed": "German Shepherd"
+    },
+    {
+        "slug": "vomiting-vs-regurgitation-in-dogs",
+        "title": "Vomiting vs Regurgitation in Dogs: How to Tell the Difference, What It Means, and When It’s an Emergency",
+        "date": "December 25, 2025",
+        "categories": [
+            "owner"
+        ]
+    },
+    {
+        "slug": "german-shepherd-hind-end-weakness-dm-vs-arthritis-vs-dlss",
+        "title": "German Shepherd Hind-End Weakness: DM vs Arthritis vs DLSS vs Injury (A Practical Owner Triage Guide)",
+        "date": "December 25, 2025",
+        "categories": [
+            "owner",
+            "breed_specific_guides"
+        ],
+        "breed": "German Shepherd"
+    },
+    {
         "slug": "vet-affordability-pet-costs-financial-stress-2025",
         "title": "Why Pet Owners Are Struggling With Vet Affordability: New Data on Costs, Financial Stress, and What Helps (2025)",
         "date": "December 23, 2025",
@@ -2940,7 +2976,7 @@
     {
         "slug": "what-health-problems-are-common-in-german-shepherds",
         "title": "What Health Problems Are Common in German Shepherds? A Practical, Evidence-Informed Owner’s Guide (Screens, Prevention & When to See the Vet)",
-        "date": "July 18, 2025",
+        "date": "December 25, 2025",
         "categories": [
             "owner",
             "breed_specific_guides"
