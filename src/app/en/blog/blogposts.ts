@@ -10,6 +10,26 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'wolf-dna-in-modern-dogs-2025-study',
+        title:
+            'Wolf DNA in Modern Dogs: What the New 2,700-Genome Study Found, What It Means, and What It Does Not',
+        date: 'December 26, 2025',
+        description:
+            'An evidence-based breakdown of a major 2025 canine genetics study analyzing nearly 2,700 genomes, explaining why many modern dogs carry trace wolf ancestry, when the mixing likely occurred, what traits it may influence, and what owners should not assume.',
+        component: () => import('./posts/wolf-dna-in-modern-dogs-2025-study'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'hip-dysplasia-in-dogs',
+        title:
+            'Hip Dysplasia in Dogs: Causes, Early Signs, Diagnosis, Treatment Options, Costs, and Long-Term Management',
+        date: 'December 26, 2025',
+        description:
+            'A comprehensive, evidence-based guide to hip dysplasia in dogs: what it is, why it develops, early warning signs owners miss, how veterinarians diagnose it, treatment and surgery options, realistic U.S. cost ranges, prevention myths, and long-term management for comfort and mobility.',
+        component: () => import('./posts/hip-dysplasia-in-dogs'),
+        categories: ['owner', 'veterinary'],
+    },
+    {
         slug: 'senolytics-for-dogs-explained',
         title:
             'Senolytics for Dogs Explained: What They Are, What They Claim to Do, What Evidence Exists, Safety Concerns, and What Is Still Unknown',
