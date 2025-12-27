@@ -55,6 +55,8 @@ export default function IndividualMessageBusinessPage() {
 
     const businessId = params.get('businessId') || '';
     const businessName = decodeURIComponent(params.get('businessName') || '');
+    const [resolvedBusinessName, setResolvedBusinessName] = useState('');
+
     const [userId, setUserId] = useState('');
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessageText, setNewMessageText] = useState('');
@@ -87,6 +89,19 @@ export default function IndividualMessageBusinessPage() {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
     }, [messages]);
+    useEffect(() => {
+        if (!businessId) return;
+
+        // 🔐 Fetch business name from Firestore (safe source)
+        getDoc(doc(db, 'businesses', businessId)).then((snap) => {
+            if (snap.exists()) {
+                const name = snap.data()?.businessName;
+                if (typeof name === 'string' && name.trim()) {
+                    setResolvedBusinessName(name.trim());
+                }
+            }
+        });
+    }, [businessId]);
 
     // ============================================
     // 🔹 Firestore Helpers
@@ -97,7 +112,7 @@ export default function IndividualMessageBusinessPage() {
     const threadDocRef = () => doc(db, 'messages', threadId);
 
     const attachListener = async () => {
-        await ensureThreadExists();
+        // Do NOT create the thread on load — wait for real messages
         const q = query(messagesCollectionRef(), orderBy('sentAt', 'asc'));
         return onSnapshot(q, async (snapshot) => {
             const msgs: Message[] = snapshot.docs.map((doc) => {
@@ -204,7 +219,7 @@ export default function IndividualMessageBusinessPage() {
                     &larr; {t('back', { default: 'Back' })}
                 </button>
                 <h1 className="flex-1 text-center font-bold text-xl text-[color:var(--color-accent)]">
-                    {businessName || t('default_title', { default: 'Chat' })}
+                    {resolvedBusinessName || businessName || t('default_title', { default: 'Chat' })}
                 </h1>
                 {/* Spacer to balance flex layout */}
                 <div className="w-12" />
@@ -222,8 +237,8 @@ export default function IndividualMessageBusinessPage() {
                     >
                         <div
                             className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm break-words ${m.senderId === userId
-                                    ? 'bg-[#2c4a30] text-white shadow-md border border-[#1f3322]'
-                                    : 'bg-white text-gray-900 border border-gray-300 shadow-sm'
+                                ? 'bg-[#2c4a30] text-white shadow-md border border-[#1f3322]'
+                                : 'bg-white text-gray-900 border border-gray-300 shadow-sm'
                                 }`}
                         >
                             {m.text}
