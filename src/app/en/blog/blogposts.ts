@@ -10,6 +10,26 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'how-veterinarians-diagnose-hip-dysplasia',
+        title:
+            'How Veterinarians Diagnose Hip Dysplasia in Dogs: Exams, X-Rays, PennHIP, OFA, and What Results Mean',
+        date: 'December 27, 2025',
+        description:
+            'A comprehensive, owner-first guide explaining how veterinarians diagnose hip dysplasia in dogs, including orthopedic exams, X-ray positioning and sedation, OFA versus PennHIP screening, arthritis grading, differential diagnoses, and how results guide treatment decisions.',
+        component: () => import('./posts/how-veterinarians-diagnose-hip-dysplasia'),
+        categories: ['owner', 'vet'],
+    },
+    {
+        slug: 'early-signs-of-hip-dysplasia-owners-miss',
+        title:
+            'Early Signs of Hip Dysplasia Owners Miss: Subtle Clues Before Limping Starts',
+        date: 'December 27, 2025',
+        description:
+            'A deeply practical, owner-focused guide to the early and often-overlooked signs of hip dysplasia in dogs, including subtle movement changes, posture shifts, behavioral clues, and daily-life signals that appear long before obvious limping.',
+        component: () => import('./posts/early-signs-of-hip-dysplasia-owners-miss'),
+        categories: ['owner'],
+    },
+    {
         slug: 'wolf-dna-in-modern-dogs-2025-study',
         title:
             'Wolf DNA in Modern Dogs: What the New 2,700-Genome Study Found, What It Means, and What It Does Not',
@@ -27,7 +47,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'A comprehensive, evidence-based guide to hip dysplasia in dogs: what it is, why it develops, early warning signs owners miss, how veterinarians diagnose it, treatment and surgery options, realistic U.S. cost ranges, prevention myths, and long-term management for comfort and mobility.',
         component: () => import('./posts/hip-dysplasia-in-dogs'),
-        categories: ['owner', 'veterinary'],
+        categories: ['owner', 'vet'],
     },
     {
         slug: 'senolytics-for-dogs-explained',
@@ -37,7 +57,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'A comprehensive, owner-first guide to senolytics in dogs, explaining cellular senescence, why senolytics are studied for healthy aging, what outcomes researchers measure, how biomarker claims can mislead, the most important safety and interaction concerns for senior dogs, and what remains unknown.',
         component: () => import('./posts/senolytics-for-dogs-explained'),
-        categories: ['veterinary'],
+        categories: ['vet'],
     },
     {
         slug: 'supplements-vs-drugs-dog-longevity',
@@ -47,7 +67,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'A comprehensive, owner-first guide explaining the real differences between supplements and prescription drugs in dog longevity, including regulatory standards, evidence requirements, biomarker pitfalls, quality and contamination risks, drug interactions, and how to make safer, veterinarian-guided decisions.',
         component: () => import('./posts/supplements-vs-drugs-dog-longevity'),
-        categories: ['owner', 'veterinary'],
+        categories: ['owner', 'veter'],
     },
     {
         slug: 'should-you-join-dog-longevity-study',
@@ -57,7 +77,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'A thorough, owner-first guide to deciding whether to enroll a dog in a longevity study, covering endpoints, placebo and blinding, safety monitoring, withdrawal rules, costs, logistics, data privacy, and how to make a calm, evidence-driven decision when you feel hopeful or anxious.',
         component: () => import('./posts/should-you-join-dog-longevity-study'),
-        categories: ['owner', 'veterinary'],
+        categories: ['owner', 'vet'],
     },
     {
         slug: 'rapamycin-longevity-research-dogs',
@@ -67,7 +87,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'A comprehensive, owner-first guide to rapamycin in dog aging research: what rapamycin is, why scientists study it for healthspan, what major dog trials like TRIAD aim to measure, the most important safety risks and monitoring questions for senior dogs, and why owners should not self-source or experiment outside veterinary supervision.',
         component: () => import('./posts/rapamycin-longevity-research-dogs'),
-        categories: ['veterinary'],
+        categories: ['vet'],
     },
     {
         slug: 'loyal-loy-002-explained',
@@ -77,7 +97,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'A comprehensive, owner-first deep dive into LOY-002: what it is designed to do, who it is intended for, how FDA milestone language like reasonable expectation of effectiveness is commonly misunderstood, what endpoints trials actually measure, what safety questions matter most for senior dogs, and what remains unknown.',
         component: () => import('./posts/loyal-loy-002-explained'),
-        categories: ['veterinary'],
+        categories: ['vet'],
     },
     {
         slug: 'dog-longevity-biomarkers-guide',
@@ -87,7 +107,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'A practical, owner-first guide to dog longevity biomarkers: what biomarkers are, why surrogate endpoints can mislead, which categories are most meaningful, how trials use biomarkers, and how owners can evaluate biomarker-based aging and longevity claims responsibly.',
         component: () => import('./posts/dog-longevity-biomarkers-guide'),
-        categories: ['veterinary'],
+        categories: ['vet'],
     },
     {
         slug: 'fda-veterinary-longevity-claims',
@@ -97,7 +117,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'A clear, owner-first explanation of how the FDA’s Center for Veterinary Medicine evaluates longevity-style veterinary drug claims, what conditional approval and reasonable expectation of effectiveness really mean, which endpoints matter, and how to read regulatory milestones without being misled.',
         component: () => import('./posts/fda-veterinary-longevity-claims'),
-        categories: ['owner', 'veterinary'],
+        categories: ['owner', 'vet'],
     },
     {
         slug: 'gdv-bloat-emergency-plan-large-dogs',
@@ -869,7 +889,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/psychology-of-hope-in-canine-longevity') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'do-dog-anti-ageing-drugs-really-work',
@@ -882,7 +902,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/do-dog-anti-ageing-drugs-really-work') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'companies-behind-canine-longevity',
@@ -895,7 +915,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/companies-behind-canine-longevity') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'ethics-of-extending-dog-lifespan',
@@ -908,7 +928,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/ethics-of-extending-dog-lifespan') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'prepare-home-for-ageing-dog',
@@ -921,7 +941,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/prepare-home-for-ageing-dog') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'large-breed-dog-longevity-guide',
@@ -934,7 +954,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/large-breed-dog-longevity-guide') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary', 'breed_specific_guides']
+        categories: ['owner', 'vet', 'breed_specific_guides']
     },
     {
         slug: 'longest-living-dog-breeds-longevity-lessons',
@@ -947,7 +967,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/longest-living-dog-breeds-longevity-lessons') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary', 'breed_specific_guides']
+        categories: ['owner', 'vet', 'breed_specific_guides']
     },
     {
         slug: 'dog-stress-sleep-environment-lifespan',
@@ -960,7 +980,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/dog-stress-sleep-environment-lifespan') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'dog-longevity-supplements-evidence',
@@ -973,7 +993,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/dog-longevity-supplements-evidence') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'dog-cognitive-decline-ccd-guide',
@@ -986,7 +1006,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/dog-cognitive-decline-ccd-guide') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'dog-mobility-and-joint-preservation',
@@ -999,7 +1019,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/dog-mobility-and-joint-preservation') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'conditions-that-shorten-dog-lifespan',
@@ -1012,7 +1032,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/conditions-that-shorten-dog-lifespan') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'future-of-dog-longevity-medicine',
@@ -1025,7 +1045,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/future-of-dog-longevity-medicine') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'senior-dog-screening-guide-2026',
@@ -1038,7 +1058,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/senior-dog-screening-guide-2026') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'dog-weight-and-lifespan-data-analysis',
@@ -1051,7 +1071,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/dog-weight-and-lifespan-data-analysis') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'dog-exercise-for-longevity-daily-routines',
@@ -1064,7 +1084,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/dog-exercise-for-longevity-daily-routines') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'dog-longevity-diet-metabolic-health',
@@ -1077,7 +1097,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/dog-longevity-diet-metabolic-health') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'dog-ageing-science-cellular-pathways',
@@ -1090,7 +1110,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/dog-ageing-science-cellular-pathways') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary']
+        categories: ['owner', 'vet']
     },
     {
         slug: 'adult-boston-terrier-care-2025',
@@ -1888,7 +1908,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/anti-ageing-for-dogs') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['owner', 'veterinary'],
+        categories: ['owner', 'vet'],
     },
     {
         slug: 'how-long-do-golden-retrievers-live',
@@ -1941,7 +1961,7 @@ export const blogPosts: BlogPostEntry[] = [
             import('./posts/veterinary-emergency-care-shortage-2025') as Promise<{
                 default: React.ComponentType<object>;
             }>,
-        categories: ['veterinary'],
+        categories: ['vet'],
     },
     {
         slug: 'holiday-ideas-dog-boarding-daycare-2025',
@@ -2506,7 +2526,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'Learn about the most common dog vaccines, what they protect against, boarding and daycare requirements, and emerging vaccines that may benefit your pet.',
         component: () => import('./posts/dog-vaccines-what-they-protect'),
-        categories: ['owner', 'veterinary'],
+        categories: ['owner', 'vet'],
     },
     {
         slug: 'separation-anxiety-dogs',
@@ -2533,7 +2553,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'Penn Vet has opened a new specialty clinic for canine retinal disease, including progressive retinal atrophy (PRA). Learn what these diseases are, why they matter, and what diagnostic and treatment innovations are underway in the U.S. and UK.',
         component: () => import('./posts/new-penn-vet-clinic-advances-treatment-for-canine-retinal-disease'),
-        categories: ['owner', 'veterinary'],
+        categories: ['owner', 'vet'],
     },
     {
         slug: 'california-dogs-tick-borne-anaplasmosis-tripled',

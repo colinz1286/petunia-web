@@ -9,7 +9,7 @@ export default function HipDysplasiaInDogs() {
 
   const title =
     'Hip Dysplasia in Dogs: Early Signs, Prevention, Treatment Options, and Life-Care Planning';
-  const date = 'September 16, 2025';
+  const date = 'December 26, 2025';
   const categories = ['owner'] as const;
 
   // Exact labels from prior posts (do not change keys/labels)
@@ -123,6 +123,7 @@ export default function HipDysplasiaInDogs() {
         {/* EARLY SIGNS */}
         <section id="early-signs" className="mb-10">
           <h2 className="text-2xl font-semibold mb-3">Early Signs by Life Stage</h2>
+
           <h3 className="text-lg font-semibold mt-2 mb-1">Puppies &amp; Adolescents</h3>
           <ul className="list-disc pl-5 space-y-1 mb-3">
             <li>“Bunny hopping” with both rear legs together during faster trots.</li>
@@ -130,29 +131,58 @@ export default function HipDysplasiaInDogs() {
             <li>Intermittent rear-limb lameness after vigorous play; soreness by evening.</li>
             <li>Grooming sensitivity over hips or lower back.</li>
           </ul>
+
           <h3 className="text-lg font-semibold mt-2 mb-1">Adults &amp; Seniors</h3>
           <ul className="list-disc pl-5 space-y-1 mb-3">
             <li>Stiffness on rising that “warms out,” then returns after rest.</li>
             <li>Shortened stride, swaying rear, or pivoting with the front more than the back.</li>
             <li>Reduced activity, reluctance to play fetch, irritability during nail trims or lifting.</li>
           </ul>
+
           <p className="mb-0">
-            None of these signs prove HD on their own. They are <strong>decision triggers</strong> to schedule a veterinary exam and discuss appropriate imaging.
+            None of these signs prove hip dysplasia on their own. They are
+            <strong> decision triggers</strong> to look for patterns over time and consider
+            veterinary evaluation if changes persist.
+            For a deeper breakdown of subtle, commonly missed early clues that appear
+            before obvious limping, see:{' '}
+            <Link
+              href={`/${locale}/blog/early-signs-of-hip-dysplasia-owners-miss`}
+              className="underline font-medium hover:opacity-80"
+            >
+              Early Signs of Hip Dysplasia Owners Miss
+            </Link>
+            .
           </p>
         </section>
 
         {/* DIAGNOSTICS */}
         <section id="diagnostics" className="mb-10">
           <h2 className="text-2xl font-semibold mb-3">Diagnostics &amp; Imaging</h2>
+
           <p className="mb-3">
-            Your veterinarian will combine <strong>history, orthopedic exam, and imaging</strong>. Standard radiographs taken under correct positioning remain the primary tool for diagnosis and OA grading. Two specialized approaches assess laxity more objectively:
+            Your veterinarian will combine <strong>history, orthopedic exam, and imaging</strong>.
+            Standard radiographs taken under correct positioning remain the primary tool
+            for diagnosis and osteoarthritis grading.
           </p>
+
           <ul className="list-disc pl-5 space-y-1 mb-3">
-            <li><strong>OFA-style views:</strong> evaluate conformation and secondary arthritis changes; typically at or after skeletal maturity.</li>
-            <li><strong>PennHIP:</strong> quantifies passive hip laxity (distraction index) and can be performed as early as 16 weeks by trained providers.</li>
+            <li><strong>OFA-style views:</strong> evaluate hip conformation and secondary arthritis changes.</li>
+            <li><strong>PennHIP:</strong> quantifies passive hip laxity using specialized positioning and measurement.</li>
           </ul>
+
           <p className="mb-0">
-            Imaging also rules out differentials such as cruciate disease, lumbosacral issues, or trauma. Pain scoring and gait analysis (including force-plate where available) help track response to therapy over time.
+            Because hip pain can originate from multiple structures, diagnosis is rarely
+            based on X-rays alone. History, exam findings, positioning quality, and interpretation
+            all matter.
+            For a step-by-step explanation of how veterinarians evaluate hips, what OFA and
+            PennHIP actually measure, and how results guide treatment decisions, continue to:{' '}
+            <Link
+              href={`/${locale}/blog/how-veterinarians-diagnose-hip-dysplasia`}
+              className="underline font-medium hover:opacity-80"
+            >
+              How Veterinarians Diagnose Hip Dysplasia
+            </Link>
+            .
           </p>
         </section>
 
