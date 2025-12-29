@@ -2675,7 +2675,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'addisons-disease-in-dogs',
         title: 'Addison’s Disease in Dogs: What Owners Need to Know About Diagnosis and Daily Management',
-        date: 'September 13, 2025',
+        date: 'December 28, 2025',
         description:
             'A 2,000+ word owner’s guide to Addison’s disease (hypoadrenocorticism): causes, breeds at risk, early symptoms, crisis recognition, diagnostic testing, lifelong treatment with medications, monitoring, and home-care SOPs.',
         component: () => import('./posts/addisons-disease-in-dogs'),
@@ -2693,7 +2693,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'bloat-gdv-in-large-breed-dogs',
         title: 'Bloat (GDV) in Large Breed Dogs: Recognizing the Warning Signs and Reducing Risk',
-        date: 'September 17, 2025',
+        date: 'December 28, 2025',
         description:
             'A comprehensive, evidence-aware guide to canine bloat (gastric dilatation-volvulus): what it is, early signs, emergency steps, diagnostics, treatment, preventive gastropexy, feeding and exercise rules, and SOPs for households and facilities.',
         component: () => import('./posts/bloat-gdv-in-large-breed-dogs'),
@@ -2890,7 +2890,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'what-health-issues-do-poodles-have',
         title: 'What Health Issues Do Poodles Have? A Practical, Vet-Informed Guide (Standard, Miniature & Toy)',
-        date: 'August 26, 2025',
+        date: 'December 28, 2025',
         description:
             'Common Poodle health issues by variety: Addison’s disease, sebaceous adenitis, PRA/cataracts, patellar luxation, Legg–Calvé–Perthes, hip dysplasia, tracheal collapse, hypothyroidism/Cushing’s, von Willebrand disease, GDV/bloat, dental/ear care, senior planning, and breeder testing (CHIC/ACVO).',
         component: () =>

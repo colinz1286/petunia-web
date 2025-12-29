@@ -1,18 +1,15 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import { useSearchParams, useRouter } from 'next/navigation';
-import {
-    getAuth,
-    onAuthStateChanged,
-} from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import {
     getFirestore,
     collection,
     doc,
     getDoc,
     setDoc,
-    updateDoc,
     addDoc,
     query,
     orderBy,
@@ -47,6 +44,16 @@ interface Message {
     read: boolean;
 }
 
+interface FirestoreMessageData {
+    senderId?: string;
+    receiverId?: string;
+    text?: string;
+    sentAt?: {
+        toDate?: () => Date;
+    };
+    read?: boolean;
+}
+
 export default function IndividualMessageBusinessPage() {
     const router = useRouter();
     const params = useSearchParams();
@@ -59,11 +66,22 @@ export default function IndividualMessageBusinessPage() {
 
     const [userId, setUserId] = useState('');
     const [messages, setMessages] = useState<Message[]>([]);
+    const [userFirstName, setUserFirstName] = useState('');
+    const [userLastName, setUserLastName] = useState('');
+    const [userName, setUserName] = useState('');
+
     const [newMessageText, setNewMessageText] = useState('');
     const [isSending, setIsSending] = useState(false);
     const scrollRef = useRef<HTMLDivElement | null>(null);
 
     const threadId = `${businessId}__${userId}`;
+
+    // ✅ Stable refs (keeps hook deps clean)
+    const threadDocRef = useCallback(() => doc(db, 'messages', threadId), [threadId]);
+    const messagesCollectionRef = useCallback(
+        () => collection(db, 'messages', threadId, 'threadMessages'),
+        [threadId]
+    );
 
     // ✅ Listen for auth
     useEffect(() => {
@@ -72,16 +90,38 @@ export default function IndividualMessageBusinessPage() {
                 router.push(`/${locale}/loginsignup`);
                 return;
             }
+
             setUserId(user.uid);
+
+            // ✅ Fetch client display name for business inbox threads
+            try {
+                const userSnap = await getDoc(doc(db, 'users', user.uid));
+                if (userSnap.exists()) {
+                    const data = userSnap.data() as Record<string, unknown>;
+
+                    const first =
+                        typeof data.firstName === 'string' ? data.firstName : '';
+                    const last =
+                        typeof data.lastName === 'string' ? data.lastName : '';
+
+                    const displayName =
+                        typeof data.userName === 'string'
+                            ? data.userName
+                            : typeof data.displayName === 'string'
+                                ? data.displayName
+                                : `${first} ${last}`.trim();
+
+                    setUserFirstName(first);
+                    setUserLastName(last);
+                    setUserName(displayName);
+                }
+            } catch {
+                // Silent failure — thread will safely fall back if name is unavailable
+            }
         });
+
         return () => unsub();
     }, [router, locale]);
-
-    // ✅ Attach Firestore listener once user is known
-    useEffect(() => {
-        if (!userId || !businessId) return;
-        attachListener();
-    }, [userId, businessId]);
 
     // ✅ Scroll to bottom whenever messages update
     useEffect(() => {
@@ -89,6 +129,7 @@ export default function IndividualMessageBusinessPage() {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
     }, [messages]);
+
     useEffect(() => {
         if (!businessId) return;
 
@@ -104,86 +145,74 @@ export default function IndividualMessageBusinessPage() {
     }, [businessId]);
 
     // ============================================
-    // 🔹 Firestore Helpers
+    // ✅ IMPORTANT FIX: declare markUnreadAsRead BEFORE attachListener
     // ============================================
-    const messagesCollectionRef = () =>
-        collection(db, 'messages', threadId, 'threadMessages');
+    const markUnreadAsRead = useCallback(
+        async (msgs: Message[]) => {
+            if (!userId || !threadId) return;
 
-    const threadDocRef = () => doc(db, 'messages', threadId);
+            const unread = msgs.filter((m) => m.receiverId === userId && !m.read);
+            if (unread.length === 0) return;
 
-    const attachListener = async () => {
-        // Do NOT create the thread on load — wait for real messages
+            const batch = writeBatch(db);
+
+            for (const m of unread) {
+                const msgRef = doc(db, 'messages', threadId, 'threadMessages', m.id);
+                batch.update(msgRef, { read: true, readAt: serverTimestamp() });
+            }
+
+            // Merge-safe thread update (won’t fail if thread doc doesn’t exist yet)
+            batch.set(
+                threadDocRef(),
+                {
+                    unreadBy: { [userId]: 0 },
+                    lastReadAt: { [userId]: serverTimestamp() },
+                },
+                { merge: true }
+            );
+
+            await batch.commit();
+        },
+        [threadId, userId, threadDocRef]
+    );
+
+    const attachListener = useCallback(() => {
         const q = query(messagesCollectionRef(), orderBy('sentAt', 'asc'));
-        return onSnapshot(q, async (snapshot) => {
-            const msgs: Message[] = snapshot.docs.map((doc) => {
-                const data = doc.data();
+
+        const unsubscribe = onSnapshot(q, async (snapshot) => {
+            const msgs: Message[] = snapshot.docs.map((docSnap) => {
+                const data = docSnap.data() as FirestoreMessageData;
                 return {
-                    id: doc.id,
-                    senderId: data.senderId,
-                    receiverId: data.receiverId,
-                    text: data.text,
+                    id: docSnap.id,
+                    senderId: String(data.senderId ?? ''),
+                    receiverId: String(data.receiverId ?? ''),
+                    text: String(data.text ?? ''),
                     sentAt: data.sentAt?.toDate?.() || null,
-                    read: data.read ?? false,
+                    read: Boolean(data.read ?? false),
                 };
             });
+
             setMessages(msgs);
             await markUnreadAsRead(msgs);
         });
-    };
 
-    const ensureThreadExists = async () => {
-        const threadRef = threadDocRef();
-        const snap = await getDoc(threadRef);
-        const user = auth.currentUser;
-        const email = user?.email ?? '';
+        return unsubscribe;
+    }, [messagesCollectionRef, markUnreadAsRead]);
 
-        if (!snap.exists()) {
-            await setDoc(threadRef, {
-                threadId,
-                businessId,
-                userId,
-                participants: [businessId, userId],
-                lastMessageText: '',
-                lastMessageAt: serverTimestamp(),
-                unreadBy: { [businessId]: 0, [userId]: 0 },
-                lastReadAt: {
-                    [businessId]: serverTimestamp(),
-                    [userId]: serverTimestamp(),
-                },
-                userEmail: email,
-            });
-        } else {
-            const data = snap.data() ?? {};
-            if (!data.userEmail) {
-                await updateDoc(threadRef, { userEmail: email });
-            }
-        }
-    };
+    // ✅ Attach Firestore listener once user is known
+    useEffect(() => {
+        if (!userId || !businessId) return;
 
-    const markUnreadAsRead = async (msgs: Message[]) => {
-        if (!userId) return;
-        const unread = msgs.filter((m) => m.receiverId === userId && !m.read);
-        if (unread.length === 0) return;
-
-        const batch = writeBatch(db);
-        for (const m of unread) {
-            const msgRef = doc(db, 'messages', threadId, 'threadMessages', m.id);
-            batch.update(msgRef, { read: true, readAt: serverTimestamp() });
-        }
-
-        batch.update(threadDocRef(), {
-            [`unreadBy.${userId}`]: 0,
-            [`lastReadAt.${userId}`]: serverTimestamp(),
-        });
-
-        await batch.commit();
-    };
+        const unsubscribe = attachListener();
+        return () => unsubscribe?.();
+    }, [userId, businessId, attachListener]);
 
     const sendMessage = async () => {
         const text = newMessageText.trim();
         if (!text || isSending || !userId || !businessId) return;
 
         setIsSending(true);
+
         const msgData = {
             senderId: userId,
             receiverId: businessId,
@@ -192,14 +221,26 @@ export default function IndividualMessageBusinessPage() {
             read: false,
         };
 
-        const msgRef = collection(db, 'messages', threadId, 'threadMessages');
-        await addDoc(msgRef, msgData);
+        await addDoc(messagesCollectionRef(), msgData);
 
-        await updateDoc(threadDocRef(), {
-            lastMessageText: text.length > 300 ? text.substring(0, 300) : text,
-            lastMessageAt: serverTimestamp(),
-            unreadBy: { [userId]: 0, [businessId]: 1 },
-        });
+        // Safer than updateDoc (won’t throw if thread doc doesn’t exist yet)
+        await setDoc(
+            threadDocRef(),
+            {
+                businessId,
+                userId,
+
+                // ✅ Client display fields for business inbox
+                userName: userName || `${userFirstName} ${userLastName}`.trim(),
+                userFirstName,
+                userLastName,
+
+                lastMessageText: text.length > 300 ? text.substring(0, 300) : text,
+                lastMessageAt: serverTimestamp(),
+                unreadBy: { [userId]: 0, [businessId]: 1 },
+            },
+            { merge: true }
+        );
 
         setNewMessageText('');
         setIsSending(false);
@@ -221,20 +262,13 @@ export default function IndividualMessageBusinessPage() {
                 <h1 className="flex-1 text-center font-bold text-xl text-[color:var(--color-accent)]">
                     {resolvedBusinessName || businessName || t('default_title', { default: 'Chat' })}
                 </h1>
-                {/* Spacer to balance flex layout */}
                 <div className="w-12" />
             </div>
 
             {/* Messages */}
-            <div
-                ref={scrollRef}
-                className="flex-1 w-full max-w-md overflow-y-auto px-3 py-2 space-y-2"
-            >
+            <div ref={scrollRef} className="flex-1 w-full max-w-md overflow-y-auto px-3 py-2 space-y-2">
                 {messages.map((m) => (
-                    <div
-                        key={m.id}
-                        className={`flex ${m.senderId === userId ? 'justify-end' : 'justify-start'}`}
-                    >
+                    <div key={m.id} className={`flex ${m.senderId === userId ? 'justify-end' : 'justify-start'}`}>
                         <div
                             className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm break-words ${m.senderId === userId
                                 ? 'bg-[#2c4a30] text-white shadow-md border border-[#1f3322]'
@@ -270,25 +304,20 @@ export default function IndividualMessageBusinessPage() {
                             flexShrink: 0,
                             minWidth: '80px',
                             height: '40px',
-                            backgroundColor:
-                                !newMessageText.trim() || isSending ? '#9ca3af' : '#2c4a30',
+                            backgroundColor: !newMessageText.trim() || isSending ? '#9ca3af' : '#2c4a30',
                             color: 'white',
                             border: '2px solid #1f3322',
                             boxShadow: '0 2px 5px rgba(0,0,0,0.15)',
-                            cursor:
-                                !newMessageText.trim() || isSending ? 'not-allowed' : 'pointer',
+                            cursor: !newMessageText.trim() || isSending ? 'not-allowed' : 'pointer',
                         }}
                         onMouseOver={(e) => {
-                            if (newMessageText.trim() && !isSending)
-                                e.currentTarget.style.opacity = '0.85';
+                            if (newMessageText.trim() && !isSending) e.currentTarget.style.opacity = '0.85';
                         }}
                         onMouseOut={(e) => {
                             e.currentTarget.style.opacity = '1';
                         }}
                     >
-                        {isSending
-                            ? t('sending', { default: 'Sending...' })
-                            : t('send', { default: 'Send' })}
+                        {isSending ? t('sending', { default: 'Sending...' }) : t('send', { default: 'Send' })}
                     </button>
                 </div>
             </div>
