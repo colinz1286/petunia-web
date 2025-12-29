@@ -10,6 +10,36 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'study-mushroom-supplement-cognitive-function-senior-dogs',
+        title:
+            'Study Report: Mushroom Supplement and Cognitive Function in Senior Dogs',
+        date: 'December 29, 2025',
+        description:
+            'A factual summary of a reported 12-week veterinary study examining a mushroom-based nutraceutical in senior dogs, including study design, cognitive measures, reported outcomes, safety observations, and stated limitations.',
+        component: () => import('./posts/study-mushroom-supplement-cognitive-function-senior-dogs'),
+        categories: ['owner', 'vet'],
+    },
+    {
+        slug: 'most-popular-dog-and-cat-names-2025',
+        title:
+            'Most Popular Dog (and Cat) Names of 2025: What Pet Naming Trends Reveal',
+        date: 'December 29, 2025',
+        description:
+            'A simple, data-informed look at Rover&rsquo;s annual list of the most popular dog and cat names of 2025, including why names like Luna remain dominant and what these trends reveal about pet ownership culture worldwide.',
+        component: () => import('./posts/most-popular-dog-and-cat-names-2025'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'san-francisco-police-investigation-rover-dog-sitter',
+        title:
+            'San Francisco Police Investigate Allegations Against a Rover Dog Sitter: What Pet Owners Should Know',
+        date: 'December 29, 2025',
+        description:
+            'A factual, owner-first report on the San Francisco police investigation involving a dog sitter booked through Rover, including what has been reported, what remains unconfirmed, how platform safeguards work, and practical steps owners can take to reduce risk when hiring pet care.',
+        component: () => import('./posts/san-francisco-police-investigation-rover-dog-sitter'),
+        categories: ['owner', 'sitter'],
+    },
+    {
         slug: 'uk-animal-welfare-reforms-2025-puppy-farming-dog-breeding-standards',
         title:
             'UK Animal Welfare Reforms (2025): What the New Strategy Could Change for Puppy Farming, Dog Breeding Standards, and Cruel Practices',

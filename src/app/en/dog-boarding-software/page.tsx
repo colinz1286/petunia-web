@@ -35,7 +35,7 @@ export default function DogBoardingSoftwarePage() {
           <p>Competitor &ndash; $189/mo</p>
           <p>Competitor &ndash; $155/mo</p>
           <p>Competitor &ndash; $99/mo</p>
-          <p className="font-bold text-green-700 text-lg pt-2">Petunia &ndash; $5/mo</p>
+          <p className="font-bold text-green-700 text-lg pt-2">Petunia &ndash; $1/mo</p>
         </div>
         <div className="mt-6 max-w-md mx-auto text-base text-gray-700">
           <p className="mt-4 font-semibold text-[#2c4a30]">
@@ -119,7 +119,7 @@ export default function DogBoardingSoftwarePage() {
           Ready to modernize your boarding &amp; daycare business?
         </h2>
         <p className="text-base text-gray-700 max-w-md mx-auto mb-6">
-          Start your <strong>60-day free trial</strong>. It&#39;s <strong>$5/month</strong> after that. <strong>No contracts. Cancel anytime.</strong>
+          Start your <strong>60-day free trial</strong>. It&#39;s <strong>$1/month</strong> after that. <strong>No contracts. Cancel anytime.</strong>
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
           <Link

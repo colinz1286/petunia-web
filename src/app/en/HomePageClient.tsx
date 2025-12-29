@@ -14,6 +14,7 @@ export default function HomePageClient() {
     const roles = [
         { key: 'petOwner', label: 'Pet Owner' },
         { key: 'boarding', label: 'Boarding and Daycare Facility Owner/Manager' },
+        { key: 'consulting', label: 'Free Consulting (Private 1-on-1)' },
         { key: 'sitterWalker', label: 'Pet Sitter or Dog Walker' },
         { key: 'rescue', label: 'Rescue or Adoption Shelter Owner/Manager' },
         { key: 'vetClinic', label: 'Veterinary Clinic Owner/Manager' },
@@ -83,9 +84,21 @@ export default function HomePageClient() {
                     </div>
                 </div>
 
+                {/* Client growth counter */}
+                <div className="mt-6 mb-6 flex justify-center">
+                    <div className="rounded-xl border border-[#d9cfc2] bg-white px-6 py-3 shadow-sm">
+                        <p className="text-[#2c4a30] text-sm sm:text-base font-bold tracking-wide">
+                            🐾 497 clients and counting!
+                        </p>
+                        <p className="text-md sm:text-md text-[#2c4a30] mt-0.5 text-center">
+                            Pet professionals are joining Petunia every week.
+                        </p>
+                    </div>
+                </div>
+
                 {/* Headline */}
-                <h2 className="text-2xl font-bold mb-6 text-[#2c4a30] tracking-wide text-balance">
-                    Are You a Current or Prospective&hellip;
+                <h2 className="w-full max-w-md text-xl sm:text-2xl font-bold mb-6 text-[#2c4a30] tracking-wide text-balance">
+                    Click or tap on the appripriate section below if you are You a Current or Prospective&hellip;
                 </h2>
 
                 {/* Role Buttons */}
@@ -190,6 +203,42 @@ export default function HomePageClient() {
                                 >
                                     Click here to get started today.
                                 </Link>
+                            </p>
+                        </section>
+                    )}
+
+                    {selectedRole === 'consulting' && (
+                        <section className="space-y-5 w-full max-w-xl">
+                            <h3 className="text-2xl font-bold text-center">
+                                Free One-on-One Consulting for Pet Care Professionals
+                            </h3>
+
+                            <p className="text-lg text-balance">
+                                Starting or running a pet care business can be overwhelming &mdash; especially when questions feel too specific,
+                                too sensitive, or too early to ask publicly. That&rsquo;s why Petunia offers free, private, one-on-one consulting
+                                for people in boarding and daycare, pet sitting, dog walking, and related services.
+                            </p>
+
+                            <p className="text-lg text-balance">
+                                These conversations are designed to be personal, judgment-free, and practical. Whether you&rsquo;re just getting
+                                started, thinking about your next step, or trying to solve a real operational challenge, the goal is simple:
+                                clarity, confidence, and support.
+                            </p>
+
+                            <p className="text-lg text-balance">
+                                Consulting is always free and done face to face via video call. It&rsquo;s a form of community service &mdash; meant
+                                to share real experience, answer real questions, and help people build something meaningful with integrity.
+                            </p>
+
+                            <p className="text-lg text-balance">
+                                👉{' '}
+                                <Link
+                                    href={`/${locale}/consulting`}
+                                    className="underline font-semibold text-[#2c4a30]"
+                                >
+                                    If you want to learn more about who I am and how I am qualified to help, please click here.
+                                </Link>
+                                .
                             </p>
                         </section>
                     )}

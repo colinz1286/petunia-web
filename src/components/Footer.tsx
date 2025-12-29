@@ -12,12 +12,42 @@ export default function Footer() {
         <div className="text-center sm:text-left">
           &copy; {new Date().getFullYear()} Petunia. All rights reserved.
         </div>
-        <div className="flex gap-4">
-          <Link href={`/${locale}/contact`} className="hover:underline">Contact</Link>
-          <Link href={`/${locale}/blog`} className="hover:underline">Blog</Link>
-          <a href="https://www.facebook.com/profile.php?id=61575107920935" target="_blank" rel="noopener noreferrer" className="hover:underline">Facebook</a>
-          <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:underline">YouTube</a>
-          <Link href={`/${locale}/privacypolicy`} className="hover:underline">Privacy Policy</Link>
+
+        <div className="flex gap-4 flex-wrap justify-center">
+          <Link href={`/${locale}/contact`} className="hover:underline">
+            Contact
+          </Link>
+
+          <Link href={`/${locale}/blog`} className="hover:underline">
+            Blog
+          </Link>
+
+          {/* ✅ NEW CONSULTING LINK */}
+          <Link href={`/${locale}/consulting`} className="hover:underline">
+            Consulting
+          </Link>
+
+          <a
+            href="https://www.facebook.com/profile.php?id=61575107920935"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+          >
+            Facebook
+          </a>
+
+          <a
+            href="https://youtube.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+          >
+            YouTube
+          </a>
+
+          <Link href={`/${locale}/privacypolicy`} className="hover:underline">
+            Privacy Policy
+          </Link>
         </div>
       </div>
     </footer>

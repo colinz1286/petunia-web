@@ -20,13 +20,40 @@ export default function Header() {
             priority
           />
         </a>
+
         <nav className="flex flex-wrap justify-center sm:justify-end gap-x-6 gap-y-2 text-sm text-[#2c4a30] font-medium text-center">
-          <Link href={`/${locale}/loginsignup`} className="hover:underline">Login / Sign Up</Link>
-          <Link href={`/${locale}/aboutus`} className="hover:underline">About Us</Link>
-          <Link href={`/${locale}/contact`} className="hover:underline">Contact</Link>
-          <Link href={`/${locale}/blog`} className="hover:underline">Blog</Link>
-          <Link href={`/${locale}/dog-boarding-software`} className="hover:underline">Dog Boarding And Daycare Software</Link>
-          <Link href={`/${locale}/tutorials`} className="hover:underline">Tutorials</Link>
+          <Link href={`/${locale}/loginsignup`} className="hover:underline">
+            Login / Sign Up
+          </Link>
+
+          <Link href={`/${locale}/aboutus`} className="hover:underline">
+            About Us
+          </Link>
+
+          {/* ✅ NEW CONSULTING LINK */}
+          <Link href={`/${locale}/consulting`} className="hover:underline">
+            Consulting
+          </Link>
+
+          <Link href={`/${locale}/contact`} className="hover:underline">
+            Contact
+          </Link>
+
+          <Link href={`/${locale}/blog`} className="hover:underline">
+            Blog
+          </Link>
+
+          <Link
+            href={`/${locale}/dog-boarding-software`}
+            className="hover:underline"
+          >
+            Dog Boarding And Daycare Software
+          </Link>
+
+          <Link href={`/${locale}/tutorials`} className="hover:underline">
+            Tutorials
+          </Link>
+
           <a
             href="https://www.facebook.com/profile.php?id=61575107920935"
             target="_blank"
@@ -35,6 +62,7 @@ export default function Header() {
           >
             Facebook
           </a>
+
           <a
             href="https://youtube.com"
             target="_blank"
