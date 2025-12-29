@@ -10,6 +10,16 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'uk-animal-welfare-reforms-2025-puppy-farming-dog-breeding-standards',
+        title:
+            'UK Animal Welfare Reforms (2025): What the New Strategy Could Change for Puppy Farming, Dog Breeding Standards, and Cruel Practices',
+        date: 'December 28, 2025',
+        description:
+            'A detailed, source-cited breakdown of the UK’s 2025 Animal Welfare Strategy: planned puppy-farming crackdown, stronger dog-breeding rules, welfare reforms for pets, farming, and wildlife, and what owners should watch next.',
+        component: () => import('./posts/uk-animal-welfare-reforms-2025-puppy-farming-dog-breeding-standards'),
+        categories: ['owner', 'breeder'],
+    },
+    {
         slug: 'how-veterinarians-diagnose-hip-dysplasia',
         title:
             'How Veterinarians Diagnose Hip Dysplasia in Dogs: Exams, X-Rays, PennHIP, OFA, and What Results Mean',
