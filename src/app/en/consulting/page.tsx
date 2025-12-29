@@ -46,7 +46,7 @@ export default function ConsultingPage() {
                     I am the owner of <strong>Berkley Creek Pet Retreat</strong> in Mars, Pennsylvania. In 2017, I took over an existing
                     boarding and daycare facility that was located in a 130 year old barn, that had only been licensed for about six months, and had never even passed a winter
                     inspection. My dad and I renovated the entire facility together, and over the next several years, I dramatically grew the business and eventually built a much larger facility. When the time came to expand, I served as the general contractor throughout the
-                    project. Today, Berkeley Creek operates as a 10,000-square-foot facility with 27 employees.
+                    project. Today, Berkley Creek operates as a 10,000-square-foot facility with 27 employees.
                 </p>
                 <p className="text-lg leading-relaxed">
                     Over the years, we have been honored to win multiple Best of the Best GOLD (highest honor given) awards for boarding and daycare facilities in the
