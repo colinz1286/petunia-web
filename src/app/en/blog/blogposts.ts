@@ -10,6 +10,16 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'should-i-offer-a-cash-discount',
+        title:
+            'Should You Offer a Cash Discount in the Dog Industry? The Real-World Tradeoffs Nobody Talks About',
+        date: 'December 30, 2025',
+        description:
+            'A practical, real-world discussion for dog-industry businesses on whether cash discounts actually help, including fee tradeoffs, tax and lender optics, operational friction, client behavior, brand perception, safety risks, and a simple decision framework—without claiming there is one “right” answer.',
+        component: () => import('./posts/should-i-offer-a-cash-discount'),
+        categories: ['owner', 'boarding', 'daycare', 'sitter', 'walker', 'trainer'],
+    },
+    {
         slug: 'study-mushroom-supplement-cognitive-function-senior-dogs',
         title:
             'Study Report: Mushroom Supplement and Cognitive Function in Senior Dogs',
