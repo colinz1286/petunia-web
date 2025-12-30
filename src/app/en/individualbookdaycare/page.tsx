@@ -218,9 +218,10 @@ export default function IndividualBookDaycarePage() {
 
   const [maxPerTimeSlot, setMaxPerTimeSlot] = useState<number>(3);
   const [includePendingInCapacity, setIncludePendingInCapacity] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [clientWritesRTDB, setClientWritesRTDB] = useState(true);
 
-  // ✅ NEW: approval toggle (daycare)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [requireDaycareReservationApproval, setRequireDaycareReservationApproval] = useState(false);
 
   const [temperamentTestRequired, setTemperamentTestRequired] = useState(false);
@@ -441,8 +442,7 @@ export default function IndividualBookDaycarePage() {
     } catch (e) {
       console.error('❌ Failed to fetch business settings:', e);
     }
-  }, []);
-
+  }, [bizTZ]);
 
   /* =========================
      Auth + initial load
@@ -792,7 +792,7 @@ export default function IndividualBookDaycarePage() {
       console.error('❌ submitAllReservations failed:', e);
       alert(t('submission_error') || 'There was an error submitting your bookings.');
     }
-  }, [userId, draftBookings, businessId, bizTZ, pets, ownerName, clientWritesRTDB, router, locale, t, blackoutDates]);
+  }, [userId, draftBookings, businessId, bizTZ, pets, ownerName, router, locale, t, blackoutDates]);
 
   /* =========================
      UI
