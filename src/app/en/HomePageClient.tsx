@@ -16,6 +16,7 @@ export default function HomePageClient() {
         { key: 'boarding', label: 'Boarding and Daycare Facility Owner/Manager' },
         { key: 'consulting', label: 'Free Consulting (Private 1-on-1)' },
         { key: 'sitterWalker', label: 'Pet Sitter or Dog Walker' },
+        { key: 'breeder', label: 'Breeder' },
         { key: 'rescue', label: 'Rescue or Adoption Shelter Owner/Manager' },
         { key: 'vetClinic', label: 'Veterinary Clinic Owner/Manager' },
     ];
@@ -88,7 +89,7 @@ export default function HomePageClient() {
                 <div className="mt-6 mb-6 flex justify-center">
                     <div className="rounded-xl border border-[#d9cfc2] bg-white px-6 py-3 shadow-sm">
                         <p className="text-[#2c4a30] text-sm sm:text-base font-bold tracking-wide">
-                            🐾 497 clients and counting!
+                            🐾 499 clients and counting!
                         </p>
                         <p className="text-md sm:text-md text-[#2c4a30] mt-0.5 text-center">
                             Pet professionals are joining Petunia every week.
@@ -269,6 +270,51 @@ export default function HomePageClient() {
                                 <a href="mailto:admin@petuniapets.com" className="underline text-[#2c4a30]">
                                     admin@petuniapets.com
                                 </a>.
+                            </p>
+                        </section>
+                    )}
+
+                    {selectedRole === 'breeder' && (
+                        <section className="space-y-5 w-full max-w-xl">
+                            <h3 className="text-2xl font-bold text-center">For Breeders</h3>
+
+                            <p className="text-lg text-balance">
+                                Petunia gives breeders a clean, organized way to track litters from the day puppies are born — without spreadsheets,
+                                notebooks, or scattered files.
+                            </p>
+
+                            <p className="text-lg text-balance">
+                                Create a record for each puppy, track body weights over time, store important health notes, and upload key documents
+                                like vaccination records, veterinary physicals, and any additional paperwork you want to keep with the puppy&rsquo;s history.
+                            </p>
+
+                            <p className="text-lg text-balance">
+                                When a puppy goes home, you can transfer ownership directly to the new owner so the puppy&rsquo;s records carry forward
+                                seamlessly — helping families stay organized and helping you maintain a professional, transparent process.
+                            </p>
+
+                            <p className="text-lg text-balance">
+                                If you&rsquo;re wondering how we keep pricing so low, we want to be clear that we do not sell your data or personal
+                                information — you can learn more by reviewing our{' '}
+                                <a href="http://localhost:3000/en/privacypolicy" className="underline font-medium">
+                                    Privacy Policy
+                                </a>
+                                .
+                            </p>
+
+                            <p className="text-lg text-balance">
+                                💌 Questions or feature requests? Email us at{' '}
+                                <a href="mailto:admin@petuniapets.com" className="underline text-[#2c4a30]">
+                                    admin@petuniapets.com
+                                </a>
+                                .
+                            </p>
+
+                            <p className="text-lg text-balance">
+                                🎉{' '}
+                                <Link href={`/${locale}/loginsignup`} className="underline text-[#2c4a30] font-semibold">
+                                    Click here to get started today.
+                                </Link>
                             </p>
                         </section>
                     )}

@@ -10,6 +10,16 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'should-daycare-only-expand-into-boarding',
+        title:
+            'Should a Daycare-Only Business Expand Into Boarding? A Realistic Decision Guide',
+        date: 'December 30, 2025',
+        description:
+            'A grounded, operator-first guide for daycare-only dog businesses considering overnight boarding, covering the realities of 24/7 responsibility, staffing, home-based limitations, licensing and compliance, facility requirements, liability exposure, and how to decide whether boarding truly fits your business and lifestyle.',
+        component: () => import('./posts/should-daycare-only-expand-into-boarding'),
+        categories: ['boarding', 'sitter', 'walker'],
+    },
+    {
         slug: 'should-i-offer-a-cash-discount',
         title:
             'Should You Offer a Cash Discount in the Dog Industry? The Real-World Tradeoffs Nobody Talks About',

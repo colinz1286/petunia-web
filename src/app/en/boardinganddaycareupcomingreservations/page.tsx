@@ -395,9 +395,8 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
 
         const dogName = (String(val['dogName'] ?? '').trim()) || t('unknown_dog');
         const ownerName = (String(val['ownerName'] ?? '').trim()) || t('unknown_owner');
-        const statusRaw = String(val['status'] ?? 'approved').trim();
-        const statusLower = statusRaw.toLowerCase();
 
+        // Type detection (MUST happen before status logic)
         const rawType = String(val['type'] ?? '').trim();
         const hasBoardingDates = !!val['checkInDate'] || !!val['checkOutDate'];
         const type: ServiceType =
@@ -405,9 +404,38 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
             ? rawType
             : (hasBoardingDates ? 'Boarding' : 'Daycare');
 
+        // Status normalization (uses per-business toggles)
+        const rawStatus = String(val['status'] ?? '').trim();
+        const lowerStatus = rawStatus.toLowerCase();
+
+        // Determine whether this reservation needs approval based on business toggles
+        const needsApprovalForThis =
+          (type === 'Daycare' && requireDaycareReservationApproval) ||
+          (type === 'Boarding' && requireBoardingReservationApproval);
+
+        // Allowed statuses we recognize
+        const allowed = new Set(['pending', 'approved', 'declined', 'checkedin', 'checkedout', 'noshow']);
+
+        // If approval is required, missing/unknown -> pending; otherwise missing/unknown -> approved
+        const normalizedLower = allowed.has(lowerStatus)
+          ? lowerStatus
+          : (needsApprovalForThis ? 'pending' : 'approved');
+
+        // Canonical status string (keeps your existing casing style)
+        const statusRaw =
+          normalizedLower === 'approved' ? 'approved'
+            : normalizedLower === 'declined' ? 'declined'
+              : normalizedLower === 'checkedin' ? 'checkedIn'
+                : normalizedLower === 'checkedout' ? 'checkedOut'
+                  : normalizedLower === 'noshow' ? 'noShow'
+                    : 'pending';
+
+        const statusLower = statusRaw.toLowerCase();
+
         const realtimeKey =
           String(val['realtimeKey'] ?? '') ||
           child.key.split('-').slice(0, -1).join('-');
+
 
         const groomingAddOns = (val['groomingAddOns'] as string[]) || null;
         const medications = (val['medications'] as string) || null;
@@ -925,6 +953,54 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
     }
   }, [businessId]);
 
+  const approveReservation = useCallback(async (r: Reservation) => {
+    if (!r || !businessId || !isValidFirebaseKey(businessId)) return;
+
+    // Base key must match the actual RTDB record key (strip "-pickup" if present)
+    const baseKey = r.id.endsWith('-pickup') ? r.id.slice(0, -7) : r.id;
+
+    const petId = baseKey.split('-').pop()!;
+    if (!petId) return;
+
+    const approvedAt = nowISO();
+    const approvedBy = auth.currentUser?.uid || 'unknown';
+
+    try {
+      // 1) ✅ Persist to RTDB so it survives leaving/re-entering the screen
+      await rtdbUpdate(rtdbRef(rtdb, `upcomingReservations/${businessId}/${baseKey}`), {
+        status: 'approved',
+        approvedAt,
+        approvedBy,
+      });
+
+      // 2) ✅ Persist to Firestore for consistency
+      const col = r.type === 'Boarding' ? 'boardingReservations' : 'daycareReservations';
+      const fsRef = doc(db, col, r.realtimeKey);
+
+      const snap = await getDoc(fsRef);
+      const data = snap.data() as ReservationFS | undefined;
+
+      const nextStatuses: PetStatuses = { ...(data?.petStatuses || {}) };
+      nextStatuses[petId] = 'approved';
+
+      await updateDoc(fsRef, {
+        petStatuses: nextStatuses,
+        status: 'approved',
+        approvedAt: serverTimestamp(),
+        approvedBy,
+      });
+
+      // 3) ✅ UI: mark acknowledged so check-in buttons unlock immediately
+      setAcknowledged((prev) => {
+        const next = new Set(prev);
+        next.add(r.id);
+        return next;
+      });
+    } catch (e) {
+      console.error('❌ approveReservation failed:', e);
+    }
+  }, [businessId]);
+
   /** =========================
  * UI
  * ========================= */
@@ -1409,12 +1485,7 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                   if (!action) return;
 
                   if (action.type === 'approve') {
-                    // UI-only approval
-                    setAcknowledged(prev => {
-                      const next = new Set(prev);
-                      next.add(action.reservation.id);
-                      return next;
-                    });
+                    await approveReservation(action.reservation);
                     return;
                   }
 

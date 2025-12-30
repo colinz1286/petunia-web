@@ -18,7 +18,7 @@ import {
   doc,
 } from 'firebase/firestore';
 import { getDatabase, ref as rtdbRef, remove as rtdbRemove } from 'firebase/database';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApp, getApps } from 'firebase/app';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -29,7 +29,7 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const rtdb = getDatabase(app);
@@ -98,6 +98,43 @@ function parseGroomingMap(data: FSMap): GroomingMap {
   return out;
 }
 
+// ✅ Parses "yyyy-MM-dd" (legacy, matches iOS)
+function parseISODateYMD(s: string): Date | null {
+  const v = (s || '').trim();
+  if (!v) return null;
+
+  const m = v.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return null;
+
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  const day = Number(m[3]);
+  if (!year || !month || !day) return null;
+
+  const d = new Date(year, month - 1, day);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+// ✅ Accepts Timestamp OR "yyyy-MM-dd" strings (matches iOS behavior)
+function parseFSDate(data: FSMap, keys: string[]): Date | null {
+  for (const key of keys) {
+    const raw = data[key];
+
+    // Firestore Timestamp
+    if (raw instanceof Timestamp) {
+      const dt = raw.toDate();
+      if (!Number.isNaN(dt.getTime())) return dt;
+    }
+
+    // Legacy String yyyy-MM-dd
+    if (typeof raw === 'string') {
+      const dt = parseISODateYMD(raw);
+      if (dt) return dt;
+    }
+  }
+  return null;
+}
+
 export default function IndividualUpcomingAppointmentsPage() {
   const t = useTranslations('individualUpcomingAppointments');
   const locale = useLocale();
@@ -135,10 +172,11 @@ export default function IndividualUpcomingAppointmentsPage() {
     const out: Reservation[] = [];
     snap.docs.forEach((d) => {
       const data = d.data() as FSMap;
-      const ts = data['date'] as Timestamp | undefined;
-      if (!ts) return;
+      const date =
+        parseFSDate(data, ['date', 'dateBusinessTZ']) ||
+        null;
+      if (!date) return;
 
-      const date = ts.toDate();
       if (endOfDay(date) < new Date()) return; // filter only
 
       const grooming = parseGroomingMap(data);
@@ -175,10 +213,17 @@ export default function IndividualUpcomingAppointmentsPage() {
     snap.docs.forEach((d) => {
       const data = d.data() as FSMap;
 
-      const cin = (data['checkInDate'] as Timestamp | undefined)?.toDate();
+      // ✅ Match iOS: accept Timestamp OR legacy string dates
+      const cin =
+        parseFSDate(data, ['checkInDate', 'checkInDateBusinessTZ']) ||
+        null;
+
       if (!cin) return;
 
-      const cout = (data['checkOutDate'] as Timestamp | undefined)?.toDate() ?? null;
+      const cout =
+        parseFSDate(data, ['checkOutDate', 'checkOutDateBusinessTZ']) ||
+        null;
+
       const keepUntil = cout ? endOfDay(cout) : endOfDay(cin);
       if (keepUntil < now) return;
 
@@ -203,14 +248,21 @@ export default function IndividualUpcomingAppointmentsPage() {
         groomingSummaryByPetName: {},
       });
     });
+
     return out;
   }, []);
 
   /** Enrichment: business info + pet names (+ grooming mapped by pet name) */
   const enrichReservation = useCallback(
     async (res: Reservation, uid: string): Promise<Reservation> => {
-      const bizSnap = await getDoc(doc(db, 'businesses', res.businessId));
-      const biz = (bizSnap.data() as FSMap) || {};
+      // Guard against invalid businessId (prevents doc(..., '') crashes)
+      const safeBusinessId = (res.businessId || '').trim();
+      const bizSnap = safeBusinessId
+        ? await getDoc(doc(db, 'businesses', safeBusinessId))
+        : null;
+
+      const biz = ((bizSnap && bizSnap.exists()) ? (bizSnap.data() as FSMap) : {}) || {};
+
 
       // name / phone
       const businessName = (biz['businessName'] as string) || t('unknown_business');
@@ -229,12 +281,22 @@ export default function IndividualUpcomingAppointmentsPage() {
       // pet names + grooming summary
       const names: string[] = [];
       const groomingByPetName: Record<string, string[]> = {};
-      for (const petId of res.petIds) {
-        const ps = await getDoc(doc(db, 'users', uid, 'pets', petId));
-        const petName = (ps.data()?.petName as string) || t('unknown_pet_name');
-        names.push(petName);
-        const addOns = res.groomingAddOns[petId];
-        if (addOns && addOns.length) groomingByPetName[petName] = addOns;
+
+      for (const petIdRaw of res.petIds) {
+        const petId = (petIdRaw || '').trim();
+        if (!petId) continue;
+
+        try {
+          const ps = await getDoc(doc(db, 'users', uid, 'pets', petId));
+          const petName = (ps.data()?.petName as string) || t('unknown_pet_name');
+          names.push(petName);
+
+          const addOns = res.groomingAddOns[petId];
+          if (addOns && addOns.length) groomingByPetName[petName] = addOns;
+        } catch (err) {
+          console.error('❌ pet lookup failed for petId:', petId, err);
+          names.push(t('unknown_pet_name'));
+        }
       }
 
       return {
@@ -263,9 +325,23 @@ export default function IndividualUpcomingAppointmentsPage() {
       ]);
 
       const combined = [...daycare, ...boarding];
-      const enriched = await Promise.all(combined.map((r) => enrichReservation(r, userId)));
+
+      // IMPORTANT: One bad document (missing biz/pet, permission edge, etc.)
+      // should not prevent ALL appointments from loading.
+      const enriched = await Promise.all(
+        combined.map(async (r) => {
+          try {
+            return await enrichReservation(r, userId);
+          } catch (err) {
+            console.error('❌ enrichReservation failed for reservation:', r?.id, err);
+            return r; // keep the reservation as-is (still shows date/time)
+          }
+        })
+      );
+
       enriched.sort((a, b) => a.date.getTime() - b.date.getTime());
       setReservations(enriched);
+
     } catch (e) {
       console.error('❌ loadAppointments failed:', e);
       setErrorMsg(t('load_error_generic'));

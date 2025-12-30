@@ -5,292 +5,382 @@ import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
 export default function DaycareVsBoardingVsGroomingBlog() {
-    const locale = useLocale();
+  const locale = useLocale();
 
-    const title = 'Should You Offer Daycare Only — or Add Boarding and Grooming?';
-    const date = 'July 26, 2025';
-    const categories = ['boarding', 'owner'];
+  const title = 'Should You Offer Daycare Only — or Add Boarding and Grooming?';
+  const date = 'July 26, 2025';
+  const updatedDate = 'December 20, 2025';
 
-    const categoryLabels: Record<string, string> = {
-        boarding: 'Boarding & Daycare',
-        sitter: 'Pet Sitters',
-        walker: 'Dog Walkers',
-        rescue: 'Rescues',
-        vet: 'Veterinary Clinics',
-        owner: 'Pet Owners',
-    };
+  const categories = ['boarding', 'daycare', 'owner', 'sitter', 'walker'] as const;
 
-    return (
-        <>
-            <Head>
-                <title>{title} – Petunia Blog</title>
-                <meta
-                    name="description"
-                    content="Compare daycare-only vs. adding boarding and grooming from a real facility owner's perspective. Learn the impact on revenue, lifestyle, and operations."
-                />
-            </Head>
+  const categoryLabels: Record<string, string> = {
+    boarding: 'Boarding & Daycare',
+    daycare: 'Daycare',
+    sitter: 'Pet Sitters',
+    walker: 'Dog Walkers',
+    rescue: 'Rescues',
+    vet: 'Veterinary Clinics',
+    owner: 'Pet Owners',
+    trainer: 'Trainers',
+  };
 
-            <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
-                <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>
-                <h1 className="text-3xl font-bold mb-4">{title}</h1>
+  const description =
+    'Compare daycare-only vs. adding boarding and grooming from a real facility owner&rsquo;s perspective. Learn the impact on revenue, staffing, lifestyle, compliance, and operations — plus a practical framework for choosing the right service mix.';
 
-                {/* 🏷️ Category Tags */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                    {categories.map((key) => (
-                        <span
-                            key={key}
-                            className="text-xs bg-[#e4dbcb] text-[#2c4a30] px-3 py-1 rounded-full border border-[#d9cfc2]"
-                        >
-                            {categoryLabels[key]}
-                        </span>
-                    ))}
-                </div>
+  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/daycare-vs-boarding-vs-grooming`;
 
-                <p className="text-lg mb-4">
-                    When I first opened my facility, I didn&apos;t set out to offer everything under the sun.
-                    I wasn&apos;t a groomer. I didn&apos;t have aspirations of running a massive kennel.
-                    I just knew I was good at managing dogs in a structured, safe environment &mdash; and I believed
-                    there was strong demand for both dog daycare and boarding in our area.
-                </p>
+  return (
+    <>
+      <Head>
+        <title>{title} – Petunia Blog</title>
+        <meta name="description" content={description} />
+        <meta name="robots" content="all" />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+      </Head>
 
-                <p className="mb-4">
-                    Over time, I&apos;ve had to wrestle with the big strategic questions that every pet care
-                    business faces at some point: Should we stick to daycare only, or expand into boarding?
-                    Should we add grooming services? What&apos;s the impact on revenue, staffing, and &mdash;
-                    maybe most importantly &mdash; lifestyle?
-                </p>
+      <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
+        <p className="text-sm text-gray-500 mb-1">Posted on {date}</p>
 
-                <p className="mb-4">
-                    These questions come up over and over in Facebook groups, new facility planning threads,
-                    and conversations with colleagues. I&apos;ve lived through all of it &mdash; and I want to
-                    walk you through what I&apos;ve learned.
-                </p>
+        {/* ✅ Update notice near the top */}
+        <p className="text-xs text-gray-500 mb-3 italic">Article updated on {updatedDate}</p>
 
-                <h2 className="text-2xl font-semibold mt-8 mb-3">
-                    🐾 Our Service Model: Daycare + Boarding, Minimal Grooming
-                </h2>
-                <p className="mb-4">
-                    At our facility, we offer both daycare and boarding as core services. We also offer limited
-                    grooming &mdash; basic baths, nail trims, and light cleaning for boarding departures &mdash;
-                    but we do not operate a full grooming salon.
-                </p>
+        <h1 className="text-3xl font-bold mb-4">{title}</h1>
 
-                <p className="mb-4">
-                    That decision has always been intentional. I&apos;m not a groomer by trade, and I&apos;ve seen
-                    how complex and risky it can be to run grooming at scale without the right person and
-                    systems in place. My focus has always been to do the simple things really, really well:
-                    safe playgroups, consistent routines, clean facilities, and strong customer service.
-                </p>
+        {/* 🏷️ Category Tags */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {categories.map((key) => (
+            <span
+              key={key}
+              className="text-xs bg-[#e4dbcb] text-[#2c4a30] px-3 py-1 rounded-full border border-[#d9cfc2]"
+            >
+              {categoryLabels[key] ?? key}
+            </span>
+          ))}
+        </div>
 
-                <h2 className="text-2xl font-semibold mt-8 mb-3">
-                    📅 Operational Differences: Simplicity vs. 24/7 Coverage
-                </h2>
-                <p className="mb-4">
-                    Let&apos;s start with the lifestyle and operations piece. Running a daycare-only model is,
-                    by far, the least complex of the three.
-                </p>
+        {/* Intro */}
+        <section className="mb-10">
+          <p className="text-lg mb-4">
+            When I first opened my facility, I didn&rsquo;t set out to offer everything under the sun. I
+            wasn&rsquo;t a groomer. I didn&rsquo;t have aspirations of running a massive kennel. I just
+            knew I was good at managing dogs in a structured, safe environment &mdash; and I believed
+            there was strong demand for daycare and boarding in our area.
+          </p>
 
-                <ul className="list-disc pl-5 space-y-2 mb-4">
-                    <li>Your schedule runs roughly 7am to 7pm</li>
-                    <li>Dogs go home at night</li>
-                    <li>You can fully shut down after hours and on holidays</li>
-                </ul>
+          <p className="mb-4">
+            Over time, I&rsquo;ve had to wrestle with the big strategic questions that show up in almost
+            every pet-care business eventually: Should you stay daycare-only, or add overnight boarding?
+            Should you add grooming? What happens to revenue, staffing, risk, and &mdash; maybe most
+            importantly &mdash; your lifestyle?
+          </p>
 
-                <p className="mb-4">
-                    That&apos;s a massive benefit if you&apos;re looking for work-life balance or operating solo.
-                    You&apos;re not chasing late-night pickups or sleeping with your phone on full volume during
-                    Thanksgiving.
-                </p>
+          <p className="mb-4">
+            These questions come up constantly: Facebook groups, facility planning threads, conversations
+            with owners who are tired, proud, overwhelmed, excited, or all of the above. I&rsquo;ve lived
+            through the real-world tradeoffs, and this article is meant to give you a practical framework
+            to think clearly &mdash; without pretending there is one perfect answer.
+          </p>
 
-                <p className="mb-4">
-                    Now, contrast that with boarding. Once you introduce overnight stays, everything changes:
-                </p>
+          {/* 🔗 Link to the new branch article (near the top) */}
+          <div className="rounded-md border border-[#d9cfc2] bg-[#f6efe4] p-4 text-sm">
+            <p>
+              If you are daycare-only and specifically deciding whether to add overnight boarding, I wrote
+              a dedicated companion article that goes deeper into the 24/7 responsibility shift, staffing,
+              compliance, dedicated space, and liability planning:{' '}
+              <Link
+                href={`/${locale}/blog/should-daycare-only-expand-into-boarding`}
+                className="underline font-medium hover:opacity-80"
+              >
+                Should a Daycare-Only Business Expand Into Boarding? A Realistic Decision Guide
+              </Link>
+              .
+            </p>
+          </div>
+        </section>
 
-                <ul className="list-disc pl-5 space-y-2 mb-4">
-                    <li>Your facility never fully closes</li>
-                    <li>You need coverage for early mornings, late nights, weekends, and holidays</li>
-                    <li>You take on significantly more responsibility &mdash; and liability</li>
-                </ul>
+        {/* Quick TL;DR */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">TL;DR: What Each Service Really Changes</h2>
 
-                <p className="mb-4">
-                    Boarding transforms your business from a &quot;day job&quot; into a 24/7 care operation,
-                    and with that comes increased staffing requirements and more complex scheduling. Even with
-                    a great team, you&apos;ll work holidays and deal with unpredictable situations. It&apos;s a
-                    serious commitment.
-                </p>
-                <h2 className="text-2xl font-semibold mt-8 mb-3">
-                    💰 Revenue Impact: Boarding Pays the Bills
-                </h2>
-                <p className="mb-4">
-                    Despite the added work, boarding has the largest revenue impact by far. In my experience,
-                    it&apos;s what allowed our business to grow beyond break-even and become truly profitable.
-                </p>
+          <div className="rounded-lg border border-[#d9cfc2] p-4 bg-[#f6efe4]">
+            <ul className="list-disc pl-5 space-y-2 text-sm">
+              <li>
+                <strong>Daycare-only</strong> is the simplest to run operationally. It has edges: opening,
+                closing, and the ability to shut down after-hours.
+              </li>
+              <li>
+                <strong>Boarding</strong> is the biggest revenue unlock for many facilities, but it turns
+                your operation into a 24/7 responsibility with more staffing, more systems, and more risk.
+              </li>
+              <li>
+                <strong>Grooming</strong> can be a great add-on for the right operator, but it is often the
+                most fragile operationally because it depends heavily on skilled labor, high expectations,
+                and tight execution.
+              </li>
+            </ul>
+          </div>
+        </section>
 
-                <p className="mb-4">
-                    Let&apos;s break it down:
-                </p>
+        <h2 className="text-2xl font-semibold mt-8 mb-3">
+          🐾 Our Service Model: Daycare + Boarding, Minimal Grooming
+        </h2>
+        <p className="mb-4">
+          At our facility, daycare and boarding are the core services. We also offer limited grooming
+          (basic baths, nail trims, light cleaning for boarding departures), but we do not run a full
+          grooming salon.
+        </p>
 
-                <ul className="list-disc pl-5 space-y-2 mb-4">
-                    <li>
-                        <strong>Daycare</strong> provides steady, recurring income. Most of our clients use 2&ndash;5 days per
-                        week. That&apos;s great &mdash; it keeps us busy, creates consistent cash flow, and fosters
-                        relationships.
-                    </li>
-                    <li>
-                        <strong>Boarding</strong>, however, provides the biggest revenue surges. Especially around holidays,
-                        long weekends, and school breaks &mdash; we often fill every kennel and generate two to three
-                        times our regular weekly revenue in a single week.
-                    </li>
-                </ul>
+        <p className="mb-8">
+          That decision has always been intentional. I&rsquo;m not a groomer by trade, and I&rsquo;ve seen
+          how complex grooming becomes without the right person, the right insurance, and the right systems.
+          Our focus has been to do the fundamentals extremely well: safe playgroups, consistent routines,
+          clean facilities, calm operations, and strong customer communication.
+        </p>
 
-                <p className="mb-4">
-                    Boarding rates in many areas range from $45&ndash;$100 per night, while daycare might be $25&ndash;$45
-                    per day. When you factor in longer stays, late pickups, and departure baths, it adds up fast.
-                </p>
+        <h2 className="text-2xl font-semibold mt-8 mb-3">
+          📅 Operational Differences: Simplicity vs. 24/7 Coverage
+        </h2>
+        <p className="mb-4">
+          Let&rsquo;s start with operations and lifestyle. Daycare-only is usually the least complex model
+          &mdash; especially when you are small.
+        </p>
 
-                <h2 className="text-2xl font-semibold mt-8 mb-3">
-                    ✂️ Why We Don&apos;t Offer Full Grooming (and What You Should Know)
-                </h2>
-                <p className="mb-4">
-                    Grooming is the trickiest of the three services in my opinion &mdash; and the one most
-                    commonly misunderstood.
-                </p>
+        <ul className="list-disc pl-5 space-y-2 mb-4">
+          <li>Your schedule often runs something like 7am to 7pm</li>
+          <li>Most dogs go home at night</li>
+          <li>You can fully shut down after hours (and often on holidays)</li>
+        </ul>
 
-                <h3 className="text-xl font-semibold mt-6 mb-2">🚩 Grooming Requires the Right Person</h3>
-                <p className="mb-4">
-                    You cannot just &quot;add grooming&quot; and expect it to run itself. Successful grooming operations
-                    require:
-                </p>
+        <p className="mb-4">
+          That structure is a real advantage if you want predictable life boundaries or you are operating
+          with very limited staff.
+        </p>
 
-                <ul className="list-disc pl-5 space-y-2 mb-4">
-                    <li>A skilled, trained groomer (preferably certified)</li>
-                    <li>Grooming-specific insurance</li>
-                    <li>Special equipment and sanitization protocols</li>
-                    <li>Careful, detailed customer service</li>
-                </ul>
+        <p className="mb-4">
+          Now contrast that with boarding. Once you introduce overnight stays, the whole rhythm changes:
+        </p>
 
-                <p className="mb-4">
-                    Groomers tend to fall into two camps: those good enough to open their own shop, and those
-                    who will leave for $1 more somewhere else. The turnover is high. Unless you have someone
-                    stable, grooming can cause constant disruption.
-                </p>
+        <ul className="list-disc pl-5 space-y-2 mb-4">
+          <li>Your facility never fully &ldquo;turns off&rdquo;</li>
+          <li>You need weekend coverage, holiday coverage, early mornings, and late nights</li>
+          <li>You take on more responsibility &mdash; and more liability exposure</li>
+        </ul>
 
-                <h3 className="text-xl font-semibold mt-6 mb-2">💸 Grooming Margins Are Low</h3>
-                <p className="mb-4">
-                    Most groomers are paid on commission, often 50% of each service. If a groom is $80, your
-                    business may only keep $30&ndash;$35 after supplies and costs. That&apos;s a thin margin compared to
-                    daycare or boarding, where per-staff-hour revenue can be significantly higher.
-                </p>
+        <p className="mb-8">
+          Boarding transforms your business from a daytime service into a continuous care operation. Even if
+          you do not physically stay open 24 hours, you are still responsible 24 hours. That reality forces
+          staffing plans, emergency plans, policies, and strong boundaries.
+        </p>
 
-                <h3 className="text-xl font-semibold mt-6 mb-2">⚠️ Risk and Liability Are Real</h3>
-                <p className="mb-4">
-                    Grooming comes with risk: accidental cuts, bites, sudden health issues, allergic reactions.
-                    You need extra insurance and tighter protocols. I decided that for us, offering simple
-                    baths and nail trims was safer and more sustainable.
-                </p>
+        <h2 className="text-2xl font-semibold mt-8 mb-3">
+          ✅ The Hidden Variable: Your &ldquo;Reliability System&rdquo;
+        </h2>
+        <p className="mb-4">
+          This is the part many people skip when they dream about expanding. Every additional service you
+          offer requires a reliability system.
+        </p>
 
-                <h2 className="text-2xl font-semibold mt-8 mb-3">👥 Staffing Considerations</h2>
-                <p className="mb-4">
-                    Daycare and boarding staff are relatively easy to train. Grooming staff are a different
-                    story. They need experience, certifications, and high attention to detail. And they can be
-                    tough to keep long-term.
-                </p>
+        <ul className="list-disc pl-5 space-y-2 mb-8">
+          <li>
+            <strong>Daycare reliability:</strong> staffing coverage for drop-off, playgroup supervision, and
+            pickup windows.
+          </li>
+          <li>
+            <strong>Boarding reliability:</strong> everything above, plus overnight checks, incident response,
+            medical decisions, and no-gaps coverage.
+          </li>
+          <li>
+            <strong>Grooming reliability:</strong> precise timing, skilled labor, client expectation management,
+            and consistent quality control.
+          </li>
+        </ul>
 
-                <p className="mb-4">
-                    Unless you are a groomer yourself, adding grooming often means tying a portion of your
-                    business to a single employee. If they leave, the revenue goes with them.
-                </p>
+        <h2 className="text-2xl font-semibold mt-8 mb-3">💰 Revenue Impact: Boarding Often Moves the Needle</h2>
+        <p className="mb-4">
+          In my experience, boarding tends to have the largest revenue impact. Daycare creates steady weekly
+          cash flow. Boarding creates the big surges that many facilities rely on to build real profitability.
+        </p>
 
-                <h2 className="text-2xl font-semibold mt-8 mb-3">
-                    👨‍👩‍👧 Client Expectations Are Different for Each Service
-                </h2>
-                <ul className="list-disc pl-5 space-y-2 mb-4">
-                    <li>
-                        <strong>Daycare</strong>: Safety, fun, reliability, and a tired dog at pickup.
-                    </li>
-                    <li>
-                        <strong>Boarding</strong>: Communication, updates, structure, trust.
-                    </li>
-                    <li>
-                        <strong>Grooming</strong>: Cleanliness, timing, accuracy, and aesthetics.
-                    </li>
-                </ul>
+        <ul className="list-disc pl-5 space-y-2 mb-4">
+          <li>
+            <strong>Daycare</strong> is recurring. Many clients use 2&ndash;5 days per week. This creates consistency
+            and predictable operations.
+          </li>
+          <li>
+            <strong>Boarding</strong> is seasonal and surge-driven. Holidays, long weekends, summer travel, school
+            breaks &mdash; these can produce weeks that outperform typical weeks significantly.
+          </li>
+        </ul>
 
-                <p className="mb-4">
-                    You need to be prepared to manage those expectations in very different ways. In daycare
-                    and boarding, clients are generally loyal and relationship-driven. In grooming, one bad
-                    haircut can lose the customer forever.
-                </p>
-                <h2 className="text-2xl font-semibold mt-8 mb-3">
-                    💡 So... Should You Offer Daycare Only?
-                </h2>
-                <p className="mb-4">
-                    Daycare-only can absolutely work &mdash; and for the right person, it may be the perfect
-                    fit. It offers predictable hours, easier staffing, and a cleaner operational model.
-                </p>
+        <p className="mb-8">
+          The practical point is not that boarding is &ldquo;better&rdquo; &mdash; it is that boarding can be the
+          difference between being busy and being truly profitable, especially once you have fixed costs like
+          rent, payroll, insurance, utilities, and facility maintenance.
+        </p>
 
-                <p className="mb-4">
-                    I see daycare-only as ideal for:
-                </p>
+        <h2 className="text-2xl font-semibold mt-8 mb-3">
+          🧾 Compliance and Legitimacy: A Bigger Issue Than People Admit
+        </h2>
+        <p className="mb-4">
+          This part becomes more important as you expand. Daycare-only can sometimes stay small and quiet.
+          Boarding tends to force legitimacy faster: more dogs, more noise, more traffic, more visibility, and
+          more risk.
+        </p>
 
-                <ul className="list-disc pl-5 space-y-2 mb-4">
-                    <li>Someone just getting started with limited space or capital</li>
-                    <li>A semi-retired owner looking to scale back</li>
-                    <li>Anyone who values evenings, weekends, and holidays off</li>
-                </ul>
+        <p className="mb-8">
+          I&rsquo;m not here to judge anyone. I&rsquo;m just being honest that a real growth plan usually means
+          you will eventually need to address licensing, zoning, business structure, insurance, and legal
+          agreements. If you do not, the cost is often paid later &mdash; at the worst possible time.
+        </p>
 
-                <p className="mb-4">
-                    However, for us, boarding has been absolutely essential to both our growth and our
-                    profitability. It comes with more work, but it also opens the door to serving clients
-                    year-round and capturing high-demand periods like holidays and summer travel.
-                </p>
+        <h2 className="text-2xl font-semibold mt-8 mb-3">
+          ✂️ Grooming: High Demand, High Expectations, High Fragility
+        </h2>
+        <p className="mb-4">
+          Grooming is the most commonly misunderstood service. People assume it is an easy add-on because the
+          demand is obvious. The demand is real &mdash; but the operations can be fragile if you do not have the
+          right person and the right systems.
+        </p>
 
-                <h2 className="text-2xl font-semibold mt-8 mb-3">
-                    🔁 If I Had to Start Over, I&apos;d Still Offer Both
-                </h2>
-                <p className="mb-4">
-                    When I launched, I knew I wanted to offer both daycare and boarding. And if I had to do it
-                    all over again, I wouldn&apos;t change a thing.
-                </p>
+        <h3 className="text-xl font-semibold mt-6 mb-2">🚩 Grooming Requires the Right Person</h3>
+        <p className="mb-4">
+          You cannot just &ldquo;add grooming&rdquo; and expect it to run itself. Successful grooming operations
+          require specialized skill, strong handling, and consistent execution.
+        </p>
 
-                <p className="mb-4">
-                    The two services complement each other perfectly. Daycare fills the weekdays, builds
-                    relationships, and gives us consistent cash flow. Boarding drives the high-revenue periods
-                    and lets us serve our clients fully when they travel. Together, they create a more stable,
-                    sustainable, and resilient business.
-                </p>
+        <ul className="list-disc pl-5 space-y-2 mb-4">
+          <li>A skilled, trained groomer (ideally with formal training and strong references)</li>
+          <li>Grooming-specific insurance and protocols</li>
+          <li>Equipment, sanitization systems, and safety procedures</li>
+          <li>Customer service that can handle timing, quality expectations, and misunderstandings</li>
+        </ul>
 
-                <p className="mb-4">
-                    Grooming, on the other hand, never made sense for us long term. I respect the facilities
-                    that do it well, but unless you&apos;ve got the right person, the right structure, and the
-                    right systems, it can introduce more instability than it&apos;s worth.
-                </p>
+        <p className="mb-4">
+          Grooming also tends to be labor-fragile: if your groomer leaves, the service can collapse overnight.
+          That is a risk many owners do not fully factor into the decision.
+        </p>
 
-                <h2 className="text-2xl font-semibold mt-8 mb-3">📬 Final Thoughts</h2>
-                <p className="mb-4">
-                    There is no one-size-fits-all answer to choosing your pet business service mix. What
-                    matters most is that your offerings align with your strengths, your lifestyle goals, and
-                    your ability to deliver consistent quality.
-                </p>
+        <h3 className="text-xl font-semibold mt-6 mb-2">💸 Grooming Margins Can Be Thinner Than People Assume</h3>
+        <p className="mb-4">
+          Many grooming pay structures are commission-based. That can make grooming great for the groomer, but
+          less impactful for the facility owner than expected after payroll, supplies, and risk are considered.
+        </p>
 
-                <p className="mb-4">
-                    For me, the combination of daycare and boarding is what built our foundation. And I&apos;m
-                    confident it will continue to support our future &mdash; without adding the complexities of
-                    grooming to the equation.
-                </p>
+        <h3 className="text-xl font-semibold mt-6 mb-2">⚠️ Risk and Liability Are Real</h3>
+        <p className="mb-8">
+          Grooming can involve nicks, bites, stress reactions, allergic responses, and health events. You need
+          tight protocols and strong documentation. This is one reason we stayed minimal: basic baths and nail
+          trims were a better fit for our risk tolerance and staffing structure.
+        </p>
 
-                <p className="mb-4 italic text-gray-600 text-sm">
-                    Sources: IBISWorld Grooming Industry Reports, Dogtopia Franchise Insights, Pet Boarding
-                    &amp; Daycare Magazine, DoggieDashboard Grooming Guides.
-                </p>
+        <h2 className="text-2xl font-semibold mt-8 mb-3">👥 Staffing Considerations: What You Can Train vs. What You Must Hire</h2>
+        <p className="mb-4">
+          Daycare and boarding staff can often be trained well with the right structure, supervision, and
+          standard operating procedures. Grooming is different. Groomers usually need experience before they
+          ever walk in your door.
+        </p>
 
-                <Link
-                    href={`/${locale}/blog`}
-                    className="underline text-[#2c4a30] font-medium hover:opacity-80"
-                >
-                    ← Back to Blog
-                </Link>
-            </main>
-        </>
-    );
+        <p className="mb-8">
+          The key question is: Are you building a business that can operate on systems, or a business that
+          depends on a single specialist? There is no shame in either. It just changes your risk profile.
+        </p>
+
+        <h2 className="text-2xl font-semibold mt-8 mb-3">
+          👨‍👩‍👧 Client Expectations Are Different for Each Service
+        </h2>
+        <ul className="list-disc pl-5 space-y-2 mb-4">
+          <li>
+            <strong>Daycare:</strong> Safety, fun, reliability, and a tired dog at pickup.
+          </li>
+          <li>
+            <strong>Boarding:</strong> Trust, communication, structure, updates, and emergency readiness.
+          </li>
+          <li>
+            <strong>Grooming:</strong> Timing, cleanliness, accuracy, aesthetics, and consistency.
+          </li>
+        </ul>
+
+        <p className="mb-8">
+          The more services you offer, the more communication and customer service discipline you need. In
+          daycare and boarding, clients often build loyalty through trust. In grooming, a single bad experience
+          can be the end of the relationship.
+        </p>
+
+        <h2 className="text-2xl font-semibold mt-8 mb-3">💡 A Simple Decision Framework</h2>
+        <p className="mb-4">
+          Here is a simple way to think about your service mix without over-complicating it.
+        </p>
+
+        <div className="rounded-lg border border-[#d9cfc2] p-4 bg-[#f6efe4] mb-8">
+          <ul className="list-disc pl-5 space-y-2 text-sm">
+            <li>
+              Choose <strong>daycare-only</strong> if you want predictable hours, simpler staffing, and a cleaner
+              operational model &mdash; especially while you build reputation and systems.
+            </li>
+            <li>
+              Add <strong>boarding</strong> if you are ready for 24/7 responsibility, stronger staffing plans,
+              firmer policies, and a bigger compliance footprint &mdash; and you want the revenue upside.
+            </li>
+            <li>
+              Add <strong>grooming</strong> if you have the right person (or you are the right person), you can
+              handle quality expectations, and you can build a stable structure that does not collapse when one
+              employee leaves.
+            </li>
+          </ul>
+        </div>
+
+        <h2 className="text-2xl font-semibold mt-8 mb-3">
+          🔁 If I Had to Start Over, I&rsquo;d Still Choose Daycare + Boarding (Minimal Grooming)
+        </h2>
+        <p className="mb-4">
+          When I launched, I knew I wanted daycare and boarding. If I had to do it all over again, I would
+          still make the same call. The services complement each other: daycare builds routine and relationships,
+          while boarding captures the travel seasons and creates high-revenue periods.
+        </p>
+
+        <p className="mb-8">
+          Grooming never made sense for us long-term at scale. I respect the facilities that do it well, but
+          unless you have the right person and the right structure, it can introduce instability.
+        </p>
+
+        <h2 className="text-2xl font-semibold mt-8 mb-3">📬 Final Thoughts</h2>
+        <p className="mb-4">
+          There is no one-size-fits-all answer. What matters is aligning your services with your strengths,
+          your lifestyle goals, and your ability to deliver consistent quality.
+        </p>
+
+        <p className="mb-8">
+          If you are daycare-only and the boarding decision is the big question in front of you right now,
+          use the companion guide linked above. It is written specifically for that moment &mdash; when you are
+          deciding whether you are ready to move from fixed hours to 24/7 responsibility.
+        </p>
+
+        {/* Backlink to the new boarding expansion article (again near the bottom) */}
+        <p className="mb-8">
+          Companion guide:{' '}
+          <Link
+            href={`/${locale}/blog/should-daycare-only-expand-into-boarding`}
+            className="underline font-medium hover:opacity-80"
+          >
+            Should a Daycare-Only Business Expand Into Boarding? A Realistic Decision Guide
+          </Link>
+          .
+        </p>
+
+        <p className="mb-4 italic text-gray-600 text-sm">
+          Sources (general): Industry operator experience; common grooming pay structures; typical service-model
+          tradeoffs observed across independent facilities and small teams.
+        </p>
+
+        <Link
+          href={`/${locale}/blog`}
+          className="underline text-[#2c4a30] font-medium hover:opacity-80"
+        >
+          ← Back to Blog
+        </Link>
+      </main>
+    </>
+  );
 }

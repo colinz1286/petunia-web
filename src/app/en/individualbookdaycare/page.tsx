@@ -68,6 +68,10 @@ type BusinessSettings = {
     countPendingInCapacity?: boolean;
     clientWritesRTDB?: boolean;
   };
+
+  // ✅ NEW: approval toggle
+  requireDaycareReservationApproval?: boolean;
+
   dropOffTimeRequiredDaycare?: boolean;
   pickUpTimeRequiredDaycare?: boolean;
   pickUpTimesDaycare?: WeekdayMap;
@@ -215,7 +219,12 @@ export default function IndividualBookDaycarePage() {
   const [maxPerTimeSlot, setMaxPerTimeSlot] = useState<number>(3);
   const [includePendingInCapacity, setIncludePendingInCapacity] = useState(false);
   const [clientWritesRTDB, setClientWritesRTDB] = useState(true);
+
+  // ✅ NEW: approval toggle (daycare)
+  const [requireDaycareReservationApproval, setRequireDaycareReservationApproval] = useState(false);
+
   const [temperamentTestRequired, setTemperamentTestRequired] = useState(false);
+
   // Blackout dates (yyyy-MM-dd in business TZ)
   const [blackoutDates, setBlackoutDates] = useState<Set<string>>(new Set());
 
@@ -374,11 +383,14 @@ export default function IndividualBookDaycarePage() {
       setIncludePendingInCapacity(!!data.features?.countPendingInCapacity);
       setClientWritesRTDB(data.features?.clientWritesRTDB !== false);
 
-      // Core flags
+      /// Core flags
       setDropOffTimeRequired(!!data.dropOffTimeRequiredDaycare);
 
       // ⭐ NEW — Pickup required flag
       setPickUpTimeRequired(!!data.pickUpTimeRequiredDaycare);
+
+      // ✅ NEW — Approval toggle (daycare)
+      setRequireDaycareReservationApproval(!!data.requireDaycareReservationApproval);
 
       setTemperamentTestRequired(!!data.temperamentTestRequired);
 
@@ -594,7 +606,7 @@ export default function IndividualBookDaycarePage() {
           collection(db, 'daycareReservations'),
           where('userId', '==', uid),
           where('businessId', '==', businessId),
-          where('status', 'in', ['pending', 'approved'])
+          where('status', 'in', ['pending', 'approved', 'declined'])
         );
         const snap = await getDocs(qref);
         return snap.docs.some((docSnap) => {
@@ -656,8 +668,19 @@ export default function IndividualBookDaycarePage() {
       resetFormAfterDraft();
     }
   }, [
-    selectedDate, dropOffTimeRequired, selectedTime, selectedPetIds,
-    hasExistingReservation, isAssessment, groomingAvailable, groomingServices, t, resetFormAfterDraft
+    selectedDate,
+    dropOffTimeRequired,
+    selectedTime,
+    selectedPetIds,
+    hasExistingReservation,
+    isAssessment,
+    groomingAvailable,
+    groomingServices,
+    t,
+    resetFormAfterDraft,
+    pickUpTimeRequired,
+    selectedPickUpTime,
+    blackoutDates
   ]);
 
   /* =========================
@@ -695,6 +718,16 @@ export default function IndividualBookDaycarePage() {
 
         const dateBizKey = ymdKey(booking.date, bizTZ);
 
+        // ✅ Submit-time authoritative fetch (matches iOS fix)
+        const bsnap = await getDoc(doc(db, 'businesses', businessId));
+        const bdata = (bsnap.data() || {}) as BusinessSettings;
+
+        // Use submit-time truth (never stale)
+        const requireApprovalNow = !!bdata.requireDaycareReservationApproval;
+        const statusToWrite: 'pending' | 'approved' = requireApprovalNow ? 'pending' : 'approved';
+
+        const clientWritesRTDBNow = bdata.features?.clientWritesRTDB !== false;
+
         const payload: DaycareReservationWrite = {
           userId,
           businessId,
@@ -704,9 +737,10 @@ export default function IndividualBookDaycarePage() {
           dateBusinessTZ: dateBizKey,            // biz TZ key
           arrivalWindow: booking.dropOffTime,
           departureWindow: booking.pickUpTime,
-          status: 'approved',
+          status: statusToWrite,
           realtimeKey,
         };
+
         if (booking.isAssessment) payload.isAssessment = true;
         if (booking.groomingAddOns && Object.keys(booking.groomingAddOns).length) {
           payload.groomingAddOns = booking.groomingAddOns;
@@ -716,11 +750,13 @@ export default function IndividualBookDaycarePage() {
         await setDoc(doc(db, 'daycareReservations', reservationId), payload);
 
         // Optional RTDB mirrors per pet
-        if (clientWritesRTDB) {
+        if (clientWritesRTDBNow) {
+
           const deviceKey = ymdKey(booking.date, Intl.DateTimeFormat().resolvedOptions().timeZone);
           await Promise.all(booking.petIds.map(async (petId) => {
             const pet = pets.find((p) => p.id === petId);
             const rtdbKey = `${realtimeKey}-${petId}`;
+
             const base: RTDBUpcomingWriteRow = {
               dogName: pet?.name || 'Dog',
               ownerName,
@@ -729,10 +765,11 @@ export default function IndividualBookDaycarePage() {
               dateBusinessTZ: dateBizKey,
               arrivalWindow: booking.dropOffTime,
               departureWindow: booking.pickUpTime,
-              status: 'approved',
+              status: statusToWrite,
               userId,
               realtimeKey,
             };
+
             if (booking.isAssessment) base.isAssessment = true;
 
             const perPet = booking.groomingAddOns?.[petId] || [];
@@ -755,7 +792,7 @@ export default function IndividualBookDaycarePage() {
       console.error('❌ submitAllReservations failed:', e);
       alert(t('submission_error') || 'There was an error submitting your bookings.');
     }
-  }, [userId, draftBookings, businessId, bizTZ, pets, ownerName, clientWritesRTDB, router, locale, t]);
+  }, [userId, draftBookings, businessId, bizTZ, pets, ownerName, clientWritesRTDB, router, locale, t, blackoutDates]);
 
   /* =========================
      UI
