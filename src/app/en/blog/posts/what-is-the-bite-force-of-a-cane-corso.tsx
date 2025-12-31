@@ -80,7 +80,14 @@ export default function WhatIsTheBiteForceOfACaneCorso() {
           <h2 className="text-2xl font-semibold mb-3">Short Answer (TL;DR)</h2>
           <div className="rounded-md border border-[#d9cfc2] bg-[#f6efe4] p-4 text-sm mb-4">
             <p className="mb-2">
-              The web loves a single number for Cane Corso bite force. Professional literature does not publish one tidy breed-specific value. Veterinary and biomechanics papers measure force in <strong>Newtons (N)</strong>, show that <strong>body size is the main driver</strong> (with skull shape a secondary factor), and report ranges for domestic dogs as a whole rather than per breed.
+              The web loves a single number for Cane Corso bite force. Professional literature does not publish one tidy breed-specific value. Veterinary and biomechanics papers measure force in <strong>Newtons (N)</strong>, show that <strong>body size is the main driver</strong> (with skull shape a secondary factor), and report ranges for domestic dogs as a whole rather than per breed—one reason overall size and mass matter more than viral rankings (explained further in{' '}
+              <Link
+                href={`/${locale}/blog/how-big-are-cane-corsos`}
+                className="underline hover:opacity-80"
+              >
+                How Big Are Cane Corsos
+              </Link>
+              ).
             </p>
             <p className="mb-0">
               A large mastiff-type like a Cane Corso likely sits toward the <strong>upper end</strong> of dog values reported in those papers, especially at the major shearing teeth. That statement stays honest without turning a beloved breed into a meme.
@@ -147,7 +154,14 @@ export default function WhatIsTheBiteForceOfACaneCorso() {
         <section id="cane-corso" className="mb-10">
           <h2 className="text-2xl font-semibold mb-3">Where Cane Corsos Fit</h2>
           <p className="mb-3">
-            There is no peer-reviewed paper that lists a single PSI value for this breed. Based on published methods and the role of size, a Cane Corso will likely sit toward the high end of dog values reported in professional studies, especially at the main shearing teeth. That statement respects the data without exaggeration.
+            There is no peer-reviewed paper that lists a single PSI value for this breed. Based on published methods and the role of size, a Cane Corso will likely sit toward the high end of dog values reported in professional studies, especially at the main shearing teeth. That statement respects the data without exaggeration and should not be confused with temperament or household suitability, which are addressed separately in{' '}
+            <Link
+              href={`/${locale}/blog/are-cane-corsos-good-family-dogs`}
+              className="underline hover:opacity-80"
+            >
+              Are Cane Corsos Good Family Dogs
+            </Link>
+            .
           </p>
           <div className="rounded-md border border-[#d9cfc2] bg-[#f6efe4] p-4 text-sm">
             This article aims to inform, not to cast a negative shadow on any breed. Strong dogs with thoughtful training, socialization, dental care, and welfare-minded routines are fantastic companions and citizens.

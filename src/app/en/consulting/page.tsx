@@ -17,11 +17,32 @@ export default function ConsultingPage() {
                 />
 
                 {/* Header */}
-                <h1 className="text-3xl font-bold">Free One-on-One Pet Care Consulting</h1>
+                <h1 className="text-3xl font-bold">
+                    Help With the Hardest Parts of Running a Pet Care Business
+                </h1>
+
                 <p className="text-lg leading-relaxed">
-                    I&rsquo;m offering free, private one-on-one consulting for people in pet care &mdash; boarding and daycare, pet sitting, dog
-                    walking, and related services. This is meant to be a safe place to ask real questions, get real answers, and keep your
-                    privacy.
+                    This is not traditional consulting. This is one-on-one, real-world help for pet care
+                    business owners who are dealing with situations they don&rsquo;t know how to handle.
+                    Clients, employees, difficult dogs, policies, boundaries, and decisions that feel
+                    heavy or overwhelming &mdash; this space exists for those moments.
+                </p>
+
+                {/* Humble Beginnings */}
+                <h2 className="text-2xl font-semibold">
+                    I Didn&rsquo;t Start With a Perfect Facility &mdash; and I&rsquo;m still Improving Every Single Day
+                </h2>
+                <p className="text-lg leading-relaxed">
+                    In 2017, I took over an existing boarding and daycare business that was operating out
+                    of a 130-year-old barn. The facility had only been licensed for about six months, had
+                    never passed a winter inspection, and was full of problems that weren&rsquo;t obvious until
+                    I was already in it.
+                </p>
+
+                <p className="text-lg leading-relaxed">
+                    My dad and I renovated the entire space ourselves. We learned through trial and error,
+                    long nights, unexpected expenses, and constant problem-solving.
+                    There were no shortcuts, no polished systems, and no one telling us what to do next.
                 </p>
 
                 {/* Consulting Photo */}
@@ -40,13 +61,49 @@ export default function ConsultingPage() {
                     Pictured: Colin, holding Petunia. Mia sitting.
                 </p>
 
+                <p className="text-lg leading-relaxed">
+                    I share this because the reality is that most people in pet care don&rsquo;t start with a
+                    lot of money in the bank or the ability to build their dream facility right away.
+                    They start with what they can afford, what&rsquo;s available to them at the time, and a lot
+                    of unanswered questions. That means making constant decisions about where to spend
+                    money, where to save, and what can wait.
+                </p>
+
+                <p className="text-lg leading-relaxed">
+                    I have made just about every mistake you can imagine along the way &mdash; especially
+                    early on. I learned the hard way what matters, what doesn&rsquo;t, and what mistakes are
+                    avoidable if someone simply explains them to you ahead of time. That experience is
+                    a big part of why I want to help others avoid the same costly missteps.
+                </p>
+
+                <p className="text-lg leading-relaxed">
+                    Even getting into this industry doesn&rsquo;t usually happen all at once. My own path
+                    started in a very simple way &mdash; training my personal dog, traveling, competing,
+                    and slowly building experience and confidence over time. Everyone&rsquo;s journey starts
+                    somewhere, and it&rsquo;s almost never where they wish it was.
+                </p>
+
+                <p className="text-lg leading-relaxed">
+                    Progress in this industry happens through small, thoughtful steps taken consistently.
+                    If you&rsquo;re willing to learn, ask questions, and move forward one decision at a time,
+                    you can build something strong &mdash; even if your starting point feels far from ideal.
+                </p>
+
                 {/* Credentials / Story */}
                 <h2 className="text-2xl font-semibold">Who I Am</h2>
                 <p className="text-lg leading-relaxed">
-                    I am the owner of <strong>Berkley Creek Pet Retreat</strong> in Mars, Pennsylvania. In 2017, I took over an existing
-                    boarding and daycare facility that was located in a 130 year old barn, that had only been licensed for about six months, and had never even passed a winter
-                    inspection. My dad and I renovated the entire facility together, and over the next several years, I dramatically grew the business and eventually built a much larger facility. When the time came to expand, I served as the general contractor throughout the
-                    project. Today, Berkley Creek operates as a 10,000-square-foot facility with 27 employees.
+                    I am the owner of <strong>Berkley Creek Pet Retreat</strong> in Mars, Pennsylvania.
+                    What began as a small, imperfect operation has grown steadily over time through
+                    hands-on work, consistency, and a lot of learning along the way. When the business
+                    reached the point where expansion made sense, I helped lead the process from start
+                    to finish, including serving as the general contractor during construction.
+                </p>
+
+                <p className="text-lg leading-relaxed">
+                    Today, Berkley Creek operates as a purpose-built, 10,000-square-foot boarding and
+                    daycare facility, with 23,000 square feet of outdoor play space and 27 employees. The growth did not happen overnight &mdash; it
+                    happened through thousands of small decisions, many of which I had to figure out
+                    the hard way.
                 </p>
                 <p className="text-lg leading-relaxed">
                     Over the years, we have been honored to win multiple Best of the Best GOLD (highest honor given) awards for boarding and daycare facilities in the
@@ -171,7 +228,7 @@ export default function ConsultingPage() {
                     <li>Getting started in boarding, daycare, pet sitting, or dog walking</li>
                     <li>Facility setup, daily operations, staffing, and customer experience</li>
                     <li>Policies, safety standards, and how to build trust with clients</li>
-                    <li>Legal concerns and how to protect youerself as best as possible</li>
+                    <li>Legal concerns and how to protect yourself as best as possible</li>
                     <li>How to grow responsibly without losing the personal touch</li>
                     <li>Anything you&rsquo;re afraid to ask publicly &mdash; no judgment</li>
                     <li>Training staff and lowering turnover (people quitting or leaving)</li>
@@ -183,9 +240,9 @@ export default function ConsultingPage() {
                     <h2 className="text-2xl font-semibold">How to Get Started</h2>
 
                     <p className="text-lg leading-relaxed">
-                        All consulting is done one-on-one and face to face via video facetime. This allows us to have real, focused
+                        All consulting is done one-on-one and face to face via video FaceTime. This allows us to have real, focused
                         conversations and ensures that every discussion is personal, private, and productive. You can also add me on
-                        facebook if you use that platform. Many younger people feel like this is a very easy form of communication
+                        Facebook (because it&rsquo;s free and people can easily afford it) if you use that platform. Many younger people feel like this is a very easy form of communication
                         and provides the ability to send messages back and forth quickly. It is simply one more option!
                     </p>
 

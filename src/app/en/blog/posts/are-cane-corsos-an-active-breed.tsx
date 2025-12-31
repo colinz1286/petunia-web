@@ -57,7 +57,7 @@ export default function AreCaneCorsosAnActiveBreed() {
               {categoryLabels[key] ?? key}
             </span>
           ))}
-          
+
         </div>
 
         {/* Local anchor nav */}
@@ -99,7 +99,6 @@ export default function AreCaneCorsosAnActiveBreed() {
           </div>
         </section>
 
-        {/* Snapshot */}
         <section id="snapshot" className="mb-10">
           <h2 className="text-2xl font-semibold mb-3">Activity Snapshot: What &quot;Active&quot; Means for a Corso</h2>
           <ul className="list-disc pl-5 space-y-2 mb-4">
@@ -110,8 +109,15 @@ export default function AreCaneCorsosAnActiveBreed() {
             <li><strong>Recovery:</strong> steady routines, quality sleep, and lean weight protect joints more than weekend marathons ever will.</li>
           </ul>
           <p>
-            Corsos are capable athletes when conditioned, but their superpower is <strong>self-possession under control</strong>. You build that with predictable,
-            repeatable habits—little things done daily.
+            Corsos are capable athletes when conditioned, but their superpower is <strong>self-possession under control</strong>. Because they are large,
+            powerful dogs, activity planning must respect body mass and joint load as outlined in{' '}
+            <Link
+              href={`/${locale}/blog/how-big-are-cane-corsos`}
+              className="underline hover:opacity-80"
+            >
+              How Big Are Cane Corsos
+            </Link>
+            . You build durability with predictable, repeatable habits—little things done daily.
           </p>
         </section>
 
@@ -230,7 +236,15 @@ export default function AreCaneCorsosAnActiveBreed() {
           <h2 className="text-2xl font-semibold mb-3">Training Framework &amp; Busy Homes: Clarity Beats Intensity</h2>
           <p className="mb-3">
             Corsos are very trainable but not forgiving of fuzzy rules. The right approach is <strong>calm, reward-based training</strong> paired with consistent
-            boundaries. Avoid both harshness and permissiveness. Think <em>matter-of-fact leadership</em>.
+            boundaries. Avoid both harshness and permissiveness. Think <em>matter-of-fact leadership</em>. Daily activity and training structure also
+            play a major role in whether a Corso is a good match for a household, especially with kids and frequent visitors (explored in{' '}
+            <Link
+              href={`/${locale}/blog/are-cane-corsos-good-family-dogs`}
+              className="underline hover:opacity-80"
+            >
+              Are Cane Corsos Good Family Dogs
+            </Link>
+            ).
           </p>
           <h3 className="text-lg font-semibold mt-2 mb-1">Core family skills</h3>
           <ul className="list-disc pl-5 space-y-1 mb-3">

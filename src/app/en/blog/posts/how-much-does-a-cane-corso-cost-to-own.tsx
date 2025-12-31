@@ -86,11 +86,19 @@ export default function HowMuchDoesACaneCorsoCostToOwn() {
         <section id="tldr" className="mb-10">
           <h2 className="text-2xl font-semibold mb-3">Short Answer (TL;DR)</h2>
           <p className="mb-4">
-            A Cane Corso is a large, powerful guardian breed. Total cost of ownership depends on food choices, health events, and whether you
-            carry pet insurance. Realistic modern ranges for a large dog place <strong>annual recurring costs</strong> commonly in the <strong>USD 2,000–4,500+</strong> span for
-            food, routine vet care, parasite prevention, dental, training, and gear, before daycare/boarding. Add <strong>USD 1,500–3,000+</strong> per year for
-            regular daycare or frequent boarding. Rare but possible big-ticket events (for example cruciate or hip surgery) can add <strong>USD 3,000–7,500+</strong>
-            per procedure. Owners who plan for these realities avoid financial stress and protect decision quality if an emergency occurs.
+            A Cane Corso is a large, powerful guardian breed. Much of the cost difference compared with smaller dogs comes from overall body size and structure,
+            which affects food volume, gear, anesthesia, and surgery pricing (outlined in{' '}
+            <Link
+              href={`/${locale}/blog/how-big-are-cane-corsos`}
+              className="underline hover:opacity-80"
+            >
+              How Big Are Cane Corsos
+            </Link>
+            ). Total cost of ownership then depends on food choices, health events, and whether you carry pet insurance. Realistic modern ranges for a large dog
+            place <strong>annual recurring costs</strong> commonly in the <strong>USD 2,000–4,500+</strong> span for food, routine vet care, parasite prevention, dental,
+            training, and gear, before daycare/boarding. Add <strong>USD 1,500–3,000+</strong> per year for regular daycare or frequent boarding. Rare but possible
+            big-ticket events (for example cruciate or hip surgery) can add <strong>USD 3,000–7,500+</strong> per procedure. Owners who plan for these realities avoid
+            financial stress and protect decision quality if an emergency occurs.
           </p>
           <div className="rounded-md border border-[#d9cfc2] bg-[#f6efe4] p-4 text-sm">
             <strong>Petunia tip:</strong> In Petunia, create a budget card with three lines: recurring monthly, emergency fund target, and optional insurance premium.
@@ -224,8 +232,17 @@ export default function HowMuchDoesACaneCorsoCostToOwn() {
         <section id="emergencies" className="mb-10">
           <h2 className="text-2xl font-semibold mb-3">Emergencies &amp; Big Surgeries: The Outliers Worth Planning For</h2>
           <p className="mb-3">
-            Large dogs face the same orthopedic and surgical possibilities as others, but size increases anesthesia and materials. Modern U.S. ranges
-            for cruciate repair and hip replacement commonly fall in the several-thousand-dollar tier. <a href="https://vcahospitals.com/ballston-spa/services/advanced-care/tplo" target="_blank" rel="noopener noreferrer">VCA TPLO example</a> · <a href="https://vcahospitals.com/know-your-pet/total-hip-replacement-in-dogs" target="_blank" rel="noopener noreferrer">VCA: hip replacement overview</a>
+            Large dogs face the same orthopedic and surgical possibilities as others, but size increases anesthesia and materials. Many of these
+            high-cost events stem from the predictable large-breed health patterns reviewed in{' '}
+            <Link
+              href={`/${locale}/blog/do-cane-corsos-have-health-issues`}
+              className="underline hover:opacity-80"
+            >
+              Do Cane Corsos Have Health Issues
+            </Link>
+            . Modern U.S. ranges for cruciate repair and hip replacement commonly fall in the several-thousand-dollar tier.
+            <a href="https://vcahospitals.com/ballston-spa/services/advanced-care/tplo" target="_blank" rel="noopener noreferrer"> VCA TPLO example</a> ·
+            <a href="https://vcahospitals.com/know-your-pet/total-hip-replacement-in-dogs" target="_blank" rel="noopener noreferrer"> VCA: hip replacement overview</a>
           </p>
           <ul className="list-disc pl-5 space-y-1">
             <li><strong>Cruciate (TPLO/TTA) per knee:</strong> often <strong>USD 3,000–6,000+</strong> depending on region, hospital, and size.</li>

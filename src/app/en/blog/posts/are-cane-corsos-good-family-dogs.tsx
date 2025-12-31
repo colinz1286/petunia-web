@@ -57,7 +57,7 @@ export default function AreCaneCorsosGoodFamilyDogs() {
               {categoryLabels[key] ?? key}
             </span>
           ))}
-          
+
         </div>
 
         {/* Local anchor nav */}
@@ -104,7 +104,17 @@ export default function AreCaneCorsosGoodFamilyDogs() {
           <h2 className="text-2xl font-semibold mb-3">Breed &amp; Household Snapshot</h2>
           <ul className="list-disc pl-5 space-y-2 mb-4">
             <li><strong>Type:</strong> Italian mastiff, traditionally a property and family guardian.</li>
-            <li><strong>Size &amp; power:</strong> very strong; adult males commonly 100+ lb. Handling skill matters.</li>
+            <li>
+              <strong>Size &amp; power:</strong> very strong; adult males commonly 100+ lb. Handling skill matters, and families should be realistic about the physical
+              and space demands outlined in{' '}
+              <Link
+                href={`/${locale}/blog/how-big-are-cane-corsos`}
+                className="underline hover:opacity-80"
+              >
+                How Big Are Cane Corsos
+              </Link>
+              .
+            </li>
             <li><strong>Typical temperament:</strong> calm, confident, observant; affectionate with family; reserved with strangers; not a social butterfly.</li>
             <li><strong>Training profile:</strong> intelligent and capable; thrives with fair, consistent boundaries and reward-based training that builds neutrality.</li>
             <li><strong>Kid fit:</strong> can be excellent with kids they live with when supervision and structure are strong; management is non-negotiable.</li>
@@ -208,9 +218,15 @@ export default function AreCaneCorsosGoodFamilyDogs() {
           </p>
           <p className="mb-3">
             Strong candidates for a Corso include families who enjoy <strong>structured routines</strong>, like morning walks, quiet afternoons, and predictable evening
-            down-time; who are comfortable <strong>telling visitors what to do</strong>; and who enjoy <strong>short daily training sessions</strong>. Less ideal are households that cannot
-            control doorways, accept drop-ins at all hours, or dislike giving instructions to guests. The dog reads your comfort level and will step in if
-            leadership feels vacant.
+            down-time; who are comfortable <strong>telling visitors what to do</strong>; and who enjoy <strong>short daily training sessions</strong>. Matching a household to
+            the breed’s real activity needs—explained in{' '}
+            <Link
+              href={`/${locale}/blog/are-cane-corsos-an-active-breed`}
+              className="underline hover:opacity-80"
+            >
+              Are Cane Corsos an Active Breed
+            </Link>
+            —is often the difference between calm success and daily frustration.
           </p>
           <ul className="list-disc pl-5 space-y-1 mb-3">
             <li>Good match: early walker + evening training habit; kids who can follow rules; few unplanned visitors.</li>

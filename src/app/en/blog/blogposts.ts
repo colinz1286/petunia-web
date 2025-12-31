@@ -10,6 +10,16 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'cane-corso-temperament-explained',
+        title: 'Cane Corso Temperament Explained: Guardian Instincts, Reactivity, Trainability, and Real-World Ownership',
+        date: 'December 31, 2025',
+        description:
+            'A comprehensive, evidence-informed guide to Cane Corso temperament, covering guardian instincts, neutrality versus friendliness, adolescence and maturity, reactivity prevention, effective training styles, household management with kids and visitors, multi-pet dynamics, and realistic expectations for ownership.',
+        component: () => import('./posts/cane-corso-temperament-explained'),
+        categories: ['owner', 'breed_specific_guides'],
+        breed: 'Cane Corso',
+    },
+    {
         slug: 'should-daycare-only-expand-into-boarding',
         title:
             'Should a Daycare-Only Business Expand Into Boarding? A Realistic Decision Guide',

@@ -94,9 +94,17 @@ export default function DoCaneCorsosHaveHealthIssues() {
           <p className="mb-4">
             Cane Corsos are robust, athletic guardian dogs, but like all large breeds they carry <strong>predictable risk zones</strong>: orthopedic
             conditions related to growth and size, skin and ear issues in some individuals, occasional eye and cardiac concerns, potential
-            gastrointestinal sensitivity, and a deep-chested build that warrants awareness for bloat. Most problems are manageable with
-            <strong> lean body condition</strong>, <strong>measured nutrition</strong>, <strong>structured exercise</strong>, and <strong>routine veterinary care</strong>. Insurance can make sense for a large
-            breed with potential for high-cost events, while well-funded savings plus prevention also works if you consistently set money aside.
+            gastrointestinal sensitivity, and a deep-chested build that warrants awareness for bloat. Many of these risks scale with overall body
+            mass and structure, which is why understanding the breed’s physical profile (covered in{' '}
+            <Link
+              href={`/${locale}/blog/how-big-are-cane-corsos`}
+              className="underline hover:opacity-80"
+            >
+              How Big Are Cane Corsos
+            </Link>
+            ) matters for realistic health planning. Most problems are manageable with <strong>lean body condition</strong>, <strong>measured nutrition</strong>,
+            <strong>structured exercise</strong>, and <strong>routine veterinary care</strong>. Insurance can make sense for a large breed with potential for high-cost
+            events, while well-funded savings plus prevention also works if you consistently set money aside.
           </p>
           <div className="rounded-md border border-[#d9cfc2] bg-[#f6efe4] p-4 text-sm">
             <strong>Petunia tip:</strong> Track weight, body photos, ear and skin notes, and training minutes in Petunia. Consistent records help your veterinarian
@@ -405,8 +413,15 @@ export default function DoCaneCorsosHaveHealthIssues() {
           <h2 className="text-2xl font-semibold mb-3">Insurance &amp; Realistic Costs: What Large-Breed Owners Should Expect</h2>
           <p className="mb-3">
             Health insurance for dogs functions like a safety net for unpredictable, high-cost events. For a large breed that may face
-            orthopedic surgery, emergency care, or complex diagnostics, insurance can protect savings and reduce decision stress. That said,
-            disciplined owners who consistently save can self-insure, especially if they keep risk low with prevention and lean weight.
+            orthopedic surgery, emergency care, or complex diagnostics, insurance can protect savings and reduce decision stress. These medical
+            realities are a major contributor to the overall lifetime cost of ownership discussed in{' '}
+            <Link
+              href={`/${locale}/blog/how-much-does-a-cane-corso-cost-to-own`}
+              className="underline hover:opacity-80"
+            >
+              How Much Does a Cane Corso Cost to Own
+            </Link>
+            . That said, disciplined owners who consistently save can self-insure, especially if they keep risk low with prevention and lean weight.
           </p>
 
           <h3 className="text-lg font-semibold mt-2 mb-1">Typical U.S. cost ranges (ballpark)</h3>

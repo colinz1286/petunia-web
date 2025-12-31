@@ -282,6 +282,14 @@ export default function HowBigAreCaneCorsos() {
           <p className="mb-3">
             The larger the dog, the more each extra pound stresses hips, elbows, and cruciate ligaments. The best joint supplement is a
             <strong> lean physique</strong>. Add structured walks, short strength sets, and calm enrichment. Avoid repetitive high-impact drills and slick surfaces.
+            These principles are expanded in{' '}
+            <Link
+              href={`/${locale}/blog/are-cane-corsos-an-active-breed`}
+              className="underline hover:opacity-80"
+            >
+              Are Cane Corsos an Active Breed
+            </Link>
+            , which focuses on building sustainable movement for a dog of this size.
           </p>
           <ul className="list-disc pl-5 space-y-1 mb-3">
             <li><strong>Daily plan:</strong> two calm walks + one short skill block; strength 2–3 days/week.</li>
@@ -299,7 +307,14 @@ export default function HowBigAreCaneCorsos() {
           <h2 className="text-2xl font-semibold mb-3">Veterinary Costs: Large vs Small Dogs</h2>
           <p className="mb-3">
             Many routine costs are similar across sizes (exam fees, vaccines), but several categories scale with size: anesthesia doses,
-            imaging time, consumables, and surgery complexity. Ballpark ranges vary by region and hospital, but here are <strong>order-of-magnitude</strong>
+            imaging time, consumables, and surgery complexity. These size-related differences explain why certain conditions discussed in{' '}
+            <Link
+              href={`/${locale}/blog/do-cane-corsos-have-health-issues`}
+              className="underline hover:opacity-80"
+            >
+              Do Cane Corsos Have Health Issues
+            </Link>
+            {' '}carry higher financial impact in large breeds. Ballpark ranges vary by region and hospital, but here are <strong>order-of-magnitude</strong>
             comparisons to help you plan:
           </p>
           <ul className="list-disc pl-5 space-y-1 mb-3">
