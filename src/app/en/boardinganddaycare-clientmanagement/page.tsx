@@ -5,10 +5,14 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import {
   getFirestore,
   collection,
+  doc,
   getDocs,
   query,
   where,
+  writeBatch,
+  serverTimestamp,
 } from 'firebase/firestore';
+
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { initializeApp, getApps, getApp } from 'firebase/app';
@@ -57,6 +61,22 @@ export default function ClientManagementPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [businessId, setBusinessId] = useState<string>('');
+
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
+  const [removeError, setRemoveError] = useState<string | null>(null);
+
+  const [reloadTick, setReloadTick] = useState(0);
+  const [selectedClient, setSelectedClient] = useState<SimpleClient | null>(null);
+
+  // ✅ Refresh list when user returns to this tab/page (e.g., after removing a client)
+  useEffect(() => {
+    const onFocus = () => setReloadTick((v) => v + 1);
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, []);
+
   useEffect(() => {
     const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -69,16 +89,18 @@ export default function ClientManagementPage() {
       setError(null);
 
       try {
-        const businessId = await resolveBusinessIdForOwner(user.uid);
-        if (!businessId) {
+        const resolvedBusinessId = await resolveBusinessIdForOwner(user.uid);
+        if (!resolvedBusinessId) {
           setError(t('no_business_found'));
           setLoading(false);
           return;
         }
 
+        setBusinessId(resolvedBusinessId);
+
         // ✅ Load only lightweight client info (fast)
         const snapshot = await getDocs(
-          collection(db, 'userApprovedBusinesses', businessId, 'clients')
+          collection(db, 'userApprovedBusinesses', resolvedBusinessId, 'clients')
         );
 
         // Build and filter valid clients
@@ -116,7 +138,7 @@ export default function ClientManagementPage() {
     });
 
     return () => unsubscribe();
-  }, [locale, router, t]);
+  }, [locale, router, t, reloadTick]);
 
   const filteredClients = clients.filter(
     (c) =>
@@ -124,6 +146,69 @@ export default function ClientManagementPage() {
       c.userLastName.toLowerCase().includes(search.toLowerCase()) ||
       c.userEmail.toLowerCase().includes(search.toLowerCase())
   );
+
+  async function removeClientFromApprovedList(mode: 'remove' | 'delete') {
+    // mode exists to mirror iOS UI choices.
+    // Under your current Firestore rules, business owners should NOT delete joinRequests.
+    // So both modes perform:
+    // - mark joinRequests as removed
+    // - delete /userApprovedBusinesses/{businessId}/clients/{clientUserId}
+
+    if (!selectedClient) {
+      setRemoveError('No client selected.');
+      return;
+    }
+    if (!businessId) {
+      setRemoveError('Business not found.');
+      return;
+    }
+
+    setIsRemoving(true);
+    setRemoveError(null);
+
+    try {
+      const batch = writeBatch(db);
+
+      // 1) Mark joinRequests as removed (owner update is allowed by your current rules)
+      const jrSnap = await getDocs(
+        query(
+          collection(db, 'joinRequests'),
+          where('businessId', '==', businessId),
+          where('userId', '==', selectedClient.userId)
+        )
+      );
+
+      jrSnap.docs.forEach((d) => {
+        batch.set(
+          d.ref,
+          {
+            status: 'removed',
+            removedAt: serverTimestamp(),
+            removedBy: 'businessOwnerWeb',
+          },
+          { merge: true }
+        );
+      });
+
+      // 2) Remove the approved client doc (drives this list)
+      const clientRef = doc(db, 'userApprovedBusinesses', businessId, 'clients', selectedClient.userId);
+      batch.delete(clientRef);
+
+      await batch.commit();
+
+      // Close modal + clear selection
+      setShowRemoveModal(false);
+      setSelectedClient(null);
+
+      // Force refresh immediately (no need to wait for focus)
+      setReloadTick((v) => v + 1);
+    } catch (e) {
+      console.error('❌ removeClientFromApprovedList failed:', e);
+      setRemoveError('Failed to remove client. Please try again.');
+    } finally {
+      setIsRemoving(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)] px-4 py-6">
@@ -182,10 +267,79 @@ export default function ClientManagementPage() {
               >
                 View More Info
               </button>
+
+              {/* ✅ Remove Client button */}
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedClient(client);
+                  setRemoveError(null);
+                  setShowRemoveModal(true);
+                }}
+                className="w-full mt-2 bg-red-600 text-white text-sm font-semibold py-2 rounded hover:bg-red-700 transition"
+              >
+                Remove Client
+              </button>
             </div>
           ))
         )}
       </div>
+
+      {/* ✅ Remove Client Modal */}
+      {showRemoveModal ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-md rounded bg-white p-5 space-y-4">
+            <h3 className="text-lg font-bold text-black">
+              Remove Client?
+            </h3>
+
+            <p className="text-sm text-gray-700">
+              Choose how you want to remove this client:
+              <br />
+              • Remove from Approved List keeps history (recommended).
+              <br />
+              • Delete Relationship uses the same safe behavior under current rules.
+            </p>
+
+            {removeError ? (
+              <p className="text-sm text-red-600">{removeError}</p>
+            ) : null}
+
+            <div className="space-y-2">
+              <button
+                type="button"
+                disabled={isRemoving}
+                onClick={() => removeClientFromApprovedList('remove')}
+                className="w-full bg-red-600 text-white font-semibold py-2 rounded hover:bg-red-700 disabled:opacity-60"
+              >
+                {isRemoving ? 'Removing…' : 'Remove from Approved List'}
+              </button>
+
+              <button
+                type="button"
+                disabled={isRemoving}
+                onClick={() => removeClientFromApprovedList('delete')}
+                className="w-full bg-red-600 text-white font-semibold py-2 rounded hover:bg-red-700 disabled:opacity-60"
+              >
+                {isRemoving ? 'Removing…' : 'Delete Relationship Entirely'}
+              </button>
+
+              <button
+                type="button"
+                disabled={isRemoving}
+                onClick={() => {
+                  setShowRemoveModal(false);
+                  setSelectedClient(null);
+                  setRemoveError(null);
+                }}
+                className="w-full border border-gray-300 text-gray-800 font-semibold py-2 rounded hover:bg-gray-50 disabled:opacity-60"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
