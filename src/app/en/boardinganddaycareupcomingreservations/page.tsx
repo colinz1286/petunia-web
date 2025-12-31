@@ -249,9 +249,6 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
   const [requireDaycareReservationApproval, setRequireDaycareReservationApproval] = useState(false);
   const [requireBoardingReservationApproval, setRequireBoardingReservationApproval] = useState(false);
 
-  // NEW — Which reservations the business owner has acknowledged (UI-only)
-  const [acknowledged, setAcknowledged] = useState<Set<string>>(new Set());
-
   // NEW — expanded date sections for accordion
   const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
 
@@ -847,21 +844,23 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
   const changeDaycareDate = useCallback(async (opts: {
     reservation: Reservation;
     newDateISO: string;
-    newWindow: string;
+    newArrivalWindow: string;
+    newDepartureWindow: string;
   }) => {
-    const { reservation, newDateISO, newWindow } = opts;
+    const { reservation, newDateISO, newArrivalWindow, newDepartureWindow } = opts;
     if (!businessId || !isValidFirebaseKey(businessId)) return;
     if (reservation.type !== 'Daycare') return;
 
     try {
       await rtdbUpdate(
         rtdbRef(rtdb, `upcomingReservations/${businessId}/${reservation.id}`),
-        { date: newDateISO, arrivalWindow: newWindow }
+        { date: newDateISO, arrivalWindow: newArrivalWindow, departureWindow: newDepartureWindow }
       );
 
       await updateDoc(doc(db, 'daycareReservations', reservation.realtimeKey), {
         date: newDateISO,
-        arrivalWindow: newWindow,
+        arrivalWindow: newArrivalWindow,
+        departureWindow: newDepartureWindow,
         dateBusinessTZ: newDateISO,
         modifiedAt: serverTimestamp(),
       });
@@ -874,7 +873,8 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                 ...x,
                 groupDateKey: newDateISO,
                 daycareDate: newDateISO,
-                arrivalWindow: newWindow,
+                arrivalWindow: newArrivalWindow,
+                departureWindow: newDepartureWindow,
               }
               : x
           )
@@ -990,12 +990,6 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
         approvedBy,
       });
 
-      // 3) ✅ UI: mark acknowledged so check-in buttons unlock immediately
-      setAcknowledged((prev) => {
-        const next = new Set(prev);
-        next.add(r.id);
-        return next;
-      });
     } catch (e) {
       console.error('❌ approveReservation failed:', e);
     }
@@ -1052,8 +1046,9 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                         (r.type === 'Daycare' && requireDaycareReservationApproval) ||
                         (r.type === 'Boarding' && requireBoardingReservationApproval);
 
-                      const isAcknowledged = acknowledged.has(r.id);
-                      const disabledByApproval = needsApproval && !isAcknowledged;
+                      // ✅ Persisted approval state comes from RTDB status
+                      const isApproved = statusLower === 'approved';
+                      const disabledByApproval = needsApproval && !isApproved;
 
                       return (
                         <div
@@ -1209,7 +1204,9 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                               const checkOutTime =
                                 r.type === 'Boarding'
                                   ? windowToHtmlTime(r.boardingCheckOutWindow || undefined)
-                                  : checkInTime;
+                                  : (r.departureWindow && r.departureWindow.trim() !== ''
+                                    ? windowToHtmlTime(r.departureWindow)
+                                    : checkInTime);
 
                               const checkInLocked =
                                 r.status.toLowerCase() === 'checkedin' ||
@@ -1243,14 +1240,13 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                                     </p>
                                   )}
 
-                                  {isAcknowledged &&
-                                    statusLower !== 'declined' && (
-                                      <p className="text-[12px] text-green-700 mb-2">
-                                        Approved. You may now check in this dog.
-                                      </p>
-                                    )}
+                                  {statusLower === 'approved' && (
+                                    <p className="text-[12px] text-green-700 mb-2">
+                                      Approved. You may now check in this dog.
+                                    </p>
+                                  )}
 
-                                  {!isAcknowledged &&
+                                  {statusLower !== 'approved' &&
                                     statusLower !== 'declined' && (
                                       <>
                                         <button
@@ -1379,21 +1375,24 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                 />
               </label>
 
-              {editModal.reservation.type === 'Boarding' && (
-                <label className="flex items-center justify-between">
-                  <span>{t('check_out_time_label')}</span>
-                  <input
-                    type="time"
-                    className="border rounded px-2 py-1"
-                    value={editModal.checkOutTime}
-                    onChange={(e) =>
-                      setEditModal((p) =>
-                        p ? { ...p, checkOutTime: e.target.value } : p
-                      )
-                    }
-                  />
-                </label>
-              )}
+              {/* ✅ FIX: Always show the second time field (Boarding = check-out, Daycare = pick-up) */}
+              <label className="flex items-center justify-between">
+                <span>
+                  {editModal.reservation.type === 'Boarding'
+                    ? t('check_out_time_label')
+                    : t('pickup_label')}
+                </span>
+                <input
+                  type="time"
+                  className="border rounded px-2 py-1"
+                  value={editModal.checkOutTime}
+                  onChange={(e) =>
+                    setEditModal((p) =>
+                      p ? { ...p, checkOutTime: e.target.value } : p
+                    )
+                  }
+                />
+              </label>
             </div>
 
             {/* APPLY TO ALL PETS */}
@@ -1439,7 +1438,8 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                     await changeDaycareDate({
                       reservation: r,
                       newDateISO: editModal.checkOutDate,
-                      newWindow: htmlTimeToWindow(editModal.checkInTime),
+                      newArrivalWindow: htmlTimeToWindow(editModal.checkInTime),
+                      newDepartureWindow: htmlTimeToWindow(editModal.checkOutTime),
                     });
                   }
 
