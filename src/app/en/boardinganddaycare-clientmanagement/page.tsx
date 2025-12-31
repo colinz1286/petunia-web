@@ -147,7 +147,9 @@ export default function ClientManagementPage() {
       c.userEmail.toLowerCase().includes(search.toLowerCase())
   );
 
-  async function removeClientFromApprovedList(mode: 'remove' | 'delete') {
+  async function removeClientFromApprovedList(_mode: 'remove' | 'delete') {
+  void _mode;
+
     // mode exists to mirror iOS UI choices.
     // Under your current Firestore rules, business owners should NOT delete joinRequests.
     // So both modes perform:
