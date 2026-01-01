@@ -1,0 +1,22 @@
+{
+  "back_button": "Back",
+  "page_title": "Client Notes",
+  "page_title_with_name": "Client Notes: {name}",
+  "subtitle": "Facility-private notes saved per business.",
+
+  "loading_label": "Loading…",
+  "missing_ids_error": "Missing user information.",
+  "not_authenticated_error": "Not authenticated.",
+  "resolve_business_error": "Unable to resolve business account.",
+  "load_failed_error": "Failed to load notes.",
+  "no_notes_yet": "No notes yet for this client.",
+
+  "notes_placeholder": "Type facility notes about this client...",
+  "char_count": "{current}/{max}",
+
+  "save_button": "Save Changes",
+  "saving_button": "Saving…",
+  "save_success": "Saved successfully.",
+  "notes_empty_error": "Notes cannot be empty.",
+  "save_failed_error": "Failed to save notes."
+}

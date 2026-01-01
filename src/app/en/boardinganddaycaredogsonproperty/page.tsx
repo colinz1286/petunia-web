@@ -390,6 +390,60 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
     }
   }, [groomingDog, groomingOptions, businessIdSanitized]);
 
+  /** -------- Client Notes (Business Owner) -------- */
+  const fetchOwnerUidByNameScoped = useCallback(
+    async (ownerName: string): Promise<string | null> => {
+      try {
+        if (!businessIdRaw) return null;
+
+        const qJoin = query(
+          collection(db, 'joinRequests'),
+          where('userName', '==', ownerName),
+          where('businessId', '==', businessIdRaw)
+        );
+
+        const snap = await getDocs(qJoin);
+        if (snap.empty) return null;
+
+        const uid = snap.docs[0].data().userId as string | undefined;
+        return uid && uid.trim().length > 0 ? uid : null;
+      } catch (e) {
+        console.error('❌ fetchOwnerUidByNameScoped failed:', e);
+        return null;
+      }
+    },
+    [businessIdRaw]
+  );
+
+  const openClientNotes = useCallback(
+    async (dog: Dog) => {
+      try {
+        // Business owner must be logged in
+        if (!auth.currentUser) {
+          router.push(`/${locale}/loginsignup`);
+          return;
+        }
+        if (!businessIdRaw) {
+          alert('Business not loaded yet. Please try again in a moment.');
+          return;
+        }
+
+        const ownerUid = await fetchOwnerUidByNameScoped(dog.owner);
+        if (!ownerUid) {
+          alert('Unable to resolve this client.');
+          return;
+        }
+
+        // ✅ Owner flow: route to the notes page (no businessId query needed)
+        router.push(`/${locale}/boardinganddaycareindividualclientnotes/${ownerUid}`);
+      } catch (e) {
+        console.error('❌ openClientNotes failed:', e);
+        alert('Failed to open client notes.');
+      }
+    },
+    [businessIdRaw, fetchOwnerUidByNameScoped, router, locale]
+  );
+
   /** -------- Assessment Modal actions -------- */
   const openAssessment = useCallback(async (dog: Dog) => {
     try {
@@ -544,26 +598,46 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
                   <button
                     className="w-full text-left px-4 py-3 rounded-t-xl"
                     onClick={() => toggleExpand(dog.id)}
+                    aria-expanded={expandedRow}
                   >
-                    <div className="flex items-center gap-2">
-                      {/* NEW: sequential number before the dog name */}
-                      <span className="text-gray-500 font-mono">{idx + 1}.</span>
+                    <div className="flex items-center justify-between gap-3">
+                      {/* Left content */}
+                      <div className="flex items-center gap-2">
+                        {/* NEW: sequential number before the dog name */}
+                        <span className="text-gray-500 font-mono">{idx + 1}.</span>
 
-                      <span className="font-semibold">🐶 {dog.name || t('unknown_dog')}</span>
-                      {hasMedications(dog) && <span title={t('medications_label')}>💊</span>}
-                      {isIntact(dog) && (
-                        <span className="text-red-600 text-[11px] font-bold">
-                          {t('intact_label')}
-                        </span>
-                      )}
-                      {hasAllergies(dog) && <span title={t('allergies_label')}>⚠️</span>}
-                      {hasGrooming(dog) && <span title={t('grooming_services_label')}>✂️</span>}
+                        <span className="font-semibold">🐶 {dog.name || t('unknown_dog')}</span>
+                        {hasMedications(dog) && <span title={t('medications_label')}>💊</span>}
+                        {isIntact(dog) && (
+                          <span className="text-red-600 text-[11px] font-bold">
+                            {t('intact_label')}
+                          </span>
+                        )}
+                        {hasAllergies(dog) && <span title={t('allergies_label')}>⚠️</span>}
+                        {hasGrooming(dog) && <span title={t('grooming_services_label')}>✂️</span>}
 
-                      {dog.isAssessment && (
-                        <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 text-[10px] font-bold">
-                          {t('assessment_badge_short')}
-                        </span>
-                      )}
+                        {dog.isAssessment && (
+                          <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 text-[10px] font-bold">
+                            {t('assessment_badge_short')}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Right chevron */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={`w-5 h-5 text-gray-500 transition-transform ${expandedRow ? 'rotate-180' : ''
+                          }`}
+                        aria-hidden="true"
+                      >
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
                     </div>
                   </button>
 
@@ -640,6 +714,14 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
                           className="px-3 py-2 rounded border border-blue-600 text-blue-700 text-sm hover:bg-blue-50"
                         >
                           {t('view_assessment_button')}
+                        </button>
+
+                        {/* ✅ Client Notes */}
+                        <button
+                          onClick={() => void openClientNotes(dog)}
+                          className="px-3 py-2 rounded border border-blue-600 text-blue-700 text-sm hover:bg-blue-50"
+                        >
+                          {t('client_notes_button')}
                         </button>
 
                         {/* Grooming */}

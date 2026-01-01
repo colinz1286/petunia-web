@@ -8,6 +8,7 @@ export default {
     boardingAndDaycarePendingRequests: require('./messages/en/boardingAndDaycarePendingRequests.json'),
     boardingAndDaycareClientManagement: require('./messages/en/boardingAndDaycareClientManagement.json'),
     boardingAndDaycareIndividualClient: require('./messages/en/boardingAndDaycareIndividualClient.json'),
+    boardingAndDaycareIndividualClientNotes: require('./messages/en/boardinganddaycareindividualclientnotes.json'),
     boardingAndDaycareDogsOnProperty: require('./messages/en/boardingAndDaycareDogsOnProperty.json'),
     boardingAndDaycareUpcomingReservations: require('./messages/en/boardingAndDaycareUpcomingReservations.json'),
     boardingAndDaycareUploadVaccineFile: require('./messages/en/boardingAndDaycareUploadVaccineFile.json'),

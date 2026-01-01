@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
 import {
     getFirestore,
     collection,
@@ -91,6 +92,15 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
     const [assessmentError, setAssessmentError] = useState<string | null>(null);
     const [assessmentSaveMsg, setAssessmentSaveMsg] = useState<string | null>(null);
 
+    // -------- Client Notes modal state (employee) --------
+    const [showClientNotesModal, setShowClientNotesModal] = useState(false);
+    const [clientNotesDog, setClientNotesDog] = useState<CheckedInDogLive | null>(null);
+    const [clientNotesText, setClientNotesText] = useState('');
+    const [clientNotesLoading, setClientNotesLoading] = useState(false);
+    const [clientNotesError, setClientNotesError] = useState<string | null>(null);
+    const [clientNotesSaveMsg, setClientNotesSaveMsg] = useState<string | null>(null);
+    const [clientNotesSaving, setClientNotesSaving] = useState(false);
+
     // ---------------------------------------------------------------------------
     // Utilities
     // ---------------------------------------------------------------------------
@@ -145,6 +155,137 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
             return {};
         }
     }
+
+    // ---------------------------------------------------------------------------
+    // ✅ Client Notes (Employee) — MODAL (no navigation)
+    // - Resolve ownerUid from joinRequests scoped to this business
+    // - Read/write: clientNotes/{ownerUid}/businesses/{businessIdRaw}
+    // ---------------------------------------------------------------------------
+    const fetchOwnerUidByNameScoped = useCallback(
+        async (ownerName: string): Promise<string | null> => {
+            try {
+                const fs = getFirestore();
+                let qJoin = query(collection(fs, 'joinRequests'), where('userName', '==', ownerName));
+
+                // ✅ Scope to THIS business to avoid collisions on common names
+                if (businessIdRaw) {
+                    qJoin = query(
+                        collection(fs, 'joinRequests'),
+                        where('userName', '==', ownerName),
+                        where('businessId', '==', businessIdRaw)
+                    );
+                }
+
+                const snap = await getDocs(qJoin);
+                if (snap.empty) return null;
+
+                const uid = snap.docs[0].data().userId as string | undefined;
+                return uid && uid.trim().length > 0 ? uid : null;
+            } catch (e) {
+                console.error('❌ fetchOwnerUidByNameScoped failed:', e);
+                return null;
+            }
+        },
+        [businessIdRaw]
+    );
+
+    const closeClientNotes = useCallback(() => {
+        setShowClientNotesModal(false);
+        setClientNotesDog(null);
+        setClientNotesText('');
+        setClientNotesError(null);
+        setClientNotesSaveMsg(null);
+        setClientNotesLoading(false);
+        setClientNotesSaving(false);
+    }, []);
+
+    const openClientNotes = useCallback(
+        async (dog: CheckedInDogLive) => {
+            if (!businessIdRaw) {
+                alert('Business not loaded yet. Please try again in a moment.');
+                return;
+            }
+
+            setClientNotesDog(dog);
+            setClientNotesText('');
+            setClientNotesError(null);
+            setClientNotesSaveMsg(null);
+            setClientNotesLoading(true);
+            setShowClientNotesModal(true);
+
+            try {
+                const ownerUid = await fetchOwnerUidByNameScoped(dog.owner);
+                if (!ownerUid) {
+                    setClientNotesError('Unable to resolve this client.');
+                    setClientNotesLoading(false);
+                    return;
+                }
+
+                const fs = getFirestore();
+                const notesRef = doc(fs, 'clientNotes', ownerUid, 'businesses', businessIdRaw);
+                const snap = await getDoc(notesRef);
+
+                if (snap.exists()) {
+                    const data = snap.data() as { notes?: string };
+                    setClientNotesText((data?.notes as string) ?? '');
+                    setClientNotesError(null);
+                } else {
+                    setClientNotesText('');
+                    setClientNotesError('No notes yet for this client.');
+                }
+            } catch (e) {
+                console.error('❌ load client notes failed:', e);
+                setClientNotesError('Failed to load client notes.');
+            } finally {
+                setClientNotesLoading(false);
+            }
+        },
+        [businessIdRaw, fetchOwnerUidByNameScoped]
+    );
+
+    const saveClientNotes = useCallback(async () => {
+        try {
+            if (!clientNotesDog || !businessIdRaw) return;
+
+            const ownerUid = await fetchOwnerUidByNameScoped(clientNotesDog.owner);
+            if (!ownerUid) {
+                setClientNotesError('Unable to resolve this client.');
+                return;
+            }
+
+            const trimmed = clientNotesText.slice(0, 2000).trim();
+            if (!trimmed) {
+                setClientNotesSaveMsg(null);
+                setClientNotesError('Notes cannot be empty.');
+                return;
+            }
+
+            setClientNotesSaving(true);
+            setClientNotesError(null);
+            setClientNotesSaveMsg(null);
+
+            const fs = getFirestore();
+            const refDoc = doc(fs, 'clientNotes', ownerUid, 'businesses', businessIdRaw);
+
+            const auth = getAuth();
+            const payload: Record<string, unknown> = {
+                notes: trimmed,
+                lastUpdated: serverTimestamp(),
+                updatedBy: auth.currentUser?.email || auth.currentUser?.uid || 'employee',
+            };
+
+            await setDoc(refDoc, payload, { merge: true });
+
+            setClientNotesSaveMsg('✅ Saved.');
+        } catch (e) {
+            console.error('❌ save client notes failed:', e);
+            setClientNotesError('Failed to save.');
+            setClientNotesSaveMsg(null);
+        } finally {
+            setClientNotesSaving(false);
+        }
+    }, [businessIdRaw, clientNotesDog, clientNotesText, fetchOwnerUidByNameScoped]);
+
     // ---------------------------------------------------------------------------
     // Auth -> Invite -> Business TZ -> Subscribe to ALL current check-ins
     // ---------------------------------------------------------------------------
@@ -501,13 +642,22 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                         </div>
 
                         {/* ✅ Always-visible View Assessment button */}
-                        <div className="mt-2">
+                        <div className="mt-2 flex flex-wrap gap-2">
                             <button
                                 type="button"
                                 onClick={() => void openAssessment(dog)}
                                 className="px-3 py-1.5 text-xs rounded-md border border-blue-600 text-blue-700 hover:bg-blue-50"
                             >
                                 {t('view_assessment_button') || 'View Assessment'}
+                            </button>
+
+                            {/* ✅ NEW: Client Notes */}
+                            <button
+                                type="button"
+                                onClick={() => void openClientNotes(dog)}
+                                className="px-3 py-1.5 text-xs rounded-md border border-blue-600 text-blue-700 hover:bg-blue-50"
+                            >
+                                {t('client_notes_button') || 'Client Notes'}
                             </button>
                         </div>
 
@@ -622,7 +772,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                 </div>
             )}
 
-            {/* -------- Assessment Modal -------- */}
+                        {/* -------- Assessment Modal -------- */}
             {showAssessmentModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     {/* Backdrop */}
@@ -690,6 +840,86 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                                 className={`px-3 py-2 rounded text-sm text-white ${assessmentLoading || assessmentNotes.trim().length === 0 ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'}`}
                             >
                                 Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* -------- Client Notes Modal (Employee) -------- */}
+            {showClientNotesModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    {/* Backdrop */}
+                    <div
+                        className="absolute inset-0 bg-black/40"
+                        onClick={closeClientNotes}
+                        aria-hidden="true"
+                    />
+                    {/* Modal */}
+                    <div
+                        role="dialog"
+                        aria-modal="true"
+                        className="relative z-10 w-full max-w-xl mx-4 rounded-xl bg-white dark:bg-neutral-900 shadow-xl border border-gray-200 dark:border-neutral-800"
+                    >
+                        <div className="px-5 py-4 border-b border-gray-200 dark:border-neutral-800 flex items-center justify-between">
+                            <h2 className="text-lg font-semibold">
+                                {clientNotesDog ? `Client Notes for ${clientNotesDog.owner}` : 'Client Notes'}
+                            </h2>
+                            <button
+                                onClick={closeClientNotes}
+                                className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
+                                aria-label="Close"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <div className="px-5 py-4">
+                            {clientNotesLoading ? (
+                                <p className="text-sm text-gray-600 dark:text-gray-300">{t('loading') || 'Loading…'}</p>
+                            ) : (
+                                <>
+                                    {clientNotesError && (
+                                        <p className="text-sm text-red-600 dark:text-red-400 mb-2">❌ {clientNotesError}</p>
+                                    )}
+
+                                    <textarea
+                                        value={clientNotesText}
+                                        onChange={(e) => setClientNotesText(e.target.value.slice(0, 2000))}
+                                        className="w-full min-h-[180px] rounded-lg border border-gray-300 dark:border-neutral-700 p-3 text-sm outline-none focus:ring-2 focus:ring-blue-200 dark:bg-neutral-900"
+                                        placeholder="Write client notes..."
+                                    />
+
+                                    <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        {clientNotesText.length} / 2000
+                                    </div>
+
+                                    {clientNotesSaveMsg && (
+                                        <div className="mt-2 text-sm text-green-700 dark:text-green-400">
+                                            {clientNotesSaveMsg}
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
+                        <div className="px-5 py-3 border-t border-gray-200 dark:border-neutral-800 flex items-center justify-end gap-2">
+                            <button
+                                onClick={closeClientNotes}
+                                className="px-3 py-2 rounded border border-gray-300 dark:border-neutral-700 text-gray-700 dark:text-gray-200 text-sm hover:bg-gray-50 dark:hover:bg-neutral-800"
+                            >
+                                Close
+                            </button>
+                            <button
+                                onClick={() => void saveClientNotes()}
+                                disabled={clientNotesLoading || clientNotesSaving || clientNotesText.trim().length === 0}
+                                className={`px-3 py-2 rounded text-sm text-white ${
+                                    clientNotesLoading || clientNotesSaving || clientNotesText.trim().length === 0
+                                        ? 'bg-blue-300 cursor-not-allowed'
+                                        : 'bg-blue-600 hover:bg-blue-500'
+                                }`}
+                            >
+                                {clientNotesSaving ? 'Saving…' : 'Save'}
                             </button>
                         </div>
                     </div>

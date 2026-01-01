@@ -331,6 +331,16 @@ export default function BoardingAndDaycareIndividualClientPage() {
                     <p>📍 Address: {client.address?.street || ''}, {client.address?.city || ''} {client.address?.state || ''} {client.address?.zipCode || ''}</p>
                 </div>
 
+                {/* ✅ Client Notes */}
+                <button
+                    onClick={() => {
+                        router.push(`/${locale}/boardinganddaycareindividualclientnotes/${userId}`);
+                    }}
+                    className="mt-3 w-full bg-green-700 text-white font-semibold py-2 rounded hover:opacity-90"
+                >
+                    Client Notes
+                </button>
+
                 {/* --- Waiver Section (shows before Veterinary Contact) --- */}
                 {waiverRequired && (
                     <div className="bg-white border border-gray-200 rounded-md p-4 text-black">
