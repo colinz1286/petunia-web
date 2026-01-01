@@ -10,6 +10,27 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'non-surgical-management-of-hip-dysplasia',
+        title:
+            'Non-Surgical Management of Hip Dysplasia in Dogs: Evidence-Based Options That Actually Improve Comfort and Mobility',
+        date: 'January 1, 2026',
+        description:
+            'A comprehensive, owner-first guide to managing canine hip dysplasia without surgery, including weight and body condition targets, safe exercise strategies, rehab and physical therapy, veterinarian-guided pain control, joint injections and advanced options, supplements and nutrition priorities, home modifications for traction and mobility, progress tracking, and clear signals for when to reconsider surgical consultation.',
+        component: () => import('./posts/non-surgical-management-of-hip-dysplasia'),
+        categories: ['owner', 'vet'],
+    },
+    {
+        slug: 'occupational-noise-exposure-dog-daycare-hearing-protection',
+        title:
+            'Occupational Noise Exposure in Dog Boarding & Daycare: Why Hearing Protection Is Being Ignored (and How to Fix It)',
+        date: 'January 1, 2026',
+        description:
+            'A comprehensive, real-world guide for dog boarding and daycare operators on occupational noise exposure, including OSHA and NIOSH thresholds, why hearing protection is routinely overlooked in pet care facilities, the long-term risks to staff, and practical, low-friction ways to reduce exposure without disrupting daily operations.',
+        component: () =>
+            import('./posts/occupational-noise-exposure-dog-daycare-hearing-protection'),
+        categories: ['boarding', 'sitter', 'walker'],
+    },
+    {
         slug: 'cane-corso-temperament-explained',
         title: 'Cane Corso Temperament Explained: Guardian Instincts, Reactivity, Trainability, and Real-World Ownership',
         date: 'December 31, 2025',
