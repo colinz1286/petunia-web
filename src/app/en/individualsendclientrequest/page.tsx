@@ -280,15 +280,27 @@ export default function IndividualSendClientRequestPage() {
             {/* === Boarding/Daycare Waiver (legacy) === */}
             {waiverRequired && !walkerWaiverRequired && !sitterWaiverRequired && (
               <div className="space-y-2">
+                {!isApprovedClient && (
+                  <p className="text-xs text-gray-600">
+                    {t('waiver_available_after_approval', {
+                      defaultValue: 'You can sign the waiver once you are an approved client.'
+                    })}
+                  </p>
+                )}
+
                 <button
                   onClick={() =>
                     router.push(`/${locale}/waiveragreement?businessId=${businessId}`)
                   }
                   disabled={!isApprovedClient}
-                  className="w-full bg-[#2c4a30] text-white font-semibold py-3 rounded-md shadow-md hover:bg-[#243d28] disabled:opacity-50"
+                  className={[
+                    'w-full bg-[#2c4a30] text-white font-semibold py-3 rounded-md shadow-md transition-colors duration-200',
+                    isApprovedClient ? 'hover:bg-[#243d28]' : 'cursor-not-allowed opacity-40 grayscale'
+                  ].join(' ')}
                 >
                   {t('waiver_button_title', { defaultValue: 'Waiver' })}
                 </button>
+
                 <p className="text-xs text-gray-600 flex items-center gap-1">
                   {waiverNeedsResign()
                     ? t('waiver_status_resign_required')
@@ -302,15 +314,27 @@ export default function IndividualSendClientRequestPage() {
             {/* === Walker Waiver === */}
             {walkerWaiverRequired && (
               <div className="space-y-2">
+                {!isApprovedClient && (
+                  <p className="text-xs text-gray-600">
+                    {t('waiver_available_after_approval', {
+                      defaultValue: 'You can sign the waiver once you are an approved client.'
+                    })}
+                  </p>
+                )}
+
                 <button
                   onClick={() =>
                     router.push(`/${locale}/waiveragreement?businessId=${businessId}&waiverType=walker`)
                   }
                   disabled={!isApprovedClient}
-                  className="w-full bg-[#2c4a30] text-white font-semibold py-3 rounded-md shadow-md hover:bg-[#243d28] disabled:opacity-50"
+                  className={[
+                    'w-full bg-[#2c4a30] text-white font-semibold py-3 rounded-md shadow-md transition-colors duration-200',
+                    isApprovedClient ? 'hover:bg-[#243d28]' : 'cursor-not-allowed opacity-40 grayscale'
+                  ].join(' ')}
                 >
                   Walker Waiver
                 </button>
+
                 {walkerWaiverSignedAt ? (
                   <p className="text-xs text-gray-600 flex items-center gap-1">
                     ✅ Signed on {walkerWaiverSignedAt.toLocaleString()}
@@ -326,15 +350,27 @@ export default function IndividualSendClientRequestPage() {
             {/* === Sitter Waiver === */}
             {sitterWaiverRequired && (
               <div className="space-y-2">
+                {!isApprovedClient && (
+                  <p className="text-xs text-gray-600">
+                    {t('waiver_available_after_approval', {
+                      defaultValue: 'You can sign the waiver once you are an approved client.'
+                    })}
+                  </p>
+                )}
+
                 <button
                   onClick={() =>
                     router.push(`/${locale}/waiveragreement?businessId=${businessId}&waiverType=sitter`)
                   }
                   disabled={!isApprovedClient}
-                  className="w-full bg-[#2c4a30] text-white font-semibold py-3 rounded-md shadow-md hover:bg-[#243d28] disabled:opacity-50"
+                  className={[
+                    'w-full bg-[#2c4a30] text-white font-semibold py-3 rounded-md shadow-md transition-colors duration-200',
+                    isApprovedClient ? 'hover:bg-[#243d28]' : 'cursor-not-allowed opacity-40 grayscale'
+                  ].join(' ')}
                 >
                   Sitter Waiver
                 </button>
+
                 {sitterWaiverSignedAt ? (
                   <p className="text-xs text-gray-600 flex items-center gap-1">
                     ✅ Signed on {sitterWaiverSignedAt.toLocaleString()}
