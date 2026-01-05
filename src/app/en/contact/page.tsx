@@ -15,21 +15,30 @@ export default function ContactPage() {
           priority
         />
 
-        <h1 className="text-3xl sm:text-4xl font-bold">We&rsquo;d love to hear from you</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold">
+          We&rsquo;d love to hear from you
+        </h1>
 
         <p className="text-lg leading-relaxed">
           Whether you have a question, suggestion, or just want to say hello — we&rsquo;re always here.
         </p>
 
         <p className="text-lg leading-relaxed">
-          Feel free to reach out anytime at{' '}
+          You can email us at{' '}
           <a
             href="mailto:admin@petuniapets.com"
             className="underline text-[#2c4a30] font-medium"
           >
             admin@petuniapets.com
+          </a>{' '}
+          or call us at{' '}
+          <a
+            href="tel:+17242094480"
+            className="underline text-[#2c4a30] font-medium whitespace-nowrap"
+          >
+            (724) 209-4480
           </a>
-          . We&rsquo;ll get back to you as soon as we can!
+          .
         </p>
 
         <p className="text-lg italic text-[#444]">

@@ -34,7 +34,7 @@
   "submit": "Submit Reservation",
   "submit_all": "Submit All Reservations",
   "submitting_reservations": "Submitting Reservations...",
-  "submission_success": "Your reservation has been submitted!",
+  "submission_success": "Your reservation has been submitted! You can view your reservation in Upcoming Appointments!",
   "submission_error": "There was an error submitting your bookings. Please try again.",
 
   "waiver_required": "You must sign the waiver before booking.",

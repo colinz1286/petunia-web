@@ -23,7 +23,7 @@
 
   "submit_boarding_reservation": "Submit Boarding Reservation",
   "saving": "Saving…",
-  "reservation_submitted": "Your reservation has been submitted!",
+  "reservation_submitted": "Your reservation has been submitted! You can view your reservation in Upcoming Appointments!",
   "error_submitting_reservation": "There was an error submitting your reservation.",
 
   "waiver_required_title": "Waiver Agreement Required",
