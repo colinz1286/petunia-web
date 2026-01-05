@@ -43,7 +43,7 @@ export default function AuthActionPage() {
         const u = new URL(continueUrl);
         if (u.hostname === 'petuniapets.com') return u.pathname + u.search + u.hash;
       }
-    } catch (_) {}
+    } catch {}
     return '/loginsignup';
   }, [continueUrl]);
 
@@ -64,7 +64,7 @@ export default function AuthActionPage() {
           setStatus('success');
           setMessage('✅ Your email has been verified. You can now log in.');
           return;
-        } catch (_) {
+        } catch {
           setStatus('error');
           setMessage('This verification link is invalid or expired. Please request a new verification email.');
           return;
@@ -80,7 +80,7 @@ export default function AuthActionPage() {
           setStatus('needsPassword');
           setMessage('Enter your new password below.');
           return;
-        } catch (_) {
+        } catch {
           setStatus('error');
           setMessage('This password reset link is invalid or expired. Please request a new reset email.');
           return;
@@ -117,7 +117,7 @@ export default function AuthActionPage() {
       await confirmPasswordReset(auth, oobCode, p1);
       setStatus('success');
       setMessage('✅ Password updated. You can now log in with your new password.');
-    } catch (_) {
+    } catch {
       setStatus('error');
       setMessage('Unable to reset your password. Please request a new reset email and try again.');
     } finally {
