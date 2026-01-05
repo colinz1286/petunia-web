@@ -1,9 +1,14 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { initializeApp, getApps } from 'firebase/app';
-import { getAuth, applyActionCode, confirmPasswordReset, verifyPasswordResetCode } from 'firebase/auth';
+import {
+  getAuth,
+  applyActionCode,
+  confirmPasswordReset,
+  verifyPasswordResetCode,
+} from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -19,7 +24,7 @@ function initFirebase() {
   return getAuth();
 }
 
-export default function AuthActionPage() {
+function AuthActionInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -168,10 +173,25 @@ export default function AuthActionPage() {
           </button>
         )}
 
-        <p className="text-xs text-gray-500">
-          If you didn’t request this, you can safely close this page.
-        </p>
+        <p className="text-xs text-gray-500">If you didn’t request this, you can safely close this page.</p>
       </div>
     </main>
+  );
+}
+
+export default function AuthActionPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-[#f6efe4] text-[#2c4a30] font-sans flex flex-col items-center justify-start px-4 py-12">
+          <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 space-y-4">
+            <h1 className="text-xl font-semibold">Petunia Account Action</h1>
+            <p className="text-sm leading-relaxed">Loading…</p>
+          </div>
+        </main>
+      }
+    >
+      <AuthActionInner />
+    </Suspense>
   );
 }
