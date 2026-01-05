@@ -19,7 +19,8 @@ import {
   getDoc,
   doc,
 } from 'firebase/firestore';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 // ✅ Inline Firebase config
 const firebaseConfig = {
@@ -31,9 +32,13 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
 
-const app = initializeApp(firebaseConfig);
+// ✅ SAFE init (prevents duplicate app init issues)
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+// ✅ Functions (your callable is in us-central1 per deploy logs)
+const functions = getFunctions(app, 'us-central1');
 
 function getFirebaseErrorCode(err: unknown): string {
   if (
@@ -60,7 +65,6 @@ async function findOwnersBusiness(
 ): Promise<{ id: string; data: () => Record<string, unknown> } | null> {
   const colRef = collection(db, 'businesses');
 
-  // Collect matches from both ownership models and de-duplicate by id
   const docs: { id: string; data: () => Record<string, unknown> }[] = [];
 
   const r1 = await getDocs(query(colRef, where('ownerIds', 'array-contains', uid)));
@@ -90,6 +94,7 @@ export default function LoginSignupPage() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [forgotMessage, setForgotMessage] = useState<string | null>(null);
+  const [isSendingReset, setIsSendingReset] = useState(false);
 
   const handleLogin = async () => {
     setLoginError(null);
@@ -101,17 +106,13 @@ export default function LoginSignupPage() {
       const user = userCredential.user;
       const uid = user.uid;
 
-      // Find business this user owns (supports ownerIds + legacy ownerId)
       const businessDoc = await findOwnersBusiness(uid);
       if (businessDoc) {
         const businessData = businessDoc.data();
         const createdAtLike = businessData.createdAt as { toDate?: () => Date } | Date | undefined;
         const createdAt =
-          createdAtLike instanceof Date
-            ? createdAtLike
-            : createdAtLike?.toDate?.();
+          createdAtLike instanceof Date ? createdAtLike : createdAtLike?.toDate?.();
 
-        // Enforce email verification only for businesses created on/after this date
         const enforcementDate = new Date('2025-07-29');
         if (createdAt && createdAt >= enforcementDate && !user.emailVerified) {
           setLoginError('Please verify your email before logging in.');
@@ -130,7 +131,6 @@ export default function LoginSignupPage() {
         return;
       }
 
-      // Otherwise, route individuals
       const userDoc = await getDoc(doc(db, 'users', uid));
       if (userDoc.exists()) {
         router.push(`/${locale}/individualdashboard`);
@@ -163,27 +163,45 @@ export default function LoginSignupPage() {
   const handleForgotPassword = async () => {
     setLoginError(null);
     setForgotMessage(null);
-    if (!email.trim()) {
+
+    const cleanEmail = email.trim();
+    if (!cleanEmail) {
       setForgotMessage('Please enter your email address into the email field above to reset your password.');
       return;
     }
 
-    try {
-      await sendPasswordResetEmail(auth, email);
-      setForgotMessage('A password reset email has been sent.');
-    } catch (error: unknown) {
-      console.error('❌ Forgot Password error:', error);
-      const code: string = getFirebaseErrorCode(error);
+    setIsSendingReset(true);
 
-      switch (code) {
-        case 'auth/invalid-email':
-          setForgotMessage('Invalid email address.');
-          break;
-        case 'auth/user-not-found':
-          setForgotMessage('No account found with that email.');
-          break;
-        default:
-          setForgotMessage('Failed to send reset email. Please try again.');
+    // ✅ Neutral message (prevents account enumeration)
+    const neutralSuccess = 'If an account exists for that email, a password reset link will be sent.';
+
+    try {
+      // 1) Prefer SES callable
+      const sendReset = httpsCallable(functions, 'sendPasswordResetEmailSES');
+      await sendReset({ email: cleanEmail });
+
+      setForgotMessage(neutralSuccess);
+      setIsSendingReset(false);
+      return;
+    } catch (err) {
+      console.error('❌ SES reset callable failed (falling back to Firebase mailer for dev test):', err);
+      // 2) Dev-only fallback so you’re never blocked while testing
+      try {
+        await sendPasswordResetEmail(auth, cleanEmail);
+        setForgotMessage(neutralSuccess);
+      } catch (error: unknown) {
+        console.error('❌ Firebase fallback reset failed:', error);
+        const code: string = getFirebaseErrorCode(error);
+
+        switch (code) {
+          case 'auth/invalid-email':
+            setForgotMessage('Invalid email address.');
+            break;
+          default:
+            setForgotMessage('Failed to send reset email. Please try again.');
+        }
+      } finally {
+        setIsSendingReset(false);
       }
     }
   };
@@ -235,8 +253,12 @@ export default function LoginSignupPage() {
         </div>
 
         <div className="text-sm text-center space-y-2 pt-4">
-          <button onClick={handleForgotPassword} className="text-[#2c4a30] underline">
-            Forgot Password?
+          <button
+            onClick={handleForgotPassword}
+            disabled={isSendingReset}
+            className="text-[#2c4a30] underline"
+          >
+            {isSendingReset ? 'Sending…' : 'Forgot Password?'}
           </button>
           <br />
           <Link href={`/${locale}/createnewaccount`} className="text-[#2c4a30] underline">
