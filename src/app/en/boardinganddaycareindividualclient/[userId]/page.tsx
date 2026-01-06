@@ -11,6 +11,9 @@ import {
     getDocs,
     query,
     where,
+    setDoc,
+    Timestamp,
+    getDocFromServer,
 } from 'firebase/firestore';
 
 import {
@@ -37,7 +40,7 @@ const storage = getStorage(app);
 
 interface VaccineRecord {
     isVaccinated: boolean;
-    date?: string;
+    date?: Date | null;
 }
 
 interface Pet {
@@ -100,6 +103,54 @@ export default function BoardingAndDaycareIndividualClientPage() {
     const [waiverStatusError, setWaiverStatusError] = useState<string | null>(null);
     const [isLoadingWaiver, setIsLoadingWaiver] = useState(false);
 
+    // ✅ Formatting + date helpers (web equivalent of iOS formatted() + DatePicker bindings)
+    const formatDate = (d: Date) =>
+        d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+
+    const toDateInputValue = (d: Date) => {
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    };
+
+    const fromDateInputValue = (value: string) => {
+        const [y, m, d] = value.split('-').map(Number);
+        return new Date(y, (m || 1) - 1, d || 1);
+    };
+
+    // ✅ Safe vaccine update (matches iOS: merge-map write; no dot-paths)
+    const updateVaccine = async (
+        petId: string,
+        vaccine: string,
+        isVaccinated: boolean,
+        date: Date | null
+    ) => {
+        const petRef = doc(db, 'users', userId, 'pets', petId);
+
+        const vaccineData: Record<string, unknown> = {
+            isVaccinated,
+            date: date ? Timestamp.fromDate(date) : null,
+        };
+
+        await setDoc(
+            petRef,
+            {
+                vaccinationRecords: {
+                    [vaccine]: vaccineData,
+                },
+            },
+            { merge: true }
+        );
+
+        // ✅ Optional: server confirm (like iOS post-write server read)
+        try {
+            await getDocFromServer(petRef);
+        } catch {
+            // Non-fatal — keep UI responsive even if server read fails
+        }
+    };
+
     // ✅ Load client + pet data
     useEffect(() => {
         const auth = getAuth(app);
@@ -156,15 +207,13 @@ export default function BoardingAndDaycareIndividualClientPage() {
                         fecalTestExamDate = new Date(data.fecalTestExamDate.seconds * 1000).toLocaleDateString();
                     }
 
-                    // Vaccination records
+                    // Vaccination records (store raw Date so the business owner can edit + save)
                     const records = data.vaccinationRecords || {};
                     const vaccineRecords: Record<string, VaccineRecord> = {};
                     Object.entries(records as Record<string, VaccinationRaw>).forEach(([key, value]) => {
                         vaccineRecords[key] = {
                             isVaccinated: value.isVaccinated ?? false,
-                            date: value.date
-                                ? new Date(value.date.seconds * 1000).toLocaleDateString()
-                                : undefined,
+                            date: value.date?.seconds ? new Date(value.date.seconds * 1000) : null,
                         };
                     });
 
@@ -396,19 +445,83 @@ export default function BoardingAndDaycareIndividualClientPage() {
 
                                 <hr className="my-3" />
 
-                                {/* Vaccine records */}
-                                {Object.entries(p.vaccinationRecords).map(([key, record]) => (
-                                    <div key={key} className="text-sm mb-1">
-                                        <span
-                                            className={`font-semibold ${record.isVaccinated ? 'text-green-600' : 'text-red-600'
-                                                }`}
-                                        >
-                                            💉 {key}: {record.isVaccinated ? 'Yes' : 'No'}
-                                        </span>
-                                        {record.date && (
-                                            <p className="text-xs text-gray-500 ml-5">
-                                                📅 Expires: {record.date}
-                                            </p>
+                                {/* Vaccine records (editable like iOS: toggle + expiration date) */}
+                                {Object.entries(p.vaccinationRecords).map(([vaccine, record]) => (
+                                    <div key={`${p.id}-${vaccine}`} className="text-sm mb-3">
+                                        <label className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={record.isVaccinated}
+                                                onChange={async (e) => {
+                                                    const next = e.target.checked;
+
+                                                    // Optimistically update UI
+                                                    setPets((prev) =>
+                                                        prev.map((pp) => {
+                                                            if (pp.id !== p.id) return pp;
+                                                            return {
+                                                                ...pp,
+                                                                vaccinationRecords: {
+                                                                    ...pp.vaccinationRecords,
+                                                                    [vaccine]: {
+                                                                        isVaccinated: next,
+                                                                        date: next ? (pp.vaccinationRecords[vaccine]?.date ?? new Date()) : null,
+                                                                    },
+                                                                },
+                                                            };
+                                                        })
+                                                    );
+
+                                                    // Persist using safe merge-map write
+                                                    await updateVaccine(
+                                                        p.id,
+                                                        vaccine,
+                                                        next,
+                                                        next ? (record.date ?? new Date()) : null
+                                                    );
+                                                }}
+                                            />
+                                            <span className="font-semibold text-[color:var(--color-accent)]">💉 {vaccine}</span>
+                                        </label>
+
+                                        {record.isVaccinated && (
+                                            <div className="mt-2 ml-6 space-y-1">
+                                                {record.date && (
+                                                    <p className="text-xs text-gray-500">
+                                                        📅 Expires: {formatDate(record.date)}
+                                                    </p>
+                                                )}
+
+                                                <label className="block text-xs text-gray-600">Expiration Date</label>
+                                                <input
+                                                    type="date"
+                                                    value={record.date ? toDateInputValue(record.date) : ''}
+                                                    onChange={async (e) => {
+                                                        const newDate = e.target.value ? fromDateInputValue(e.target.value) : null;
+
+                                                        // Optimistically update UI
+                                                        setPets((prev) =>
+                                                            prev.map((pp) => {
+                                                                if (pp.id !== p.id) return pp;
+                                                                return {
+                                                                    ...pp,
+                                                                    vaccinationRecords: {
+                                                                        ...pp.vaccinationRecords,
+                                                                        [vaccine]: {
+                                                                            isVaccinated: true,
+                                                                            date: newDate,
+                                                                        },
+                                                                    },
+                                                                };
+                                                            })
+                                                        );
+
+                                                        // Persist
+                                                        await updateVaccine(p.id, vaccine, true, newDate);
+                                                    }}
+                                                    className="border rounded px-2 py-1 text-sm"
+                                                />
+                                            </div>
                                         )}
                                     </div>
                                 ))}

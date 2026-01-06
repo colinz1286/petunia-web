@@ -13,12 +13,14 @@ import {
     getFirestore,
     doc,
     getDoc,
+    getDocFromServer,
     updateDoc,
     collection,
     addDoc,
     Timestamp,
     DocumentData
 } from 'firebase/firestore';
+
 import {
     getStorage,
     ref as storageRef,
@@ -214,7 +216,24 @@ export default function AddEditPetPage() {
     // ---------- Load existing pet data (parity with iOS populateFormIfEditing) ----------
     const loadPetData = useCallback(async (uid: string, id: string) => {
         const ref = doc(db, 'users', uid, 'pets', id);
-        const snap = await getDoc(ref);
+
+        // ✅ RESET UI STATE FIRST (matches iOS)
+        setVaccinationRecords({
+            Rabies: { isVaccinated: false, expirationDate: '' },
+            Bordetella: { isVaccinated: false, expirationDate: '' },
+            'DAPP (or DHPP/DA2PP)': { isVaccinated: false, expirationDate: '' },
+            'Canine Influenza': { isVaccinated: false, expirationDate: '' },
+        });
+
+        // ✅ SERVER-FIRST FETCH (matches iOS getDocument(source: .server))
+        let snap;
+        try {
+            snap = await getDocFromServer(ref);
+        } catch {
+            // fallback to cache/offline
+            snap = await getDoc(ref);
+        }
+
         if (!snap.exists()) return;
 
         const data = snap.data();
