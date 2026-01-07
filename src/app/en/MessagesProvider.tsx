@@ -1,22 +1,21 @@
-// src/app/[locale]/MessagesProvider.tsx
+// src/app/en/MessagesProvider.tsx
+import React from 'react';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
-import { notFound } from 'next/navigation';
+
+import messagesLoader from '../../../messages';
 
 export default async function MessagesProvider({
   children,
-  locale,
+  locale
 }: {
   children: React.ReactNode;
   locale: string;
 }) {
-  let messages;
+  // messages.ts exports default { en: () => ({...}) }
+  const loader = messagesLoader as unknown as { en?: () => Record<string, unknown> };
 
-  try {
-    messages = await getMessages();
-  } catch {
-    notFound();
-  }
+  // You are using /en routes, so always load English messages
+  const messages = loader.en ? loader.en() : {};
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>

@@ -6,8 +6,13 @@ import { useLocale } from 'next-intl'; // ✅ Added to access current locale
 import {
   getAuth,
   createUserWithEmailAndPassword,
-  sendEmailVerification,
 } from 'firebase/auth';
+
+import {
+  getFunctions,
+  httpsCallable,
+} from 'firebase/functions';
+
 import {
   getFirestore,
   doc,
@@ -29,6 +34,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const functions = getFunctions(app, 'us-central1');
 
 export default function IndividualSignUpPage() {
   const router = useRouter();
@@ -104,7 +110,12 @@ export default function IndividualSignUpPage() {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCred.user;
 
-      await sendEmailVerification(user);
+      // 🔐 Send SES verification email (shared with iOS + Business)
+      const sendVerify = httpsCallable(functions, 'sendEmailVerificationSES');
+      await sendVerify({
+        email: email.toLowerCase(),
+        uid: user.uid,
+      });
 
       const userDoc = {
         userId: user.uid,
@@ -129,8 +140,10 @@ export default function IndividualSignUpPage() {
 
       await setDoc(doc(db, 'users', user.uid), userDoc);
 
-      setSuccess('Account created! Please verify your email.');
+      // ✅ Match iOS + Business behavior
+      setSuccess('Verification email sent. Please check your inbox.');
       router.push(`/${locale}/loginsignup`);
+
     } catch (err) {
       if (
         typeof err === 'object' &&

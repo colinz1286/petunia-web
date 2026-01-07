@@ -38,6 +38,7 @@ export default getRequestConfig(async ({ locale }) => {
     breederSubmittedApplications: (await import(`../../messages/${safeLocale}/breederSubmittedApplications.json`)).default,
     breederSubmittedContracts: (await import(`../../messages/${safeLocale}/breederSubmittedContracts.json`)).default,
     businessSignUp: (await import(`../../messages/${safeLocale}/businessSignUp.json`)).default,
+    groomingDashboard: (await import(`../../messages/${safeLocale}/groomingDashboard.json`)).default,
     individualSignUp: (await import(`../../messages/${safeLocale}/individualSignUp.json`)).default,
     individualDashboard: (await import(`../../messages/${safeLocale}/individualDashboard.json`)).default,
     individualEditProfile: (await import(`../../messages/${safeLocale}/individualEditProfile.json`)).default,

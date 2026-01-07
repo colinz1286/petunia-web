@@ -24,6 +24,7 @@ export default {
     breederDashboard: require('./messages/en/breederDashboard.json'),
     breederMyDogs: require('./messages/en/breederMyDogs.json'),
     breederPendingRequests: require('./messages/en/breederPendingRequests.json'),
+    groomingDashboard: require('./messages/en/groomingDashboard.json'),
     individualSignUp: require('./messages/en/individualSignUp.json'),
     individualAddEditPet: require('./messages/en/individualAddEditPet.json'),
     individualBookBoarding: require('./messages/en/individualBookBoarding.json'),

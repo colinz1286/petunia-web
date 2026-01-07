@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+
 import {
   getAuth,
   createUserWithEmailAndPassword,
-  sendEmailVerification
 } from 'firebase/auth';
+
 import {
   getFirestore,
   setDoc,
@@ -27,10 +28,11 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
 const db = getFirestore(app);
-const functions = getFunctions(app);
+const functions = getFunctions(app, 'us-central1');
 
 export default function BusinessSignUpPage() {
   const locale = useLocale();
@@ -75,7 +77,7 @@ export default function BusinessSignUpPage() {
   ];
 
   // Enabled set (Walker/Sitter intentionally left out for now)
-  const enabledBusinessTypeValues = new Set(['boardingDaycare', 'breeder']);
+  const enabledBusinessTypeValues = new Set(['boardingDaycare', 'breeder', 'groomer']);
 
   const handleChange = (field: string, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -145,8 +147,12 @@ export default function BusinessSignUpPage() {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCred.user;
 
-      // Email verification
-      await sendEmailVerification(user);
+      // 🔐 Send SES verification email (shared with iOS + Individual + Business)
+      const sendVerify = httpsCallable(functions, 'sendEmailVerificationSES');
+      await sendVerify({
+        email: email.toLowerCase(),
+        uid: user.uid,
+      });
 
       // Resolve timezone via callable (safe fallback to "unverified")
       let timezone = 'unverified';

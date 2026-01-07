@@ -125,6 +125,8 @@ export default function LoginSignupPage() {
           router.push(`/${locale}/breederdashboard`);
         } else if (type === 'walkersitter') {
           router.push(`/${locale}/walkersitterdashboard`);
+        } else if (type === 'groomer' || type === 'grooming') {
+          router.push(`/${locale}/groomingdashboard`);
         } else {
           router.push(`/${locale}/boardinganddaycaredashboard`);
         }
