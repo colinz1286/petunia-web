@@ -10,6 +10,32 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'why-dogs-are-afraid-of-vacuums',
+        title:
+            'Why Dogs Are Afraid of Vacuums (And How to Fix It): Noise, Instinct, and a Step-by-Step Training Plan',
+        date: 'January 7, 2026',
+        description:
+            'A comprehensive, practical guide explaining why dogs fear vacuums, how to tell fear from excitement or instinctive chasing, common mistakes that make the problem worse, and a clear step-by-step desensitization and training plan to help dogs stay calm and safe.',
+        component: () =>
+            import('./posts/why-dogs-are-afraid-of-vacuums') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner'],
+    },
+    {
+        slug: 'cdc-dog-import-rules-us-2025-2026',
+        title:
+            'CDC Dog Import Rules Explained (2025–2026): Returning to the U.S. With Your Dog — What Changed, What Airlines Don’t Tell You, and How to Avoid Denial at the Airport',
+        date: 'January 8, 2026',
+        description:
+            'A comprehensive CDC dog-import guide for 2025–2026: what changed after Aug 2024, the 6-month country-history decision tree, age and microchip requirements, CDC Dog Import Form receipt rules, transit and layover traps, common vet paperwork errors, what happens if your dog is denied, and copy-ready airport-day scripts and templates.',
+        component: () =>
+            import('./posts/cdc-dog-import-rules-us-2025-2026') as Promise<{
+                default: React.ComponentType<object>;
+            }>,
+        categories: ['owner'],
+    },
+    {
         slug: 'non-surgical-management-of-hip-dysplasia',
         title:
             'Non-Surgical Management of Hip Dysplasia in Dogs: Evidence-Based Options That Actually Improve Comfort and Mobility',
