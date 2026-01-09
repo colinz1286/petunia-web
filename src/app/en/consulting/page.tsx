@@ -21,6 +21,16 @@ export default function ConsultingPage() {
                     Help With the Hardest Parts of Running a Pet Care Business
                 </h1>
 
+                <p className="text-sm sm:text-base text-[#555] mt-3">
+                    For a list of current business topics I&rsquo;m actively helping owners with,&nbsp;
+                    <a
+                        href="/en/currentconsultingtopics"
+                        className="underline font-medium hover:opacity-80"
+                    >
+                        click here
+                    </a>.
+                </p>
+
                 <p className="text-lg leading-relaxed">
                     This is not traditional consulting. This is one-on-one, real-world help for pet care
                     business owners who are dealing with situations they don&rsquo;t know how to handle.
