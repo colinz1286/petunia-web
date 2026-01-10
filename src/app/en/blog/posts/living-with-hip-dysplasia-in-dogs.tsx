@@ -9,7 +9,7 @@ export default function LivingWithHipDysplasiaInDogs() {
 
   const title =
     'Living With Hip Dysplasia in Dogs: Daily Routines, Home Setup, Exercise, Flare Plans, and Long-Term Quality of Life';
-  const date = 'January 9, 2025';
+  const date = 'January 9, 2026';
   const slug = 'living-with-hip-dysplasia-in-dogs';
 
   const description =

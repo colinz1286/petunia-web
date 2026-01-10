@@ -23,7 +23,7 @@ export const blogPosts: BlogPostEntry[] = [
         slug: 'living-with-hip-dysplasia-in-dogs',
         title:
             'Living With Hip Dysplasia in Dogs: Daily Routines, Home Setup, Exercise, Flare Plans, and Long-Term Quality of Life',
-        date: 'January 9, 2025',
+        date: 'January 9, 2026',
         description:
             'A comprehensive, owner-first guide to living with canine hip dysplasia day to day, including home traction and flooring strategies, stairs and car access, sleep comfort, safe exercise routines, flare-up planning, low-impact mental enrichment, grooming and handling tips, seasonal considerations, travel planning, progress tracking, and long-term quality-of-life decision-making.',
         component: () => import('./posts/living-with-hip-dysplasia-in-dogs'),
