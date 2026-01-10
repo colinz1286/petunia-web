@@ -373,7 +373,7 @@ export default function HomePageClient() {
                         <section className="space-y-5 w-full max-w-xl">
                             <h3 className="text-2xl font-bold text-center">For Rescues & Adoption Shelters</h3>
                             <p className="text-lg text-balance">
-                                Software for rescue and shelter organizations coming in mid to late 2026. When it goes live, it will cost $1/mo.
+                                Software for rescue and shelter organizations coming in mid to late 2026. When it goes live, it will be free.
                             </p>
                             <p className="text-lg text-balance">
                                 If you’re concerned about how we’re able to keep pricing so low, rest assured we do not sell your data or personal information — you can learn more by reviewing our{' '}
