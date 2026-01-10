@@ -11,7 +11,7 @@ export default function DogBoardingSoftwarePage() {
           Dog Boarding &amp; Daycare Software that&#39;s Fast, Simple, and Fairly Priced.
         </h1>
         <p className="text-base sm:text-lg text-gray-800 max-w-md mx-auto">
-          This isn&#39;t software. It&#39;s sanity. Run bookings, pet &amp; client profiles, vaccine tracking, waivers, reminders, and more in one calm, reliable place. Built for independents today, with multi-location support rolling out within six months. <strong>Free for 60 days, then just $5/month. No contracts. Cancel anytime.</strong>
+          This isn&#39;t software. It&#39;s sanity. Run bookings, pet &amp; client profiles, vaccine tracking, waivers, reminders, and more in one calm, reliable place. Built for independents today, with multi-location support rolling out within six months.
         </p>
       </section>
 
@@ -35,12 +35,9 @@ export default function DogBoardingSoftwarePage() {
           <p>Competitor &ndash; $189/mo</p>
           <p>Competitor &ndash; $155/mo</p>
           <p>Competitor &ndash; $99/mo</p>
-          <p className="font-bold text-green-700 text-lg pt-2">Petunia &ndash; $1/mo</p>
+          <p className="font-bold text-green-700 text-lg pt-2">Petunia &ndash; Free</p>
         </div>
         <div className="mt-6 max-w-md mx-auto text-base text-gray-700">
-          <p className="mt-4 font-semibold text-[#2c4a30]">
-            We know from expreience that it takes an average of 30 days for your clients to enter their information into Petunia. Therefore, we are giving you 60 DAYS OF FREE USE! So, whether you are integrating software into your business for the first time, or switching from another system, we are taking into account the time it will take for everyone to get on boarded.
-          </p>
         </div>
       </section>
 
@@ -118,9 +115,6 @@ export default function DogBoardingSoftwarePage() {
         <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-[#2c4a30]">
           Ready to modernize your boarding &amp; daycare business?
         </h2>
-        <p className="text-base text-gray-700 max-w-md mx-auto mb-6">
-          Start your <strong>60-day free trial</strong>. It&#39;s <strong>$1/month</strong> after that. <strong>No contracts. Cancel anytime.</strong>
-        </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
           <Link
             href="/en/createnewaccount"
