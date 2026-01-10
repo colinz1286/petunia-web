@@ -453,18 +453,6 @@ export default function HowVetsDiagnoseHipDysplasia() {
             <strong>Practical tip:</strong> If you feel overwhelmed, ask your vet for the plan in three lines: (1) what
             is happening, (2) what we are doing now, (3) what would trigger the next escalation.
           </div>
-
-          <p className="mb-0">
-            If you are still at the stage of noticing subtle changes and you want a detailed checklist of early clues,
-            our early-signs article is designed for that purpose:{' '}
-            <Link
-              href={`/${locale}/blog/early-signs-of-hip-dysplasia-owners-miss`}
-              className="underline font-medium hover:opacity-80"
-            >
-              Early Signs of Hip Dysplasia Owners Miss
-            </Link>
-            .
-          </p>
         </section>
 
         {/* Questions */}

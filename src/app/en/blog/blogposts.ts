@@ -30,16 +30,6 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['owner'],
     },
     {
-        slug: 'non-surgical-management-hip-dysplasia-dogs',
-        title:
-            'Non-Surgical Management of Hip Dysplasia in Dogs: Weight, Rehab, Pain Control, Home Setup, and Long-Term Planning',
-        date: 'January 8, 2026',
-        description:
-            'A comprehensive, evidence-based guide to non-surgical management of canine hip dysplasia, covering weight and body condition targets, controlled exercise rules, physical therapy and rehabilitation, veterinarian-guided pain control strategies, supplements and joint support, home modifications for traction and mobility, progress monitoring, and clear criteria for when escalation or surgical consultation should be considered.',
-        component: () => import('./posts/non-surgical-management-hip-dysplasia-dogs'),
-        categories: ['owner', 'vet'],
-    },
-    {
         slug: 'why-dogs-are-afraid-of-vacuums',
         title:
             'Why Dogs Are Afraid of Vacuums (And How to Fix It): Noise, Instinct, and a Step-by-Step Training Plan',

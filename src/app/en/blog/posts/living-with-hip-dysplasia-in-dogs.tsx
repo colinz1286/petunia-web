@@ -272,18 +272,6 @@ export default function LivingWithHipDysplasiaInDogs() {
             <li>Make one or two preferred resting places comfortable so your dog chooses them naturally</li>
             <li>If your dog insists on the couch, remove the need for repeated jumping</li>
           </ul>
-
-          <p className="mb-0">
-            If your dog is at the stage of hesitating before car entry or stairs, that is an important early signal.
-            This checklist helps you interpret those daily-life signs:{' '}
-            <Link
-              href={`/${locale}/blog/early-signs-of-hip-dysplasia-owners-miss`}
-              className="underline font-medium hover:opacity-80"
-            >
-              Early Signs of Hip Dysplasia Owners Miss
-            </Link>
-            .
-          </p>
         </section>
 
         {/* Sleep */}
@@ -528,18 +516,6 @@ export default function LivingWithHipDysplasiaInDogs() {
             <li>Improved confidence on surfaces and transitions</li>
             <li>Reduced guarding and fewer avoidance behaviors</li>
           </ul>
-
-          <p className="mb-0">
-            If your vet has not confirmed the diagnosis yet, or if you are unsure whether hip dysplasia is the primary
-            issue, use this diagnostic guide to prepare for a clearer appointment:{' '}
-            <Link
-              href={`/${locale}/blog/how-veterinarians-diagnose-hip-dysplasia`}
-              className="underline font-medium hover:opacity-80"
-            >
-              How Veterinarians Diagnose Hip Dysplasia in Dogs
-            </Link>
-            .
-          </p>
         </section>
 
         {/* Quality of life */}
@@ -576,7 +552,7 @@ export default function LivingWithHipDysplasiaInDogs() {
             If you want the detailed non-surgical playbook for weight, rehab, home modifications, and pain-control
             strategy, read:{' '}
             <Link
-              href={`/${locale}/blog/non-surgical-management-hip-dysplasia-dogs`}
+              href={`/${locale}/blog/non-surgical-management-of-hip-dysplasia`}
               className="underline font-medium hover:opacity-80"
             >
               Non-Surgical Management of Hip Dysplasia in Dogs

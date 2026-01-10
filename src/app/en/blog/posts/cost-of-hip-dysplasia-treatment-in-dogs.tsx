@@ -280,17 +280,6 @@ export default function CostOfHipDysplasiaTreatmentInDogs() {
             <strong>Cost-saving concept:</strong> Paying for proper positioning and clear interpretation once is often
             cheaper than paying for repeated visits and repeated imaging due to uncertainty.
           </div>
-
-          <p className="mt-4 mb-0">
-            For the step-by-step explanation of what vets do and why sedation and positioning matter, read:{' '}
-            <Link
-              href={`/${locale}/blog/how-veterinarians-diagnose-hip-dysplasia`}
-              className="underline font-medium hover:opacity-80"
-            >
-              How Veterinarians Diagnose Hip Dysplasia in Dogs
-            </Link>
-            .
-          </p>
         </section>
 
         {/* Non-surgical categories */}
@@ -314,7 +303,7 @@ export default function CostOfHipDysplasiaTreatmentInDogs() {
           <p className="mb-0">
             If you want the full non-surgical playbook (what to do, how to structure it, and what tends to work), read:{' '}
             <Link
-              href={`/${locale}/blog/non-surgical-management-hip-dysplasia-dogs`}
+              href={`/${locale}/blog/non-surgical-management-of-hip-dysplasia`}
               className="underline font-medium hover:opacity-80"
             >
               Non-Surgical Management of Hip Dysplasia in Dogs
@@ -510,18 +499,6 @@ export default function CostOfHipDysplasiaTreatmentInDogs() {
               Track outcomes in plain English: stairs, car entry, morning stiffness, walk endurance.
             </li>
           </ul>
-
-          <p className="mb-0">
-            If you want a structured non-surgical plan that can reduce flare frequency (and often reduces long-term cost),
-            read:{' '}
-            <Link
-              href={`/${locale}/blog/non-surgical-management-hip-dysplasia-dogs`}
-              className="underline font-medium hover:opacity-80"
-            >
-              Non-Surgical Management of Hip Dysplasia in Dogs
-            </Link>
-            .
-          </p>
         </section>
 
         {/* Sources */}
