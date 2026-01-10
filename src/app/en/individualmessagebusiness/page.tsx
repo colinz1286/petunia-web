@@ -70,11 +70,8 @@ export default function IndividualMessageBusinessPage() {
     const [userLastName, setUserLastName] = useState('');
     const [userName, setUserName] = useState('');
 
-        const [newMessageText, setNewMessageText] = useState('');
+    const [newMessageText, setNewMessageText] = useState('');
     const [isSending, setIsSending] = useState(false);
-
-    const [isLoadingMessages, setIsLoadingMessages] = useState(true);
-    const [messagesError, setMessagesError] = useState<string | null>(null);
 
     const scrollRef = useRef<HTMLDivElement | null>(null);
 
