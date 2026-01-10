@@ -10,6 +10,36 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'cost-of-hip-dysplasia-treatment-in-dogs',
+        title:
+            'Cost of Hip Dysplasia Treatment in Dogs: Non-Surgical Care, Rehab, Injections, and Surgical Ranges',
+        date: 'January 10, 2026',
+        description:
+            'A detailed, owner-first breakdown of the real-world costs of canine hip dysplasia care, including veterinary exams and imaging, PennHIP and OFA screening, medications and monitoring, structured rehab and physical therapy, joint injections and advanced pain-control options, assistive devices and home modifications, surgical cost categories, and practical budgeting strategies to reduce surprise expenses.',
+        component: () => import('./posts/cost-of-hip-dysplasia-treatment-in-dogs'),
+        categories: ['owner', 'vet'],
+    },
+    {
+        slug: 'living-with-hip-dysplasia-in-dogs',
+        title:
+            'Living With Hip Dysplasia in Dogs: Daily Routines, Home Setup, Exercise, Flare Plans, and Long-Term Quality of Life',
+        date: 'January 9, 2025',
+        description:
+            'A comprehensive, owner-first guide to living with canine hip dysplasia day to day, including home traction and flooring strategies, stairs and car access, sleep comfort, safe exercise routines, flare-up planning, low-impact mental enrichment, grooming and handling tips, seasonal considerations, travel planning, progress tracking, and long-term quality-of-life decision-making.',
+        component: () => import('./posts/living-with-hip-dysplasia-in-dogs'),
+        categories: ['owner'],
+    },
+    {
+        slug: 'non-surgical-management-hip-dysplasia-dogs',
+        title:
+            'Non-Surgical Management of Hip Dysplasia in Dogs: Weight, Rehab, Pain Control, Home Setup, and Long-Term Planning',
+        date: 'January 8, 2026',
+        description:
+            'A comprehensive, evidence-based guide to non-surgical management of canine hip dysplasia, covering weight and body condition targets, controlled exercise rules, physical therapy and rehabilitation, veterinarian-guided pain control strategies, supplements and joint support, home modifications for traction and mobility, progress monitoring, and clear criteria for when escalation or surgical consultation should be considered.',
+        component: () => import('./posts/non-surgical-management-hip-dysplasia-dogs'),
+        categories: ['owner', 'vet'],
+    },
+    {
         slug: 'why-dogs-are-afraid-of-vacuums',
         title:
             'Why Dogs Are Afraid of Vacuums (And How to Fix It): Noise, Instinct, and a Step-by-Step Training Plan',
