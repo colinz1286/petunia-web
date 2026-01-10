@@ -14,6 +14,7 @@ export default function HomePageClient() {
     const roles = [
         { key: 'petOwner', label: 'Pet Owner' },
         { key: 'boarding', label: 'Boarding and Daycare Facility Owner/Manager' },
+        { key: 'groomer', label: 'Dog Groomer (Shop Owner/Manager)' }, // ✅ NEW
         { key: 'consulting', label: 'Free Consulting (Private 1-on-1)' },
         { key: 'sitterWalker', label: 'Pet Sitter or Dog Walker' },
         { key: 'breeder', label: 'Breeder' },
@@ -167,15 +168,6 @@ export default function HomePageClient() {
                         <section className="space-y-5 w-full max-w-xl">
                             <h3 className="text-2xl font-bold text-center">For Boarding & Daycare Facilities</h3>
                             <p className="text-lg text-balance">
-                                We want to be clear that we do not sell your data or personal information — you can learn more by reviewing our{' '}
-                                <a
-                                    href="http://localhost:3000/en/privacypolicy"
-                                    className="underline font-medium"
-                                >
-                                    Privacy Policy
-                                </a>.
-                            </p>
-                            <p className="text-lg text-balance">
                                 The creators of Petunia are also owners of a boarding and daycare facility — that’s how we got our start in this industry back in 2017. We know the daily challenges firsthand, because we’ve lived them.
                             </p>
                             <p className="text-lg text-balance">
@@ -193,7 +185,68 @@ export default function HomePageClient() {
                                 </a>.
                             </p>
                             <p className="text-lg text-balance">
+                                We want to be clear that we do not sell your data or personal information — you can learn more by reviewing our{' '}
+                                <a
+                                    href="http://localhost:3000/en/privacypolicy"
+                                    className="underline font-medium"
+                                >
+                                    Privacy Policy
+                                </a>.
+                            </p>
+                            <p className="text-lg text-balance">
                                 🎉{" "}
+                                <Link
+                                    href={`/${locale}/loginsignup`}
+                                    className="underline text-[#2c4a30] font-semibold"
+                                >
+                                    Click here to get started today.
+                                </Link>
+                            </p>
+                        </section>
+                    )}
+
+                    {/* ✅ NEW: Groomer Section */}
+                    {selectedRole === 'groomer' && (
+                        <section className="space-y-5 w-full max-w-xl">
+                            <h3 className="text-2xl font-bold text-center">For Dog Groomers</h3>
+
+                            <p className="text-lg text-balance">
+                                As of January 9, 2026, Petunia officially supports dog grooming businesses. If you run a grooming shop (or manage a team),
+                                you can now keep your clients organized, keep pet profiles clean and consistent, and run your day-to-day workflow without
+                                messy notes, endless texts, or chasing down details.
+                            </p>
+
+                            <p className="text-lg text-balance">
+                                Petunia helps you store key pet details (behavior notes, temperament, special handling, and owner preferences) so your staff
+                                can deliver consistent grooms — even if a different groomer sees the dog next time.
+                            </p>
+
+                            <p className="text-lg text-balance">
+                                We also believe grooming software should not punish small businesses. We&rsquo;re building Petunia to stay affordable, modern,
+                                and shaped by real pet professionals — not investors trying to squeeze you for every dollar.
+                            </p>
+
+                            <p className="text-lg text-balance">
+                                💌 Questions or requests? Want a feature that we don&rsquo;t currently have? Email us at{' '}
+                                <a href="mailto:admin@petuniapets.com" className="underline text-[#2c4a30]">
+                                    admin@petuniapets.com
+                                </a>
+                                .
+                            </p>
+
+                            <p className="text-lg text-balance">
+                                We want to be clear that we do not sell your data or personal information — you can learn more by reviewing our{' '}
+                                <a
+                                    href="http://localhost:3000/en/privacypolicy"
+                                    className="underline font-medium"
+                                >
+                                    Privacy Policy
+                                </a>
+                                .
+                            </p>
+
+                            <p className="text-lg text-balance">
+                                🎉{' '}
                                 <Link
                                     href={`/${locale}/loginsignup`}
                                     className="underline text-[#2c4a30] font-semibold"
@@ -247,7 +300,7 @@ export default function HomePageClient() {
                                 This part of Petunia is coming in the first half of 2026! We&rsquo;re rolling out tools built specifically for sitters and walkers.
                             </p>
                             <p className="text-lg text-balance">
-                                $1/month. No commissions, ever. Bring your existing clients and grow from there. Why should you be paying obscene prices for software, and then giving out your personal phone number so you don&rsquo;t lose significant portions of your hard earned money to larger software companies? Of course, you will encourage people to book directly through you so you can make more money! But you shouldn&rsquo;t have to do this at the sacrifice of your own personal privacy.
+                                No commissions, ever. Bring your existing clients and grow from there. Why should you be paying obscene prices for software, and then giving out your personal phone number so you don&rsquo;t lose significant portions of your hard earned money to larger software companies? Of course, you will encourage people to book directly through you so you can make more money! But you shouldn&rsquo;t have to do this at the sacrifice of your own personal privacy.
                             </p>
                             <p className="text-lg text-balance">
                                 If you&rsquo;re wondering how we keep pricing so low, we want to be clear that we do not sell your data or personal information — you can learn more by reviewing our{' '}
@@ -262,10 +315,11 @@ export default function HomePageClient() {
                                 If you have clients on other platforms, don’t leave your reputation behind. Invite them to join you here. Once they sign up and you approve them as a past client, they can write you a review — so your history doesn’t disappear, and your momentum doesn’t miss a step.
                             </p>
                             <p className="text-lg text-balance">
-                                💌 Want to shape the features and help us determine what features we roll out next? Email us at{" "}
+                                💌 Want to shape the features and help us determine what features we roll out next? Email us at{' '}
                                 <a href="mailto:admin@petuniapets.com" className="underline text-[#2c4a30]">
                                     admin@petuniapets.com
-                                </a>.
+                                </a>
+                                .
                             </p>
                         </section>
                     )}
