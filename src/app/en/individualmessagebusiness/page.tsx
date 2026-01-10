@@ -70,18 +70,27 @@ export default function IndividualMessageBusinessPage() {
     const [userLastName, setUserLastName] = useState('');
     const [userName, setUserName] = useState('');
 
-    const [newMessageText, setNewMessageText] = useState('');
+        const [newMessageText, setNewMessageText] = useState('');
     const [isSending, setIsSending] = useState(false);
+
+    const [isLoadingMessages, setIsLoadingMessages] = useState(true);
+    const [messagesError, setMessagesError] = useState<string | null>(null);
+
     const scrollRef = useRef<HTMLDivElement | null>(null);
 
-    const threadId = `${businessId}__${userId}`;
+    // ✅ Only build threadId when both IDs exist (prevents writing to "messages/{businessId}__")
+    const threadId = businessId && userId ? `${businessId}__${userId}` : '';
 
-    // ✅ Stable refs (keeps hook deps clean)
-    const threadDocRef = useCallback(() => doc(db, 'messages', threadId), [threadId]);
-    const messagesCollectionRef = useCallback(
-        () => collection(db, 'messages', threadId, 'threadMessages'),
-        [threadId]
-    );
+    // ✅ Stable refs that are ONLY callable when threadId is valid
+    const threadDocRef = useCallback(() => {
+        if (!threadId) throw new Error('threadId not ready');
+        return doc(db, 'messages', threadId);
+    }, [threadId]);
+
+    const messagesCollectionRef = useCallback(() => {
+        if (!threadId) throw new Error('threadId not ready');
+        return collection(db, 'messages', threadId, 'threadMessages');
+    }, [threadId]);
 
     // ✅ Listen for auth
     useEffect(() => {
@@ -211,39 +220,54 @@ export default function IndividualMessageBusinessPage() {
         const text = newMessageText.trim();
         if (!text || isSending || !userId || !businessId) return;
 
+        // ✅ Guard: ensure threadId is valid before writing
+        if (!threadId) return;
+
         setIsSending(true);
 
-        const msgData = {
-            senderId: userId,
-            receiverId: businessId,
-            text,
-            sentAt: serverTimestamp(),
-            read: false,
-        };
+        try {
+            const msgData = {
+                senderId: userId,
+                receiverId: businessId,
+                text,
+                sentAt: serverTimestamp(),
+                read: false,
+            };
 
-        await addDoc(messagesCollectionRef(), msgData);
+            // 1) Write the message
+            await addDoc(messagesCollectionRef(), msgData);
 
-        // Safer than updateDoc (won’t throw if thread doc doesn’t exist yet)
-        await setDoc(
-            threadDocRef(),
-            {
-                businessId,
-                userId,
+            // 2) Upsert the parent thread doc (mirror iOS fields)
+            await setDoc(
+                threadDocRef(),
+                {
+                    threadId,
+                    businessId,
+                    userId,
+                    participants: [businessId, userId],
 
-                // ✅ Client display fields for business inbox
-                userName: userName || `${userFirstName} ${userLastName}`.trim(),
-                userFirstName,
-                userLastName,
+                    // ✅ Client display fields for business inbox
+                    userName: userName || `${userFirstName} ${userLastName}`.trim(),
+                    userFirstName,
+                    userLastName,
+                    userEmail: auth.currentUser?.email ?? '',
 
-                lastMessageText: text.length > 300 ? text.substring(0, 300) : text,
-                lastMessageAt: serverTimestamp(),
-                unreadBy: { [userId]: 0, [businessId]: 1 },
-            },
-            { merge: true }
-        );
+                    lastMessageText: text.length > 300 ? text.substring(0, 300) : text,
+                    lastMessageAt: serverTimestamp(),
 
-        setNewMessageText('');
-        setIsSending(false);
+                    // ✅ unread map (same intent as iOS)
+                    unreadBy: { [userId]: 0, [businessId]: 1 },
+                },
+                { merge: true }
+            );
+
+            setNewMessageText('');
+        } catch (err) {
+            console.error('❌ sendMessage failed:', err);
+            // Optional: surface a UI alert/toast if you want
+        } finally {
+            setIsSending(false);
+        }
     };
 
     // ============================================
