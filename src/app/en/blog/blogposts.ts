@@ -10,6 +10,16 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'the-2026-2029-boarding-and-daycare-forecast-us-the-3-demand-drivers-owners-should-watch',
+        title: 'The 2026–2029 Boarding & Daycare Forecast (U.S.): The 3 Demand Drivers Owners Should Watch',
+        date: 'January 11, 2026',
+        description:
+            'A data-driven, U.S.-focused forecast for boarding and daycare facility owners covering 2026–2029, explaining how travel patterns, time away from home, and household confidence shape demand, pricing pressure, and operational planning.',
+        component: () =>
+            import('./posts/the-2026-2029-boarding-and-daycare-forecast-us-the-3-demand-drivers-owners-should-watch'),
+        categories: ['boarding'],
+    },
+    {
         slug: 'cost-of-hip-dysplasia-treatment-in-dogs',
         title:
             'Cost of Hip Dysplasia Treatment in Dogs: Non-Surgical Care, Rehab, Injections, and Surgical Ranges',
