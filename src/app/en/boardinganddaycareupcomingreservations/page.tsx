@@ -273,7 +273,6 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
   const rtdbSubRef = useRef<ReturnType<typeof rtdbRef> | null>(null);
   const rtdbCbRef = useRef<((snap: DataSnapshot) => void) | null>(null);
 
-  // Grouped by date key
   const grouped = useMemo(() => {
     const map: Record<string, Reservation[]> = {};
     for (const r of reservations) {
@@ -302,6 +301,51 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
       });
     });
     return map;
+  }, [reservations]);
+
+  /** =========================
+   * NEW: Per-day counts (matches iOS)
+   * ========================= */
+
+  const daycareSignUpsCount = useCallback((dateKey: string): number => {
+    const items = grouped[dateKey] || [];
+    return items.filter((r) => r.type === 'Daycare').length;
+  }, [grouped]);
+
+  // Dogs staying overnight on `dateKey` means:
+  // checkInDate <= dateKey < checkOutDate
+  // Dedup by base RTDB key so pickup clones don't double-count.
+  const boardingOvernightCount = useCallback((dateKey: string): number => {
+    const unique: Record<string, Reservation> = {};
+
+    for (const r of reservations) {
+      if (r.type !== 'Boarding') continue;
+      const baseKey = r.id.endsWith('-pickup') ? r.id.slice(0, -7) : r.id;
+      if (!unique[baseKey]) unique[baseKey] = r;
+    }
+
+    let count = 0;
+
+    for (const baseKey of Object.keys(unique)) {
+      const r = unique[baseKey];
+      const statusLower = String(r.status || '').trim().toLowerCase();
+
+      // Exclude finalized statuses
+      if (statusLower === 'declined' || statusLower === 'noshow' || statusLower === 'checkedout') {
+        continue;
+      }
+
+      const cin = String(r.boardingCheckInDate || '').trim();
+      const cout = String(r.boardingCheckOutDate || '').trim();
+      if (!cin || !cout) continue;
+
+      // ISO yyyy-MM-dd string comparisons are valid lexicographically.
+      if (cin <= dateKey && dateKey < cout) {
+        count += 1;
+      }
+    }
+
+    return count;
   }, [reservations]);
 
   /** =========================
@@ -1019,7 +1063,7 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
               <section key={dateKey} className="rounded-xl bg-white/70 shadow-sm">
                 {/* DATE HEADER */}
                 <button
-                  className="w-full flex items-center justify-between px-4 py-3"
+                  className="w-full flex items-start justify-between px-4 py-3"
                   onClick={() => {
                     setExpandedDates((prev) => {
                       const next = new Set(prev);
@@ -1029,10 +1073,21 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                     });
                   }}
                 >
-                  <span className="text-base font-semibold text-[color:var(--color-foreground)]">
-                    {formatISOToLong(dateKey)}
+                  <span className="flex flex-col items-start gap-1">
+                    <span className="text-base font-semibold text-[color:var(--color-foreground)]">
+                      {formatISOToLong(dateKey)}
+                    </span>
+
+                    <span className="text-sm text-gray-500">
+                      Daycare sign ups: {daycareSignUpsCount(dateKey)}
+                    </span>
+
+                    <span className="text-sm text-gray-500">
+                      Dogs staying overnight: {boardingOvernightCount(dateKey)}
+                    </span>
                   </span>
-                  <span className="text-gray-500">
+
+                  <span className="text-gray-500 pt-0.5">
                     {expandedDates.has(dateKey) ? '▴' : '▾'}
                   </span>
                 </button>
