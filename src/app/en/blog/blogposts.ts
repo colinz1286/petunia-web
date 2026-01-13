@@ -10,6 +10,17 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'ces-2026-pet-tech-smart-feeders-ai-collars-robot-companions',
+        title:
+            'CES 2026 Pet Tech: Smart Feeders, AI Collars, Self-Cleaning Toilets, and Robot Companions Worth Knowing About',
+        date: 'January 12, 2026',
+        description:
+            'A source-backed roundup of CES 2026 pet tech: smart wet-food feeding, drinking analytics, face-recognition feeders, camera-enabled litter solutions, a self-flushing cat toilet concept, next-gen GPS collars, and the newest robot companions — including who each product fits best and what to watch before buying.',
+        component: () =>
+            import('./posts/ces-2026-pet-tech-smart-feeders-ai-collars-robot-companions'),
+        categories: ['owner', 'boarding'],
+    },
+    {
         slug: 'the-2026-2029-boarding-and-daycare-forecast-us-the-3-demand-drivers-owners-should-watch',
         title: 'The 2026–2029 Boarding & Daycare Forecast (U.S.): The 3 Demand Drivers Owners Should Watch',
         date: 'January 11, 2026',
