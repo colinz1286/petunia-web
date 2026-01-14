@@ -307,7 +307,16 @@ export default function The2026to2029BoardingAndDaycareForecastUSThe3DemandDrive
                 <h2 className="text-2xl font-semibold mt-10 mb-3">What&rsquo;s coming in Article 2</h2>
 
                 <p className="mb-6">
-                    Article 2 will tackle the big risk you&rsquo;re worried about: <strong>a potential &ldquo;sitter surge&rdquo;</strong> (more people doing pet sitting/dog walking as a side hustle) and what that does to pricing, occupancy, and differentiation.
+                    Article 2 tackles the big risk many owners are worried about:{' '}
+                    <strong>a potential &ldquo;sitter surge&rdquo;</strong>—more people doing pet sitting or dog
+                    walking as a side hustle—and what that could mean for pricing, occupancy, and differentiation.
+                    {' '}
+                    <Link
+                        href={`/${locale}/blog/the-sitter-surge-risk-2026-2029-how-side-hustles-could-pressure-boarding-and-daycare-prices`}
+                        className="underline font-medium hover:opacity-80"
+                    >
+                        Read Article 2 →
+                    </Link>
                 </p>
 
                 <hr className="border-[#d9cfc2] my-8" />
