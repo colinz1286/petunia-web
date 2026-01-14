@@ -10,6 +10,16 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'the-sitter-surge-risk-2026-2029-how-side-hustles-could-pressure-boarding-and-daycare-prices',
+        title: 'The Sitter Surge Risk (2026–2029): How Side Hustles Could Pressure Boarding & Daycare Prices',
+        date: 'January 14, 2026',
+        description:
+            'A data-driven analysis of the potential “sitter surge” from 2026–2029, explaining how gig work, side hustles, and labor-market shifts could increase in-home sitting and walking supply, pressure facility pricing, and reshape competition for boarding and daycare businesses.',
+        component: () =>
+            import('./posts/the-sitter-surge-risk-2026-2029-how-side-hustles-could-pressure-boarding-and-daycare-prices'),
+        categories: ['boarding', 'sitter'],
+    },
+    {
         slug: 'ces-2026-pet-tech-smart-feeders-ai-collars-robot-companions',
         title:
             'CES 2026 Pet Tech: Smart Feeders, AI Collars, Self-Cleaning Toilets, and Robot Companions Worth Knowing About',
