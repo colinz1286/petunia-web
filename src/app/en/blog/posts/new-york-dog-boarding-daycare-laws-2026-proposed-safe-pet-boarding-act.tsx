@@ -9,7 +9,7 @@ export default function NewYorkSafePetBoardingActFullArticle() {
 
   const title =
     'New York’s Safe Pet Boarding Act: What It Would Change for Dog Boarding & Daycare Facilities';
-  const date = 'January 2026';
+  const date = 'January 15, 2026';
 
   const description =
     'A full, detailed, factual explanation of New York’s proposed Safe Pet Boarding Act (A09123 / S08510), including every operational, staffing, facility, training, recordkeeping, inspection, and enforcement requirement for dog boarding and daycare businesses.';
