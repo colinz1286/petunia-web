@@ -60,7 +60,6 @@ export default function DogBoardingSoftwarePage() {
           <li><strong>Multi-Location Management (coming soon):</strong> Centralized visibility and controls for multi-site operators.</li>
           <li><strong>Payments &amp; Invoicing (coming soon):</strong> Take deposits and payments online with clear receipts.</li>
           <li><strong>Staff Scheduling (coming soon):</strong> Assign roles, manage availability, and cover shifts with ease.</li>
-          <li><strong>Transparent Pricing:</strong> $29/month after your free trial. <em>No contracts. Cancel anytime.</em></li>
           <li><strong>Customer-Driven Roadmap:</strong> We run a poll every 60 days&mdash;<em>you vote, we build</em>.</li>
         </ul>
       </section>
