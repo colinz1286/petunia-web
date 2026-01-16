@@ -10,6 +10,17 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'new-york-dog-boarding-daycare-laws-2026-proposed-safe-pet-boarding-act',
+        title:
+            'New York Dog Boarding & Daycare Laws (2026): What the Proposed Safe Pet Boarding Act Would Require',
+        date: 'January 2026',
+        description:
+            'A detailed, plain-English breakdown of New York’s proposed Safe Pet Boarding Act, explaining statewide licensing, inspections, staff training, documentation requirements, and how this legislation could reshape the boarding and daycare industry.',
+        component: () =>
+            import('./posts/new-york-dog-boarding-daycare-laws-2026-proposed-safe-pet-boarding-act'),
+        categories: ['boarding'],
+    },
+    {
         slug: 'the-sitter-surge-risk-2026-2029-how-side-hustles-could-pressure-boarding-and-daycare-prices',
         title: 'The Sitter Surge Risk (2026–2029): How Side Hustles Could Pressure Boarding & Daycare Prices',
         date: 'January 14, 2026',
