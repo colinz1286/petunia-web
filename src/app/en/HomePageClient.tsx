@@ -90,7 +90,7 @@ export default function HomePageClient() {
                 <div className="mt-6 mb-6 flex justify-center">
                     <div className="rounded-xl border border-[#d9cfc2] bg-white px-6 py-3 shadow-sm">
                         <p className="text-[#2c4a30] text-sm sm:text-base font-bold tracking-wide">
-                            🐾 531 clients and counting!
+                            🐾 533 clients and counting!
                         </p>
                         <p className="text-md sm:text-md text-[#2c4a30] mt-0.5 text-center">
                             Pet professionals are joining Petunia every week.
