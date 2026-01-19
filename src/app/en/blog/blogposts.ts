@@ -10,6 +10,16 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'competing-without-a-price-war-2026-2029-how-facilities-win-on-trust-proof-and-retention',
+        title: 'Competing Without a Price War (2026–2029): How Facilities Win on Trust, Proof, and Retention',
+        date: 'January 19, 2026',
+        description:
+            'A data-driven guide for boarding and daycare facility owners explaining how trust signals, proof, and retention strategies protect pricing power in crowded markets from 2026–2029—without resorting to discounting.',
+        component: () =>
+            import('./posts/competing-without-a-price-war-2026-2029-how-facilities-win-on-trust-proof-and-retention'),
+        categories: ['boarding'],
+    },
+    {
         slug: 'new-york-dog-boarding-daycare-laws-2026-proposed-safe-pet-boarding-act',
         title:
             'New York Dog Boarding & Daycare Laws (2026): What the Proposed Safe Pet Boarding Act Would Require',
