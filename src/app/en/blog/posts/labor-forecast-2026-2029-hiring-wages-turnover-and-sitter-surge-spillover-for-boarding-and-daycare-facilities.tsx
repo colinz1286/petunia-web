@@ -9,7 +9,7 @@ export default function Article4LaborForecast2026to2029() {
 
     const title =
         'Labor Forecast 2026–2029 — Hiring, Wages, Turnover, and “Sitter Surge” Spillover for Boarding & Daycare Facilities';
-    const date = 'January 19, 2026';
+    const date = 'January 28, 2026';
     const categories = ['boarding'] as const;
 
     const categoryLabels: Record<string, string> = {
