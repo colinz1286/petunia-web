@@ -10,6 +10,16 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'labor-forecast-2026-2029-hiring-wages-turnover-and-sitter-surge-spillover-for-boarding-and-daycare-facilities',
+        title: 'Labor Forecast 2026–2029 — Hiring, Wages, Turnover, and Sitter Surge Spillover for Boarding & Daycare Facilities',
+        date: 'January 28, 2026',
+        description:
+            'A data-driven labor-market outlook for boarding and daycare facility owners covering hiring availability, wage pressure, turnover risk, schedule quality, training systems, and the operational impact of sitter-surge dynamics from 2026–2029.',
+        component: () =>
+            import('./posts/labor-forecast-2026-2029-hiring-wages-turnover-and-sitter-surge-spillover-for-boarding-and-daycare-facilities'),
+        categories: ['boarding'],
+    },
+    {
         slug: 'competing-without-a-price-war-2026-2029-how-facilities-win-on-trust-proof-and-retention',
         title: 'Competing Without a Price War (2026–2029): How Facilities Win on Trust, Proof, and Retention',
         date: 'January 19, 2026',
