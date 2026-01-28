@@ -7,7 +7,7 @@ import { useLocale } from 'next-intl';
 export default function PetuniaPetsWhatIsIt() {
   const locale = useLocale();
 
-  const title = 'Petunia Pets: What It Is, Who It&rsquo;s For, and How It Works';
+  const title = "Petunia Pets: What It's For, and How It Works";
   const date = 'August 26, 2025';
   const categories = ['boarding', 'owner'] as const;
 
