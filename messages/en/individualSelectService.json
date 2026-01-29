@@ -9,5 +9,6 @@
   "service_not_ready_title": "Service Not Ready",
   "service_not_ready_message": "This feature is coming soon.",
   "ok_button": "OK",
-  "back_to_book_services": "Back to Book Services"
+  "back_to_book_services": "Back to Book Services",
+  "schedule_assessment_service": "Schedule Assessment"
 }

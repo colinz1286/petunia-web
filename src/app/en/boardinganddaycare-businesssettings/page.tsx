@@ -41,11 +41,19 @@ export default function BusinessSettingsPage() {
     const [businessPhone, setBusinessPhone] = useState('');
     const [businessAddress, setBusinessAddress] = useState('');
 
+    // --- Operating Hours (matches iOS) ---
+    const [operatingHours, setOperatingHours] = useState<Record<
+        string,
+        { open: string; close: string }
+    >>({});
+
     const [offersBoarding, setOffersBoarding] = useState(false);
     const [offersDaycare, setOffersDaycare] = useState(false);
     const [offersGrooming, setOffersGrooming] = useState(false);
     const [offersTraining, setOffersTraining] = useState(false);
     const [groomingServices, setGroomingServices] = useState<string[]>(['']);
+    const [requiresAssessment, setRequiresAssessment] = useState(false);
+    const [temperamentTestRequired, setTemperamentTestRequired] = useState(false);
 
     // NEW — Boarding “What To Bring” lists (matches iOS)
     const [boardingRequiredItems, setBoardingRequiredItems] = useState<string[]>(['']);
@@ -66,6 +74,9 @@ export default function BusinessSettingsPage() {
     const [pickUpTimeRequiredDaycare, setPickUpTimeRequiredDaycare] = useState(false);
     const [dropOffTimeRequiredBoarding, setDropOffTimeRequiredBoarding] = useState(false);
     const [pickUpTimeRequiredBoarding, setPickUpTimeRequiredBoarding] = useState(false);
+
+    const [dropOffTimeRequiredAssessment, setDropOffTimeRequiredAssessment] = useState(false);
+    const [pickUpTimeRequiredAssessment, setPickUpTimeRequiredAssessment] = useState(false);
 
     // ✅ NEW: After-hours pick-up settings
     const [afterHoursPickUpTimeRequired, setAfterHoursPickUpTimeRequired] = useState(false);
@@ -176,11 +187,14 @@ export default function BusinessSettingsPage() {
                 setBusinessAddress(`${addr.street || ''}, ${addr.city || ''}, ${addr.state || ''} ${addr.zipCode || ''}`);
                 setBusinessBio(data.businessBio || '');
 
+                setOperatingHours(data.operatingHours || {});
+
                 setOffersBoarding(data.offersBoarding || false);
                 setOffersDaycare(data.offersDaycare || false);
                 setOffersGrooming(data.offersGrooming || false);
                 setOffersTraining(data.offersTraining || false);
                 setGroomingServices(data.groomingServices || ['']);
+                setRequiresAssessment(data.requiresAssessment || false);
 
                 // NEW — What To Bring (Boarding only)
                 setBoardingRequiredItems(data.boardingRequiredItems || ['']);
@@ -193,6 +207,9 @@ export default function BusinessSettingsPage() {
                 setPickUpTimeRequiredDaycare(data.pickUpTimeRequiredDaycare || false);
                 setDropOffTimeRequiredBoarding(data.dropOffTimeRequiredBoarding || false);
                 setPickUpTimeRequiredBoarding(data.pickUpTimeRequiredBoarding || false);
+
+                setDropOffTimeRequiredAssessment(data.dropOffTimeRequiredAssessment || false);
+                setPickUpTimeRequiredAssessment(data.pickUpTimeRequiredAssessment || false);
 
                 setRequireDaycareReservationApproval(
                     data.requireDaycareReservationApproval || false
@@ -214,6 +231,8 @@ export default function BusinessSettingsPage() {
                         'Negative Fecal': false,
                     }
                 );
+
+                setTemperamentTestRequired(data.temperamentTestRequired || false);
 
                 // ✅ NEW: After-hours fields
                 setAfterHoursPickUpTimeRequired(data.afterHoursPickUpTimeRequired || false);
@@ -281,6 +300,9 @@ export default function BusinessSettingsPage() {
             offersGrooming,
             offersTraining,
 
+            requiresAssessment,
+            temperamentTestRequired,
+
             requireDaycareReservationApproval,
             requireBoardingReservationApproval,
 
@@ -297,10 +319,15 @@ export default function BusinessSettingsPage() {
             requiredVaccinations,
             requiredTests,
 
+            operatingHours,
+
             dropOffTimeRequiredDaycare,
             pickUpTimeRequiredDaycare,
             dropOffTimeRequiredBoarding,
             pickUpTimeRequiredBoarding,
+
+            dropOffTimeRequiredAssessment,
+            pickUpTimeRequiredAssessment,
 
             // ✅ After-hours
             afterHoursPickUpTimeRequired,
@@ -460,6 +487,74 @@ export default function BusinessSettingsPage() {
                         </div>
                     </div>
 
+                    {/* Operating Hours */}
+                    <div className="mt-10">
+                        <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-4">
+                            {t('operating_hours_header')}
+                        </h2>
+
+                        {daysOfWeek.map((day) => {
+                            const open = operatingHours[day]?.open || '7:00 AM';
+                            const close = operatingHours[day]?.close || '6:00 PM';
+
+                            return (
+                                <div key={`operating-hours-${day}`} className="flex gap-4">
+                                    {/* Open */}
+                                    <div className="flex flex-col">
+                                        <label className="text-xs text-gray-500 mb-1">
+                                            {t('open_label')}
+                                        </label>
+                                        <select
+                                            value={open}
+                                            onChange={(e) =>
+                                                setOperatingHours((prev) => ({
+                                                    ...prev,
+                                                    [day]: {
+                                                        open: e.target.value,
+                                                        close,
+                                                    },
+                                                }))
+                                            }
+                                            className="border px-2 py-1 rounded text-sm"
+                                        >
+                                            {timeOptions.map((time, idx) => (
+                                                <option key={`${day}-open-${time}-${idx}`} value={time}>
+                                                    {time}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    {/* Close */}
+                                    <div className="flex flex-col">
+                                        <label className="text-xs text-gray-500 mb-1">
+                                            {t('close_label')}
+                                        </label>
+                                        <select
+                                            value={close}
+                                            onChange={(e) =>
+                                                setOperatingHours((prev) => ({
+                                                    ...prev,
+                                                    [day]: {
+                                                        open,
+                                                        close: e.target.value,
+                                                    },
+                                                }))
+                                            }
+                                            className="border px-2 py-1 rounded text-sm"
+                                        >
+                                            {timeOptions.map((time, idx) => (
+                                                <option key={`${day}-close-${time}-${idx}`} value={time}>
+                                                    {time}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
                     {/* Blackout Dates */}
                     <div className="mt-10 space-y-4">
                         <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
@@ -541,6 +636,11 @@ export default function BusinessSettingsPage() {
                         <Toggle label={t('daycare_toggle')} checked={offersDaycare} onChange={setOffersDaycare} />
                         <Toggle label={t('grooming_toggle')} checked={offersGrooming} onChange={setOffersGrooming} />
                         <Toggle label={t('training_toggle')} checked={offersTraining} onChange={setOffersTraining} />
+                        <Toggle
+                            label={t('requires_assessment_toggle')}
+                            checked={requiresAssessment}
+                            onChange={setRequiresAssessment}
+                        />
 
                         {offersGrooming && (
                             <div className="mt-4 space-y-2">
@@ -726,6 +826,25 @@ export default function BusinessSettingsPage() {
                         ))}
                     </div>
 
+                    <div className="mt-10">
+                        <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-4">
+                            {t('pet_requirements_header')}
+                        </h2>
+
+                        <div className="space-y-1">
+                            <Toggle
+                                label={t('temperament_test_toggle')}
+                                checked={temperamentTestRequired}
+                                onChange={setTemperamentTestRequired}
+                            />
+
+                            {/* ✅ Helper text to clarify downstream behavior */}
+                            <p className="text-xs text-gray-500 ml-8">
+                                {t('temperament_test_helper_text')}
+                            </p>
+                        </div>
+                    </div>
+
                     {/* Waiver */}
                     <div className="mt-10 space-y-4">
                         <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
@@ -806,6 +925,21 @@ export default function BusinessSettingsPage() {
                                 <>
                                     <Toggle label={t('require_drop_boarding')} checked={dropOffTimeRequiredBoarding} onChange={setDropOffTimeRequiredBoarding} />
                                     <Toggle label={t('require_pick_boarding')} checked={pickUpTimeRequiredBoarding} onChange={setPickUpTimeRequiredBoarding} />
+                                </>
+                            )}
+
+                            {requiresAssessment && (
+                                <>
+                                    <Toggle
+                                        label={t('require_drop_assessment')}
+                                        checked={dropOffTimeRequiredAssessment}
+                                        onChange={setDropOffTimeRequiredAssessment}
+                                    />
+                                    <Toggle
+                                        label={t('require_pick_assessment')}
+                                        checked={pickUpTimeRequiredAssessment}
+                                        onChange={setPickUpTimeRequiredAssessment}
+                                    />
                                 </>
                             )}
 

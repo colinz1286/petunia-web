@@ -36,6 +36,8 @@ export default function IndividualSelectServicePage() {
     const [isLoading, setIsLoading] = useState(true);
     const [showComingSoon, setShowComingSoon] = useState(false);
 
+    const [requiresAssessment, setRequiresAssessment] = useState(false);
+
     const loadBusinessServices = useCallback(async (bizId: string) => {
         try {
             const snap = await getDoc(doc(db, 'businesses', bizId));
@@ -54,6 +56,8 @@ export default function IndividualSelectServicePage() {
             if (data.offersDaycare) offered.push('daycare');
             if (data.offersGrooming) offered.push('grooming');
             if (data.offersTraining) offered.push('training');
+
+            setRequiresAssessment(!!data.requiresAssessment);
 
             setServicesOffered(offered);
         } catch (err) {
@@ -97,6 +101,9 @@ export default function IndividualSelectServicePage() {
                 break;
             case 'boarding':
                 router.push(`/${locale}/individualbookboarding?businessId=${businessId}&businessName=${encodedName}`);
+                break;
+            case 'assessment':
+                router.push(`/${locale}/individualbookdaycare?businessId=${businessId}&businessName=${encodedName}`);
                 break;
             default:
                 setShowComingSoon(true);
@@ -142,6 +149,15 @@ export default function IndividualSelectServicePage() {
                                 className="w-full max-w-xs mx-auto bg-green-900 text-white py-3 rounded hover:opacity-90 block text-sm"
                             >
                                 {t('boarding_service')}
+                            </button>
+                        )}
+
+                        {requiresAssessment && (
+                            <button
+                                onClick={() => handleServiceClick('assessment')}
+                                className="w-full max-w-xs mx-auto bg-green-900 text-white py-3 rounded hover:opacity-90 block text-sm"
+                            >
+                                {t('schedule_assessment_service')}
                             </button>
                         )}
 

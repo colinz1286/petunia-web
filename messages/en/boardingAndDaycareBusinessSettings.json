@@ -36,7 +36,7 @@
   "save_changes_button": "Save Changes",
   "saving": "Saving...",
   "back_to_dashboard": "Back to Dashboard",
-  "require_after_hours_pickup": "Require time for after-hours pick-up",
+  "require_after_hours_pickup": "Require Time for After-Hours Pick-Up",
   "after_hours_time_settings_title": "After Hours Time Settings",
   "after_hours_pickup_times": "After-Hours Pick-Up Times",
   "no_after_hours_day": "No after-hours pick-up on",
@@ -58,5 +58,14 @@
   "boarding_required_item_placeholder": "Required Item {num}",
   "boarding_prohibited_item_placeholder": "Prohibited Item {num}",
   "add_boarding_required_item_button": "Add Required Item",
-  "add_boarding_prohibited_item_button": "Add Prohibited Item"
+  "add_boarding_prohibited_item_button": "Add Prohibited Item",
+  "pet_requirements_header": "Pet Requirements",
+  "temperament_test_toggle": "Temperament Test Required",
+  "requires_assessment_toggle": "Requires Assessment",
+  "temperament_test_helper_text": "When enabled, clients booking daycare will automatically see an option to schedule a temperament assessment.",
+  "require_drop_assessment": "Require Drop-Off Time for Assessment",
+  "require_pick_assessment": "Require Pick-Up Time for Assessment",
+  "operating_hours_header": "Hours of Operation",
+  "open_label": "Open",
+  "close_label": "Close"
 }
