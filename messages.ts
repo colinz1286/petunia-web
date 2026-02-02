@@ -27,6 +27,7 @@ export default {
     groomingDashboard: require('./messages/en/groomingDashboard.json'),
     individualSignUp: require('./messages/en/individualSignUp.json'),
     individualAddEditPet: require('./messages/en/individualAddEditPet.json'),
+    individualBookAssessment: require('./messages/en/individualBookAssessment.json'),
     individualBookBoarding: require('./messages/en/individualBookBoarding.json'),
     individualBookDaycare: require('./messages/en/individualBookDaycare.json'),
     individualBookServices: require('./messages/en/individualBookServices.json'),

@@ -67,5 +67,10 @@
   "require_pick_assessment": "Require Pick-Up Time for Assessment",
   "operating_hours_header": "Hours of Operation",
   "open_label": "Open",
-  "close_label": "Close"
+  "close_label": "Close",
+  "assessment_time_settings_title": "Assessment Time Settings",
+  "assessment_drop_times": "Assessment Drop-Off Times",
+  "assessment_pickup_times": "Assessment Pick-Up Times",
+  "no_assessment_day": "No assessments on",
+  "assessment_time_settings_accessibility": "Configure assessment availability times"
 }

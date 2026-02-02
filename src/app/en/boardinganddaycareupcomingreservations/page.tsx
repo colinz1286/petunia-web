@@ -1045,6 +1045,15 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <main className="max-w-3xl mx-auto px-4 py-6">
+        <button
+          onClick={() =>
+            router.push(`/${locale}/boardinganddaycaredashboard`)
+          }
+          className="mb-2 text-sm text-[color:var(--color-accent)] underline hover:opacity-90"
+        >
+          ← Back to Business Dashboard
+        </button>
+
         <h1 className="text-3xl font-bold text-center text-[color:var(--color-accent)] mb-4">
           {t('upcoming_reservations_title')}
         </h1>

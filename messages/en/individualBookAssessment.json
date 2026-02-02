@@ -1,0 +1,31 @@
+{
+  "book_assessment_title": "Book Assessment",
+  "default_business_name": "Selected Business",
+
+  "back_to_select_service": "Back to Select Service",
+
+  "select_date": "Select Assessment Date",
+  "select_date_placeholder": "Select a date",
+
+  "select_dropoff_time": "Select Drop-Off Time",
+  "select_pickup_time": "Select Pick-Up Time",
+
+  "select_pets": "Select Pets",
+
+  "existing_appointment": "You already have an assessment scheduled for this date.",
+
+  "cannot_book_in_past": "You cannot book an assessment in the past. Please choose another date.",
+  "selected_date_is_blackout": "This date is unavailable.",
+  "no_assessments_available": "No assessments are available on this day. Please choose another date.",
+
+  "vaccine_alerts_title": "Vaccine Alerts",
+  "checking_vaccine_status": "Checking vaccine status…",
+
+  "submit_assessment": "Submit Assessment Request",
+  "submitting": "Submitting...",
+
+  "assessment_submitted": "Your assessment has been successfully booked.",
+  "submission_error": "There was an error submitting your assessment. Please try again.",
+
+  "loading": "Loading..."
+}

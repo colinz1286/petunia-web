@@ -116,6 +116,13 @@ export default function BoardingAndDaycareNotificationsPage() {
     return (
         <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)] px-4 py-6">
             <div className="w-full max-w-md mx-auto">
+                <button
+                    onClick={() => router.push(`/en/boardinganddaycaredashboard`)}
+                    className="mb-2 text-sm text-[color:var(--color-accent)] underline hover:opacity-90"
+                >
+                    ← Back to Business Dashboard
+                </button>
+
                 {/* Centered, prominent title to match iOS look */}
                 <h1 className="text-4xl font-bold text-center text-[color:var(--color-foreground)] mb-6">
                     {title}

@@ -103,7 +103,7 @@ export default function IndividualSelectServicePage() {
                 router.push(`/${locale}/individualbookboarding?businessId=${businessId}&businessName=${encodedName}`);
                 break;
             case 'assessment':
-                router.push(`/${locale}/individualbookdaycare?businessId=${businessId}&businessName=${encodedName}`);
+                router.push(`/${locale}/individualbookassessment?businessId=${businessId}&businessName=${encodedName}`);
                 break;
             default:
                 setShowComingSoon(true);

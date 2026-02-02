@@ -78,6 +78,10 @@ export default function BusinessSettingsPage() {
     const [dropOffTimeRequiredAssessment, setDropOffTimeRequiredAssessment] = useState(false);
     const [pickUpTimeRequiredAssessment, setPickUpTimeRequiredAssessment] = useState(false);
 
+    const[assessmentDropOffTimes, setAssessmentDropOffTimes] = useState<Record<string, string[]>>({});
+    const [assessmentPickUpTimes, setAssessmentPickUpTimes] = useState<Record<string, string[]>>({});
+    const [noAssessmentDays, setNoAssessmentDays] = useState<Set<string>>(new Set());
+
     // ✅ NEW: After-hours pick-up settings
     const [afterHoursPickUpTimeRequired, setAfterHoursPickUpTimeRequired] = useState(false);
     const [afterHoursPickUpTimes, setAfterHoursPickUpTimes] = useState<Record<string, string[]>>({});
@@ -211,6 +215,10 @@ export default function BusinessSettingsPage() {
                 setDropOffTimeRequiredAssessment(data.dropOffTimeRequiredAssessment || false);
                 setPickUpTimeRequiredAssessment(data.pickUpTimeRequiredAssessment || false);
 
+                setAssessmentDropOffTimes(data.assessmentDropOffTimes || {});
+                setAssessmentPickUpTimes(data.assessmentPickUpTimes || {});
+                setNoAssessmentDays(new Set<string>(data.noAssessmentDays || []));
+
                 setRequireDaycareReservationApproval(
                     data.requireDaycareReservationApproval || false
                 );
@@ -328,6 +336,10 @@ export default function BusinessSettingsPage() {
 
             dropOffTimeRequiredAssessment,
             pickUpTimeRequiredAssessment,
+
+            assessmentDropOffTimes,
+            assessmentPickUpTimes,
+            noAssessmentDays: Array.from(noAssessmentDays),
 
             // ✅ After-hours
             afterHoursPickUpTimeRequired,
@@ -1156,6 +1168,120 @@ export default function BusinessSettingsPage() {
                                 </div>
                             )}
                         </div>
+
+                        {/* Assessment Time Settings */}
+                        {requiresAssessment && (dropOffTimeRequiredAssessment || pickUpTimeRequiredAssessment) && (
+                            <div className="mt-10">
+                                <h3 className="text-lg font-semibold mb-2 text-center">
+                                    {t('assessment_time_settings_title')}
+                                </h3>
+
+                                {/* Assessment Drop-Off Times */}
+                                {dropOffTimeRequiredAssessment && (
+                                    <div className="mt-6">
+                                        <h4 className="font-semibold text-center mb-2">
+                                            {t('assessment_drop_times')}
+                                        </h4>
+
+                                        {daysOfWeek.map((day) => (
+                                            <div key={`ado-${day}`} className="mb-6">
+                                                <Toggle
+                                                    label={`${t('no_assessment_day')} ${day}`}
+                                                    checked={noAssessmentDays.has(day)}
+                                                    onChange={(val) => {
+                                                        const updated = new Set(noAssessmentDays);
+                                                        if (val) {
+                                                            updated.add(day);
+                                                            setAssessmentDropOffTimes(prev => ({ ...prev, [day]: [] }));
+                                                        } else {
+                                                            updated.delete(day);
+                                                        }
+                                                        setNoAssessmentDays(updated);
+                                                    }}
+                                                />
+
+                                                {!noAssessmentDays.has(day) && (
+                                                    <div className="mt-2 space-y-1">
+                                                        <button
+                                                            className="text-sm text-blue-600 underline"
+                                                            onClick={() =>
+                                                                setCollapsedDays(prev => ({
+                                                                    ...prev,
+                                                                    [`${day}-assessment-drop`]: !prev[`${day}-assessment-drop`],
+                                                                }))
+                                                            }
+                                                        >
+                                                            {collapsedDays[`${day}-assessment-drop`] ? t('expand') : t('collapse')}
+                                                        </button>
+
+                                                        {!collapsedDays[`${day}-assessment-drop`] &&
+                                                            timeOptions.map((time, i) => (
+                                                                <Toggle
+                                                                    key={`ado-${day}-${time}-${i}`}
+                                                                    label={time}
+                                                                    checked={(assessmentDropOffTimes[day] || []).includes(time)}
+                                                                    onChange={() => {
+                                                                        const current = assessmentDropOffTimes[day] || [];
+                                                                        const updated = current.includes(time)
+                                                                            ? current.filter(t => t !== time)
+                                                                            : [...current, time];
+                                                                        setAssessmentDropOffTimes(prev => ({ ...prev, [day]: updated }));
+                                                                    }}
+                                                                />
+                                                            ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Assessment Pick-Up Times */}
+                                {pickUpTimeRequiredAssessment && (
+                                    <div className="mt-10">
+                                        <h4 className="font-semibold text-center mb-2">
+                                            {t('assessment_pickup_times')}
+                                        </h4>
+
+                                        {daysOfWeek.map((day) => (
+                                            <div key={`apu-${day}`} className="mb-6">
+                                                {!noAssessmentDays.has(day) && (
+                                                    <div className="mt-2 space-y-1">
+                                                        <button
+                                                            className="text-sm text-blue-600 underline"
+                                                            onClick={() =>
+                                                                setCollapsedDays(prev => ({
+                                                                    ...prev,
+                                                                    [`${day}-assessment-pickup`]: !prev[`${day}-assessment-pickup`],
+                                                                }))
+                                                            }
+                                                        >
+                                                            {collapsedDays[`${day}-assessment-pickup`] ? t('expand') : t('collapse')}
+                                                        </button>
+
+                                                        {!collapsedDays[`${day}-assessment-pickup`] &&
+                                                            timeOptions.map((time, i) => (
+                                                                <Toggle
+                                                                    key={`apu-${day}-${time}-${i}`}
+                                                                    label={time}
+                                                                    checked={(assessmentPickUpTimes[day] || []).includes(time)}
+                                                                    onChange={() => {
+                                                                        const current = assessmentPickUpTimes[day] || [];
+                                                                        const updated = current.includes(time)
+                                                                            ? current.filter(t => t !== time)
+                                                                            : [...current, time];
+                                                                        setAssessmentPickUpTimes(prev => ({ ...prev, [day]: updated }));
+                                                                    }}
+                                                                />
+                                                            ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {/* Optional feature toggles */}
                         <div className="mt-10">

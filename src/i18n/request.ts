@@ -53,6 +53,7 @@ export default getRequestConfig(async ({ locale }) => {
     individualSelectService: (await import(`../../messages/${safeLocale}/individualSelectService.json`)).default,
     individualBookDaycare: (await import(`../../messages/${safeLocale}/individualBookDaycare.json`)).default,
     individualBookBoarding: (await import(`../../messages/${safeLocale}/individualBookBoarding.json`)).default,
+    individualBookAssessment: (await import(`../../messages/${safeLocale}/individualBookAssessment.json`)).default,
     individualEmployeeDogsOnProperty: (await import(`../../messages/${safeLocale}/individualEmployeeDogsOnProperty.json`)).default,
     individualEmployeeUpcomingReservations: (await import(`../../messages/${safeLocale}/individualEmployeeUpcomingReservations.json`)).default,
     individualMessages: (await import(`../../messages/${safeLocale}/individualMessages.json`)).default,

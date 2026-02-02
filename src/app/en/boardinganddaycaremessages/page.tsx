@@ -167,6 +167,13 @@ export default function BoardingAndDaycareMessagesPage() {
     return (
         <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)] flex flex-col items-center px-4 py-6">
             <div className="w-full max-w-md">
+                <button
+                    onClick={() => router.push(`/${locale}/boardinganddaycaredashboard`)}
+                    className="mb-2 text-sm text-[color:var(--color-accent)] underline hover:opacity-90"
+                >
+                    ← Back to Business Dashboard
+                </button>
+
                 <h1 className="text-2xl font-bold text-[color:var(--color-accent)] text-center mb-6">
                     {t('title', { default: 'Messages' })}
                 </h1>
