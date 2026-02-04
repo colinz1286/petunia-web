@@ -100,7 +100,7 @@ export default function BoardingAndDaycareMessageClientPage() {
     const attachListener = async () => {
         await ensureThreadExists();
 
-        const q = query(messagesCollection(), orderBy('sentAt', 'asc'));
+        const q = query(messagesCollection(), orderBy('sentAtClient', 'asc'));
         return onSnapshot(q, async (snapshot) => {
             const msgs: ChatMessage[] = snapshot.docs.map((docSnap) => {
                 const data = docSnap.data();
@@ -167,6 +167,7 @@ export default function BoardingAndDaycareMessageClientPage() {
             receiverId: clientId,
             text,
             sentAt: serverTimestamp(),
+            sentAtClient: new Date(),
             read: false,
         };
 
@@ -217,8 +218,8 @@ export default function BoardingAndDaycareMessageClientPage() {
                     >
                         <div
                             className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm break-words ${m.senderId === businessId
-                                    ? 'bg-[#2c4a30] text-white shadow-md border border-[#1f3322]'
-                                    : 'bg-white text-gray-800 border border-gray-300 shadow-sm'
+                                ? 'bg-[#2c4a30] text-white shadow-md border border-[#1f3322]'
+                                : 'bg-white text-gray-800 border border-gray-300 shadow-sm'
                                 }`}
                         >
                             {m.text}

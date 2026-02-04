@@ -11,17 +11,24 @@ export default function DogBoardingSoftwarePage() {
           Dog Boarding &amp; Daycare Software that&#39;s Fast, Simple, and Fairly Priced.
         </h1>
         <p className="text-base sm:text-lg text-gray-800 max-w-md mx-auto">
-          This isn&#39;t software. It&#39;s sanity. Run bookings, pet &amp; client profiles, vaccine tracking, waivers, reminders, and more in one calm, reliable place. Built for independents today, with multi-location support rolling out within six months.
+          This is dog boarding and daycare software designed to feel calm, simple, and reliable. Run bookings, pet &amp; client profiles, vaccine tracking, waivers, reminders, and more in one place. Built for independents today, with multi-location support rolling out within six months.
         </p>
       </section>
 
       {/* What Is Dog Boarding & Daycare Software? */}
       <section className="py-8 text-center">
         <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-[#2c4a30]">
-          IMPORTANT UPDATE!
+          What dog boarding &amp; daycare software should actually do
         </h2>
         <p className="text-base leading-7 text-gray-700 max-w-md mx-auto">
-          Due to high demand, we now have a waiting list. If you wish to join our waiting list, please contact us at admin@petunia.com. One thing we understand more than anyone is that each business runs slightly differently. We promise our clients to give them the features they need. And we are building every single one of them! At the time of this publishing (November 14, 2025), our waiting list for on boarding currently extends into January, 2026. For anyone who signs up, we will extend your free trial period to begin the day that we are able to start assisting you in on boarding. We want to make sure that everyone is on boarded properly and we appreciate your patience as we continue to work through our waiting list. We sincerely appreciate your understanding.        </p>
+          Dog boarding and daycare software should adapt to how <em>you</em> run your business &mdash; not force
+          you into rigid workflows or unnecessary complexity. Petunia is designed to support real operations,
+          whether you run a small in-home facility or a growing, multi-location business.
+        </p>
+        <p className="text-base leading-7 text-gray-700 max-w-md mx-auto mt-4">
+          From bookings and check-ins to vaccination requirements, waivers, reminders, and day-to-day visibility,
+          Petunia keeps everything organized in one place so your team can focus on care instead of admin.
+        </p>
       </section>
 
       {/* Pricing Comparison */}
@@ -133,7 +140,8 @@ export default function DogBoardingSoftwarePage() {
         <div className="mt-10">
           <h3 className="text-lg font-medium text-[#2c4a30] mb-2">Educational Resources</h3>
           <p className="text-base text-gray-700">
-            We regularly publish practical guides for boarding and daycare operators to help you run safer, calmer, more efficient operations.
+            We regularly publish practical guides for boarding and daycare operators to help you run safer, calmer,
+            more efficient operations in our <Link href="/en/blog" className="underline">Petunia blog</Link>.
           </p>
         </div>
       </section>

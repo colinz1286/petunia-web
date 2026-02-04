@@ -183,7 +183,7 @@ export default function IndividualMessageBusinessPage() {
     );
 
     const attachListener = useCallback(() => {
-        const q = query(messagesCollectionRef(), orderBy('sentAt', 'asc'));
+        const q = query(messagesCollectionRef(), orderBy('sentAtClient', 'asc'));
 
         const unsubscribe = onSnapshot(q, async (snapshot) => {
             const msgs: Message[] = snapshot.docs.map((docSnap) => {
@@ -228,6 +228,7 @@ export default function IndividualMessageBusinessPage() {
                 receiverId: businessId,
                 text,
                 sentAt: serverTimestamp(),
+                sentAtClient: new Date(),
                 read: false,
             };
 
