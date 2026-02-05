@@ -182,6 +182,44 @@ export default function IndividualMessageBusinessPage() {
         [threadId, userId, threadDocRef]
     );
 
+    const createThreadIfNeededAndWait = useCallback(async () => {
+        if (!threadId) return;
+
+        const ref = threadDocRef();
+        const snap = await getDoc(ref);
+
+        if (snap.exists()) return;
+
+        await setDoc(ref, {
+            threadId,
+            businessId,
+            userId,
+            participants: [businessId, userId],
+            lastMessageText: '',
+            lastMessageAt: serverTimestamp(),
+            unreadBy: { [userId]: 0, [businessId]: 0 },
+            lastReadAt: {
+                [userId]: serverTimestamp(),
+                [businessId]: serverTimestamp(),
+            },
+            userName: userName || `${userFirstName} ${userLastName}`.trim(),
+            userFirstName,
+            userLastName,
+            userEmail: auth.currentUser?.email ?? '',
+        });
+
+        // 🔒 hard wait until readable
+        await getDoc(ref);
+    }, [
+        threadId,
+        businessId,
+        userId,
+        userName,
+        userFirstName,
+        userLastName,
+        threadDocRef,
+    ]);
+
     const attachListener = useCallback(() => {
         const q = query(messagesCollectionRef(), orderBy('sentAtClient', 'asc'));
 
@@ -205,13 +243,18 @@ export default function IndividualMessageBusinessPage() {
         return unsubscribe;
     }, [messagesCollectionRef, markUnreadAsRead]);
 
-    // ✅ Attach Firestore listener once user is known
     useEffect(() => {
-        if (!userId || !businessId) return;
+        if (!userId || !businessId || !threadId) return;
 
-        const unsubscribe = attachListener();
-        return () => unsubscribe?.();
-    }, [userId, businessId, attachListener]);
+        let unsub: (() => void) | undefined;
+
+        (async () => {
+            await createThreadIfNeededAndWait();
+            unsub = attachListener();
+        })();
+
+        return () => unsub?.();
+    }, [userId, businessId, threadId, attachListener, createThreadIfNeededAndWait]);
 
     const sendMessage = async () => {
         const text = newMessageText.trim();

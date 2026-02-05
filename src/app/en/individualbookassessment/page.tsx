@@ -123,7 +123,9 @@ export default function IndividualBookAssessmentPage() {
     const businessName = params.get('businessName') || t('default_business_name');
 
     const [userId, setUserId] = useState('');
+    const [ownerName, setOwnerName] = useState<string>('Client');
     const [pets, setPets] = useState<Pet[]>([]);
+
     const [selectedPetIds, setSelectedPetIds] = useState<string[]>([]);
 
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -174,8 +176,16 @@ export default function IndividualBookAssessmentPage() {
 
             setUserId(uid);
 
+            // -------- Owner profile (MATCH DAYCARE) --------
+            const usnap = await getDoc(doc(db, 'users', uid)).catch(() => null);
+            const fn = (usnap?.data()?.firstName as string) || '';
+            const ln = (usnap?.data()?.lastName as string) || '';
+            const on = `${fn} ${ln}`.trim();
+            if (on) setOwnerName(on);
+
             // -------- Pets --------
             const psnap = await getDocs(collection(db, 'users', uid, 'pets'));
+
             const list: Pet[] = psnap.docs.map(d => ({
                 id: d.id,
                 name: d.data().petName || 'Pet',
@@ -562,6 +572,7 @@ export default function IndividualBookAssessmentPage() {
                             rtdbRef(rtdb, `upcomingReservations/${businessId}/${realtimeKey}-${pid}`),
                             {
                                 dogName: pet?.name || 'Dog',
+                                ownerName,
                                 type: 'Assessment',
                                 date: deviceKey,
                                 dateBusinessTZ: dateBizKey,

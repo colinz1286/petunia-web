@@ -82,10 +82,22 @@ export default function BoardingAndDaycareMessageClientPage() {
         return () => unsub();
     }, [router, locale]);
 
-    // ✅ Attach Firestore listener
     useEffect(() => {
         if (!userId || !businessId || !clientId) return;
-        attachListener();
+
+        let unsubscribe: (() => void) | undefined;
+        let cancelled = false;
+
+        ensureThreadExistsAndWait().then(() => {
+            if (!cancelled) {
+                unsubscribe = attachListener();
+            }
+        });
+
+        return () => {
+            cancelled = true;
+            if (unsubscribe) unsubscribe();
+        };
     }, [userId, businessId, clientId]);
 
     // ======================================================
@@ -97,10 +109,33 @@ export default function BoardingAndDaycareMessageClientPage() {
 
     const threadDoc = () => doc(db, 'messages', threadId);
 
-    const attachListener = async () => {
-        await ensureThreadExists();
+    const ensureThreadExistsAndWait = async () => {
+        const threadRef = threadDoc();
+        const snap = await getDoc(threadRef);
 
+        if (snap.exists()) return;
+
+        await setDoc(threadRef, {
+            threadId,
+            businessId,
+            userId: clientId,
+            participants: [businessId, clientId],
+            lastMessageText: '',
+            lastMessageAt: serverTimestamp(),
+            unreadBy: { [businessId]: 0, [clientId]: 0 },
+            lastReadAt: {
+                [businessId]: serverTimestamp(),
+                [clientId]: serverTimestamp(),
+            },
+        });
+
+        // 🔒 Hard wait until readable by rules
+        await getDoc(threadRef);
+    };
+
+    const attachListener = () => {
         const q = query(messagesCollection(), orderBy('sentAtClient', 'asc'));
+
         return onSnapshot(q, async (snapshot) => {
             const msgs: ChatMessage[] = snapshot.docs.map((docSnap) => {
                 const data = docSnap.data();
@@ -113,29 +148,10 @@ export default function BoardingAndDaycareMessageClientPage() {
                     read: data.read ?? false,
                 };
             });
+
             setMessages(msgs);
             await markUnreadAsRead(msgs);
         });
-    };
-
-    const ensureThreadExists = async () => {
-        const threadRef = threadDoc();
-        const snap = await getDoc(threadRef);
-        if (!snap.exists()) {
-            await setDoc(threadRef, {
-                threadId,
-                businessId,
-                userId: clientId,
-                participants: [businessId, clientId],
-                lastMessageText: '',
-                lastMessageAt: serverTimestamp(),
-                unreadBy: { [businessId]: 0, [clientId]: 0 },
-                lastReadAt: {
-                    [businessId]: serverTimestamp(),
-                    [clientId]: serverTimestamp(),
-                },
-            });
-        }
     };
 
     const markUnreadAsRead = async (msgs: ChatMessage[]) => {
