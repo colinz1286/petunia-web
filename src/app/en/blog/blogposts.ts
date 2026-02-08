@@ -10,6 +10,29 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'westminster-2026-doberman-best-in-show',
+        title:
+            'Westminster 2026: Why a Doberman Winning Best in Show Matters Beyond the Show Ring',
+        date: 'February 8, 2026',
+        description:
+            'An in-depth, owner-first look at why a Doberman Pinscher winning Best in Show at Westminster 2026 matters far beyond the show ring, including health, temperament myths, ethical breeding, and real-world impacts on families and rescues.',
+        component: () =>
+            import('./posts/westminster-2026-doberman-best-in-show'),
+        categories: ['owner', 'breed_specific_guides', 'breeder', 'rescue'],
+        breed: 'Doberman Pinscher'
+    },
+    {
+        slug: 'new-york-shelter-rescue-standards-article-26c',
+        title:
+            'New York Shelter & Rescue Standards (Article 26-C): What Adopters Should Know',
+        date: 'February 7, 2026',
+        description:
+            'A plain-English guide to New York’s new Article 26-C shelter and rescue standards, explaining why rescues may ask more questions, move more slowly, or charge more, and how higher standards aim to improve animal welfare, transparency, and adopter confidence.',
+        component: () =>
+            import('./posts/new-york-shelter-rescue-standards-article-26c'),
+        categories: ['owner', 'rescue', 'vet']
+    },
+    {
         slug: 'labor-forecast-2026-2029-hiring-wages-turnover-and-sitter-surge-spillover-for-boarding-and-daycare-facilities',
         title: 'Labor Forecast 2026–2029 — Hiring, Wages, Turnover, and Sitter Surge Spillover for Boarding & Daycare Facilities',
         date: 'January 28, 2026',

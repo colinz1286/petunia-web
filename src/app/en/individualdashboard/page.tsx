@@ -90,7 +90,7 @@ export default function IndividualDashboardPage() {
         loadReminders(uid),
         loadNotifications(uid),
         checkEmployeeStatus(email),
-        loadUnreadMessages(uid), // 🔴 new call
+        // loadUnreadMessages(uid), // 🔴 new call
       ]);
     });
     return () => unsub();
