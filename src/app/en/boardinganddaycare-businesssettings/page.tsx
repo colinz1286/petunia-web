@@ -55,6 +55,12 @@ export default function BusinessSettingsPage() {
     const [requiresAssessment, setRequiresAssessment] = useState(false);
     const [temperamentTestRequired, setTemperamentTestRequired] = useState(false);
 
+    // --- Daycare Payment Settings (matches iOS) ---
+    //const [paymentsEnabled, setPaymentsEnabled] = useState(false);
+    //const [daycarePayAtBookingEnabled, setDaycarePayAtBookingEnabled] = useState(false);
+    //const [daycareInvoiceAfterAttendanceEnabled, setDaycareInvoiceAfterAttendanceEnabled] = useState(false);
+    //const [daycarePayAtPickupEnabled, setDaycarePayAtPickupEnabled] = useState(false);
+
     // NEW — Boarding “What To Bring” lists (matches iOS)
     const [boardingRequiredItems, setBoardingRequiredItems] = useState<string[]>(['']);
     const [boardingProhibitedItems, setBoardingProhibitedItems] = useState<string[]>(['']);
@@ -78,7 +84,7 @@ export default function BusinessSettingsPage() {
     const [dropOffTimeRequiredAssessment, setDropOffTimeRequiredAssessment] = useState(false);
     const [pickUpTimeRequiredAssessment, setPickUpTimeRequiredAssessment] = useState(false);
 
-    const[assessmentDropOffTimes, setAssessmentDropOffTimes] = useState<Record<string, string[]>>({});
+    const [assessmentDropOffTimes, setAssessmentDropOffTimes] = useState<Record<string, string[]>>({});
     const [assessmentPickUpTimes, setAssessmentPickUpTimes] = useState<Record<string, string[]>>({});
     const [noAssessmentDays, setNoAssessmentDays] = useState<Set<string>>(new Set());
 
@@ -200,6 +206,15 @@ export default function BusinessSettingsPage() {
                 setGroomingServices(data.groomingServices || ['']);
                 setRequiresAssessment(data.requiresAssessment || false);
 
+                // --- Load Daycare Payment Settings (matches iOS) ---
+                //const paymentSettings = data.paymentSettings || {};
+                //setPaymentsEnabled(!!paymentSettings.enabled);
+
+                //const daycarePayments = paymentSettings.daycare || {};
+                //setDaycarePayAtBookingEnabled(!!daycarePayments.payAtBooking);
+                //setDaycareInvoiceAfterAttendanceEnabled(!!daycarePayments.invoiceAfterAttendance);
+                //setDaycarePayAtPickupEnabled(!!daycarePayments.payAtPickup);
+
                 // NEW — What To Bring (Boarding only)
                 setBoardingRequiredItems(data.boardingRequiredItems || ['']);
                 setBoardingProhibitedItems(data.boardingProhibitedItems || ['']);
@@ -310,6 +325,15 @@ export default function BusinessSettingsPage() {
 
             requiresAssessment,
             temperamentTestRequired,
+
+            //paymentSettings: {
+            //enabled: paymentsEnabled,
+            //daycare: {
+            //payAtBooking: daycarePayAtBookingEnabled,
+            //invoiceAfterAttendance: daycareInvoiceAfterAttendanceEnabled,
+            //payAtPickup: daycarePayAtPickupEnabled,
+            //},
+            //},
 
             requireDaycareReservationApproval,
             requireBoardingReservationApproval,
@@ -679,6 +703,90 @@ export default function BusinessSettingsPage() {
                             </div>
                         )}
                     </div>
+
+                    {/*
+────────────────────────────────────────────────────────
+Payments (Daycare only) — TEMPORARILY BLOCKED
+Do not remove. Will be re-enabled later.
+────────────────────────────────────────────────────────
+
+{offersDaycare && (
+    <div className="mt-10 space-y-3">
+        <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
+            Payments
+        </h2>
+
+        <Toggle
+            label="Accept payments with Petunia (Stripe)"
+            checked={paymentsEnabled}
+            onChange={(val) => {
+                setPaymentsEnabled(val);
+                if (!val) {
+                    setDaycarePayAtBookingEnabled(false);
+                    setDaycareInvoiceAfterAttendanceEnabled(false);
+                    setDaycarePayAtPickupEnabled(false);
+                }
+            }}
+        />
+
+        <p className="text-xs text-gray-500 text-center">
+            Payments are optional. You may accept payment at booking, after attendance, or at pickup.
+        </p>
+
+        {paymentsEnabled && (
+            <div className="mt-4 space-y-2">
+                <h3 className="text-sm font-semibold text-[color:var(--color-accent)] text-center">
+                    Daycare Payment Settings
+                </h3>
+
+                <Toggle
+                    label="Pay at booking (online card)"
+                    checked={daycarePayAtBookingEnabled}
+                    onChange={setDaycarePayAtBookingEnabled}
+                />
+
+                {daycarePayAtBookingEnabled && (
+                    <p className="text-xs text-gray-500 ml-8">
+                        Clients pay in full when booking daycare. Deposits are not supported.
+                    </p>
+                )}
+
+                <Toggle
+                    label="Invoice after attendance"
+                    checked={daycareInvoiceAfterAttendanceEnabled}
+                    onChange={setDaycareInvoiceAfterAttendanceEnabled}
+                />
+
+                {daycareInvoiceAfterAttendanceEnabled && (
+                    <p className="text-xs text-gray-500 ml-8">
+                        Invoices are generated after daycare attendance and sent to the client.
+                    </p>
+                )}
+
+                <Toggle
+                    label="Pay at pickup / deferred payment"
+                    checked={daycarePayAtPickupEnabled}
+                    onChange={setDaycarePayAtPickupEnabled}
+                />
+
+                {daycarePayAtPickupEnabled && (
+                    <p className="text-xs text-gray-500 ml-8">
+                        Payment is collected after daycare, either through Petunia or externally.
+                    </p>
+                )}
+
+                {!daycarePayAtBookingEnabled &&
+                    !daycareInvoiceAfterAttendanceEnabled &&
+                    !daycarePayAtPickupEnabled && (
+                        <p className="text-xs text-red-600 text-center mt-2">
+                            At least one payment method must be enabled to accept payments.
+                        </p>
+                    )}
+            </div>
+        )}
+    </div>
+)}
+*/}
 
                     {/* What To Bring With You (Boarding only) */}
                     {offersBoarding && (

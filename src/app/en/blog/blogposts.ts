@@ -10,6 +10,17 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'akc-newly-recognized-breeds-2026-owner-guide',
+        title:
+            'AKC’s Newly Recognized Breeds for 2026 (and What First-Time Owners Get Wrong)',
+        date: 'February 9, 2026',
+        description:
+            'A practical, owner-first breakdown of the American Kennel Club’s newly recognized dog breeds for 2026, covering exercise needs, grooming commitments, training styles, common first-time owner mistakes, and how to find reputable breeders instead of impulse purchases.',
+        component: () =>
+            import('./posts/akc-newly-recognized-breeds-2026-owner-guide'),
+        categories: ['owner', 'breeder']
+    },
+    {
         slug: 'westminster-2026-doberman-best-in-show',
         title:
             'Westminster 2026: Why a Doberman Winning Best in Show Matters Beyond the Show Ring',
@@ -31,6 +42,28 @@ export const blogPosts: BlogPostEntry[] = [
         component: () =>
             import('./posts/new-york-shelter-rescue-standards-article-26c'),
         categories: ['owner', 'rescue', 'vet']
+    },
+    {
+        slug: 'ohio-averys-law-dangerous-vicious-dogs-2026',
+        title:
+            'Ohio’s Avery’s Law (Effective March 18, 2026): What ‘Dangerous/Vicious Dog’ Updates Mean for Owners',
+        date: 'February 6, 2026',
+        description:
+            'A plain-English guide to Ohio’s Avery’s Law, effective March 18, 2026, explaining updated dangerous and vicious dog designations, liability insurance requirements, due process protections, impacts on dog parks and daycares, and why breed stereotypes are often confused with documented behavior history.',
+        component: () =>
+            import('./posts/ohio-averys-law-dangerous-vicious-dogs-2026'),
+        categories: ['owner', 'vet', 'rescue']
+    },
+    {
+        slug: 'usda-puppy-mill-enforcement-aspca-2025',
+        title:
+            'Is the USDA Actually Enforcing Puppy Mill Protections? What the ASPCA’s 2025 Critique Reveals',
+        date: 'February 5, 2026',
+        description:
+            'A plain-English look at how USDA breeder enforcement is supposed to work, what the ASPCA says is actually happening in 2025, and how prospective dog owners can verify licensed breeder status and inspection history before buying a puppy.',
+        component: () =>
+            import('./posts/usda-puppy-mill-enforcement-aspca-2025'),
+        categories: ['owner', 'breeder', 'rescue']
     },
     {
         slug: 'labor-forecast-2026-2029-hiring-wages-turnover-and-sitter-surge-spillover-for-boarding-and-daycare-facilities',
