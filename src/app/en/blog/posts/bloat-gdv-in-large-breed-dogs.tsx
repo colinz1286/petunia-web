@@ -25,8 +25,6 @@ export default function BloatGDVDogs() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'bloat-gdv-in-large-breed-dogs';
-
   const description =
     'A comprehensive, evidence-aware guide to canine bloat (gastric dilatation-volvulus): what it is, early signs, emergency response, diagnostics and surgery, preventive gastropexy, feeding and exercise rules, and SOPs for households and boarding/daycare facilities.';
 

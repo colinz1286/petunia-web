@@ -25,7 +25,6 @@ export default function WhatTypeOfDogIsBestForMe() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'what-type-of-dog-is-best-for-me';
   const description =
     'A step-by-step, vet-informed framework to choose a dog that truly fits your life: time, space, energy, training, grooming, health risks, budget, and family goals—with archetypes, shortlists, and operator-grade checklists.';
 

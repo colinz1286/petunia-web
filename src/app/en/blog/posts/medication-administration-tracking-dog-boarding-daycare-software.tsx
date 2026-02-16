@@ -29,8 +29,6 @@ export default function MedicationAdministrationTrackingForBoardingAndDaycare() 
   const description =
     'Why medication administration tracking belongs at the core of dog boarding software and dog daycare software: precise intake, MAR logs, double-check protocols, controlled substances, incident reporting, owner communication, and KPIs that protect dogs, teams, and margins.';
 
-  const slug = 'medication-administration-tracking-dog-boarding-daycare-software';
-
   return (
     <>
       <Head>

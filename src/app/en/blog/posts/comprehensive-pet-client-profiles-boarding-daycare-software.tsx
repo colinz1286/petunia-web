@@ -7,7 +7,6 @@ import { useLocale } from 'next-intl';
 export default function ComprehensivePetClientProfilesBoardingDaycareSoftware() {
   const locale = useLocale();
 
-  const slug = 'comprehensive-pet-client-profiles-boarding-daycare-software';
   const title =
     'Comprehensive Pet & Client Profiles in Dog Boarding Software and Dog Daycare Software: Safer Operations, Faster Check-Ins, and Happier Clients';
   const date = 'August 23, 2025';

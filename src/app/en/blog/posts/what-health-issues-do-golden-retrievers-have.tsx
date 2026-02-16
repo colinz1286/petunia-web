@@ -26,7 +26,6 @@ export default function WhatHealthIssuesDoGoldenRetrieversHave() {
         breed_specific_guides: 'Breed Specific Guides',
     };
 
-    const slug = 'what-health-issues-do-golden-retrievers-have';
     const description =
         'Common Golden Retriever health problems—what to watch for and how to prevent them. Covers cancer risks, skin &amp; ear disease, orthopedic issues, eyes (GRPU, cataracts), heart screening (cardiac), hypothyroidism, ichthyosis, GI emergencies, senior care, and life-stage checklists with operator-grade routines.';
 

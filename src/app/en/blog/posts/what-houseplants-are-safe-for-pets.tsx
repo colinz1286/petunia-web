@@ -24,8 +24,6 @@ export default function WhatHouseplantsAreSafeForPets() {
     breeder: 'Breeders',
     breed_specific_guides: 'Breed Specific Guides',
   };
-
-  const slug = 'what-houseplants-are-safe-for-pets';
   const description =
     'A practical, vet-informed guide to pet-safe houseplants for homes with cats &amp; dogs—top non-toxic picks (with scientific names), risky look-alikes to avoid, room-by-room checklists, and operator-grade systems for prevention and emergency response.';
 

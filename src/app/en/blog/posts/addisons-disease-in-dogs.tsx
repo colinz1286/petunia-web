@@ -25,8 +25,6 @@ export default function AddisonsDiseaseDogs() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'addisons-disease-in-dogs';
-
   const description =
     'A practical, evidence-aware guide to Addison’s disease (hypoadrenocorticism) in dogs: what it is, why it is called the “great pretender,” early and crisis signs, ACTH stimulation test, lifelong treatment (glucocorticoids, mineralocorticoids), stress dosing, monitoring plans, travel/boarding checklists, and owner SOPs.';
 

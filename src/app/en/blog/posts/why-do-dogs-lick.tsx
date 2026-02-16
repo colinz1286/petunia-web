@@ -28,8 +28,6 @@ export default function WhyDoDogsLick() {
   const description =
     'A comprehensive guide to why dogs lick: normal self-grooming, affection, taste exploration, stress relief, and medical causes like allergies, pain, or nausea. Learn how to tell what is normal, what needs training, and what deserves a veterinary visit. Includes practical checklists, home-care tips, and calm behavior strategies.';
 
-  const slug = 'why-do-dogs-lick';
-
   return (
     <>
       <Head>

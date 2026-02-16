@@ -7,7 +7,6 @@ import { useLocale } from 'next-intl';
 export default function AllergyDietTrackingDogBoardingDaycareSoftware() {
   const locale = useLocale();
 
-  const slug = 'allergy-diet-tracking-dog-boarding-daycare-software';
   const title =
     'Allergy & Diet Tracking in Dog Boarding Software and Dog Daycare Software: Safer Meals, Fewer Incidents, and Calmer Operations';
   const date = 'August 23, 2025';

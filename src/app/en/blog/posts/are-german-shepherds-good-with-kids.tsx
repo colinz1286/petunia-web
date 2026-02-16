@@ -26,7 +26,6 @@ export default function AreGermanShepherdsGoodWithKids() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'are-german-shepherds-good-with-kids';
   const description =
     'A calm, step-by-step framework for deciding whether a German Shepherd is the right fit for a family with children—temperament, socialization, home setup, training plans, play rules, safety systems, red flags, and printable checklists.';
 

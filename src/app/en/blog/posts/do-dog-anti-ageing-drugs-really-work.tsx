@@ -13,8 +13,6 @@ export default function DoDogAntiAgeingDrugsReallyWork() {
   const description =
     'A comprehensive, owner-first guide to canine longevity drugs: what people mean by “anti-ageing,” what has actually been tested, how FDA language is often misunderstood, which biomarkers matter (and which can mislead), safety questions to ask, and how to evaluate early trial claims without false hope.';
 
-  const slug = 'do-dog-anti-ageing-drugs-really-work';
-
   const categories = ['owner', 'veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {

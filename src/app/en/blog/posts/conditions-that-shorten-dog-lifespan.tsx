@@ -12,7 +12,6 @@ export default function ConditionsThatShortenDogLifespan() {
   const date = 'November 26, 2025';
   const description =
     'A science-backed examination of the most common conditions that shorten canine lifespan, including obesity, arthritis, dental disease, kidney disease, heart disease, and strategies owners can use to slow disease progression and improve longevity.';
-  const slug = 'conditions-that-shorten-dog-lifespan';
 
   const categories = ['owner', 'veterinary'] as const;
 

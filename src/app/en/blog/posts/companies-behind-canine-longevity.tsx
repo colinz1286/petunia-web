@@ -12,7 +12,6 @@ export default function CompaniesBehindCanineLongevity() {
   const date = 'December 5, 2025';
   const description =
     'A deep dive into the biotech and research groups shaping the future of canine longevity, including Loyal, Embark, the Dog Ageing Project, university laboratories, funding transparency, scientific rigor, and realistic expectations for anti-ageing breakthroughs.';
-  const slug = 'companies-behind-canine-longevity';
 
   const categories = ['owner', 'veterinary'] as const;
 

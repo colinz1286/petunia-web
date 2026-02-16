@@ -26,7 +26,6 @@ export default function AreGermanShepherdsAggressiveOrDangerous() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'are-german-shepherds-aggressive-or-dangerous';
   const description =
     'A balanced, evidence-informed look at German Shepherd temperament and bite risk: what the data do and do not say; how genetics, socialization, training, health, and management shape behavior; line differences; scenario-based prevention; operator-grade checklists; and when to seek professional help.';
 

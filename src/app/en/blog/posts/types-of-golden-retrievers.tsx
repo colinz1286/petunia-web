@@ -26,7 +26,6 @@ export default function AreThereDifferentTypesOfGoldenRetrievers() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'types-of-golden-retrievers';
   const description =
     'Do Golden Retrievers come in different types? Understand regional styles (American, British, Canadian), field vs. show lines, the “English cream” myth, similarities, differences, and how to choose the right fit for your family—with checklists and breeder vetting systems.';
 

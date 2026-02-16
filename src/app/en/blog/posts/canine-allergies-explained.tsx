@@ -25,8 +25,6 @@ export default function CanineAllergiesExplained() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'canine-allergies-explained';
-
   const description =
     'A practical, evidence-aware guide to dog allergies: food vs. environmental triggers, flea allergy dermatitis, how to run an elimination diet, ear/skin flare protocols, meds and nutraceuticals, home tweaks, grooming, and SOPs for daily management.';
 

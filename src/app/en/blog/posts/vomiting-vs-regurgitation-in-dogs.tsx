@@ -25,8 +25,6 @@ export default function VomitingVsRegurgitationInDogs() {
     food: 'Dog Food & Nutrition',
   };
 
-  const slug = 'vomiting-vs-regurgitation-in-dogs';
-
   const description =
     'A practical, calm guide for worried owners: how to distinguish vomiting from regurgitation, why the difference matters (aspiration risk, obstruction, megaesophagus), what to track, and clear ER thresholds.';
 

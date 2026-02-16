@@ -25,8 +25,6 @@ export default function CaneCorsoTemperamentExplained() {
         breed_specific_guides: 'Breed Specific Guides',
     };
 
-    const slug = 'cane-corso-temperament-explained';
-
     const description =
         'A comprehensive, evidence-informed guide to Cane Corso temperament: what guardian instincts look like at home, why neutrality beats friendliness, how adolescence changes behavior, how to prevent reactivity, what training methods work best, realistic expectations for kids and visitors, multi-pet households, and practical routines that keep a powerful dog calm and safe.';
 

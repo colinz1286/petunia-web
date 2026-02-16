@@ -25,8 +25,6 @@ export default function TrachealCollapseSmallBreeds() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'tracheal-collapse-in-small-breeds';
-
   const description =
     'A practical, evidence-aware guide for owners of small dogs with tracheal collapse: hallmark cough patterns, triggers, at-home environment changes, harness and weight strategies, veterinary medications, anesthesia and dental considerations, stent/surgery pathways, monitoring, and SOPs.';
 

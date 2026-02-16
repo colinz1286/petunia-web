@@ -29,8 +29,6 @@ export default function VaccinationTrackingAlertsForBoardingAndDaycare() {
   const description =
     'Why vaccination tracking and automated alerts are mission-critical in dog boarding & dog daycare software. Learn core vs non-core vaccines, regional nuances, airtight policy design, booking-flow enforcement, owner uploads, audit-ready reporting, and the KPIs that move occupancy, safety, and trust.';
 
-  const slug = 'vaccination-tracking-alerts-dog-boarding-daycare-software';
-
   return (
     <>
       <Head>

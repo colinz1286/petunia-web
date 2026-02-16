@@ -26,8 +26,6 @@ export default function WhatHealthProblemsAreCommonInGermanShepherds() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'what-health-problems-are-common-in-german-shepherds';
-
   // Keep meta description concise (roughly 150–200 characters)
   const description =
     'Common German Shepherd health risks explained clearly: hips/elbows, spine, DM, EPI/IBD/megaesophagus, GDV, skin disease, pannus, seizures, and key red flags with practical screening steps.';

@@ -29,8 +29,6 @@ export default function BehaviorTemperamentNotesForBoardingAndDaycare() {
   const description =
     'Why structured behavior & temperament notes belong at the heart of dog boarding software and dog daycare software. Build safer group play, smarter staff assignments, and calmer operations with standardized tags, incident logs, and proactive alerts.';
 
-  const slug = 'behavior-temperament-notes-dog-boarding-daycare-software';
-
   return (
     <>
       <Head>

@@ -26,7 +26,7 @@ export default function WhyDoDogsEatGrass() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'why-do-dogs-eat-grass';
+
   const description =
     'Dogs grazing on grass is common and usually normal. This guide unpacks the best evidence on “why,” sorts normal vs. concerning patterns, flags real risks (chemicals, parasites, toxic plants), and gives a practical, checklist-driven plan to manage it safely.';
 

@@ -25,8 +25,6 @@ export default function DoGoldenRetrieversShedALot() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'do-golden-retrievers-shed-a-lot';
-
   const description =
     'Yes—Golden Retrievers shed. This evidence-informed field guide explains why, how to manage “coat blow,” allergy realities and dander control, grooming schedules and tools, bathing & drying protocols, nutrition for skin/coat, medical red flags for excessive hair loss, and copy/paste checklists that keep hair under control.';
 

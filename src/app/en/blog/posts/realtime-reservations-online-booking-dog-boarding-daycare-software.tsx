@@ -7,7 +7,7 @@ import { useLocale } from 'next-intl';
 export default function RealTimeReservationsOnlineBookingDogBoardingDaycareSoftware() {
   const locale = useLocale();
 
-  const slug = 'realtime-reservations-online-booking-dog-boarding-daycare-software';
+
   const title =
     'Real-Time Reservations & Online Booking in Dog Boarding Software and Dog Daycare Software: A Practical Guide to Higher Occupancy, Fewer No-Shows, and Happier Clients';
   const date = 'August 23, 2025';

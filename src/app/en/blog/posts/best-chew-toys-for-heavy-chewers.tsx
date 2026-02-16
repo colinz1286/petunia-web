@@ -7,7 +7,6 @@ import { useLocale } from 'next-intl';
 export default function BestChewToysForHeavyChewers() {
   const locale = useLocale();
 
-  const slug = 'best-chew-toys-for-heavy-chewers';
   const title = 'Best Chew Toys for Heavy Chewers: Materials, Sizing, Safer Picks, and Real-World Handling for Homes & Facilities';
   const date = 'August 25, 2025';
   const categories = ['owner', 'boarding', 'daycare'] as const;

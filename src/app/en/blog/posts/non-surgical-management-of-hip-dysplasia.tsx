@@ -11,7 +11,6 @@ export default function NonSurgicalManagementOfHipDysplasia() {
   const title =
     'Non-Surgical Management of Hip Dysplasia in Dogs: Evidence-Based Options That Actually Improve Comfort and Mobility';
   const date = 'January 1, 2026';
-  const slug = 'non-surgical-management-of-hip-dysplasia';
 
   const description =
     'A comprehensive, owner-first guide to managing canine hip dysplasia without surgery, including weight and exercise plans, physical therapy, medications, joint injections, supplements, home modifications, rehab timelines, and when to reconsider surgery.';
@@ -36,7 +35,6 @@ export default function NonSurgicalManagementOfHipDysplasia() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={`https://www.petuniapets.com/${locale}/blog/${slug}`} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

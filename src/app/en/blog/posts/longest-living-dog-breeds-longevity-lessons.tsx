@@ -12,7 +12,6 @@ export default function LongestLivingDogBreedsLongevityLessons() {
   const date = 'December 1, 2025';
   const description =
     'A scientific look at dog breeds with exceptionally long lifespans, examining genetic factors, metabolic traits, lifestyle patterns, growth speed, and lessons all owners can apply to support healthy ageing.';
-  const slug = 'longest-living-dog-breeds-longevity-lessons';
 
   const categories = ['owner', 'veterinary', 'breed_specific_guides'] as const;
 

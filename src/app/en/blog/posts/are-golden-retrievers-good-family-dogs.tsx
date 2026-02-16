@@ -25,8 +25,6 @@ export default function AreGoldenRetrieversGoodFamilyDogs() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'are-golden-retrievers-good-family-dogs';
-
   const description =
     'A field-tested, evidence-informed guide to Golden Retrievers as family dogs: temperament, kid safety systems, training and enrichment, exercise needs, shedding/grooming, health predispositions, budgeting, adoption vs. breeder due diligence, travel/boarding policies, and ready-to-use checklists. Professional veterinary sources included.';
 

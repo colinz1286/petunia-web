@@ -29,8 +29,6 @@ export default function DigitalMarketingSocialMediaForBoardingDaycare() {
   const description =
     'A complete, practical playbook for dog boarding and dog daycare marketing: local SEO, Google Business Profile, Facebook and Instagram content, short-form video, ads that actually convert, reviews, referrals, SMS/email, partnerships, seasonal promos, KPIs, and templates you can ship this week.';
 
-  const slug = 'digital-marketing-social-media-dog-boarding-daycare';
-
   return (
     <>
       <Head>

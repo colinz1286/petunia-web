@@ -25,8 +25,6 @@ export default function ManagingGroupPlaySafely() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'managing-group-play-safely';
-
   const description =
     'An operator-grade manual for safe playgroups: intake behavior assessments, grouping logic, supervision ratios, arousal management, environment design, equipment staging, break-up protocols, documentation standards, and printable SOPs for training staff and protecting dogs.';
 

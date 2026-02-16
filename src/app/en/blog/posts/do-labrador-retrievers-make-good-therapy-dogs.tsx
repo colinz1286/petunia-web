@@ -25,8 +25,6 @@ export default function DoLabsMakeGoodTherapyDogs() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'do-labrador-retrievers-make-good-therapy-dogs';
-
   const description =
     'Labs are friendly, biddable, and people-focused—great raw material for therapy work—but success hinges on genetics, socialization, impulse control, handler skill, and welfare-first infection control. This operator-grade guide details the differences between therapy dogs vs. service/ESA, settings where Labs shine, breed-specific pitfalls, training steps (CGC → registration → AKC Therapy Dog titles), facility SOPs, insurance, and ethical red-flags—plus checklists you can copy-paste.';
 

@@ -10,7 +10,6 @@ export default function CostOfHipDysplasiaTreatmentInDogs() {
   const title =
     'Cost of Hip Dysplasia Treatment in Dogs: Non-Surgical Care, Rehab, Injections, and Surgical Ranges';
   const date = 'January 10, 2026';
-  const slug = 'cost-of-hip-dysplasia-treatment-in-dogs';
 
   const description =
     'A comprehensive, owner-first guide to the real-world costs of hip dysplasia care in dogs: vet exams and X-rays, PennHIP and OFA, rehab and physical therapy, meds and monitoring, injections, assistive devices, and realistic surgical cost ranges plus budgeting strategies.';

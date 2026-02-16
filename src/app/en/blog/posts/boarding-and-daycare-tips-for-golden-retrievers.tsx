@@ -25,8 +25,6 @@ export default function BoardingAndDaycareTipsForGoldenRetrievers() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'boarding-and-daycare-tips-for-golden-retrievers';
-
   const description =
     'Operator-grade guidance for boarding or enrolling a Golden Retriever in daycare: readiness and vaccine planning, ear/skin care after water play, hot spot prevention, weight and orthopedic protection, cancer-aware monitoring, enrichment, rest architecture, heat/water safety, incident escalation, and copy/paste checklists. Professional veterinary sources included.';
 
