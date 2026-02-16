@@ -11,7 +11,6 @@ export default function BoxerMastCellTumors2025() {
   const date = 'October 23, 2025';
   const description =
     'Boxers are genetically predisposed to mast cell tumors, a common but potentially serious form of skin cancer in dogs. Learn the symptoms, diagnosis, and treatment options for early detection and better outcomes.';
-  const canonical = `https://www.petuniapets.com/${locale}/blog/boxer-mast-cell-tumors-2025`;
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -23,7 +22,6 @@ export default function BoxerMastCellTumors2025() {
     publisher: { '@type': 'Organization', name: 'Petunia Pets' },
     description,
     image: 'https://cdn.petuniapets.com/blog/boxer-mast-cell-tumors-2025.jpg',
-    mainEntityOfPage: canonical,
   };
 
   return (
@@ -32,7 +30,6 @@ export default function BoxerMastCellTumors2025() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonical} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <script

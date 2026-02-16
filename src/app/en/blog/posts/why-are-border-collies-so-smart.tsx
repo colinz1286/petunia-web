@@ -18,10 +18,6 @@ export default function WhyAreBorderColliesSoSmart() {
           content="Learn why Border Collies are considered the smartest dog breed. Explore working-dog intelligence, herding instincts, problem-solving skills, and the mental stimulation Border Collies need."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/why-are-border-collies-so-smart`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

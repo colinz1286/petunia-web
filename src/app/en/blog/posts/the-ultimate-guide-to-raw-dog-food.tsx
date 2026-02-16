@@ -32,10 +32,6 @@ export default function UltimateGuideToRawDogFood() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/the-ultimate-guide-to-raw-dog-food`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

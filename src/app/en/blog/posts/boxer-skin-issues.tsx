@@ -18,10 +18,7 @@ export default function BoxerSkinIssues() {
           content="Boxers are prone to skin issues including allergies, lumps, and tumors. Learn the early warning signs, treatment options, and care tips for maintaining healthy skin in your Boxer."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/boxer-skin-issues`}
-        />
+        
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

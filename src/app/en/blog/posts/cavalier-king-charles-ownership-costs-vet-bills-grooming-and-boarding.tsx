@@ -33,10 +33,7 @@ export default function CavalierKingCharlesOwnershipCosts() {
         <meta name="description" content={description} />
         {/* House rule: do not use the forbidden word; use "all" */}
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/cavalier-king-charles-ownership-costs-vet-bills-grooming-and-boarding`}
-        />
+       
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

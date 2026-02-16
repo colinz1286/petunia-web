@@ -18,10 +18,6 @@ export default function AllergySkinIssues() {
           content="Learn how allergies cause ear infections, hot spots, and skin irritation in dogs. Discover the connection, early warning signs, and prevention and treatment tips for healthier pets."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/allergy-ear-skin-hotspots`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

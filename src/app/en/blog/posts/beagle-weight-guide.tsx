@@ -18,10 +18,6 @@ export default function BeagleWeightGuide() {
           content="Discover the ideal Beagle weight ranges, feeding guidelines, portion charts, and vet-backed strategies to prevent obesity. Keep your Beagle healthy, active, and fit for life."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/beagle-weight-guide`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

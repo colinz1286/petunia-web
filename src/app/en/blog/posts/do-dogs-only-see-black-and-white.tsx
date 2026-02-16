@@ -35,10 +35,7 @@ export default function DoDogsOnlySeeBlackAndWhite() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="index,follow" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/do-dogs-only-see-black-and-white`}
-        />
+        
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

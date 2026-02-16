@@ -10,8 +10,6 @@ export default function HighTurnoverBoardingDaycareGuide() {
   const title =
     'Why Employee Turnover Is So High in the Pet Boarding and Daycare Industry—and What You Can Do About It';
   const date = 'August 28, 2025';
-  const slug =
-    'why-employee-turnover-is-so-high-in-the-pet-boarding-and-daycare-industry-and-what-you-can-do-about-it';
   const categories = ['boarding', 'daycare', 'owner'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -36,10 +34,6 @@ export default function HighTurnoverBoardingDaycareGuide() {
         <meta name="description" content={description} />
         {/* Per house rules */}
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

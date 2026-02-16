@@ -18,10 +18,6 @@ export default function SeparationAnxietyDogs() {
           content="Learn the signs of separation anxiety in dogs, from pacing and barking to destructive behavior. Explore proven coping strategies including enrichment, daycare, and when to seek professional help."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/separation-anxiety-dogs`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

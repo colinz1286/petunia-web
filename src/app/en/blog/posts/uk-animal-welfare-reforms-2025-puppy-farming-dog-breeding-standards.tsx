@@ -27,15 +27,12 @@ export default function UkAnimalWelfareReforms2025() {
   const description =
     'Plain-English, owner-first breakdown of the UK Animal Welfare Strategy (Dec 2025): proposed actions to curb low-welfare dog breeding and puppy farming, improve traceability and enforcement, regulate breeding-related services, and phase out certain cruel practices (plus what to watch in 2026).';
 
-  const canonicalPath = 'uk-animal-welfare-reforms-2025-puppy-farming-dog-breeding-standards';
-
   return (
     <>
       <Head>
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={`https://www.petuniapets.com/${locale}/blog/${canonicalPath}`} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

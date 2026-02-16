@@ -32,10 +32,7 @@ export default function BostonTerrierVsPug2025() {
           content="A clear comparison of Boston Terriers and Pugs, covering temperament, grooming and shedding, health strengths and weaknesses, exercise needs, recent demand trends, and which lifestyle each breed fits best."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/boston-terrier-vs-pug-2025`}
-        />
+        
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

@@ -27,15 +27,12 @@ export default function RoverDogSitterInvestigationSanFrancisco2025() {
   const description =
     'A factual, owner-first report on the San Francisco police investigation involving a pet sitter booked on Rover, plus practical safety steps for vetting sitters and reducing risk when you travel.';
 
-  const canonicalPath = 'san-francisco-police-investigation-rover-dog-sitter-what-we-know-and-safety-steps';
-
   return (
     <>
       <Head>
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={`https://www.petuniapets.com/${locale}/blog/${canonicalPath}`} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

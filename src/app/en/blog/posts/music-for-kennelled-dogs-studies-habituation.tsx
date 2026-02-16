@@ -34,10 +34,7 @@ export default function MusicForKennelledDogsStudiesHabituation() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/music-for-kennelled-dogs-studies-habituation`}
-        />
+        
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

@@ -18,10 +18,6 @@ export default function BorderCollieBehaviorProblems() {
           content="Learn the most common Border Collie behavior problems—including nipping, herding, reactivity, excessive barking, and overstimulation—plus practical solutions to manage and prevent them."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/border-collie-behavior-problems`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

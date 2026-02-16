@@ -18,10 +18,6 @@ export default function XLBullyPolicyGuide() {
           content="A clear and factual overview of the UK’s XL Bully legislation — what the law states, how exemptions work, and what both dog owners and pet care professionals should know to stay safe and compliant."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/xl-bully-policy-guide`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

@@ -34,10 +34,6 @@ export default function AreCaneCorsosAnActiveBreed() {
         <meta name="description" content={description} />
         {/* Per user preference, avoid the word "index" here. */}
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/are-cane-corsos-an-active-breed`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

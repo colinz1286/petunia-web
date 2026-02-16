@@ -32,10 +32,7 @@ export default function BostonTerrierRecallTraining2025() {
           content="A realistic, step-by-step guide to Boston Terrier recall training, covering why recall is challenging, indoor foundations, yard and long-line work, off-leash safety, reinforcement systems, common mistakes, and distraction proofing."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/boston-terrier-recall-training-2025`}
-        />
+        
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

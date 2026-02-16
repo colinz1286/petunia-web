@@ -14,8 +14,6 @@ export default function ConditionsThatShortenDogLifespan() {
     'A science-backed examination of the most common conditions that shorten canine lifespan, including obesity, arthritis, dental disease, kidney disease, heart disease, and strategies owners can use to slow disease progression and improve longevity.';
   const slug = 'conditions-that-shorten-dog-lifespan';
 
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
-
   const categories = ['owner', 'veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -36,7 +34,6 @@ export default function ConditionsThatShortenDogLifespan() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -51,7 +48,6 @@ export default function ConditionsThatShortenDogLifespan() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

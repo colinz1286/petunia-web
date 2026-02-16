@@ -26,19 +26,13 @@ export default function MostPopularPetNames2025() {
   const description =
     'A data-informed look at the most popular pet names of 2025 from Rover&rsquo;s annual Top Pet Names report, what they reveal about culture and pet parent behavior, and the trends shaping how we name our dogs and cats.';
 
-  const canonicalPath =
-    'most-popular-dog-and-cat-names-2025-rover-top-pet-names-trends';
-
   return (
     <>
       <Head>
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${canonicalPath}`}
-        />
+       
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

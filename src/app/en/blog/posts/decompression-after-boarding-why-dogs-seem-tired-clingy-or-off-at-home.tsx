@@ -34,10 +34,7 @@ export default function DecompressionAfterBoardingWhyDogsSeemTiredClingyOrOffAtH
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/decompression-after-boarding-why-dogs-seem-tired-clingy-or-off-at-home`}
-        />
+        
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

@@ -18,10 +18,6 @@ export default function AreBeaglesGoodFamilyDogs() {
           content="Are Beagles good family dogs? Learn about their temperament, suitability for children, training needs, behavior traits, shedding considerations, and what families should expect."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/are-beagles-good-family-dogs`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

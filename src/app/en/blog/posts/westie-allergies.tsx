@@ -18,10 +18,6 @@ export default function WestieAllergies() {
           content="West Highland White Terriers are prone to allergies that cause scratching, itching, and skin issues. Learn why Westies develop allergies, the signs to watch for, and the best treatments and prevention tips."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/westie-allergies`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

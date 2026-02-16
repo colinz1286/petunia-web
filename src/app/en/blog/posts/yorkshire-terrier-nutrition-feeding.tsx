@@ -18,10 +18,6 @@ export default function YorkshireTerrierNutritionFeeding() {
                     content="Learn how to feed a Yorkshire Terrier properly from puppyhood through adulthood. This guide covers portion sizes, calorie needs, feeding schedules, toy-breed metabolism, dental health, and veterinary-supported nutrition guidelines."
                 />
                 <meta name="robots" content="all" />
-                <link
-                    rel="canonical"
-                    href={`https://www.petuniapets.com/${locale}/blog/yorkshire-terrier-nutrition-feeding`}
-                />
             </Head>
 
             <article className="prose lg:prose-xl mx-auto px-4 py-8">

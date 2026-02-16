@@ -33,10 +33,6 @@ export default function BostonTerrierAdolescence2025() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/boston-terrier-adolescence-6-18-months-2025`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

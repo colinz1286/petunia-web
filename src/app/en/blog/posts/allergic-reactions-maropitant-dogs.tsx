@@ -31,10 +31,6 @@ export default function AllergicReactionsMaropitantDogs() {
           content="Maropitant (Cerenia®) can rarely trigger allergic reactions in dogs, including facial swelling, hives, and itching. Learn how to recognize these reactions, what to do at home, when emergency care is needed, and safe treatment alternatives."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/allergic-reactions-maropitant-dogs`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

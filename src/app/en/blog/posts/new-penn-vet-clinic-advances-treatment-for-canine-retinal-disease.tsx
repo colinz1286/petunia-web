@@ -16,10 +16,7 @@ export default function CanineRetinalDiseasePennVet() {
           content="Penn Vet has opened a new specialty clinic for canine retinal disease, including progressive retinal atrophy (PRA). Learn what retinal diseases are, why they matter, current treatment challenges, and new diagnostic innovations in the U.S. and UK."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/new-penn-vet-clinic-advances-treatment-for-canine-retinal-disease`}
-        />
+       
       </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">

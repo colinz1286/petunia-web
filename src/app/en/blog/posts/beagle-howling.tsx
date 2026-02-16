@@ -18,10 +18,6 @@ export default function BeagleHowling() {
           content="Why do Beagles howl? Learn why Beagles are such vocal dogs, what their howls mean, and how to manage excessive howling using science-backed behavior guidance."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/beagle-howling`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

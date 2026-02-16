@@ -31,10 +31,7 @@ export default function PancreatitisAndFattyFoodsInDogs() {
           content="Pancreatitis is a painful and potentially serious condition in dogs, often triggered by high-fat foods. Learn symptoms, risk factors, diagnosis, treatment, and how to prevent recurrence."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/pancreatitis-and-fatty-foods-in-dogs`}
-        />
+       
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

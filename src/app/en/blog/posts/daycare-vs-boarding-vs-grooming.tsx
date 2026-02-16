@@ -27,15 +27,12 @@ export default function DaycareVsBoardingVsGroomingBlog() {
   const description =
     'Compare daycare-only vs. adding boarding and grooming from a real facility owner&rsquo;s perspective. Learn the impact on revenue, staffing, lifestyle, compliance, and operations — plus a practical framework for choosing the right service mix.';
 
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/daycare-vs-boarding-vs-grooming`;
-
   return (
     <>
       <Head>
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

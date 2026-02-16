@@ -30,15 +30,12 @@ export default function AddisonsDiseaseDogs() {
   const description =
     'A practical, evidence-aware guide to Addison’s disease (hypoadrenocorticism) in dogs: what it is, why it is called the “great pretender,” early and crisis signs, ACTH stimulation test, lifelong treatment (glucocorticoids, mineralocorticoids), stress dosing, monitoring plans, travel/boarding checklists, and owner SOPs.';
 
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
-
   return (
     <>
       <Head>
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

@@ -18,10 +18,6 @@ export default function BeagleHealthProblems() {
           content="Learn the most common Beagle health problems, including obesity, allergies, ear infections, thyroid disorders, and genetic conditions. Evidence-based guidance for early detection and prevention."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/beagle-health-problems`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

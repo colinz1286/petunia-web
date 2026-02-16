@@ -13,9 +13,6 @@ export default function SenolyticsForDogsExplained() {
   const description =
     'A comprehensive, owner-first guide to senolytics in dogs: what cellular senescence is, why senolytics are studied for healthy aging, what outcomes researchers measure (biomarkers vs real-world function), the biggest safety and interaction concerns for senior dogs, and how owners can evaluate claims without hype.';
 
-  const slug = 'senolytics-for-dogs-explained';
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
-
   const categories = ['veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -46,7 +43,6 @@ export default function SenolyticsForDogsExplained() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -60,7 +56,6 @@ export default function SenolyticsForDogsExplained() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

@@ -18,10 +18,6 @@ export default function SeniorDogHealthProblems() {
           content="Learn about the top 10 health problems senior dogs face, including arthritis, dementia, heart issues, and more. Explore tips on diet, exercise, and how to support aging dogs at home and in boarding."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/senior-dog-health-problems`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

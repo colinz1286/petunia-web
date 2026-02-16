@@ -22,14 +22,10 @@ export default function ShouldDaycareOnlyExpandIntoBoarding() {
         vet: 'Veterinary Clinics',
     };
 
-    const slug = 'should-daycare-only-expand-into-boarding';
-    const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
-
     return (
         <>
             <Head>
                 <title>{title} – Petunia Blog</title>
-                <link rel="canonical" href={canonicalUrl} />
                 <meta
                     name="description"
                     content="Thinking about adding boarding to a daycare-only business? Here is a realistic, operator-first framework covering 24/7 responsibility, staffing, home-based limitations, licensing, liability, and facility requirements."

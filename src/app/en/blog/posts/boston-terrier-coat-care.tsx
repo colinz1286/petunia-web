@@ -18,10 +18,6 @@ export default function BostonTerrierCoatCare() {
           content="Learn how to care for your Boston Terrier’s coat. Understand shedding patterns, allergy considerations, and common skin health issues with tips for grooming and prevention."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/boston-terrier-coat-care`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

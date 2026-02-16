@@ -18,10 +18,6 @@ export default function YorkshireTerrierBoardingDaycare() {
                     content="Learn how to provide safe, enriching, toy-breed-appropriate care for Yorkshire Terriers in boarding and daycare settings. Covers group play, feeding routines, grooming needs, health considerations, and staff best practices."
                 />
                 <meta name="robots" content="all" />
-                <link
-                    rel="canonical"
-                    href={`https://www.petuniapets.com/${locale}/blog/yorkshire-terrier-boarding-daycare`}
-                />
             </Head>
 
             <article className="prose lg:prose-xl mx-auto px-4 py-8">

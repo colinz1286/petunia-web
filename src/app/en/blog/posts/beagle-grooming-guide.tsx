@@ -18,10 +18,6 @@ export default function BeagleGroomingGuide() {
           content="A complete Beagle grooming guide covering coat maintenance, ear care, bathing, nail trimming, skin health, and tools. Evidence-based tips for keeping your Beagle clean and healthy."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/beagle-grooming-guide`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

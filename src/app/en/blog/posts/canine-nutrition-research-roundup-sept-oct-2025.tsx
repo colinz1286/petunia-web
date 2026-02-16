@@ -26,7 +26,6 @@ export default function CanineNutritionResearchRoundupSeptOct2025() {
   const description =
     'A concise, evidence-based summary of canine nutrition studies published in Sept–Oct 2025, including plant- vs. meat-based diets, environmental impact, and kibble vs. raw metabolic outcomes.';
 
-  const canonical = `https://www.petuniapets.com/${locale}/blog/canine-nutrition-research-roundup-sept-oct-2025`;
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -37,7 +36,6 @@ export default function CanineNutritionResearchRoundupSeptOct2025() {
     publisher: { '@type': 'Organization', name: 'Petunia Pets' },
     description,
     image: `https://cdn.petuniapets.com/blog/canine-nutrition-research-roundup-sept-oct-2025.jpg`,
-    mainEntityOfPage: canonical,
   };
 
   return (
@@ -46,7 +44,6 @@ export default function CanineNutritionResearchRoundupSeptOct2025() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonical} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <script

@@ -18,10 +18,6 @@ export default function BorderCollieExerciseRequirements() {
           content="Learn how much exercise Border Collies really need, including daily physical activity, mental stimulation, enrichment, and working-style exercise ideal for this high-drive breed."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/border-collie-exercise-requirements`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

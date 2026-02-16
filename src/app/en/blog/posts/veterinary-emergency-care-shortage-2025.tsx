@@ -21,10 +21,6 @@ export default function VeterinaryEmergencyCareShortage2025() {
 
         {/* ❌ NO indexing tags, NO robots tags */}
 
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/veterinary-emergency-care-shortage-2025`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

@@ -12,8 +12,6 @@ export default function RingSearchPartyAIUpdateOct22() {
   const description =
     'The latest news and user feedback on Ring’s AI-powered Search Party feature for lost dogs. Learn how early testers are responding, the privacy debates, and what pet owners and businesses should know.';
 
-  const canonical = `https://www.petuniapets.com/${locale}/blog/ring-search-party-ai-update-oct22-2025`;
-
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -24,7 +22,6 @@ export default function RingSearchPartyAIUpdateOct22() {
     publisher: { '@type': 'Organization', name: 'Petunia Pets' },
     description,
     image: `https://cdn.petuniapets.com/blog/ring-search-party-ai-update-oct22-2025.jpg`,
-    mainEntityOfPage: canonical,
   };
 
   return (
@@ -33,7 +30,6 @@ export default function RingSearchPartyAIUpdateOct22() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonical} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <script

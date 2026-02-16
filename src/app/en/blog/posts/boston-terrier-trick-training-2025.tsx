@@ -32,10 +32,7 @@ export default function BostonTerrierTrickTraining2025() {
           content="A step-by-step guide to Boston Terrier trick training, covering why the breed excels, foundational focus skills, beginner and intermediate tricks, chaining behaviors, and reward schedules for long-term success."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/boston-terrier-trick-training-2025`}
-        />
+        
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

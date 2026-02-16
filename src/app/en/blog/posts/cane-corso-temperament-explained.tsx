@@ -30,15 +30,12 @@ export default function CaneCorsoTemperamentExplained() {
     const description =
         'A comprehensive, evidence-informed guide to Cane Corso temperament: what guardian instincts look like at home, why neutrality beats friendliness, how adolescence changes behavior, how to prevent reactivity, what training methods work best, realistic expectations for kids and visitors, multi-pet households, and practical routines that keep a powerful dog calm and safe.';
 
-    const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
-
     return (
         <>
             <Head>
                 <title>{title} – Petunia Blog</title>
                 <meta name="description" content={description} />
                 <meta name="robots" content="all" />
-                <link rel="canonical" href={canonicalUrl} />
                 <meta property="og:title" content={title} />
                 <meta property="og:description" content={description} />
             </Head>

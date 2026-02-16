@@ -18,10 +18,6 @@ export default function YorkshireTerrierTrainingGuide() {
                     content="Learn how to train a Yorkshire Terrier using positive reinforcement, structured routines, terrier-appropriate strategies, and toy-breed specific handling. This guide covers barking, socialization, crate training, and common behavior challenges."
                 />
                 <meta name="robots" content="all" />
-                <link
-                    rel="canonical"
-                    href={`https://www.petuniapets.com/${locale}/blog/yorkshire-terrier-training-guide`}
-                />
             </Head>
 
             <article className="prose lg:prose-xl mx-auto px-4 py-8">

@@ -31,11 +31,7 @@ export default function BestDogSportsForBostonTerriers2025() {
           name="description"
           content="A practical guide to the best dog sports for Boston Terriers, including agility, rally, and obedience, which sports are unsafe for brachycephalic breeds, beginner-friendly options, confidence building, competition expectations, and behavior benefits."
         />
-        <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/best-dog-sports-for-boston-terriers-2025`}
-        />
+        <meta name="robots" content="all" />s
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

@@ -31,10 +31,7 @@ export default function CollapseLethargyMaropitantDogs() {
           content="Although uncommon, maropitant (Cerenia®) can be associated with severe lethargy or collapse in dogs. Learn why this happens, emergency warning signs, immediate first steps owners can take, and how veterinarians treat these cases."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/collapse-lethargy-maropitant-dogs`}
-        />
+        
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

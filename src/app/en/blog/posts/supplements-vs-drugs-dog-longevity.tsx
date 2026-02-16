@@ -13,9 +13,6 @@ export default function SupplementsVsDrugsDogLongevity() {
   const description =
     'A comprehensive, owner-first guide to dog longevity products: the real difference between supplements and prescription drugs, what regulation does (and does not) require, how to spot misleading claims, what “clinically proven” actually means, quality and contamination risks, safe vet-guided decision making, and a practical checklist for evaluating any product.';
 
-  const slug = 'supplements-vs-drugs-dog-longevity';
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
-
   const categories = ['owner', 'veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -46,7 +43,6 @@ export default function SupplementsVsDrugsDogLongevity() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -60,7 +56,6 @@ export default function SupplementsVsDrugsDogLongevity() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

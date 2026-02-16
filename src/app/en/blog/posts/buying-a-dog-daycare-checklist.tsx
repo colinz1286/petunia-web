@@ -27,16 +27,12 @@ export default function BuyingADogDaycareChecklist() {
   const description =
     'A complete checklist for buying a dog daycare or boarding facility: what to inspect, financial metrics to review, licensing considerations, safety standards, staffing, client lists, building needs, zoning rules, and hidden operational risks.';
 
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/buying-a-dog-daycare-checklist`;
-
   return (
     <>
       <Head>
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-
-        <link rel="canonical" href={canonicalUrl} />
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -52,7 +48,6 @@ export default function BuyingADogDaycareChecklist() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

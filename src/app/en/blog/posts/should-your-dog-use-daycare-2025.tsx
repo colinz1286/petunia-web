@@ -32,10 +32,6 @@ export default function ShouldYourDogUseDaycare2025() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/should-your-dog-use-daycare-2025`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

@@ -30,15 +30,12 @@ export default function BloatGDVDogs() {
   const description =
     'A comprehensive, evidence-aware guide to canine bloat (gastric dilatation-volvulus): what it is, early signs, emergency response, diagnostics and surgery, preventive gastropexy, feeding and exercise rules, and SOPs for households and boarding/daycare facilities.';
 
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
-
   return (
     <>
       <Head>
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

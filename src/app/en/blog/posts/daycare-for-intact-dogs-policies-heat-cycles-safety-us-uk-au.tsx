@@ -17,10 +17,7 @@ export default function DaycareForIntactDogsPolicies() {
         />
         {/* House rule */}
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/daycare-for-intact-dogs-policies-heat-cycles-safety-us-uk-au`}
-        />
+       
       </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">

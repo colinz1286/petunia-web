@@ -18,10 +18,6 @@ export default function BorderCollieTrainingGuide() {
           content="A complete Border Collie training guide covering obedience, recall, herding instincts, mental stimulation, crate training, and problem-prevention strategies for this intelligent working breed."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/border-collie-training-guide`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

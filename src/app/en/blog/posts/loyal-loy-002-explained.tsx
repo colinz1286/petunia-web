@@ -14,7 +14,6 @@ export default function LoyalLOY002Explained() {
     'A comprehensive, owner-first deep dive into LOY-002: what it is designed to do, eligibility basics, how the conditional approval pathway and “reasonable expectation of effectiveness” are commonly misunderstood, what endpoints are being measured, what safety questions matter most for senior dogs, and how to evaluate claims without false certainty.';
 
   const slug = 'loyal-loy-002-explained';
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['veterinary'] as const;
 
@@ -46,7 +45,6 @@ export default function LoyalLOY002Explained() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -60,7 +58,6 @@ export default function LoyalLOY002Explained() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

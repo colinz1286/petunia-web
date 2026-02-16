@@ -18,10 +18,6 @@ export default function YorkshireTerrierGroomingGuide() {
                     content="Learn how to keep a Yorkshire Terrier’s coat silky, healthy, and tangle-free. This grooming guide covers brushing routines, coat types, bathing frequency, trimming, professional grooming, and puppy grooming training."
                 />
                 <meta name="robots" content="all" />
-                <link
-                    rel="canonical"
-                    href={`https://www.petuniapets.com/${locale}/blog/yorkshire-terrier-grooming-guide`}
-                />
             </Head>
 
             <article className="prose lg:prose-xl mx-auto px-4 py-8">

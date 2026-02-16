@@ -18,10 +18,6 @@ export default function YorkshireTerrierLivingWith() {
                     content="A complete guide to living with Yorkshire Terriers, including ideal home environments, compatibility with families and other pets, apartment suitability, exercise needs, daily routines, and lifestyle considerations."
                 />
                 <meta name="robots" content="all" />
-                <link
-                    rel="canonical"
-                    href={`https://www.petuniapets.com/${locale}/blog/yorkshire-terrier-living-with`}
-                />
             </Head>
 
             <article className="prose lg:prose-xl mx-auto px-4 py-8">

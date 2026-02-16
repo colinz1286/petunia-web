@@ -34,10 +34,7 @@ export default function OlliesLawExplained2025() {
         <meta name="description" content={description} />
         {/* Per user preference, avoid the word "index" here. */}
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/ollies-law-kennel-safety-2025`}
-        />
+        
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

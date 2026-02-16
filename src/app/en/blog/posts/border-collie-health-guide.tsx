@@ -18,10 +18,6 @@ export default function BorderCollieHealthGuide() {
           content="Border Collies are active, intelligent dogs with unique health needs. Learn about joint care, seizures, and how to support longevity in this detailed breed health guide."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/border-collie-health-guide`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

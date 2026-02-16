@@ -26,16 +26,12 @@ export default function AverageAgeOfLabrador() {
   const description =
     'What is the average age of a Labrador? This evidence-based guide breaks down real-world lifespan ranges, how weight, genetics, orthopedic health, cancer risk, and preventive care shape longevity, and what families can do to add healthy years.';
 
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/average-age-of-labrador`;
-
   return (
     <>
       <Head>
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-
-        <link rel="canonical" href={canonicalUrl} />
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -51,7 +47,6 @@ export default function AverageAgeOfLabrador() {
               datePublished: date,
               dateModified: date,
               description,
-              url: canonicalUrl,
               author: {
                 '@type': 'Organization',
                 name: 'Petunia',

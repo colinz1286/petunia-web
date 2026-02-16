@@ -13,9 +13,6 @@ export default function ShouldYouJoinDogLongevityStudy() {
   const description =
     'A thorough, owner-first guide to deciding whether to join a dog longevity study: what questions to ask about endpoints, placebo and blinding, safety monitoring, withdrawal rules, costs, time commitments, data privacy, and how to decide calmly when you feel hopeful or anxious.';
 
-  const slug = 'should-you-join-dog-longevity-study';
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
-
   const categories = ['owner', 'veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -46,7 +43,6 @@ export default function ShouldYouJoinDogLongevityStudy() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -60,7 +56,6 @@ export default function ShouldYouJoinDogLongevityStudy() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

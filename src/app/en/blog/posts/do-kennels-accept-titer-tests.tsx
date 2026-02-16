@@ -33,10 +33,7 @@ export default function DoKennelsAcceptTiterTests() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="index,follow" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/do-kennels-accept-titer-tests`}
-        />
+        
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

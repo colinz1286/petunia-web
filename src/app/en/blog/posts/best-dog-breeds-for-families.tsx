@@ -18,10 +18,6 @@ export default function BestFamilyDogBreeds() {
           content="Looking for the best dog breeds for families with young kids? Explore top family-friendly breeds, challenges, safety tips, and daycare insights to help you choose the right dog."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/best-dog-breeds-for-families`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

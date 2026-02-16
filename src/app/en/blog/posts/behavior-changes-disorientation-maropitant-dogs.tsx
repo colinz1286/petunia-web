@@ -31,10 +31,6 @@ export default function BehaviorChangesDisorientationMaropitantDogs() {
           content="Maropitant (Cerenia®) can rarely cause behavior changes or disorientation in dogs. Learn what to watch for, who is higher risk, when it is an emergency, and safe alternatives."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/behavior-changes-disorientation-maropitant-dogs`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

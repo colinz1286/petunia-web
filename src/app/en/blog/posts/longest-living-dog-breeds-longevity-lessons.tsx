@@ -14,8 +14,6 @@ export default function LongestLivingDogBreedsLongevityLessons() {
     'A scientific look at dog breeds with exceptionally long lifespans, examining genetic factors, metabolic traits, lifestyle patterns, growth speed, and lessons all owners can apply to support healthy ageing.';
   const slug = 'longest-living-dog-breeds-longevity-lessons';
 
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
-
   const categories = ['owner', 'veterinary', 'breed_specific_guides'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -36,7 +34,6 @@ export default function LongestLivingDogBreedsLongevityLessons() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -51,7 +48,6 @@ export default function LongestLivingDogBreedsLongevityLessons() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

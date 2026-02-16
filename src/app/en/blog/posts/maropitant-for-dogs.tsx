@@ -31,10 +31,7 @@ export default function MaropitantForDogs() {
           content="Maropitant, commonly known as Cerenia®, is a prescription medication used to control nausea and vomiting in dogs. Learn how it works, when it is prescribed, potential side effects, and when it should be used cautiously."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/maropitant-for-dogs`}
-        />
+       
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

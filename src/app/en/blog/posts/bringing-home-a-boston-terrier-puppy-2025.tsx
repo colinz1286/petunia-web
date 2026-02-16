@@ -32,10 +32,7 @@ export default function BringingHomeABostonTerrierPuppy2025() {
           content="A step-by-step, first-time owner guide to bringing home a Boston Terrier puppy, including first-day essentials, safe home setup, feeding schedules, introductions, first-night expectations, and what to do in the first 48 hours."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/bringing-home-a-boston-terrier-puppy-2025`}
-        />
+        
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

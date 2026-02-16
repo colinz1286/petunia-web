@@ -14,8 +14,6 @@ export default function CompaniesBehindCanineLongevity() {
     'A deep dive into the biotech and research groups shaping the future of canine longevity, including Loyal, Embark, the Dog Ageing Project, university laboratories, funding transparency, scientific rigor, and realistic expectations for anti-ageing breakthroughs.';
   const slug = 'companies-behind-canine-longevity';
 
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
-
   const categories = ['owner', 'veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -36,7 +34,6 @@ export default function CompaniesBehindCanineLongevity() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -52,7 +49,6 @@ export default function CompaniesBehindCanineLongevity() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

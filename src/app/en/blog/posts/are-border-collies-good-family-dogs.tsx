@@ -18,10 +18,6 @@ export default function AreBorderColliesGoodFamilyDogs() {
           content="Are Border Collies good family dogs? Learn about their temperament, intelligence, behavior around children, energy levels, and whether this high-drive working breed fits into family life."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/are-border-collies-good-family-dogs`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

@@ -30,10 +30,7 @@ export default function DietaryIndiscretionInDogs() {
           content="Dietary indiscretion is one of the most common causes of vomiting and diarrhea in dogs. Learn why dogs scavenge, what they commonly ingest, warning signs of obstruction, how veterinarians diagnose these cases, and how to prevent repeat episodes."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/dietary-indiscretion-in-dogs`}
-        />
+        
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

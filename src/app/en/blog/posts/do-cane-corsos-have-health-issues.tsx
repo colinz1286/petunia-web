@@ -34,10 +34,7 @@ export default function DoCaneCorsosHaveHealthIssues() {
         <meta name="description" content={description} />
         {/* Per user preference, avoid the word "index" here. */}
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/do-cane-corsos-have-health-issues`}
-        />
+        
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

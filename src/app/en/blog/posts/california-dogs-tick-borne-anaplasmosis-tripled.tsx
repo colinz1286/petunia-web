@@ -16,10 +16,7 @@ export default function CaliforniaAnaplasmosisSpike() {
           content="Dogs in California are testing positive for anaplasmosis at nearly 3× historical rates. Learn about tick surveillance, overlapping tick-borne diseases, prevention strategies, and what boarding/daycare facilities must do to stay safe."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/california-dogs-tick-borne-anaplasmosis-tripled`}
-        />
+       
       </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">

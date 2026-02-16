@@ -18,10 +18,7 @@ export default function CavalierHealthRisks() {
           content="Learn about the most common health risks in Cavalier King Charles Spaniels, including heart disease, eye problems, and factors that affect their lifespan. Discover tips to support a healthier, longer life."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/cavalier-king-charles-spaniel-health-risks`}
-        />
+        
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

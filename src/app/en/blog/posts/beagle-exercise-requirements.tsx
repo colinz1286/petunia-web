@@ -18,10 +18,6 @@ export default function BeagleExerciseRequirements() {
           content="Learn how much exercise Beagles really need, why they are such energetic dogs, and how proper activity prevents behavior issues, obesity, and excess shedding."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/beagle-exercise-requirements`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

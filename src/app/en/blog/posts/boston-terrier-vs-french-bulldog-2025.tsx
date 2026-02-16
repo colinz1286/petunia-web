@@ -32,10 +32,7 @@ export default function BostonTerrierVsFrenchBulldog2025() {
           content="A clear, side-by-side comparison of Boston Terriers and French Bulldogs, covering personality, energy level, trainability, health risks, lifespan, cost of ownership, and which lifestyle each breed fits best."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/boston-terrier-vs-french-bulldog-2025`}
-        />
+        
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

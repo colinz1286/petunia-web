@@ -32,10 +32,7 @@ export default function BostonTerrierVsBulldogBreeds2025() {
           content="A detailed comparison of Boston Terriers versus English, French, and American Bulldogs, covering body structure, mobility, personality, breathing and heat sensitivity, care needs, ownership costs, and which homes each breed fits best."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/boston-terrier-vs-bulldog-breeds-2025`}
-        />
+        
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

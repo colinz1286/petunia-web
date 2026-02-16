@@ -11,7 +11,6 @@ export default function CfiaPetImportRulesCanada2025() {
   const date = 'October 21, 2025';
   const description =
     'The Canadian Food Inspection Agency (CFIA) has updated its 2025 import rules for dogs and cats, including microchip and rabies antibody requirements. Learn what’s new and how to prepare before crossing the border.';
-  const canonical = `https://www.petuniapets.com/${locale}/blog/cfia-pet-import-rules-canada-2025`;
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -23,7 +22,6 @@ export default function CfiaPetImportRulesCanada2025() {
     publisher: { '@type': 'Organization', name: 'Petunia Pets' },
     description,
     image: 'https://cdn.petuniapets.com/blog/cfia-pet-import-rules-canada-2025.jpg',
-    mainEntityOfPage: canonical,
   };
 
   return (
@@ -32,7 +30,6 @@ export default function CfiaPetImportRulesCanada2025() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonical} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <script

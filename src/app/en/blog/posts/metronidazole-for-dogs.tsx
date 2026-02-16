@@ -31,10 +31,7 @@ export default function MetronidazoleForDogs() {
           content="Metronidazole is frequently prescribed for dogs with diarrhea, colitis, and certain infections. Learn how it works, how long it is used, possible side effects, warning signs of toxicity, and when veterinary care is necessary."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/metronidazole-for-dogs`}
-        />
+        
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

@@ -32,10 +32,6 @@ export default function BostonTerrierHouseRules2025() {
           content="A practical guide to Boston Terrier house rules, covering jumping, counter-surfing, door manners, furniture boundaries, begging at the table, consistency strategies, and how to reinforce calm behavior indoors."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/boston-terrier-house-rules-2025`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

@@ -18,10 +18,7 @@ export default function CavalierLifespanArticle() {
           content="Discover the average lifespan of Cavalier King Charles Spaniels and learn proven ways to help your dog live longer through heart health, weight management, and preventive care."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/cavalier-king-charles-spaniel-lifespan`}
-        />
+      
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

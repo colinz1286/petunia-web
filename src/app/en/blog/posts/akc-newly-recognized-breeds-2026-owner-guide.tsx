@@ -33,10 +33,6 @@ export default function AKCNewBreeds2026OwnersGuide() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/akc-newly-recognized-breeds-2026-owner-guide`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

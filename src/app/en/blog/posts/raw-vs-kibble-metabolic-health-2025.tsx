@@ -26,7 +26,6 @@ export default function RawVsKibbleMetabolicHealth2025() {
   const description =
     'University of Helsinki researchers report major metabolic differences between raw meat-based and kibble diets in dogs, highlighting how carbohydrate load shapes blood sugar and lipid markers.';
 
-  const canonical = `https://www.petuniapets.com/${locale}/blog/raw-vs-kibble-metabolic-health-2025`;
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -37,7 +36,6 @@ export default function RawVsKibbleMetabolicHealth2025() {
     publisher: { '@type': 'Organization', name: 'Petunia Pets' },
     description,
     image: `https://cdn.petuniapets.com/blog/raw-vs-kibble-metabolic-health-2025.jpg`,
-    mainEntityOfPage: canonical,
   };
 
   return (
@@ -46,7 +44,6 @@ export default function RawVsKibbleMetabolicHealth2025() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonical} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <script

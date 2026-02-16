@@ -31,10 +31,7 @@ export default function CommonGIProblemsInDogs() {
           content="Vomiting, diarrhea, gas, appetite changes, and abnormal stools are among the most common gastrointestinal issues in dogs. Learn what causes GI distress, which symptoms are serious, how vets evaluate digestive problems, and when professional care is necessary."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/common-gi-problems-in-dogs`}
-        />
+        
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

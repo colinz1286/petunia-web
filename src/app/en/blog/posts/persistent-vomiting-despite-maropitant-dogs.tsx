@@ -31,10 +31,7 @@ export default function PersistentVomitingDespiteMaropitantDogs() {
           content="Maropitant (Cerenia®) is a powerful anti-vomiting medication, yet some dogs continue vomiting despite treatment. Learn why this happens, the physiologic pathways involved, emergency warning signs, and what veterinarians do next."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/persistent-vomiting-despite-maropitant-dogs`}
-        />
+        
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

@@ -18,10 +18,6 @@ export default function YorkshireTerrierHealthLifespan() {
                     content="Learn about the most common health conditions in Yorkshire Terriers, including dental disease, tracheal collapse, and luxating patella. Understand lifespan, preventive care strategies, early warning signs, and veterinary recommendations for a long, healthy life."
                 />
                 <meta name="robots" content="all" />
-                <link
-                    rel="canonical"
-                    href={`https://www.petuniapets.com/${locale}/blog/yorkshire-terrier-health-lifespan`}
-                />
             </Head>
 
             <article className="prose lg:prose-xl mx-auto px-4 py-8">

@@ -27,16 +27,12 @@ export default function MushroomSupplementSeniorDogsCognitiveStudy2025() {
   const description =
     'A factual summary of a reported 12-week veterinary study evaluating a mushroom-based nutraceutical in senior dogs with cognitive decline, including design, measures, results, safety notes, and stated limitations.';
 
-  const canonicalPath =
-    'study-report-mushroom-based-supplement-cognitive-scores-senior-dogs-12-weeks';
-
   return (
     <>
       <Head>
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={`https://www.petuniapets.com/${locale}/blog/${canonicalPath}`} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

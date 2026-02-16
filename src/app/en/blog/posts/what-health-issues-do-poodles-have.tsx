@@ -27,15 +27,12 @@ export default function WhatHealthIssuesDoPoodlesHave() {
   const description =
     'Common health issues in Poodles—by size variety—with clear prevention and action steps. Covers Addison’s disease, sebaceous adenitis, PRA/cataracts, patellar luxation & Legg–Calvé–Perthes, hip dysplasia, tracheal collapse, hypothyroidism/Cushing’s, von Willebrand disease, bloat (GDV), dental/ear care, senior planning, and breeder health testing (CHIC/ACVO).';
 
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/what-health-issues-do-poodles-have`;
-
   return (
     <>
       <Head>
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

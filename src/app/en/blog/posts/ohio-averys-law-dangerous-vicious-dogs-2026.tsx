@@ -33,10 +33,7 @@ export default function OhioAverysLawDangerousViciousDogs2026() {
                 <title>{title} – Petunia Blog</title>
                 <meta name="description" content={description} />
                 <meta name="robots" content="all" />
-                <link
-                    rel="canonical"
-                    href={`https://www.petuniapets.com/${locale}/blog/ohio-averys-law-dangerous-vicious-dogs-2026`}
-                />
+                
                 <meta property="og:title" content={title} />
                 <meta property="og:description" content={description} />
             </Head>

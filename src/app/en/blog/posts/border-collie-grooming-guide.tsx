@@ -18,10 +18,6 @@ export default function BorderCollieGroomingGuide() {
           content="A complete grooming guide for Border Collies, covering coat types, brushing routines, shedding cycles, bathing schedules, ear and nail care, and long-term skin and coat health."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/border-collie-grooming-guide`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

@@ -30,10 +30,6 @@ export default function SuddenDietChangesGIUpsetDogs() {
           content="Sudden food changes often trigger vomiting, diarrhea, gas, or soft stools in dogs. Learn why transitions upset digestion, how to switch foods safely, and when symptoms mean something else."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/sudden-diet-changes-gi-upset-dogs`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

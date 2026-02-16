@@ -32,10 +32,6 @@ export default function TravelingWithABostonTerrier2025() {
           content="A practical, safety-first guide to traveling with a Boston Terrier, covering air travel rules for brachycephalic dogs, car safety setups, hotel etiquette, overheating prevention, packing checklists, and managing travel anxiety."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/traveling-with-a-boston-terrier-2025`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

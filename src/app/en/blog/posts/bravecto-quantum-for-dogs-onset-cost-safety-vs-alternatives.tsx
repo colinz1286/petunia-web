@@ -16,10 +16,7 @@ export default function BravectoQuantumForDogs() {
           content="A veterinary-informed 2025 guide to Bravecto Quantum for dogs: how fast it works, cost comparisons, safety evidence, and alternatives for flea and tick prevention worldwide."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/bravecto-quantum-for-dogs-onset-cost-safety-vs-alternatives`}
-        />
+        
       </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">

@@ -32,10 +32,6 @@ export default function AreBostonTerriersGoodForFirstTimeOwners2025() {
           content="A clear-eyed guide for first-time dog owners considering a Boston Terrier, covering beginner-friendly traits, common challenges, training needs, real costs, behavior pitfalls, and what the first year is actually like."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/are-boston-terriers-good-for-first-time-owners-2025`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

@@ -34,10 +34,6 @@ export default function WhatIsTheBiteForceOfACaneCorso() {
         <meta name="description" content={description} />
         {/* Per project standards, avoid the word that triggers lint; use "all". */}
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/what-is-the-bite-force-of-a-cane-corso`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

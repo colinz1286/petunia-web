@@ -32,10 +32,7 @@ export default function BostonTerrierPuppyExerciseNeeds2025() {
           content="A veterinarian-aligned guide to Boston Terrier puppy exercise needs, including age-by-age limits, safe vs unsafe activities, indoor alternatives, early leash training, joint protection, and how to prevent overstimulation."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/boston-terrier-puppy-exercise-needs-2025`}
-        />
+      
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

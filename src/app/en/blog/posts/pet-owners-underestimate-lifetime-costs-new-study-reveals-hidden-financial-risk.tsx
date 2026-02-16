@@ -16,10 +16,7 @@ export default function PetLifetimeCostsStudy() {
           content="A 2025 deep dive into the lifetime costs of pet ownership. New research shows most owners underestimate the financial commitment, leaving families unprepared for emergencies. Learn real cost breakdowns, hidden expenses, and planning strategies."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/pet-owners-underestimate-lifetime-costs-new-study-reveals-hidden-financial-risk`}
-        />
+       
       </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">

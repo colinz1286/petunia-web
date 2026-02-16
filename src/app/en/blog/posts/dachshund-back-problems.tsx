@@ -18,10 +18,7 @@ export default function DachshundBackProblems() {
           content="Dachshunds are prone to back problems like intervertebral disc disease (IVDD). Learn the causes, prevention tips, treatment options, and how to keep your Dachshund’s spine healthy."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/dachshund-back-problems`}
-        />
+        
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

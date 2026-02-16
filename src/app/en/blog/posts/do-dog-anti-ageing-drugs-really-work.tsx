@@ -14,7 +14,6 @@ export default function DoDogAntiAgeingDrugsReallyWork() {
     'A comprehensive, owner-first guide to canine longevity drugs: what people mean by “anti-ageing,” what has actually been tested, how FDA language is often misunderstood, which biomarkers matter (and which can mislead), safety questions to ask, and how to evaluate early trial claims without false hope.';
 
   const slug = 'do-dog-anti-ageing-drugs-really-work';
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['owner', 'veterinary'] as const;
 
@@ -46,7 +45,6 @@ export default function DoDogAntiAgeingDrugsReallyWork() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -60,7 +58,6 @@ export default function DoDogAntiAgeingDrugsReallyWork() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

@@ -27,8 +27,6 @@ export default function AntiAgeingForDogs() {
   const description =
     'Anti ageing for dogs: A science-backed look at the emerging anti-aging drug for dogs, recent FDA milestones, what early trials show, what it means for lifespan and healthspan, and how owners can prepare for the future of canine longevity.';
 
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/anti-ageing-for-dogs`;
-
   return (
     <>
       <Head>
@@ -36,7 +34,6 @@ export default function AntiAgeingForDogs() {
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
 
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -51,7 +48,6 @@ export default function AntiAgeingForDogs() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

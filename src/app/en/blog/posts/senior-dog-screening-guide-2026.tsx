@@ -12,9 +12,6 @@ export default function SeniorDogScreeningGuide2026() {
   const date = 'November 24, 2025';
   const description =
     'A veterinarian-backed 2026 guide to senior dog screenings, including bloodwork, mobility exams, cognitive assessments, early-detection red flags, and what owners should prioritize for healthy ageing.';
-  const slug = 'senior-dog-screening-guide-2026';
-
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['owner', 'veterinary'] as const;
 
@@ -36,7 +33,6 @@ export default function SeniorDogScreeningGuide2026() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -52,7 +48,6 @@ export default function SeniorDogScreeningGuide2026() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',
