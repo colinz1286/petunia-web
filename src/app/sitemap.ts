@@ -7,7 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const blogUrls = blogPosts.map((post) => ({
     url: `${baseUrl}/${locale}/blog/${post.slug}`,
-    lastModified: new Date(post.date),
+    lastModified: new Date(), // safe fallback
   }))
 
   return [
