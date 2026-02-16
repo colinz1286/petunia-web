@@ -10,6 +10,24 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'professional-associations-certification-pet-care',
+        title: 'Professional Associations & Certification Push: Raising Standards in Dog Boarding, Daycare & Pet Care',
+        date: 'February 16, 2026',
+        description:
+            'An in-depth look at how professional associations like IBPSA, PACCC, and PSI are elevating standards across dog boarding, daycare, pet sitting, and dog walking through certification, ethics frameworks, and structured education.',
+        component: () => import('./posts/professional-associations-certification-pet-care'),
+        categories: ['boarding', 'sitter', 'walker'],
+    },
+    {
+        slug: 'advocacy-pressure-boarding-safety-practices',
+        title: 'Advocacy Pressure on Boarding Safety: Why Standards, Training, and Accountability Are Becoming Non-Negotiable',
+        date: 'February 15, 2026',
+        description:
+            'After high-profile cruelty and negligence cases, advocacy voices and BBB guidance are pushing dog boarding and daycare toward stronger safety standards, staff training expectations, and clearer accountability. Here is what is changing, what owners should ask, and what operators can implement now.',
+        component: () => import('./posts/advocacy-pressure-boarding-safety-practices'),
+        categories: ['boarding', 'owner', 'vet'],
+    },
+    {
         slug: 'akc-newly-recognized-breeds-2026-owner-guide',
         title:
             'AKC’s Newly Recognized Breeds for 2026 (and What First-Time Owners Get Wrong)',
