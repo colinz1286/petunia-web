@@ -31,10 +31,6 @@ export default function PoorQualityDogFoodDigestiveProblems() {
           content="Digestive issues are often blamed on sensitive stomachs, but food quality and digestibility play a major role. Learn how poor-quality dog food affects stool, gut health, and how to upgrade diets safely."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/poor-dog-food-digestive-problems`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

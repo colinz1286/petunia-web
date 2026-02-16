@@ -33,10 +33,6 @@ export default function HowManyDogsPerAttendant() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="index,follow" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/how-many-dogs-per-attendant`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

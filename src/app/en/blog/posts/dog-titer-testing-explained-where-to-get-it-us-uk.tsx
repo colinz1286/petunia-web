@@ -16,10 +16,6 @@ export default function DogTiterTestingExplained() {
           content="A veterinary-informed guide to dog titer testing: what it is, when it matters, how reliable it is, and where owners can access testing in the U.S. and UK."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/dog-titer-testing-explained-where-to-get-it-us-uk`}
-        />
       </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">

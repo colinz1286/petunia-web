@@ -18,10 +18,6 @@ export default function DogBoardingPreparationGuide() {
           content="Reduce stress for both you and your dog on boarding day. Learn proven pre-drop-off routines, scent transfer tips, and owner strategies for a calm, confident goodbye."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/dog-boarding-preparation-guide`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

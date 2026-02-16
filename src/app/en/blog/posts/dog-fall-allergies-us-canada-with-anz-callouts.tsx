@@ -17,10 +17,6 @@ export default function DogFallAllergiesUSCanadaWithANZCallouts() {
         />
         {/* House rule: robots=all */}
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/dog-fall-allergies-us-canada-with-anz-callouts`}
-        />
       </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">

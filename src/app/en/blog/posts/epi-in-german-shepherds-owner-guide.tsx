@@ -25,8 +25,6 @@ export default function EpiInGermanShepherdsOwnerGuide() {
     food: 'Dog Food & Nutrition',
   };
 
-  const slug = 'epi-in-german-shepherds-owner-guide';
-
   const description =
     'A clear, step-by-step guide to exocrine pancreatic insufficiency (EPI) in German Shepherds: hallmark signs, cTLI testing, enzyme routines, B12 support, diet choices, monitoring, and troubleshooting.';
 
@@ -36,10 +34,6 @@ export default function EpiInGermanShepherdsOwnerGuide() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

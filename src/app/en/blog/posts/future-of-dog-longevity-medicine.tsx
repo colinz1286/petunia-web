@@ -12,9 +12,6 @@ export default function FutureOfDogLongevityMedicine() {
   const date = 'November 25, 2025';
   const description =
     'A forward-looking examination of senolytics, gene therapy, microbiome modulation, metabolic switching, regulatory milestones after LOY-002, realistic timelines, and ethical considerations shaping the future of canine longevity medicine.';
-  const slug = 'future-of-dog-longevity-medicine';
-
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['owner', 'veterinary'] as const;
 
@@ -36,7 +33,6 @@ export default function FutureOfDogLongevityMedicine() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -52,7 +48,6 @@ export default function FutureOfDogLongevityMedicine() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

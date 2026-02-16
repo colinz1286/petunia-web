@@ -12,9 +12,6 @@ export default function PrepareHomeForAgeingDog() {
   const date = 'December 3, 2025';
   const description =
     'A complete guide to preparing your home for an ageing dog, including flooring solutions, lighting adjustments, temperature control, safe layouts, fall prevention, and practical modifications for comfort and safety.';
-  const slug = 'prepare-home-for-ageing-dog';
-
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['owner', 'veterinary'] as const;
 
@@ -36,7 +33,6 @@ export default function PrepareHomeForAgeingDog() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -51,7 +47,6 @@ export default function PrepareHomeForAgeingDog() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

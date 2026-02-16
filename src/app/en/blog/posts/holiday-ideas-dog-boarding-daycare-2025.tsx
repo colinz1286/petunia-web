@@ -20,11 +20,6 @@ export default function HolidayIdeasDogBoardingDaycare2025() {
         />
 
         <meta name="robots" content="all" />
-
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/holiday-ideas-dog-boarding-daycare-2025`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

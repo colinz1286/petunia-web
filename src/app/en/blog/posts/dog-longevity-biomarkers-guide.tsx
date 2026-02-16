@@ -13,9 +13,6 @@ export default function DogLongevityBiomarkersGuide() {
   const description =
     'A practical, owner-first guide to dog longevity biomarkers: what a biomarker is, which categories are most meaningful, why surrogate endpoints can mislead, how trials use biomarkers, how to interpret lab-style claims in headlines, and what questions to ask your vet or a study team.';
 
-  const slug = 'dog-longevity-biomarkers-guide';
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
-
   const categories = ['veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -46,7 +43,6 @@ export default function DogLongevityBiomarkersGuide() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -60,7 +56,6 @@ export default function DogLongevityBiomarkersGuide() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

@@ -31,10 +31,6 @@ export default function HelpDogEatWhileOnMetronidazole() {
           content="Dogs taking metronidazole or similar GI medications may lose interest in food. Learn safe ways to encourage eating, grocery-store foods that are gentle on the stomach, what to avoid, and when appetite loss becomes a medical concern."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/help-dog-eat-while-on-metronidazole`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

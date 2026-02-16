@@ -9,7 +9,6 @@ export default function HandleClientComplaintKennelCough() {
 
   const title = 'How to Handle a Client Complaint about Kennel Cough';
   const date = 'August 27, 2025';
-  const slug = 'how-to-handle-a-client-complaint-about-kennel-cough';
   const categories = ['owner', 'boarding', 'daycare'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -33,10 +32,6 @@ export default function HandleClientComplaintKennelCough() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

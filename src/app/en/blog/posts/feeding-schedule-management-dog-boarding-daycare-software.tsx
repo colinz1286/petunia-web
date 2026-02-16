@@ -29,8 +29,6 @@ export default function FeedingScheduleManagementForBoardingAndDaycare() {
   const description =
     'Why feeding schedule management belongs at the heart of dog boarding software and dog daycare software: accurate portions, allergy controls, kitchen workflows, automation, shift handoffs, and KPIs that protect safety, margins, and client trust.';
 
-  const slug = 'feeding-schedule-management-dog-boarding-daycare-software';
-
   return (
     <>
       <Head>
@@ -38,10 +36,6 @@ export default function FeedingScheduleManagementForBoardingAndDaycare() {
         <meta name="description" content={description} />
         {/* Per user preference, do not use the word "index" here. */}
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

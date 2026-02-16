@@ -18,10 +18,6 @@ export default function DogVaccines() {
           content="Learn about the most common dog vaccines, what they protect against, boarding and daycare requirements, and emerging vaccines that may benefit your pet."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/dog-vaccines-what-they-protect`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

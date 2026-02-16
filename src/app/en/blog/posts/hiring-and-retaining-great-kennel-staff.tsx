@@ -25,8 +25,6 @@ export default function HiringAndRetainingGreatKennelStaff() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'hiring-and-retaining-great-kennel-staff';
-
   const description =
     'A practical, evidence-informed guide for kennel and daycare operators on hiring pipelines, onboarding, culture building, mentorship, fair compensation, flexible scheduling, communication systems, burnout prevention, and SOPs for sustainable teams.';
 
@@ -36,10 +34,6 @@ export default function HiringAndRetainingGreatKennelStaff() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

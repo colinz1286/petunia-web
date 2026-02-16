@@ -18,10 +18,6 @@ export default function DogBoardingSoftwareCostArticle() {
           content="Opinion: The real cost of running dog boarding software is minimal—so why are companies charging $100 or more each month? Colin Zedreck of Petunia shares why affordable, high-quality software is possible for everyone."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/dog-boarding-software-costs`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

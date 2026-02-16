@@ -27,15 +27,12 @@ export default function DogBoardingVsDaycare() {
     const description =
         'Dog boarding vs daycare explained: what each service includes, how to evaluate facility fit, costs, risks, benefits, and how to pick what’s right for your dog with confidence.';
 
-    const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/dog-boarding-vs-daycare`;
-
     return (
         <>
             <Head>
                 <title>{title} – Petunia Blog</title>
                 <meta name="description" content={description} />
                 <meta name="robots" content="all" />
-                <link rel="canonical" href={canonicalUrl} />
                 <meta property="og:title" content={title} />
                 <meta property="og:description" content={description} />
 
@@ -49,7 +46,6 @@ export default function DogBoardingVsDaycare() {
                             description,
                             datePublished: date,
                             dateModified: date,
-                            url: canonicalUrl,
                             author: { '@type': 'Organization', name: 'Petunia' },
                             publisher: {
                                 '@type': 'Organization',

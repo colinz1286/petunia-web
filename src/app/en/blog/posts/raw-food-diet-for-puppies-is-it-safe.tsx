@@ -33,10 +33,6 @@ export default function RawFoodDietForPuppiesIsItSafe() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/raw-food-diet-for-puppies-is-it-safe`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

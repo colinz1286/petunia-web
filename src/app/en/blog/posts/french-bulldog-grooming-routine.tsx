@@ -18,10 +18,6 @@ export default function FrenchBulldogGroomingRoutine() {
           content="Learn the ideal French Bulldog grooming routine, including how often to bathe, brush, and clean facial folds. Keep your Frenchie’s coat, skin, and wrinkles healthy and odor-free."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/french-bulldog-grooming-routine`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

@@ -27,7 +27,6 @@ export default function HowToChooseTheRightDogFood() {
     train: 'Training'
   };
 
-  const slug = 'how-to-choose-the-right-dog-food';
   const description =
     'Everything you actually need to pick a safe, complete, and appropriate diet for your dog—how to read labels (AAFCO statements), match foods to life stage and size (including large-breed growth), calculate calories and portions, avoid common myths, transition safely, and connect diet to hydration, activity, and routine. Includes practical checklists and red flags.';
 
@@ -37,10 +36,6 @@ export default function HowToChooseTheRightDogFood() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="index,follow" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

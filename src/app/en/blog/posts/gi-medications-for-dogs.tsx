@@ -31,10 +31,6 @@ export default function GIMedicationsForDogs() {
           content="Dogs with gastrointestinal distress are often treated with medications tailored to vomiting, diarrhea, nausea, acid reflux, inflammation, or infection. Learn which GI medications veterinarians prescribe, how they work, and how long they are typically used."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/gi-medications-for-dogs`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

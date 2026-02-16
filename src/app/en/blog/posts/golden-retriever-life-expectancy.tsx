@@ -25,8 +25,6 @@ export default function GoldenRetrieverLifeExpectancy() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'golden-retriever-life-expectancy';
-
   const description =
     'Most Golden Retrievers live 10–12 years. This operator-grade guide explains what “life expectancy” means, why cancer looms large for the breed, and the concrete levers—genetics, weight, preventive care, and environment—that can add healthy months to years. Includes checklists, owner SOPs, and vetted sources.';
 
@@ -36,10 +34,6 @@ export default function GoldenRetrieverLifeExpectancy() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="index,follow" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

@@ -12,9 +12,6 @@ export default function DogLongevitySupplementsEvidence() {
   const date = 'November 29, 2025';
   const description =
     'A scientific guide to dog longevity supplements, including evidence-supported ingredients, promising emerging compounds, ineffective products, safety considerations, and how to work with your veterinarian to build a smart supplementation plan.';
-  const slug = 'dog-longevity-supplements-evidence';
-
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['owner', 'veterinary'] as const;
 
@@ -36,7 +33,6 @@ export default function DogLongevitySupplementsEvidence() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -51,7 +47,6 @@ export default function DogLongevitySupplementsEvidence() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

@@ -36,10 +36,6 @@ export default function KennelCoughPittsburghGuide() {
         <meta name="description" content={description} />
         {/* Per user preference: never use “index,follow” */}
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/kennel-cough-guide-pittsburgh-boarding-daycare-2025`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

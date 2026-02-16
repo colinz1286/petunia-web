@@ -12,9 +12,6 @@ export default function LargeBreedDogLongevityGuide() {
   const date = 'December 2, 2025';
   const description =
     'A science-backed guide explaining why large dog breeds age faster and practical longevity strategies including growth rate management, joint protection, muscle maintenance, nutrition, mobility work, cardiovascular care, and breed-specific risk factors.';
-  const slug = 'large-breed-dog-longevity-guide';
-
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['owner', 'veterinary', 'breed_specific_guides'] as const;
 
@@ -36,7 +33,6 @@ export default function LargeBreedDogLongevityGuide() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -51,7 +47,6 @@ export default function LargeBreedDogLongevityGuide() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

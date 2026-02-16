@@ -18,10 +18,6 @@ export default function GreatDaneHealthLifespan() {
           content="Great Danes are gentle giants with unique health challenges and shorter lifespans. Learn about common health issues, diet, exercise, and care strategies to support a long and healthy life."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/great-dane-health-lifespan`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

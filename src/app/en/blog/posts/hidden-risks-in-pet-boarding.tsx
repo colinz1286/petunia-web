@@ -25,8 +25,6 @@ export default function HiddenRisksInPetBoarding() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'hidden-risks-in-pet-boarding';
-
   const description =
     'A practical, operator-grade guide to the biggest risks in pet boarding — liability exposure, health and disease control, behavior incidents, environment and equipment hazards, client contracts, insurance, recordkeeping, and crisis response — with checklists and SOPs you can implement today.';
 
@@ -36,10 +34,6 @@ export default function HiddenRisksInPetBoarding() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

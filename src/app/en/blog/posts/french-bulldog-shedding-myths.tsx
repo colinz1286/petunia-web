@@ -16,10 +16,6 @@ export default function FrenchBulldogSheddingMyths() {
           content="French Bulldogs are often labeled as hypoallergenic, but is that true? Learn the facts about shedding, seasonal patterns, and grooming tips to keep your Frenchie healthy."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/french-bulldog-shedding-myths`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

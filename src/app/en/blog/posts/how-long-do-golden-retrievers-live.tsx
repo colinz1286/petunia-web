@@ -27,15 +27,12 @@ export default function HowLongDoGoldenRetrieversLive() {
   const description =
     'How long do Golden Retrievers live? This evidence-based guide covers average lifespan ranges, major health risks, cancer rates, weight and orthopedic management, and practical daily routines that can add healthy years.';
 
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/how-long-do-golden-retrievers-live`;
-
   return (
     <>
       <Head>
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -51,7 +48,6 @@ export default function HowLongDoGoldenRetrieversLive() {
               datePublished: date,
               dateModified: date,
               description,
-              url: canonicalUrl,
               author: {
                 '@type': 'Organization',
                 name: 'Petunia',

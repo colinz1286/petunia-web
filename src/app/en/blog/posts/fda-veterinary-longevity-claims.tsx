@@ -13,9 +13,6 @@ export default function FDAVeterinaryLongevityClaims() {
   const description =
     'A clear, owner-first explanation of how the FDA (CVM) evaluates new animal drugs with longevity-style claims, what conditional approval really means, what “reasonable expectation of effectiveness” does (and does not) prove, what endpoints matter, and how to read headlines without getting misled.';
 
-  const slug = 'fda-veterinary-longevity-claims';
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
-
   const categories = ['veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -46,7 +43,6 @@ export default function FDAVeterinaryLongevityClaims() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -60,7 +56,6 @@ export default function FDAVeterinaryLongevityClaims() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

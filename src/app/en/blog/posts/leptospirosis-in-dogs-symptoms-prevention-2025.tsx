@@ -12,7 +12,6 @@ export default function LeptospirosisInDogsSymptomsPrevention2025() {
   const date = 'October 24, 2025';
   const description =
     'Leptospirosis is a serious bacterial disease that affects both dogs and humans. Learn the early symptoms, how it spreads, treatment options, and the latest 2025 prevention recommendations.';
-  const canonical = `https://www.petuniapets.com/${locale}/blog/leptospirosis-in-dogs-symptoms-prevention-2025`;
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -24,7 +23,6 @@ export default function LeptospirosisInDogsSymptomsPrevention2025() {
     publisher: { '@type': 'Organization', name: 'Petunia Pets' },
     description,
     image: 'https://cdn.petuniapets.com/blog/leptospirosis-in-dogs-symptoms-prevention-2025.jpg',
-    mainEntityOfPage: canonical,
   };
 
   return (
@@ -33,7 +31,6 @@ export default function LeptospirosisInDogsSymptomsPrevention2025() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonical} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <script

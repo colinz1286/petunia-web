@@ -29,8 +29,6 @@ export default function HowToTrainMyDogToSit() {
   const description =
     'A calm, step-by-step guide to teaching sit: readiness checks by age and temperament, lure-and-reward vs. shaping, adding a verbal cue and hand signal, consistency for multi-person households, breed-by-breed notes, training aids, session plans, common mistakes, and gentle troubleshooting.';
 
-  const slug = 'how-to-train-my-dog-to-sit';
-
   return (
     <>
       <Head>
@@ -38,10 +36,6 @@ export default function HowToTrainMyDogToSit() {
         <meta name="description" content={description} />
         {/* Per user preference, do not use the word "index" here. */}
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

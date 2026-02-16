@@ -27,15 +27,12 @@ export default function DoDogsNeedCanineInfluenzaVaccine() {
   const description =
     'Do dogs need the canine influenza vaccine? A complete guide covering evidence, outbreak updates, safety data, boarding and daycare requirements, and when the flu shot is recommended by veterinarians.';
 
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/do-dogs-need-canine-influenza-vaccine`;
-
   return (
     <>
       <Head>
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -51,7 +48,6 @@ export default function DoDogsNeedCanineInfluenzaVaccine() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

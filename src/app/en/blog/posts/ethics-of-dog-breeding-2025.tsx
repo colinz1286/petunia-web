@@ -18,10 +18,6 @@ export default function EthicsOfDogBreeding2025() {
           content="Explore the ethics of dog breeding in 2025 — how responsible breeders balance profit, purpose, and preservation while protecting canine welfare and genetic diversity."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/ethics-of-dog-breeding-2025`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

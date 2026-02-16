@@ -31,10 +31,6 @@ export default function LethargyMetronidazoleDogs() {
           content="Metronidazole and similar GI medications can cause lethargy in some dogs. Learn why fatigue occurs, what is happening physiologically, how to monitor safely at home, and when lethargy becomes a medical emergency."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/lethargy-metronidazole-dogs`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

@@ -18,10 +18,6 @@ export default function GoldenRetrieverCancerRates2025() {
           content="An evidence-based 2025 update on Golden Retriever cancer rates — covering the latest research, early detection tips, and how owners can reduce risk through weight, genetics, and preventive care."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/golden-retriever-cancer-rates-2025`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

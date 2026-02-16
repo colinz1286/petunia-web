@@ -31,10 +31,6 @@ export default function ExcessiveDroolingMetronidazoleDogs() {
           content="Metronidazole and similar GI medications can trigger excessive drooling in some dogs. Learn why it happens, what you can do at home, risks like dehydration or toxicity, and when urgent veterinary care is needed."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/excessive-drooling-metronidazole-dogs`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

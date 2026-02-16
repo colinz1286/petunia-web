@@ -20,11 +20,6 @@ export default function FromClipboardsToCloudDogDaycareManagementSoftware2026() 
         />
 
         {/* No indexing tags allowed */}
-
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/from-clipboards-to-cloud-dog-daycare-management-software-2026`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

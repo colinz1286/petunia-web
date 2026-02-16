@@ -10,7 +10,6 @@ export default function LivingWithHipDysplasiaInDogs() {
   const title =
     'Living With Hip Dysplasia in Dogs: Daily Routines, Home Setup, Exercise, Flare Plans, and Long-Term Quality of Life';
   const date = 'January 9, 2026';
-  const slug = 'living-with-hip-dysplasia-in-dogs';
 
   const description =
     'A comprehensive, owner-first guide to living with canine hip dysplasia day to day, including home traction, stairs and cars, sleep comfort, exercise routines, flare plans, mental enrichment, grooming and handling tips, travel, seasons, and how to monitor progress over time.';
@@ -35,10 +34,6 @@ export default function LivingWithHipDysplasiaInDogs() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

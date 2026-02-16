@@ -12,9 +12,6 @@ export default function DogLongevityDietMetabolicHealth() {
   const date = 'November 21, 2025';
   const description =
     'A research-based guide to how caloric density, macronutrients, omega-3s, antioxidants, feeding patterns, and emerging supplements influence dog longevity, metabolic health, and ageing.';
-  const slug = 'dog-longevity-diet-metabolic-health';
-
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['owner', 'veterinary'] as const;
 
@@ -36,7 +33,6 @@ export default function DogLongevityDietMetabolicHealth() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -52,7 +48,6 @@ export default function DogLongevityDietMetabolicHealth() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

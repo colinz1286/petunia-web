@@ -10,7 +10,6 @@ export default function FrenchBulldogPuppiesForSaleNearMeGuide() {
   const title =
     'Go Beyond the Basic Searching of "French bulldog Puppies for Sale Near Me" – A Guide to Finding the Right Puppy for Uou and Your Family';
   const date = 'August 28, 2025';
-  const slug = 'french-bulldog-puppies-for-sale-near-me';
   const categories = ['owner', 'breeder', 'rescue'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -35,10 +34,6 @@ export default function FrenchBulldogPuppiesForSaleNearMeGuide() {
         <meta name="description" content={description} />
         {/* Per house rules */}
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

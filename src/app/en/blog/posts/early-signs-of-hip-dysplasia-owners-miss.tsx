@@ -10,7 +10,6 @@ export default function EarlySignsHipDysplasiaOwnersMiss() {
   const title =
     'Early Signs of Hip Dysplasia Owners Miss: Subtle Clues Before Limping Starts';
   const date = 'December 27, 2025';
-  const slug = 'early-signs-of-hip-dysplasia-owners-miss';
 
   const description =
     'A deeply practical, owner-focused guide to the early and often-overlooked signs of hip dysplasia in dogs, including behavior changes, posture shifts, movement patterns, and daily-life clues that appear long before obvious limping.';
@@ -35,10 +34,6 @@ export default function EarlySignsHipDysplasiaOwnersMiss() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

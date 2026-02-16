@@ -12,9 +12,6 @@ export default function EthicsOfExtendingDogLifespan() {
   const date = 'December 4, 2025';
   const description =
     'An in-depth exploration of the ethical questions surrounding canine lifespan extension, including owner expectations, quality-of-life considerations, veterinary counseling, accessibility challenges, and humane decision-making in the era of longevity medicine.';
-  const slug = 'ethics-of-extending-dog-lifespan';
-
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['owner', 'veterinary'] as const;
 
@@ -36,7 +33,6 @@ export default function EthicsOfExtendingDogLifespan() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -51,7 +47,6 @@ export default function EthicsOfExtendingDogLifespan() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

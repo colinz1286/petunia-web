@@ -12,9 +12,6 @@ export default function DogWeightAndLifespanDataAnalysis() {
     const date = 'November 23, 2025';
     const description =
         'A detailed analysis of how body weight affects canine lifespan, including the Purina study, inflammation pathways, metabolic disease risk, body condition scoring, and safe weight reduction strategies.';
-    const slug = 'dog-weight-and-lifespan-data-analysis';
-
-    const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
     const categories = ['owner', 'veterinary'] as const;
 
@@ -36,7 +33,6 @@ export default function DogWeightAndLifespanDataAnalysis() {
                 <title>{title} – Petunia Blog</title>
                 <meta name="description" content={description} />
                 <meta name="robots" content="all" />
-                <link rel="canonical" href={canonicalUrl} />
 
                 <meta property="og:title" content={title} />
                 <meta property="og:description" content={description} />
@@ -52,7 +48,6 @@ export default function DogWeightAndLifespanDataAnalysis() {
                             description,
                             datePublished: date,
                             dateModified: date,
-                            url: canonicalUrl,
                             author: { '@type': 'Organization', name: 'Petunia' },
                             publisher: {
                                 '@type': 'Organization',

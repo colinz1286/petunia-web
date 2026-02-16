@@ -32,10 +32,6 @@ export default function LeashTrainingABostonTerrier2025() {
           content="A practical guide to leash training a Boston Terrier, covering loose-leash walking vs heel, why pulling happens, best harnesses for brachycephalic dogs, training progression, preventing reactivity, and puppy vs adult routines."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/leash-training-a-boston-terrier-2025`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

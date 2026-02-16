@@ -12,9 +12,6 @@ export default function PsychologyOfHopeInCanineLongevity() {
   const date = 'December 7, 2025';
   const description =
     'A deep exploration of the emotional drivers behind longevity medicine for dogs, including grief avoidance, attachment psychology, marketing risks, red flags, rational evaluation of claims, and the ethical difference between extending life and extending suffering.';
-  const slug = 'psychology-of-hope-in-canine-longevity';
-
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['owner', 'veterinary'] as const;
 
@@ -36,7 +33,6 @@ export default function PsychologyOfHopeInCanineLongevity() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -52,7 +48,6 @@ export default function PsychologyOfHopeInCanineLongevity() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

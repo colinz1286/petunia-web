@@ -16,10 +16,6 @@ export default function CanineInfluenza2025() {
           content="A veterinary-informed 2025 guide to canine influenza: current vaccine safety, booster recommendations, global boarding requirements, and practical owner advice."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/canine-influenza-2025-safety-boosters-boarding-rules`}
-        />
       </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">

@@ -10,7 +10,6 @@ export default function HowVetsDiagnoseHipDysplasia() {
   const title =
     'How Veterinarians Diagnose Hip Dysplasia in Dogs: Exams, X-Rays, PennHIP, OFA, and What Results Mean';
   const date = 'December 27, 2025';
-  const slug = 'how-veterinarians-diagnose-hip-dysplasia';
 
   const description =
     'A comprehensive, owner-first guide to how veterinarians diagnose hip dysplasia in dogs, including history, orthopedic exams, sedation and positioning for X-rays, OFA vs PennHIP, arthritis grading, and how diagnosis guides treatment decisions.';
@@ -35,10 +34,6 @@ export default function HowVetsDiagnoseHipDysplasia() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

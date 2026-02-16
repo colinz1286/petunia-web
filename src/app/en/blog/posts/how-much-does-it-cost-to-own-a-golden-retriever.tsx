@@ -24,8 +24,6 @@ export default function GoldenRetrieverCostToOwn() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'how-much-does-it-cost-to-own-a-golden-retriever';
-
   const description =
     'Realistic first-year and annual costs to own a Golden Retriever—food math, veterinary care, vaccines, preventives, grooming, training, insurance, boarding/daycare, and emergency planning—plus low/median/high budget templates you can copy-paste. Sources included.';
 
@@ -35,10 +33,6 @@ export default function GoldenRetrieverCostToOwn() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="index,follow" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

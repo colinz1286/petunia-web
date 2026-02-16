@@ -12,9 +12,6 @@ export default function DogStressSleepEnvironmentLifespan() {
   const date = 'November 30, 2025';
   const description =
     'A veterinarian-informed guide to how stress, sleep quality, circadian rhythm, and environmental design influence canine lifespan, including daily habits and enrichment techniques that support longevity.';
-  const slug = 'dog-stress-sleep-environment-lifespan';
-
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['owner', 'veterinary'] as const;
 
@@ -36,7 +33,6 @@ export default function DogStressSleepEnvironmentLifespan() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -51,7 +47,6 @@ export default function DogStressSleepEnvironmentLifespan() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

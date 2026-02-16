@@ -25,8 +25,6 @@ export default function HowToSelectADogToAdopt() {
     breeder: 'Breeders',
     breed_specific_guides: 'Breed Specific Guides',
   };
-
-  const slug = 'how-to-select-a-dog-to-adopt';
   const description =
     'A step-by-step adoption guide: define your lifestyle, evaluate behavior and temperament, understand health/age trade-offs, run a structured meet-and-greet, ask the right questions, and follow a 30-day plan to set your new dog up for success. Includes checklists and red-flag audits.';
 
@@ -36,10 +34,6 @@ export default function HowToSelectADogToAdopt() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="index,follow" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

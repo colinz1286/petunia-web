@@ -18,10 +18,6 @@ export default function WhelpingComplicationsEveryBreederShouldKnow() {
           content="Learn the early warning signs of whelping complications—dystocia, retained placenta, hypocalcemia, and postpartum risks—and when to contact your veterinarian for safe outcomes."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/whelping-complications-every-breeder-should-know`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

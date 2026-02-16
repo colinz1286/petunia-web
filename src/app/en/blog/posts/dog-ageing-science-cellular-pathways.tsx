@@ -12,9 +12,6 @@ export default function DogAgeingScienceCellularPathways() {
   const date = 'November 20, 2025';
   const description =
     'A scientific, veterinarian-supported breakdown of how dogs age: inflammation, metabolic slowdown, mitochondrial decline, immune weakening, and how new longevity medicine targets ageing pathways at the cellular level.';
-  const slug = 'dog-ageing-science-cellular-pathways';
-
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['owner', 'veterinary'] as const;
 
@@ -36,7 +33,6 @@ export default function DogAgeingScienceCellularPathways() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -52,7 +48,6 @@ export default function DogAgeingScienceCellularPathways() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

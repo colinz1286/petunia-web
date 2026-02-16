@@ -25,8 +25,6 @@ export default function DogFoodIngredientsToAvoid() {
         breed_specific_guides: 'Breed Specific Guides',
     };
 
-    const slug = 'dog-food-ingredients-to-avoid';
-
     const description =
         'A practical guide to dog food ingredients to avoid (and why), how to read labels, red flags vs. myths, and how to choose safer, complete-and-balanced products. Includes toxic ingredients (xylitol, allium powders), higher-risk preservatives or colorants, contamination risks (aflatoxin, pentobarbital), raw-pathogen concerns, boutique/BEG diet cautions, and a copy-paste shopping checklist with operator-grade detail. Professionally cited.';
 
@@ -36,10 +34,6 @@ export default function DogFoodIngredientsToAvoid() {
                 <title>{title} – Petunia Blog</title>
                 <meta name="description" content={description} />
                 <meta name="robots" content="index,follow" />
-                <link
-                    rel="canonical"
-                    href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-                />
                 <meta property="og:title" content={title} />
                 <meta property="og:description" content={description} />
             </Head>

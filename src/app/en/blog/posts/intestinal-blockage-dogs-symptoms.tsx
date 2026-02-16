@@ -31,10 +31,6 @@ export default function IntestinalBlockageDogsSymptoms() {
           content="Intestinal blockages in dogs can become life-threatening quickly. Learn common objects dogs swallow, early warning signs owners miss, why vomiting without diarrhea is concerning, and how veterinarians diagnose and treat obstructions."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/intestinal-blockage-dogs-symptoms`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

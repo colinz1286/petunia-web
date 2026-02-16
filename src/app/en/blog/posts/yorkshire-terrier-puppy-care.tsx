@@ -18,10 +18,6 @@ export default function YorkshireTerrierPuppyCare() {
                     content="Learn how to raise a healthy, confident Yorkshire Terrier puppy. This complete first-year guide covers vaccinations, training, grooming, socialization, feeding schedules, and toy breed safety tips."
                 />
                 <meta name="robots" content="all" />
-                <link
-                    rel="canonical"
-                    href={`https://www.petuniapets.com/${locale}/blog/yorkshire-terrier-puppy-care`}
-                />
             </Head>
 
             <article className="prose lg:prose-xl mx-auto px-4 py-8">

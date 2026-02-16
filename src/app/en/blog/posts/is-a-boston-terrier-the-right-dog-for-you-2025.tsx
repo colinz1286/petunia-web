@@ -32,10 +32,6 @@ export default function IsABostonTerrierRightForYou2025() {
           content="An honest, experience-based guide to whether a Boston Terrier is the right dog for you, covering personality fit, lifestyle compatibility, daily needs, pros and cons, and realistic expectations for new owners."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/is-a-boston-terrier-the-right-dog-for-you-2025`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

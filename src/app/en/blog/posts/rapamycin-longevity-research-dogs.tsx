@@ -13,8 +13,6 @@ export default function RapamycinLongevityResearchDogs() {
   const description =
     'A comprehensive, owner-first guide to rapamycin in dog aging research: what rapamycin is, why scientists study it for healthspan, what the TRIAD trial is designed to measure, what early dog studies suggest, the most important safety risks and monitoring questions, and why owners should not self-source or experiment outside veterinary supervision.';
 
-  const slug = 'rapamycin-longevity-research-dogs';
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['veterinary'] as const;
 
@@ -46,7 +44,6 @@ export default function RapamycinLongevityResearchDogs() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
 
@@ -60,7 +57,6 @@ export default function RapamycinLongevityResearchDogs() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

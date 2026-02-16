@@ -24,7 +24,6 @@ export default function ExtendingGreatDaneLifespan2025() {
   const description =
     'Learn research-based ways to extend a Great Dane’s lifespan, including weight management, exercise, sleep quality, gut health, and preventive veterinary care.';
 
-  const canonical = `https://www.petuniapets.com/${locale}/blog/extending-great-dane-lifespan-2025`;
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -35,7 +34,6 @@ export default function ExtendingGreatDaneLifespan2025() {
     publisher: { '@type': 'Organization', name: 'Petunia Pets' },
     description,
     image: `https://cdn.petuniapets.com/blog/extending-great-dane-lifespan-2025.jpg`,
-    mainEntityOfPage: canonical,
   };
 
   return (
@@ -44,7 +42,6 @@ export default function ExtendingGreatDaneLifespan2025() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonical} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <script

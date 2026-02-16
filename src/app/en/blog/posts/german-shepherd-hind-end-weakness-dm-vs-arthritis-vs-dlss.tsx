@@ -24,8 +24,6 @@ export default function GermanShepherdHindEndWeaknessTriageGuide() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'german-shepherd-hind-end-weakness-dm-vs-arthritis-vs-dlss';
-
   const description =
     'A practical, calm, step-by-step guide to hind-end weakness in German Shepherds: pain vs nerve weakness, common causes (arthritis, cruciate injury, DLSS, DM), what to track, and when to seek urgent care.';
 
@@ -35,10 +33,6 @@ export default function GermanShepherdHindEndWeaknessTriageGuide() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

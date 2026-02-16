@@ -17,10 +17,6 @@ export default function FoodVsEnvironmentalAllergiesInDogs() {
         />
         {/* House rule: never use the forbidden word and keep robots to 'all' */}
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/food-vs-environmental-allergies-in-dogs-how-to-tell-the-difference`}
-        />
       </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">

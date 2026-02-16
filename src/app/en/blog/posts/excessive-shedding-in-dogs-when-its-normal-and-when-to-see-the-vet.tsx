@@ -16,10 +16,6 @@ export default function ExcessiveSheddingInDogsGuide() {
           content="A practical, veterinary-informed guide to dog shedding: what&#39;s normal, what counts as excessive, how to reduce mess with grooming and nutrition, and the red flags that mean it&#39;s time to call your vet."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/excessive-shedding-in-dogs-when-its-normal-and-when-to-see-the-vet`}
-        />
       </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">

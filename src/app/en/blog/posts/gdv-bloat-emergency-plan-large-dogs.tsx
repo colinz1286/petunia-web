@@ -24,8 +24,6 @@ export default function GdvBloatEmergencyPlanLargeDogs() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'gdv-bloat-emergency-plan-large-dogs';
-
   const description =
     'A calm, practical emergency guide to GDV (bloat) in dogs: the signs to treat as an emergency, what to do immediately, what not to do, what the ER typically does, gastropexy explained, and risk-reduction steps.';
 
@@ -35,10 +33,6 @@ export default function GdvBloatEmergencyPlanLargeDogs() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

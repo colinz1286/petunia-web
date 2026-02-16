@@ -18,10 +18,6 @@ export default function BeagleShedding() {
           content="Do Beagles shed? Learn about Beagle shedding patterns, grooming needs, allergy considerations, and household tips for keeping your home clean and your dog’s coat healthy."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/beagle-shedding`}
-        />
       </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">

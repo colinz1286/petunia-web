@@ -12,9 +12,6 @@ export default function DogCognitiveDeclineCCDGuide() {
   const date = 'November 28, 2025';
   const description =
     'A veterinarian-supported guide explaining canine cognitive dysfunction (CCD), early symptoms, environmental and nutritional interventions, enrichment plans, sensory decline differentiation, and long-term quality-of-life planning.';
-  const slug = 'dog-cognitive-decline-ccd-guide';
-
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['owner', 'veterinary'] as const;
 
@@ -36,7 +33,6 @@ export default function DogCognitiveDeclineCCDGuide() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -52,7 +48,6 @@ export default function DogCognitiveDeclineCCDGuide() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

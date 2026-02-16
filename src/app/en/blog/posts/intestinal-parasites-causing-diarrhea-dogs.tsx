@@ -31,10 +31,6 @@ export default function IntestinalParasitesCausingDiarrheaDogs() {
           content="Parasites are a common, treatable cause of diarrhea in dogs. Learn which intestinal parasites matter most, how dogs get infected, what symptoms look like, how fecal testing works, and how to prevent reinfection and household spread."
         />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/intestinal-parasites-causing-diarrhea-dogs`}
-        />
       </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">

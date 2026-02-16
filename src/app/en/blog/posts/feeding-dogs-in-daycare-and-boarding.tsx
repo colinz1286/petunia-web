@@ -25,8 +25,6 @@ export default function FeedingDogsInDaycareBoarding() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const slug = 'feeding-dogs-in-daycare-and-boarding';
-
   const description =
     'An operator-grade guide to feeding systems in daycare and boarding: intake questions, portioning in grams, sanitation, allergy controls, raw and prescription diets, med-with-food workflows, bloat and aspiration risk, documentation, training, and ready-to-use SOPs.';
 
@@ -36,10 +34,6 @@ export default function FeedingDogsInDaycareBoarding() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link
-          rel="canonical"
-          href={`https://www.petuniapets.com/${locale}/blog/${slug}`}
-        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
       </Head>

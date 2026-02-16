@@ -12,9 +12,6 @@ export default function DogExerciseForLongevityDailyRoutines() {
   const date = 'November 22, 2025';
   const description =
     'A science-backed guide to the daily exercise routines that support dog longevity, including cardio, strength, mobility, cognitive work, and breed-specific needs for healthy ageing.';
-  const slug = 'dog-exercise-for-longevity-daily-routines';
-
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['owner', 'veterinary'] as const;
 
@@ -36,7 +33,6 @@ export default function DogExerciseForLongevityDailyRoutines() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -52,7 +48,6 @@ export default function DogExerciseForLongevityDailyRoutines() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',

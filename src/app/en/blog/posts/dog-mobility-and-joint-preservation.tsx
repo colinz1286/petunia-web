@@ -12,9 +12,6 @@ export default function DogMobilityAndJointPreservation() {
   const date = 'November 27, 2025';
   const description =
     'A veterinarian-supported guide to preventing arthritis, muscle loss, and balance decline in ageing dogs, including flooring solutions, strength exercises, complementary therapies, nutrition, and daily movement routines.';
-  const slug = 'dog-mobility-and-joint-preservation';
-
-  const canonicalUrl = `https://www.petuniapets.com/${locale}/blog/${slug}`;
 
   const categories = ['owner', 'veterinary'] as const;
 
@@ -36,7 +33,6 @@ export default function DogMobilityAndJointPreservation() {
         <title>{title} – Petunia Blog</title>
         <meta name="description" content={description} />
         <meta name="robots" content="all" />
-        <link rel="canonical" href={canonicalUrl} />
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -52,7 +48,6 @@ export default function DogMobilityAndJointPreservation() {
               description,
               datePublished: date,
               dateModified: date,
-              url: canonicalUrl,
               author: { '@type': 'Organization', name: 'Petunia' },
               publisher: {
                 '@type': 'Organization',
