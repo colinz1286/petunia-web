@@ -2496,12 +2496,12 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
-        slug: 'pet-insurance-dog-daycare-2025',
+        slug: 'are-pet-insurance-premiums-worth-it-in-2025',
         title: 'Pet Insurance and Dog Daycare: What’s Covered, What’s Not',
         date: 'October 11, 2025',
         description:
             'Pet insurance can offset daycare-related accident and illness costs—but not daily fees. Learn what’s covered, what’s excluded, and how to choose the right plan with real examples from leading providers.',
-        component: () => import('./posts/pet-insurance-dog-daycare-2025'),
+        component: () => import('./posts/are-pet-insurance-premiums-worth-it-in-2025'),
         categories: ['owner'],
     },
     {
