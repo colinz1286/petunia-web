@@ -2559,12 +2559,12 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['owner', 'vet', 'food'],
     },
     {
-        slug: 'pet-insurance-worth-it-2025',
+        slug: 'are-pet-insurance-premiums-worth-it-in-2025',
         title: 'Are Pet Insurance Premiums Worth It in 2025? What to Know Before You Enroll',
         date: 'October 7, 2025',
         description:
             'Nationwide and Trupanion announced 2025 premium hikes amid rising veterinary costs. Learn why pet insurance prices are climbing, how to evaluate coverage, and whether it still makes financial sense for your dog or cat.',
-        component: () => import('./posts/pet-insurance-worth-it-2025'),
+        component: () => import('./posts/are-pet-insurance-premiums-worth-it-in-2025'),
         categories: ['owner'],
     },
     {
