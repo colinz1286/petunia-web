@@ -4,11 +4,16 @@ import type { Metadata } from 'next';
 
 type RouteParams = { slug: string; locale: string };
 // ✅ Match the generated type expectation: params is a Promise<...>
-type PageProps = { params: Promise<RouteParams> };
+type PageProps = {
+  params: RouteParams;
+};
+
 
 // ---- SEO metadata per post ---------------------------------------------------
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug, locale } = await params; // works even if Next passes a plain object
+  const { slug, locale } = params;
+  const safeLocale = locale ?? 'en';
+
   const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
@@ -18,7 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const url = `https://petuniapets.com/${locale}/blog/${post.slug}`;
+  const url = `https://petuniapets.com/${safeLocale}/blog/${post.slug}`;
 
   return {
     title: post.title,
@@ -41,7 +46,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 // ---- JSON-LD structured data -------------------------------------------------
 function StructuredData({ post, locale }: { post: BlogPostEntry; locale: string }) {
-  const jsonLd: Record<string, unknown> = {
+  const safeLocale = locale ?? 'en';
+
+  const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
@@ -55,16 +62,23 @@ function StructuredData({ post, locale }: { post: BlogPostEntry; locale: string 
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://petuniapets.com/${locale}/blog/${post.slug}`,
+      '@id': `https://petuniapets.com/${safeLocale}/blog/${post.slug}`,
     },
   };
 
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />;
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
 }
 
 // ---- Page --------------------------------------------------------------------
 export default async function BlogPostPage({ params }: PageProps) {
-  const { slug, locale } = await params; // safe with Promise or object
+  const resolved = await params;
+  const slug = resolved.slug;
+  const locale = resolved.locale ?? 'en';
   const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
