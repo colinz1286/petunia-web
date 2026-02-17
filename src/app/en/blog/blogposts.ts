@@ -10,6 +10,15 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'pet-boarding-market-exploding-2031-forecast',
+        title: 'Pet Boarding Market Exploding Globally: What Facility Owners Need to Know About Growth Through 2031',
+        date: 'February 17, 2026',
+        description:
+            'A data-backed deep dive into why the global pet boarding industry is projected to surge through 2031, including urbanization trends, premium care demand, rising pet ownership, and strategic insights for boarding and daycare facility owners.',
+        component: () => import('./posts/pet-boarding-market-exploding-2031-forecast'),
+        categories: ['boarding'],
+    },
+    {
         slug: 'professional-associations-certification-pet-care',
         title: 'Professional Associations & Certification Push: Raising Standards in Dog Boarding, Daycare & Pet Care',
         date: 'February 16, 2026',
@@ -26,6 +35,15 @@ export const blogPosts: BlogPostEntry[] = [
             'After high-profile cruelty and negligence cases, advocacy voices and BBB guidance are pushing dog boarding and daycare toward stronger safety standards, staff training expectations, and clearer accountability. Here is what is changing, what owners should ask, and what operators can implement now.',
         component: () => import('./posts/advocacy-pressure-boarding-safety-practices'),
         categories: ['boarding', 'owner', 'vet'],
+    },
+    {
+        slug: 'new-franchise-models-in-pet-services',
+        title: 'New Franchise Models in Pet Services: How Hybrid, Tech-Enabled Chains Are Reshaping Boarding & Daycare',
+        date: 'February 14, 2026',
+        description:
+            'An in-depth look at the rise of franchise-based pet service models, including hybrid concepts that combine daycare, boarding, grooming, retail, and tech-enabled client experiences. What it means for independent operators and the future of scalable pet care.',
+        component: () => import('./posts/new-franchise-models-in-pet-services'),
+        categories: ['boarding', 'owner'],
     },
     {
         slug: 'akc-newly-recognized-breeds-2026-owner-guide',
