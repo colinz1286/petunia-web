@@ -134,7 +134,8 @@ export default function BoardingAndDaycareMessageClientPage() {
     };
 
     const attachListener = () => {
-        const q = query(messagesCollection(), orderBy('sentAtClient', 'asc'));
+        // ✅ Use server timestamp field that always exists
+        const q = query(messagesCollection(), orderBy('sentAt', 'asc'));
 
         return onSnapshot(q, async (snapshot) => {
             const msgs: ChatMessage[] = snapshot.docs.map((docSnap) => {

@@ -34,6 +34,19 @@ import {
   set as rtdbSet,
 } from 'firebase/database';
 
+import {
+  getFunctions,
+  httpsCallable
+} from 'firebase/functions';
+
+import { loadStripe } from '@stripe/stripe-js';
+import {
+  Elements,
+  PaymentElement,
+  useStripe,
+  useElements,
+} from '@stripe/react-stripe-js';
+
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
@@ -46,6 +59,11 @@ if (!getApps().length) initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
 const rtdb = getDatabase();
+const functions = getFunctions();
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
 
 /* =========================
    Types
@@ -210,6 +228,10 @@ export default function IndividualBookDaycarePage() {
   const [dropOffTimeRequired, setDropOffTimeRequired] = useState(false);
   const [dropOffTimesByWeekday, setDropOffTimesByWeekday] = useState<WeekdayMap>({});
 
+  // 🔵 NEW — Payment Settings (must match iOS behavior)
+  const [paymentsEnabled, setPaymentsEnabled] = useState(false);
+  const [payAtBookingEnabled, setPayAtBookingEnabled] = useState(false);
+
   // ⭐ NEW — Pickup time requirement + time map + options
   const [pickUpTimeRequired, setPickUpTimeRequired] = useState(false);
   const [pickUpTimesByWeekday, setPickUpTimesByWeekday] = useState<WeekdayMap>({});
@@ -242,6 +264,9 @@ export default function IndividualBookDaycarePage() {
   const [showGroomingPrompt, setShowGroomingPrompt] = useState(false);
   const [pendingDraft, setPendingDraft] = useState<DraftBooking | null>(null);
   const [showGroomingUI, setShowGroomingUI] = useState(false);
+
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
 
   // Vaccine alerts (read-only)
   const [requiredVaccines, setRequiredVaccines] = useState<Set<VaccineKey>>(new Set());
@@ -384,7 +409,7 @@ export default function IndividualBookDaycarePage() {
       setIncludePendingInCapacity(!!data.features?.countPendingInCapacity);
       setClientWritesRTDB(data.features?.clientWritesRTDB !== false);
 
-      /// Core flags
+      // Core flags
       setDropOffTimeRequired(!!data.dropOffTimeRequiredDaycare);
 
       // ⭐ NEW — Pickup required flag
@@ -392,6 +417,20 @@ export default function IndividualBookDaycarePage() {
 
       // ✅ NEW — Approval toggle (daycare)
       setRequireDaycareReservationApproval(!!data.requireDaycareReservationApproval);
+
+      // 🔵 NEW — Hydrate Payment Settings (matches iOS)
+      const paymentSettings = (data as {
+        paymentSettings?: {
+          enabled?: boolean;
+          daycare?: {
+            payAtBooking?: boolean;
+          };
+        }
+      }).paymentSettings || {};
+      setPaymentsEnabled(!!paymentSettings.enabled);
+
+      const daycarePayments = paymentSettings.daycare || {};
+      setPayAtBookingEnabled(!!daycarePayments.payAtBooking);
 
       setTemperamentTestRequired(!!data.temperamentTestRequired);
 
@@ -681,6 +720,63 @@ export default function IndividualBookDaycarePage() {
     pickUpTimeRequired,
     selectedPickUpTime,
     blackoutDates
+  ]);
+
+  // 🔵 Stripe Payment Flow (matches iOS architecture)
+  const startStripePaymentFlow = useCallback(async () => {
+    if (isProcessingPayment) return;
+    if (!userId || draftBookings.length === 0) return;
+
+    setIsProcessingPayment(true);
+
+    try {
+      // 🔄 STEP 1 — Sync Stripe Account Status
+      const syncCallable = httpsCallable(functions, 'syncStripeAccountStatus');
+      await syncCallable({ businessId });
+
+      // 🔄 STEP 2 — Create PaymentIntent
+      const createCallable = httpsCallable(functions, 'createDaycarePaymentIntent');
+
+      const payload = {
+        businessId,
+        userId,
+        draftBookings: draftBookings.map((b) => ({
+          date: b.date.getTime() / 1000, // unix seconds
+          petIds: b.petIds,
+          dropOffTime: b.dropOffTime,
+          pickUpTime: b.pickUpTime,
+          isAssessment: b.isAssessment,
+        })),
+      };
+
+      const result = await createCallable(payload) as {
+        data?: {
+          clientSecret?: string;
+        };
+      };
+      const clientSecret = result?.data?.clientSecret;
+
+      if (!clientSecret) {
+        throw new Error("Missing clientSecret from createDaycarePaymentIntent");
+      }
+
+      console.log("✅ PaymentIntent created:", clientSecret.substring(0, 20));
+
+      // Store clientSecret to render Stripe UI instead of auto-submitting
+      setClientSecret(clientSecret);
+
+    } catch (error) {
+      console.error("❌ Stripe payment flow failed:", error);
+      alert("Payment could not be processed.");
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  }, [
+    isProcessingPayment,
+    userId,
+    draftBookings,
+    businessId,
+    bizTZ
   ]);
 
   /* =========================
@@ -1125,11 +1221,45 @@ export default function IndividualBookDaycarePage() {
             </div>
           )}
 
+          {isProcessingPayment && !clientSecret && (
+            <div className="w-full max-w-xs text-center text-sm text-gray-600">
+              Processing payment...
+            </div>
+          )}
+
+          {clientSecret && (
+            <Elements
+              stripe={stripePromise}
+              options={{
+                clientSecret,
+                appearance: { theme: 'stripe' },
+              }}
+            >
+              <StripeCheckoutForm
+                onSuccess={async () => {
+                  setClientSecret(null);
+                  await submitAllReservations();
+                }}
+                onCancel={() => setClientSecret(null)}
+              />
+            </Elements>
+          )}
+
           {/* Submit */}
           <button
-            onClick={submitAllReservations}
-            className={`w-full max-w-xs text-white py-3 rounded transition text-sm ${draftBookings.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-800 hover:bg-green-700'}`}
-            disabled={draftBookings.length === 0}
+            onClick={() => {
+              // 🔵 Stripe Pay-At-Booking Gate (matches iOS logic)
+              if (paymentsEnabled && payAtBookingEnabled) {
+                startStripePaymentFlow(); // we will implement this next
+              } else {
+                submitAllReservations();
+              }
+            }}
+            className={`w-full max-w-xs text-white py-3 rounded transition text-sm ${draftBookings.length === 0
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-green-800 hover:bg-green-700'
+              }`}
+            disabled={draftBookings.length === 0 || isProcessingPayment}
           >
             {t('submit_all')}
           </button>
@@ -1220,6 +1350,74 @@ function GroomingModal(props: {
                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-600"
           >
             {t('done_button')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StripeCheckoutForm({
+  onSuccess,
+  onCancel,
+}: {
+  onSuccess: () => void;
+  onCancel: () => void;
+}) {
+
+  const stripe = useStripe();
+  const elements = useElements();
+  const [processing, setProcessing] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!stripe || !elements) return;
+
+    setProcessing(true);
+
+    const { error, paymentIntent } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: window.location.href,
+      },
+      redirect: "if_required",
+    });
+
+    if (error) {
+      alert(error.message);
+      setProcessing(false);
+      return;
+    }
+
+    if (paymentIntent?.status === 'succeeded') {
+      onSuccess();
+    }
+
+    setProcessing(false);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md space-y-4">
+        <h3 className="text-lg font-semibold">Complete Payment</h3>
+
+        <div className="border p-3 rounded">
+          <PaymentElement />
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 bg-gray-300 rounded"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={handleSubmit}
+            disabled={processing}
+            className="px-4 py-2 bg-green-800 text-white rounded"
+          >
+            {processing ? "Processing..." : "Pay Now"}
           </button>
         </div>
       </div>

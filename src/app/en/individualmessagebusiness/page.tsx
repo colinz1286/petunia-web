@@ -221,7 +221,8 @@ export default function IndividualMessageBusinessPage() {
     ]);
 
     const attachListener = useCallback(() => {
-        const q = query(messagesCollectionRef(), orderBy('sentAtClient', 'asc'));
+        // ✅ Use server timestamp field that exists across all historical messages
+        const q = query(messagesCollectionRef(), orderBy('sentAt', 'asc'));
 
         const unsubscribe = onSnapshot(q, async (snapshot) => {
             const msgs: Message[] = snapshot.docs.map((docSnap) => {
