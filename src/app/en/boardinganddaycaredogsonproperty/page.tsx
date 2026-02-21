@@ -95,12 +95,22 @@ const formatCheckIn = (iso: string, locale: string) => {
 };
 
 /** -------- Fetch feeding info from Firestore -------- */
-async function fetchFeedingInfo(ownerName: string, dogId: string): Promise<{ currentFood?: string; feedingAmount?: string }> {
+async function fetchFeedingInfo(
+  ownerName: string,
+  dogId: string,
+  businessIdRaw: string
+): Promise<{ currentFood?: string; feedingAmount?: string }> {
   try {
-    // Step 1 – Find userId by owner name
-    const joinQ = query(collection(db, 'joinRequests'), where('userName', '==', ownerName));
+    // Step 1 – Find userId by owner name SCOPED to this business (matches iOS logic)
+    const joinQ = query(
+      collection(db, 'joinRequests'),
+      where('userName', '==', ownerName),
+      where('businessId', '==', businessIdRaw)
+    );
+
     const joinSnap = await getDocs(joinQ);
     if (joinSnap.empty) return {};
+
     const ownerUid = joinSnap.docs[0].data().userId as string | undefined;
     if (!ownerUid) return {};
 
@@ -108,7 +118,9 @@ async function fetchFeedingInfo(ownerName: string, dogId: string): Promise<{ cur
     const petRef = doc(db, 'users', ownerUid, 'pets', dogId);
     const petSnap = await getDoc(petRef);
     if (!petSnap.exists()) return {};
+
     const data = petSnap.data() || {};
+
     return {
       currentFood: (data.currentFood as string) || '',
       feedingAmount: (data.feedingAmount as string) || '',
@@ -242,17 +254,20 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
               isAssessment: (v.isAssessment as boolean) ?? false,
             };
 
-            // 🧩 Immediately start Firestore lookup for feeding info
-            fetchFeedingInfo(owner, dog.id).then((feed) => {
-              if (feed.currentFood || feed.feedingAmount) {
-                setDogs((prev) => {
-                  const updated = prev.map((d) =>
-                    d.id === dog.id ? { ...d, ...feed } : d
-                  );
-                  return updated;
+            if (businessIdRaw) {
+              fetchFeedingInfo(owner, dog.id, businessIdRaw)
+                .then((feed) => {
+                  if (feed.currentFood || feed.feedingAmount) {
+                    setDogs((prev) =>
+                      prev.map((d) =>
+                        d.id === dog.id ? { ...d, ...feed } : d
+                      )
+                    );
+                  }
+                })
+                .catch(() => {
                 });
-              }
-            });
+            }
 
             list.push(dog);
           });
@@ -278,7 +293,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
         rCb.current = null;
       }
     };
-  }, [businessIdSanitized, t]);
+  }, [businessIdSanitized, businessIdRaw, t]);
 
   /** Filtering — now sorted alphabetically by dog name (A–Z) */
   const filteredDogs = useMemo(() => {
@@ -602,7 +617,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
             {filteredDogs.map((dog, idx) => {
               const expandedRow = expanded.has(dog.id);
               return (
-                <div key={dog.id} className="rounded-xl border border-[color:var(--color-accent)] bg-white">
+                <div key={`${dog.id}-${idx}`} className="rounded-xl border border-[color:var(--color-accent)] bg-white">
                   {/* Header row (tap to expand) */}
                   <button
                     className="w-full text-left px-4 py-3 rounded-t-xl"
