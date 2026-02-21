@@ -61,8 +61,12 @@ const db = getFirestore();
 const rtdb = getDatabase();
 const functions = getFunctions();
 
+if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+  throw new Error("Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable");
+}
+
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
 
 /* =========================
@@ -150,6 +154,7 @@ type DaycareReservationWrite = {
 };
 
 type DraftBooking = {
+  reservationId: string;
   date: Date;                 // normalized (no time)
   dropOffTime: string;
   pickUpTime: string;  // ⭐ NEW
@@ -267,6 +272,7 @@ export default function IndividualBookDaycarePage() {
 
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [paymentAmount, setPaymentAmount] = useState<number | null>(null);
 
   // Vaccine alerts (read-only)
   const [requiredVaccines, setRequiredVaccines] = useState<Set<VaccineKey>>(new Set());
@@ -692,6 +698,7 @@ export default function IndividualBookDaycarePage() {
     if (hasExistingReservation) { alert(t('duplicate_daycare_message')); return; }
 
     const draft: DraftBooking = {
+      reservationId: crypto.randomUUID(),
       date: normalizeDate(selectedDate),
       dropOffTime: dropOffTimeRequired ? selectedTime : "",      // ✅ only required if business requires it
       pickUpTime: pickUpTimeRequired ? selectedPickUpTime : "",  // ✅ only required if business requires it
@@ -741,7 +748,8 @@ export default function IndividualBookDaycarePage() {
         businessId,
         userId,
         draftBookings: draftBookings.map((b) => ({
-          date: b.date.getTime() / 1000, // unix seconds
+          reservationId: b.reservationId,   // 🔥 CRITICAL — match iOS
+          date: b.date.getTime() / 1000,
           petIds: b.petIds,
           dropOffTime: b.dropOffTime,
           pickUpTime: b.pickUpTime,
@@ -752,15 +760,21 @@ export default function IndividualBookDaycarePage() {
       const result = await createCallable(payload) as {
         data?: {
           clientSecret?: string;
+          amountCents?: number;
         };
       };
-      const clientSecret = result?.data?.clientSecret;
 
-      if (!clientSecret) {
-        throw new Error("Missing clientSecret from createDaycarePaymentIntent");
+      const clientSecret = result?.data?.clientSecret;
+      const amountCents = result?.data?.amountCents;
+
+      if (!clientSecret || typeof amountCents !== "number") {
+        throw new Error("Invalid PaymentIntent response");
       }
 
       console.log("✅ PaymentIntent created:", clientSecret.substring(0, 20));
+
+      // 🔥 NEW — Store amount for UI display
+      setPaymentAmount(amountCents);
 
       // Store clientSecret to render Stripe UI instead of auto-submitting
       setClientSecret(clientSecret);
@@ -775,8 +789,7 @@ export default function IndividualBookDaycarePage() {
     isProcessingPayment,
     userId,
     draftBookings,
-    businessId,
-    bizTZ
+    businessId
   ]);
 
   /* =========================
@@ -805,7 +818,7 @@ export default function IndividualBookDaycarePage() {
       } catch { /* ignore */ }
 
       for (const booking of draftBookings) {
-        const reservationId = crypto.randomUUID();
+        const reservationId = booking.reservationId;   // 🔥 use canonical ID
         const realtimeKey = reservationId;
 
         const petStatuses = booking.petIds.reduce<Record<string, string>>((acc, pid) => {
@@ -1229,6 +1242,7 @@ export default function IndividualBookDaycarePage() {
 
           {clientSecret && (
             <Elements
+              key={clientSecret} // 🔥 FORCE REMOUNT
               stripe={stripePromise}
               options={{
                 clientSecret,
@@ -1236,11 +1250,16 @@ export default function IndividualBookDaycarePage() {
               }}
             >
               <StripeCheckoutForm
+                amountCents={paymentAmount}
                 onSuccess={async () => {
                   setClientSecret(null);
+                  setPaymentAmount(null);
                   await submitAllReservations();
                 }}
-                onCancel={() => setClientSecret(null)}
+                onCancel={() => {
+                  setClientSecret(null);
+                  setPaymentAmount(null);
+                }}
               />
             </Elements>
           )}
@@ -1358,9 +1377,11 @@ function GroomingModal(props: {
 }
 
 function StripeCheckoutForm({
+  amountCents,
   onSuccess,
   onCancel,
 }: {
+  amountCents: number | null;
   onSuccess: () => void;
   onCancel: () => void;
 }) {
@@ -1376,9 +1397,6 @@ function StripeCheckoutForm({
 
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
-      confirmParams: {
-        return_url: window.location.href,
-      },
       redirect: "if_required",
     });
 
@@ -1399,6 +1417,12 @@ function StripeCheckoutForm({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md space-y-4">
         <h3 className="text-lg font-semibold">Complete Payment</h3>
+
+        {amountCents !== null && (
+          <div className="text-md font-semibold text-gray-700">
+            Total: ${(amountCents / 100).toFixed(2)}
+          </div>
+        )}
 
         <div className="border p-3 rounded">
           <PaymentElement />

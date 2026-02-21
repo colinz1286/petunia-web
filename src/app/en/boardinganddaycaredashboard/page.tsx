@@ -67,6 +67,7 @@ export default function BoardingAndDaycareDashboardPage() {
 
   const [enableEmployeeManagement, setEnableEmployeeManagement] = useState(false);
   const [enableStatePaperwork, setEnableStatePaperwork] = useState(false);
+  const [enableFinancialManagement, setEnableFinancialManagement] = useState(false);
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
 
   useEffect(() => {
@@ -103,6 +104,7 @@ export default function BoardingAndDaycareDashboardPage() {
     const features = data.features || {};
     setEnableEmployeeManagement(features.enableEmployeeManagement || false);
     setEnableStatePaperwork(features.enableStatePaperwork || false);
+    setEnableFinancialManagement(features.enableFinancialManagement || false);
   };
 
   // 🔴 Checks for unread client messages for this business
@@ -241,6 +243,13 @@ export default function BoardingAndDaycareDashboardPage() {
           />
 
           <DashboardLink href="/boardinganddaycare-clientmanagement" label={t('client_management')} />
+
+          {enableFinancialManagement && (
+            <DashboardLink
+              href="/boardinganddaycare-financialmanagement"
+              label="Financial Management"
+            />
+          )}
 
           {enableEmployeeManagement && (
             <>

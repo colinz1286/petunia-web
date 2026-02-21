@@ -33,6 +33,7 @@
   "optional_features_header": "Optional Features",
   "employee_management_toggle": "Enable Employee Management",
   "state_paperwork_toggle": "Enable State Paperwork Log",
+  "enable_financial_management": "Enable Financial Management",
   "save_changes_button": "Save Changes",
   "saving": "Saving...",
   "back_to_dashboard": "Back to Dashboard",

@@ -227,6 +227,7 @@ export default function BusinessSettingsPage() {
     const [optionalFeatures, setOptionalFeatures] = useState({
         employeeManagement: false,
         statePaperworkLog: false,
+        financialManagement: false,
     });
 
     // --- Required Vaccinations (matches iOS) ---
@@ -511,10 +512,16 @@ export default function BusinessSettingsPage() {
                     data.prohibitBoardingOverlapWithBlackoutDates || false
                 );
 
-                const features = data.features || { enableEmployeeManagement: false, enableStatePaperwork: false };
+                const features = data.features || {
+                    enableEmployeeManagement: false,
+                    enableStatePaperwork: false,
+                    enableFinancialManagement: false,
+                };
+
                 setOptionalFeatures({
                     employeeManagement: !!features.enableEmployeeManagement,
                     statePaperworkLog: !!features.enableStatePaperwork,
+                    financialManagement: !!features.enableFinancialManagement,
                 });
 
                 // Sync Stripe status after business loads
@@ -657,6 +664,7 @@ export default function BusinessSettingsPage() {
             features: {
                 enableEmployeeManagement: optionalFeatures.employeeManagement,
                 enableStatePaperwork: optionalFeatures.statePaperworkLog,
+                enableFinancialManagement: optionalFeatures.financialManagement,
             },
         });
 
@@ -2009,6 +2017,11 @@ export default function BusinessSettingsPage() {
                                 label={t('state_paperwork_toggle')}
                                 checked={optionalFeatures.statePaperworkLog}
                                 onChange={(val) => setOptionalFeatures((prev) => ({ ...prev, statePaperworkLog: val }))}
+                            />
+                            <Toggle
+                                label={t('enable_financial_management')}
+                                checked={optionalFeatures.financialManagement}
+                                onChange={(val) => setOptionalFeatures((prev) => ({ ...prev, financialManagement: val }))}
                             />
                         </div>
 
