@@ -21,6 +21,7 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 import { initializeApp } from 'firebase/app';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
+import { currencyTextToCents, centsToCurrencyText } from '@/lib/currencyUtils';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -88,39 +89,6 @@ export default function BusinessSettingsPage() {
     const [daycarePrice4Pets, setDaycarePrice4Pets] = useState('');
     const [daycarePrice5Pets, setDaycarePrice5Pets] = useState('');
     const [maxDaycarePricingRows, setMaxDaycarePricingRows] = useState(3); // starts 1–3, expands to 5
-
-    const currencyTextToCents = (text: string): number => {
-        // Accept "45", "45.00", "$45.00" etc. (mirrors iOS)
-        const filtered = text
-            .replace(/,/g, '.')
-            .split('')
-            .filter((ch) => '0123456789.'.includes(ch))
-            .join('');
-
-        if (!filtered) return 0;
-
-        const parts = filtered.split('.');
-        const dollarsPart = parts[0] ?? '0';
-        const centsRaw = parts.length > 1 ? (parts[1] ?? '0') : '0';
-
-        const dollars = Number.parseInt(dollarsPart, 10) || 0;
-
-        const centsTwoDigits = (() => {
-            if (!centsRaw) return 0;
-            const trimmed = centsRaw.slice(0, 2);
-            if (trimmed.length === 1) return (Number.parseInt(trimmed, 10) || 0) * 10;
-            return Number.parseInt(trimmed, 10) || 0;
-        })();
-
-        return Math.max(0, (dollars * 100) + centsTwoDigits);
-    };
-
-    const centsToCurrencyText = (cents: number): string => {
-        const safe = Math.max(0, cents || 0);
-        const dollars = Math.floor(safe / 100);
-        const remainder = safe % 100;
-        return `${dollars}.${remainder.toString().padStart(2, '0')}`;
-    };
 
     const daycarePricePayloadFromFields = (): Record<string, number> => {
         const payload: Record<string, number> = {};
