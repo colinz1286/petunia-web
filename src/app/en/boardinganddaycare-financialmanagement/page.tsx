@@ -18,7 +18,7 @@ export default function BoardingAndDaycareFinancialManagementPage() {
 
                     {/* ACTIVE BUTTON */}
                     <DashboardLink
-                        href="/boardinganddaycare-financialmanagement-transactions"
+                        href="/en/boardinganddaycare-financialmanagement-transactionsandrefunds"
                         label={t('transactions_and_refunds')}
                     />
 

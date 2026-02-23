@@ -60,6 +60,7 @@ export default function BusinessSettingsPage() {
     const [groomingServices, setGroomingServices] = useState<string[]>(['']);
     const [groomingPricingItems, setGroomingPricingItems] = useState<string[]>(['']);
     const [groomingServicePrices, setGroomingServicePrices] = useState<Record<string, string>>({});
+    const [groomingServiceCategories, setGroomingServiceCategories] = useState<Record<string, string>>({});
 
 
     const [daycareAddOnServices, setDaycareAddOnServices] = useState<string[]>(['']);
@@ -318,20 +319,25 @@ export default function BusinessSettingsPage() {
                         const groomingData = groomingSnap.data();
                         const services = groomingData.grooming?.services || {};
 
-                        // ✅ Recreate pricing rows
                         const itemNames = Object.keys(services).sort();
                         setGroomingPricingItems(itemNames.length > 0 ? itemNames : ['']);
 
                         const priceMap: Record<string, string> = {};
+                        const categoryMap: Record<string, string> = {};
 
                         for (const name of itemNames) {
                             const cents = services[name]?.priceCents;
                             if (typeof cents === 'number') {
                                 priceMap[name] = centsToCurrencyText(cents);
                             }
+
+                            if (typeof services[name]?.category === 'string') {
+                                categoryMap[name] = services[name].category;
+                            }
                         }
 
                         setGroomingServicePrices(priceMap);
+                        setGroomingServiceCategories(categoryMap);
                     }
                 } catch {
                     // silent fail
@@ -659,7 +665,7 @@ export default function BusinessSettingsPage() {
 
         // --- Save Grooming Pricing (parity with iOS) ---
         if (offersGrooming) {
-            const servicesPayload: Record<string, { priceCents: number }> = {};
+            const servicesPayload: Record<string, { priceCents: number; category?: string }> = {};
 
             for (const item of groomingPricingItems) {
                 const trimmed = item.trim();
@@ -669,9 +675,15 @@ export default function BusinessSettingsPage() {
                 const cents = currencyTextToCents(priceText);
 
                 if (cents > 0) {
-                    servicesPayload[trimmed] = {
+                    const serviceData: { priceCents: number; category?: string } = {
                         priceCents: cents,
                     };
+
+                    if (groomingServiceCategories[trimmed]) {
+                        serviceData.category = groomingServiceCategories[trimmed];
+                    }
+
+                    servicesPayload[trimmed] = serviceData;
                 }
             }
 
@@ -689,7 +701,6 @@ export default function BusinessSettingsPage() {
                 );
             }
         }
-
 
         // keep waiver subdoc behavior simple/consistent
         const waiverRef = doc(db, 'businesses', businessId, 'settings', 'clientWaiver');
@@ -1116,9 +1127,32 @@ export default function BusinessSettingsPage() {
                                     />
 
                                     {daycareInvoiceAfterAttendanceEnabled && (
-                                        <p className="text-xs text-gray-500 ml-8">
-                                            Invoices are generated after daycare attendance and sent to the client.
-                                        </p>
+                                        <>
+                                            <p className="text-xs text-gray-500 ml-8">
+                                                Invoices are generated after daycare attendance and sent to the client.
+                                            </p>
+
+                                            <div className="mt-3 ml-8 border rounded p-3 bg-gray-50">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => router.push(`/${_locale}/boardinganddaycare-invoicelibrary`)}
+                                                    className="w-full text-left"
+                                                >
+                                                    <div className="flex items-center justify-between gap-3">
+                                                        <div>
+                                                            <p className="font-semibold text-sm text-[color:var(--color-accent)]">
+                                                                Manage Invoice Item Library
+                                                            </p>
+                                                            <p className="text-xs text-gray-500 mt-1">
+                                                                Create invoiceable items (daycare, boarding, grooming, training, add-ons).
+                                                            </p>
+                                                        </div>
+
+                                                        <span className="text-gray-400 text-lg">›</span>
+                                                    </div>
+                                                </button>
+                                            </div>
+                                        </>
                                     )}
 
                                     <Toggle
@@ -1268,18 +1302,40 @@ export default function BusinessSettingsPage() {
                                         </div>
 
                                         {trimmed !== '' && (
-                                            <input
-                                                value={groomingServicePrices[trimmed] || ''}
-                                                placeholder={`Price for ${trimmed}`}
-                                                inputMode="decimal"
-                                                onChange={(e) =>
-                                                    setGroomingServicePrices(prev => ({
-                                                        ...prev,
-                                                        [trimmed]: e.target.value,
-                                                    }))
-                                                }
-                                                className="w-full border px-3 py-2 rounded text-sm"
-                                            />
+                                            <>
+                                                <input
+                                                    value={groomingServicePrices[trimmed] || ''}
+                                                    placeholder={`Price for ${trimmed}`}
+                                                    inputMode="decimal"
+                                                    onChange={(e) =>
+                                                        setGroomingServicePrices(prev => ({
+                                                            ...prev,
+                                                            [trimmed]: e.target.value,
+                                                        }))
+                                                    }
+                                                    className="w-full border px-3 py-2 rounded text-sm"
+                                                />
+
+                                                {/* Category Picker (Parity with iOS) */}
+                                                <select
+                                                    value={groomingServiceCategories[trimmed] || ''}
+                                                    onChange={(e) =>
+                                                        setGroomingServiceCategories(prev => {
+                                                            const updated = { ...prev };
+                                                            if (e.target.value === '') {
+                                                                delete updated[trimmed];
+                                                            } else {
+                                                                updated[trimmed] = e.target.value;
+                                                            }
+                                                            return updated;
+                                                        })
+                                                    }
+                                                    className="w-full border px-3 py-2 rounded text-sm mt-1"
+                                                >
+                                                    <option value="">None</option>
+                                                    <option value="bath">Bath</option>
+                                                </select>
+                                            </>
                                         )}
                                     </div>
                                 );

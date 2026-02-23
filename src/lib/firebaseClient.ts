@@ -3,6 +3,7 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getFunctions } from 'firebase/functions';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -13,20 +14,8 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
 
-// ---------------------------------------------------------------------------
-// Firebase App (singleton)
-// ---------------------------------------------------------------------------
-
 export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-
-// ---------------------------------------------------------------------------
-// App Check (initialize ONCE, client-side only)
-// This is the web equivalent of iOS AppDelegate.didFinishLaunching
-// ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
-// Shared service singletons
-// ---------------------------------------------------------------------------
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const functions = getFunctions(app);

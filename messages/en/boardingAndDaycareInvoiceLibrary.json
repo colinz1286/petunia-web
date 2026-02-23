@@ -1,0 +1,12 @@
+{
+  "back_button": "Back",
+  "page_title": "Invoice Item Library",
+  "page_subtitle": "Build a library of items you can add to invoices at any time.",
+  "loading": "Loading...",
+  "coming_next_title": "Coming next:",
+  "coming_next_add_item": "Add item (name, price, category)",
+  "coming_next_edit_item": "Edit item",
+  "coming_next_deactivate_item": "Deactivate item (hide from picker without deleting)",
+  "coming_next_search_filter": "Search/filter by category",
+  "firestore_target_label": "Firestore target (next step):"
+}
