@@ -23,6 +23,7 @@ type InvoiceItem = {
     name: string;
     priceCents: number;
     category: string;
+    serviceContext?: string; // NEW (optional)
     active: boolean;
 };
 
@@ -127,6 +128,7 @@ export default function BoardingAndDaycareInvoiceLibraryPage() {
                         name?: unknown;
                         priceCents?: unknown;
                         category?: unknown;
+                        serviceContext?: unknown; // NEW
                         active?: unknown;
                     };
 
@@ -135,13 +137,33 @@ export default function BoardingAndDaycareInvoiceLibraryPage() {
                         name: typeof value.name === 'string' ? value.name : 'Unnamed',
                         priceCents: typeof value.priceCents === 'number' ? value.priceCents : 0,
                         category: typeof value.category === 'string' ? value.category : 'uncategorized',
+                        serviceContext: typeof value.serviceContext === 'string'
+                            ? value.serviceContext
+                            : 'none',
                         active: typeof value.active === 'boolean' ? value.active : true
                     });
                 }
 
-                hydrated.sort((a, b) =>
-                    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-                );
+                const categoryOrder: Record<string, number> = {
+                    'add-on': 0,
+                    'addon': 0,
+                    'boarding': 1,
+                    'daycare': 2,
+                    'grooming': 3,
+                    'training': 4,
+                    'retail': 5
+                };
+
+                hydrated.sort((a, b) => {
+                    const aRank = categoryOrder[a.category.toLowerCase()] ?? Number.MAX_SAFE_INTEGER;
+                    const bRank = categoryOrder[b.category.toLowerCase()] ?? Number.MAX_SAFE_INTEGER;
+
+                    if (aRank !== bRank) {
+                        return aRank - bRank;
+                    }
+
+                    return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+                });
 
                 setItems(hydrated);
                 setLoading(false);
@@ -155,6 +177,7 @@ export default function BoardingAndDaycareInvoiceLibraryPage() {
         name: string,
         price: string,
         category: string,
+        serviceContext: string,
         active: boolean
     ) => {
         if (!businessId) return;
@@ -165,14 +188,8 @@ export default function BoardingAndDaycareInvoiceLibraryPage() {
         const priceCents = Math.round(priceDouble * 100);
         const id = editingItem?.id ?? crypto.randomUUID();
 
-        const payload: {
-            name: string;
-            priceCents: number;
-            category: string;
-            active: boolean;
-            updatedAt: Date;
-            createdAt?: Date;
-        } = {
+        // 🔥 Use flexible typing to support deleteField()
+        const payload: Record<string, unknown> = {
             name,
             priceCents,
             category,
@@ -180,7 +197,14 @@ export default function BoardingAndDaycareInvoiceLibraryPage() {
             updatedAt: new Date()
         };
 
-        // Only set createdAt on new item
+        // Properly handle serviceContext removal or update
+        if (serviceContext === 'none') {
+            payload.serviceContext = deleteField();
+        } else {
+            payload.serviceContext = serviceContext;
+        }
+
+        // Only set createdAt for new items
         if (!editingItem) {
             payload.createdAt = new Date();
         }
@@ -286,12 +310,23 @@ export default function BoardingAndDaycareInvoiceLibraryPage() {
                                             <div className="font-semibold">
                                                 {item.name}
                                             </div>
+
                                             <div className="text-xs text-gray-500">
-                                                {item.category}
+                                                {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
                                             </div>
+
+                                            {item.serviceContext &&
+                                                item.serviceContext.toLowerCase() !== 'none' &&
+                                                item.serviceContext.toLowerCase() !== 'universal' && (
+                                                    <div className="text-xs text-[color:var(--color-accent)]">
+                                                        {item.serviceContext.charAt(0).toUpperCase() + item.serviceContext.slice(1)}
+                                                    </div>
+                                                )}
+
                                             <div className="font-semibold mt-1">
                                                 ${(item.priceCents / 100).toFixed(2)}
                                             </div>
+
                                             <div
                                                 className={`text-xs ${item.active
                                                     ? 'text-green-600'
@@ -337,9 +372,10 @@ function InvoiceEditorModal({
         name: string,
         price: string,
         category: string,
+        serviceContext: string,
         active: boolean
     ) => void;
-    onClose: () => void;
+    onClose: () => void; // RESTORED
 }) {
     const [name, setName] = useState(existing?.name ?? '');
     const [price, setPrice] = useState(
@@ -348,61 +384,109 @@ function InvoiceEditorModal({
     const [category, setCategory] = useState(
         existing?.category ?? 'daycare'
     );
+
+    const [serviceContext, setServiceContext] = useState(() => {
+        if (existing?.serviceContext &&
+            existing.serviceContext.toLowerCase() !== 'universal') {
+            return existing.serviceContext;
+        }
+        return 'none';
+    });
+
     const [active, setActive] = useState(existing?.active ?? true);
+    const [showContextInfo, setShowContextInfo] = useState(false);
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-            <div className="bg-white rounded p-6 w-full max-w-sm space-y-4">
-                <h2 className="text-lg font-bold">
-                    {existing ? 'Edit Item' : 'Add Item'}
-                </h2>
+        <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4">
+            <div className="bg-white rounded w-full max-w-sm max-h-[90vh] border shadow-xl flex flex-col">
+                {/* Scrollable content */}
+                <div className="p-6 overflow-y-auto flex-1 space-y-4">
+                    <h2 className="text-lg font-bold">
+                        {existing ? 'Edit Item' : 'Add Item'}
+                    </h2>
 
-                <input
-                    className="w-full border p-2 rounded"
-                    placeholder="Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                />
-
-                <input
-                    className="w-full border p-2 rounded"
-                    placeholder="Price (e.g. 25.00)"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                />
-
-                <select
-                    className="w-full border p-2 rounded"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                >
-                    <option value="daycare">Daycare</option>
-                    <option value="boarding">Boarding</option>
-                    <option value="grooming">Grooming</option>
-                    <option value="training">Training</option>
-                    <option value="addon">Add-on</option>
-                    <option value="retail">Retail</option>
-                </select>
-
-                <label className="flex items-center space-x-2">
                     <input
-                        type="checkbox"
-                        checked={active}
-                        onChange={(e) => setActive(e.target.checked)}
+                        className="w-full border p-2 rounded"
+                        placeholder="Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                     />
-                    <span>Active</span>
-                </label>
 
-                <div className="flex justify-end space-x-2">
+                    <input
+                        className="w-full border p-2 rounded"
+                        placeholder="Price (e.g. 25.00)"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                    />
+
+                    <select
+                        className="w-full border p-2 rounded"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                    >
+                        <option value="daycare">Daycare</option>
+                        <option value="boarding">Boarding</option>
+                        <option value="grooming">Grooming</option>
+                        <option value="training">Training</option>
+                        <option value="addon">Add-on</option>
+                        <option value="retail">Retail</option>
+                    </select>
+
+                    <div className="relative">
+                        <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm font-medium">Service Context</span>
+
+                            <button
+                                type="button"
+                                onClick={() => setShowContextInfo(prev => !prev)}
+                                className="text-xs w-5 h-5 flex items-center justify-center rounded-full border border-gray-400 text-gray-600 hover:bg-gray-100"
+                            >
+                                i
+                            </button>
+                        </div>
+
+                        <select
+                            className="w-full border p-2 rounded"
+                            value={serviceContext}
+                            onChange={(e) => setServiceContext(e.target.value)}
+                        >
+                            <option value="none">None</option>
+                            <option value="boarding">Boarding</option>
+                            <option value="daycare">Daycare</option>
+                            <option value="training">Training</option>
+                        </select>
+
+                        {showContextInfo && (
+                            <div className="absolute z-50 mt-2 w-full bg-white border rounded shadow-lg p-3 text-xs text-gray-600">
+                                Use Service Context when you offer the same service at different prices depending on the situation (e.g., Boarding vs Daycare). This allows intelligent invoicing to automatically select the correct pricing.
+                            </div>
+                        )}
+                    </div>
+
+                    <label className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={active}
+                            onChange={(e) => setActive(e.target.checked)}
+                        />
+                        <span>Active</span>
+                    </label>
+                </div>
+
+                {/* Sticky footer (always visible) */}
+                <div className="border-t px-6 py-4 flex justify-end gap-2 bg-white">
                     <button
                         onClick={onClose}
                         className="px-4 py-2 border rounded"
+                        type="button"
                     >
                         Cancel
                     </button>
                     <button
-                        onClick={() => onSave(name, price, category, active)}
-                        className="px-4 py-2 bg-[color:var(--color-accent)] text-white rounded"
+                        onClick={() => onSave(name, price, category, serviceContext, active)}
+                        className="px-4 py-2 bg-[#1F4D2E] hover:bg-[#163A22] text-white rounded font-semibold"
+                        style={{ display: 'inline-block', minWidth: '90px' }}
+                        type="button"
                     >
                         Save
                     </button>
