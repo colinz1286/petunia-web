@@ -252,10 +252,10 @@ export default function BoardingAndDaycareDashboardPage() {
           )}
 
           {enableEmployeeManagement && (
-            <>
-              <DashboardLink href="/boardinganddaycare-manageemployees" label={t('manage_employees')} />
-              <DashboardLink href="/boardinganddaycare-scheduleemployees" label={t('schedule_employees')} />
-            </>
+            <DashboardLink
+              href="/boardinganddaycare-employeemanagementdashboard"
+              label={t('employee_management')}
+            />
           )}
 
           {enableStatePaperwork && (
