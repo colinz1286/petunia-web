@@ -31,18 +31,10 @@ export default function ContactPage() {
           >
             admin@petuniapets.com
           </a>{' '}
-          or call us at{' '}
-          <a
-            href="tel:+17242094480"
-            className="underline text-[#2c4a30] font-medium whitespace-nowrap"
-          >
-            (724) 209-4480
-          </a>
-          .
         </p>
 
         <p className="text-lg italic text-[#444]">
-          Thank you for being part of the Petunia community.
+          Thank you for interest in being part of the Petunia community.
         </p>
       </div>
     </main>

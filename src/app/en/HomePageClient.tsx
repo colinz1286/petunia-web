@@ -66,18 +66,18 @@ export default function HomePageClient() {
 
                 {/* Primary H1 */}
                 <h1 className="text-2xl sm:text-3xl font-bold text-[#2c4a30] mb-4 text-balance">
-                    Modern Pet Care Software Built by Real Boarding & Daycare Owners
+                    Modern Pet Care Software Built by Real Boarding & Daycare Owners — Not Investors
                 </h1>
 
                 {/* Slogan */}
                 <p className="text-gray-600 italic text-lg mb-6 text-balance">
-                    The perfect app for your business.<br />
+                    The perfect software for your business.<br />
                     The perfect world for your pet.
                 </p>
 
                 <div className="w-full max-w-md mb-6">
                     <p className="text-sm text-gray-600 mb-3 text-balance">
-                        If you&rsquo;re an iOS user (meaning you have an Apple iPhone) and would like to use the Petunia app on your device, it&rsquo;s currently available in the following countries (Canada, United States, Ireland, United Kindom, New Zealand, Australia). The Petunia website, however, is accessible worldwide for anyone who speaks English.
+                        The Petunia iOS app is currently available in Canada, the United States, Ireland, the United Kingdom, New Zealand, and Australia. The web platform is accessible worldwide.
                     </p>
 
                     {/* Countries We Serve */}
@@ -95,24 +95,23 @@ export default function HomePageClient() {
                 <div className="mt-6 mb-6 flex justify-center">
                     <div className="rounded-xl border border-[#d9cfc2] bg-white px-6 py-3 shadow-sm">
                         <p className="text-[#2c4a30] text-sm sm:text-base font-bold tracking-wide">
-                            🐾 551 clients and counting!
+                            🐾 557 active clients
                         </p>
                         <p className="text-md sm:text-md text-[#2c4a30] mt-0.5 text-center">
-                            Pet professionals are joining Petunia every week.
+                            Facilities and professionals across multiple countries.
                         </p>
                     </div>
                 </div>
 
                 {/* Operator Credibility */}
-                <div className="w-full max-w-3xl mb-10 rounded-xl border border-[#d9cfc2] bg-white px-6 py-5 shadow-sm text-left">
-                    <h2 className="text-lg font-semibold text-[#2c4a30] mb-2">
-                        Built by people who actually run boarding & daycare facilities
+                <div className="w-full max-w-3xl mb-12 rounded-2xl border border-[#d9cfc2] bg-white px-8 py-8 shadow-sm text-center">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-[#2c4a30] mb-4 tracking-wide">
+                        BUILT BY REAL BOARDING & DAYCARE OPERATORS
                     </h2>
-                    <p className="text-sm text-gray-700 leading-relaxed">
-                        Petunia was created by the owners of a real dog boarding and daycare facility that has been operating
-                        since 2017. While the platform supports multiple areas of pet care, boarding and daycare operations
-                        remain at its core. Every feature is shaped by real-world operations &mdash; not theory, not investors,
-                        and not bloated legacy software.
+                    <p className="text-base text-gray-700 leading-relaxed max-w-2xl mx-auto">
+                        Petunia was created by the owners of a real dog boarding and daycare facility operating since 2017.
+                        While the platform supports multiple areas of pet care, boarding and daycare remain at its core.
+                        Every feature is shaped by real-world operations — not theory, not investors, and not bloated legacy software.
                     </p>
                 </div>
 
@@ -130,10 +129,6 @@ export default function HomePageClient() {
                     <Link href="/dog-boarding-software" className="underline mx-1">
                         Learn more about our dog boarding software
                     </Link>
-                    or
-                    <Link href="/dog-daycare-software" className="underline mx-1">
-                        explore our dog daycare software
-                    </Link>.
                 </p>
 
                 {/* Role Buttons */}
@@ -206,12 +201,10 @@ export default function HomePageClient() {
                                 The creators of Petunia are also owners of a boarding and daycare facility — that’s how we got our start in this industry back in 2017. We know the daily challenges firsthand, because we’ve lived them — from reservations and check-ins to vaccination tracking, waivers, and day-to-day capacity management.
                             </p>
                             <p className="text-lg text-balance">
-                                People who stay in this industry only stay for one reason: they love the animals. They sacrifice weekends, sleep, and margins of comfort to make life better for the dogs in their care. Your software should never punish that. You shouldn’t have to watch hard-earned money leak out of your pocket just to manage the basics. We don’t make you pay for our rent — we simply have our priorities straight. We wanted to build a software company that actually cared about the customer… and their wallets (important to not forget that last part!).
+                                People who stay in this industry do it because they genuinely care about the animals in their care. You sacrifice weekends, sleep, and personal time to serve your clients well. Your software should respect that commitment — not add unnecessary financial pressure. Petunia was built to deliver serious operational capability at a price that reflects real-world margins.
                                 <br /><br />
-                                Caring doesn’t mean overcharging; it means delivering the features that make your life easier, at a price that respects the work you do and the sacrifices you make. While families go away, they trust you to take care of their dog while they’re on vacation. That doesn’t mean you shouldn’t be able to afford a nice vacation as well!
+                                Caring doesn’t mean overcharging; it means delivering operational tools that genuinely improve your day-to-day workflow. Small facilities shouldn’t lose features because of pricing, and larger facilities shouldn’t sacrifice precision for scale. Petunia is built to eliminate that compromise.
                                 <br /><br />
-                                An incredibly small in-home boarding and daycare facility should not have to sacrifice features simply because they can’t afford them. And a large facility should not have to give up the fine-tuned features that smaller software packages offer. Right now, everyone on both sides of the fence is forced to compromise. We’re going to eliminate that.
-                                <br />
                             </p>
                             <p className="text-lg text-balance">
                                 💌 Questions or requests? Want a feature that we don&rsquo;t currently have? Email us at{" "}
@@ -335,7 +328,7 @@ export default function HomePageClient() {
                                 This part of Petunia is coming in the first half of 2026! We&rsquo;re rolling out tools built specifically for sitters and walkers.
                             </p>
                             <p className="text-lg text-balance">
-                                No commissions, ever. Bring your existing clients and grow from there. Why should you be paying obscene prices for software, and then giving out your personal phone number so you don&rsquo;t lose significant portions of your hard earned money to larger software companies? Of course, you will encourage people to book directly through you so you can make more money! But you shouldn&rsquo;t have to do this at the sacrifice of your own personal privacy.
+                                No commissions, ever. Bring your existing clients and grow from there. You shouldn’t have to choose between keeping more of your revenue and protecting your personal privacy. Petunia is structured so you can grow your business without surrendering large commissions or exposing your personal contact information.
                             </p>
                             <p className="text-lg text-balance">
                                 If you&rsquo;re wondering how we keep pricing so low, we want to be clear that we do not sell your data or personal information — you can learn more by reviewing our{' '}
