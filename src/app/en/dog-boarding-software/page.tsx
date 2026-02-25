@@ -108,7 +108,7 @@ export default function DogBoardingSoftwarePage() {
       <section className="py-10 border-t border-gray-200">
         <div className="text-center">
           <h2 className="text-xl sm:text-2xl font-semibold text-[#2c4a30] mb-3">
-            Simple tiers. Real leverage.
+            Simple Tiers. Real Leverage.
           </h2>
           <p className="text-base leading-7 text-gray-700 max-w-2xl mx-auto">
             Most boarding software starts near $100/month. We don’t. Tier 1 removes the barrier to entry.
@@ -233,7 +233,7 @@ export default function DogBoardingSoftwarePage() {
       <section className="py-10 border-t border-gray-200">
         <div className="text-center">
           <h2 className="text-xl sm:text-2xl font-semibold text-[#2c4a30] mb-4">
-            How Petunia compares
+            How Petunia Compares
           </h2>
           <p className="text-base leading-7 text-gray-700 max-w-2xl mx-auto">
             Transparent pricing. Real migration time. No hidden processing spreads.
@@ -253,7 +253,7 @@ export default function DogBoardingSoftwarePage() {
               <tr>
                 <td className="p-3 border border-gray-200">Monthly Cost</td>
                 <td className="p-3 border border-gray-200">$95–$199+</td>
-                <td className="p-3 border border-gray-200">$10–$149</td>
+                <td className="p-3 border border-gray-200">$10–$109</td>
               </tr>
               <tr>
                 <td className="p-3 border border-gray-200">Trial Length</td>
@@ -369,7 +369,7 @@ export default function DogBoardingSoftwarePage() {
       <section className="py-10 border-t border-gray-200">
         <div className="text-center">
           <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-[#2c4a30]">
-            The features that actually matter day-to-day
+            The Features That Actually Matter Day-To-Day
           </h2>
           <p className="text-base leading-7 text-gray-700 max-w-2xl mx-auto">
             You don&apos;t need more dashboards. You need fewer interruptions. Petunia is designed to reduce the mental
@@ -534,7 +534,7 @@ export default function DogBoardingSoftwarePage() {
       {/* BRAND / EMOTIONAL */}
       <section className="py-10 border-t border-gray-200 text-center">
         <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-[#2c4a30]">
-          Built for people who love dogs—not software busywork
+          Built For People Who Love Dogs—Not Software Busywork
         </h2>
         <div className="max-w-2xl mx-auto space-y-4 text-base leading-7 text-gray-700">
           <p>
@@ -550,7 +550,7 @@ export default function DogBoardingSoftwarePage() {
       {/* CTA */}
       <section className="py-10 border-t border-gray-200 text-center px-4">
         <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-[#2c4a30]">
-          Ready to modernize your boarding &amp; daycare business?
+          Ready to Modernize Your Boarding &amp; Daycare Business?
         </h2>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
