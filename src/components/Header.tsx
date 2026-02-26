@@ -43,12 +43,75 @@ export default function Header() {
             Blog
           </Link>
 
-          <Link
-            href={`/${locale}/dog-boarding-software`}
-            className="hover:underline"
-          >
-            Dog Boarding And Daycare Software
-          </Link>
+          {/* SOFTWARE DROPDOWN */}
+          <div className="relative group">
+            <button className="hover:underline flex items-center gap-1">
+              Software
+              <span className="text-xs">▾</span>
+            </button>
+
+            <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+
+              {/* Section Label */}
+              <div className="px-4 pt-3 pb-1 text-xs uppercase tracking-wide text-gray-500">
+                Platform
+              </div>
+
+              {/* Platform Overview Link */}
+              <Link
+                href={`/${locale}/dog-boarding-software`}
+                className="block px-4 py-2 text-sm font-medium text-[#2c4a30] hover:bg-[#f0f7f2]"
+              >
+                Platform Overview
+              </Link>
+
+              {/* OR Divider */}
+              <div className="relative my-3">
+                <div className="border-t border-gray-200"></div>
+                <span className="absolute left-1/2 -translate-x-1/2 -top-2 bg-white px-2 text-xs text-gray-500 tracking-wide">
+                  OR
+                </span>
+              </div>
+
+              {/* Business Size Prompt */}
+              <div className="px-4 pt-1 pb-1 text-xs uppercase tracking-wide text-gray-500 text-center">
+                Choose Your Business Size
+              </div>
+
+              {/* Small */}
+              <Link
+                href={`/${locale}/dog-boarding-and-daycare-software-small-business`}
+                className="block px-4 py-2 text-sm text-[#2c4a30] hover:bg-[#f0f7f2]"
+              >
+                Small Business
+              </Link>
+
+              {/* Medium */}
+              <Link
+                href={`/${locale}/dog-boarding-and-daycare-software-medium-business`}
+                className="block px-4 py-2 text-sm text-[#2c4a30] hover:bg-[#f0f7f2]"
+              >
+                Medium Business
+              </Link>
+
+              {/* Large */}
+              <Link
+                href={`/${locale}/dog-boarding-and-daycare-software-large-business`}
+                className="block px-4 py-2 text-sm text-[#2c4a30] hover:bg-[#f0f7f2]"
+              >
+                Large
+              </Link>
+
+              {/* Large */}
+              <Link
+                href={`/${locale}/dog-boarding-and-daycare-software-enterprise`}
+                className="block px-4 py-2 text-sm text-[#2c4a30] hover:bg-[#f0f7f2]"
+              >
+                Multi-Location (Enterprise)
+              </Link>
+
+            </div>
+          </div>
 
           <Link href={`/${locale}/tutorials`} className="hover:underline">
             Tutorials

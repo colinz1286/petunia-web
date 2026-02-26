@@ -1,0 +1,738 @@
+'use client';
+
+import Link from 'next/link';
+import Script from 'next/script';
+import { useState, useEffect } from 'react';
+
+export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
+
+    const [subscriptionCost, setSubscriptionCost] = useState<number | "">("");
+    const [accountingMonthly, setAccountingMonthly] = useState<number | "">("");
+    const [hrMonthly, setHrMonthly] = useState<number | "">("");
+    const [schedulingMonthly, setSchedulingMonthly] = useState<number | "">("");
+    const [otherSoftwareMonthly, setOtherSoftwareMonthly] = useState<number | "">("");
+
+    const [processingRate, setProcessingRate] = useState<number | "">("");
+    const [flatFee, setFlatFee] = useState<number | "">("");
+    const [transactionsPerYear, setTransactionsPerYear] = useState<number | "">("");
+    const [averageTicket, setAverageTicket] = useState<number | "">("");
+
+    const petuniaPlan = { monthly: 115, rate: 3.0, flat: 0.25 };
+
+    const tasks = [
+        "Staff scheduling & shift adjustments",
+        "Invoicing & payment reconciliation",
+        "Vaccine expiration checks",
+        "Daily Task List / Checklist Prep",
+        "Playgroup & Safety Planning",
+        "Employee Performance Tracking & Raises",
+        "Hiring Prep (job descriptions / onboarding)",
+        "Accounting & Bookkeeping Prep",
+        "Financial Analysis, Budgeting, and Forecasting",
+        "Forecasting Occupancy & Labor Demand",
+        "State Paperwork and Compliance"
+    ];
+
+    const [taskInputs, setTaskInputs] = useState<{ hours: number; rate: number }[]>([]);
+
+    useEffect(() => {
+        setTaskInputs(tasks.map(() => ({ hours: 0, rate: 0 })));
+    }, []);
+
+    const [timeSavingsPercent, setTimeSavingsPercent] = useState(50); // Adjustable savings selector
+
+    const updateTask = (index: number, field: "hours" | "rate", value: number) => {
+        const updated = [...taskInputs];
+        updated[index][field] = value;
+        setTaskInputs(updated);
+    };
+
+    const calculateSavings = () => {
+        const subCost = Number(subscriptionCost) || 0;
+        const procRate = Number(processingRate) || 0;
+        const flat = Number(flatFee) || 0;
+        const txPerYear = Number(transactionsPerYear) || 0;
+        const avgTicket = Number(averageTicket) || 0;
+
+        const annualSoftware = subCost * 12;
+
+        const accountingAnnual = (Number(accountingMonthly) || 0) * 12;
+        const hrAnnual = (Number(hrMonthly) || 0) * 12;
+        const schedulingAnnual = (Number(schedulingMonthly) || 0) * 12;
+        const otherSoftwareAnnual = (Number(otherSoftwareMonthly) || 0) * 12;
+
+        const annualProcessing =
+            txPerYear *
+            ((procRate / 100) * avgTicket + flat);
+
+        const petuniaSubscription = petuniaPlan.monthly * 12;
+
+        const petuniaProcessing =
+            txPerYear *
+            ((petuniaPlan.rate / 100) * avgTicket +
+                petuniaPlan.flat);
+
+        const totalAnnualLaborValue =
+            taskInputs.reduce((total, task) => {
+                return total + (task.hours || 0) * (task.rate || 0) * 52;
+            }, 0);
+
+        const annualLaborSavings =
+            totalAnnualLaborValue * (timeSavingsPercent / 100);
+
+        const savings =
+            (
+                annualSoftware +
+                accountingAnnual +
+                hrAnnual +
+                schedulingAnnual +
+                otherSoftwareAnnual +
+                annualProcessing +
+                annualLaborSavings
+            ) -
+            (petuniaSubscription + petuniaProcessing);
+
+        return savings.toLocaleString(undefined, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        });
+    };
+
+    const softwareApplicationSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: 'Petunia Pro',
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web',
+        description:
+            'Dog boarding and daycare software for established facilities focused on financial discipline and long-term value.',
+        offers: {
+            '@type': 'Offer',
+            price: '115',
+            priceCurrency: 'USD',
+        },
+        areaServed: 'US',
+        url: '/en/dog-boarding-and-daycare-software-large-business',
+    };
+
+    const breadcrumbSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Dog Boarding Software',
+                item: '/en/dog-boarding-software',
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Dog Boarding and Daycare Software Large Business',
+                item: '/en/dog-boarding-and-daycare-software-large-business',
+            },
+        ],
+    };
+
+    return (
+        <main className="max-w-4xl mx-auto px-4 sm:px-6 bg-white">
+            <Script
+                id="large-software-application-schema"
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationSchema) }}
+            />
+            <Script
+                id="large-breadcrumb-schema"
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
+
+            {/* HERO */}
+            <section className="py-16 text-center">
+                <h1 className="text-3xl sm:text-4xl font-bold text-[#2c4a30] mb-6">
+                    Software for Established Dog Boarding & Daycare Owners
+                </h1>
+
+                <p className="text-base sm:text-lg text-gray-700 leading-8 max-w-3xl mx-auto mb-6">
+                    You built something real. You carried the risk, hired the team,
+                    weathered the slow seasons, and earned your reputation.
+                    Now your operation runs at meaningful volume.
+                </p>
+
+                <p className="text-base text-gray-700 leading-8 max-w-3xl mx-auto">
+                    At this level, systems directly impact margin, valuation,
+                    expansion potential, and eventual exit conversations.
+                    Petunia Pro is built for disciplined ownership.
+                </p>
+
+                <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+                    <Link
+                        href="/createnewaccount"
+                        className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-8 py-4 rounded-xl transition font-semibold shadow-sm hover:shadow-md text-center"
+                    >
+                        Choose Pro — $115/month
+                    </Link>
+
+                    <a
+                        href="mailto:admin@petuniapets.com?subject=Petunia Pro Owner Strategy Discussion"
+                        className="border border-[#2c4a30] text-[#2c4a30] px-8 py-4 rounded-xl transition font-semibold hover:bg-[#f4f4f4] text-center"
+                    >
+                        Discuss Long-Term Strategy
+                    </a>
+                </div>
+            </section>
+
+            {/* SCALE & OWNERSHIP SHIFT */}
+            <section className="py-14 border-t border-gray-200 text-center">
+                <h2 className="text-xl font-semibold text-[#2c4a30] mb-6">
+                    Volume Magnifies Financial Exposure
+                </h2>
+
+                <div className="space-y-6 text-gray-700 leading-8 max-w-3xl mx-auto">
+                    <p>
+                        At higher revenue levels, small inconsistencies become material financial risk.
+                        Deposit liability compounds. Processing spreads multiply.
+                        Reconciliation errors scale with volume.
+                    </p>
+
+                    <p>
+                        A $0.10 flat transaction difference across 40,000 annual transactions
+                        equals $4,000 per year. Five unnoticed administrative hours per week
+                        equals 260 hours of leadership time lost.
+                    </p>
+
+                    <p className="font-medium text-[#2c4a30]">
+                        Large operations require structured systems — not patched workflows.
+                    </p>
+                </div>
+            </section>
+
+            {/* WHY GROWTH WORKS */}
+            <section className="py-14 border-t border-gray-200 text-center">
+                <h2 className="text-xl font-semibold text-[#2c4a30] mb-6">
+                    Built for Expansion, Valuation, and Exit Readiness
+                </h2>
+
+                <div className="space-y-6 text-gray-700 leading-8 max-w-2xl mx-auto">
+                    <p>
+                        Advanced employee management tools, structured checklists,
+                        smarter scheduling, automated deposit tracking, and clean
+                        reporting reduce the manual workload that consumes your day.
+                    </p>
+
+                    <p>
+                        Instead of spending evenings buried in spreadsheets,
+                        you spend your time leading your team and growing the business.
+                        Instead of scrambling at tax time,
+                        you operate with financial clarity year-round.
+                    </p>
+
+                    <p>
+                        At this size, profit margins matter more.
+                        Systems matter more.
+                        And if you’re successful, the business itself becomes
+                        a real asset — something that could one day be sold
+                        or positioned for a buyout.
+                    </p>
+
+                    <p className="font-medium text-[#2c4a30]">
+                        Petunia Pro gives you structured financial discipline —
+                        so scale strengthens valuation instead of increasing risk.
+                    </p>
+
+                    <div className="mt-10 max-w-3xl mx-auto bg-[#f7faf7] border border-[#2c4a30]/15 rounded-2xl p-8 text-center">
+                        <h3 className="text-lg font-semibold text-[#2c4a30] mb-4">
+                            Owner-Level Strategic Review
+                        </h3>
+
+                        <p className="space-y-6 text-gray-700 leading-8 max-w-2xl mx-auto">
+                            Established operators often benefit from a structured financial review.
+                            We can walk through your current revenue volume, processing spread,
+                            reporting structure, and long-term objectives — whether expansion,
+                            capital planning, or exit preparation.
+                        </p>
+
+                        <a
+                            href="mailto:admin@petuniapets.com?subject=Petunia Pro Owner Strategy Discussion"
+                            className="inline-block bg-[#2c4a30] text-white px-8 py-3 rounded-lg hover:bg-[#243d27] transition font-semibold"
+                        >
+                            Schedule Owner Strategy Call
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            {/* SELF-REQUALIFICATION SECTION */}
+            <div className="mt-16 max-w-3xl mx-auto border-t border-gray-200 pt-12 text-center">
+                <h3 className="text-lg font-semibold text-[#2c4a30] mb-4">
+                    Are You Operating at Established Scale?
+                </h3>
+
+                <p className="space-y-6 text-gray-700 leading-8 max-w-2xl mx-auto">
+                    If your revenue is substantial, margins matter daily,
+                    reporting must be clean, and you are thinking about
+                    long-term asset value — you are operating at established scale.
+                </p>
+
+                <p className="space-y-6 text-gray-700 leading-8 max-w-2xl mx-auto">
+                    Many established facilities exceed $750,000 in annual revenue.
+                    At this level, your focus shifts from survival to optimization,
+                    expansion planning, and protecting long-term business value.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
+
+                    <Link
+                        href="/dog-boarding-and-daycare-software-small-business"
+                        className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-6 py-5 rounded-xl transition text-sm font-semibold shadow-sm hover:shadow-md"
+                    >
+                        Small Business →
+                    </Link>
+
+                    <Link
+                        href="/dog-boarding-and-daycare-software-medium-business"
+                        className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-6 py-5 rounded-xl transition text-sm font-semibold shadow-sm hover:shadow-md"
+                    >
+                        Medium Business →
+                    </Link>
+
+                    <Link
+                        href="/dog-boarding-software"
+                        className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-6 py-5 rounded-xl transition text-sm font-semibold shadow-sm hover:shadow-md"
+                    >
+                        ← Back to Overview
+                    </Link>
+
+                </div>
+            </div>
+
+            {/* SAVINGS CALCULATOR */}
+            <section className="py-14 border-t border-gray-200">
+                <div className="text-center mb-8">
+                    <h2 className="text-xl font-semibold text-[#2c4a30]">
+                        Step 1: Measure the Financial Impact of Growth
+                    </h2>
+
+                    <div className="mt-6 space-y-6 text-base text-gray-700 leading-8 max-w-3xl mx-auto">
+                        <p>
+                            At this stage, you are no longer comparing software features.
+                            You are evaluating operational efficiency, margin preservation,
+                            and long-term financial discipline.
+                        </p>
+
+                        <p>
+                            The calculator below is the starting point. Enter real numbers —
+                            your current subscriptions, processing structure, administrative workload,
+                            and transaction volume. The output reflects measurable financial impact.
+                        </p>
+                    </div>
+
+                    <div className="mt-6 space-y-6 text-base text-gray-700 leading-8 max-w-3xl mx-auto">
+                        <p>
+                            The calculator begins with Petunia Pro’s annual cost already applied
+                            ($115 × 12 = $1,380). As you enter your details, the estimate adjusts in real time.
+                        </p>
+
+                        <p>
+                            If the calculator shows meaningful annual savings or reclaimed time,
+                            that is your signal to schedule a Growth strategy discussion so we can
+                            validate the assumptions and refine the model with you.
+                        </p>
+
+                        <p>
+                            If the numbers do not clearly show savings, that is equally important.
+                            Reach out. We can review your inputs together to ensure the comparison
+                            reflects your true processing structure and operational workload.
+                        </p>
+
+                        <p className="font-medium text-[#2c4a30]">
+                            The goal is clarity and ensuring you have the best fit for your business model!
+                        </p>
+                    </div>
+                </div>
+
+                <div className="space-y-8 max-w-4xl mx-auto">
+
+                    {/* Core Financial Inputs */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Current Monthly Booking Software ($)
+                            </label>
+                            <input
+                                type="number"
+                                className="border p-4 rounded-lg w-full"
+                                value={subscriptionCost}
+                                onChange={(e) =>
+                                    setSubscriptionCost(e.target.value === "" ? "" : Number(e.target.value))
+                                }
+                            />
+                            <p className="text-sm text-gray-600 leading-6 mt-2">
+                                Enter your current monthly boarding/daycare software subscription. (example: 100)
+                            </p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Monthly Accounting Software ($)
+                            </label>
+                            <input
+                                type="number"
+                                className="border p-4 rounded-lg w-full"
+                                value={accountingMonthly}
+                                onChange={(e) =>
+                                    setAccountingMonthly(e.target.value === "" ? "" : Number(e.target.value))
+                                }
+                            />
+                            <p className="text-sm text-gray-600 leading-6 mt-2">
+                                Include QuickBooks, Xero, or any bookkeeping platforms. (example: 139)
+                            </p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Monthly Payroll / HR Software ($)
+                            </label>
+                            <input
+                                type="number"
+                                className="border p-4 rounded-lg w-full"
+                                value={hrMonthly}
+                                onChange={(e) =>
+                                    setHrMonthly(e.target.value === "" ? "" : Number(e.target.value))
+                                }
+                            />
+                            <p className="text-sm text-gray-600 leading-6 mt-2">
+                                Include payroll systems, HR tools, or compliance software. (example: 29)
+                            </p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Monthly Staff Scheduling Software ($)
+                            </label>
+                            <input
+                                type="number"
+                                className="border p-4 rounded-lg w-full"
+                                value={schedulingMonthly}
+                                onChange={(e) =>
+                                    setSchedulingMonthly(e.target.value === "" ? "" : Number(e.target.value))
+                                }
+                            />
+                            <p className="text-sm text-gray-600 leading-6 mt-2">
+                                Enter any scheduling or shift management platform fees. (example: 49)
+                            </p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Other Monthly Software Tools ($)
+                            </label>
+                            <input
+                                type="number"
+                                className="border p-4 rounded-lg w-full"
+                                value={otherSoftwareMonthly}
+                                onChange={(e) =>
+                                    setOtherSoftwareMonthly(e.target.value === "" ? "" : Number(e.target.value))
+                                }
+                            />
+                            <p className="text-sm text-gray-600 leading-6 mt-2">
+                                Include any additional SaaS tools not listed above. (example: 150)
+                            </p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Transactions Per Year
+                            </label>
+                            <input
+                                type="number"
+                                className="border p-4 rounded-lg w-full"
+                                value={transactionsPerYear}
+                                onChange={(e) =>
+                                    setTransactionsPerYear(e.target.value === "" ? "" : Number(e.target.value))
+                                }
+                            />
+                            <p className="text-sm text-gray-600 leading-6 mt-2">
+                                Total card transactions processed annually. (example: 6492)
+                            </p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Average Transaction Amount ($)
+                            </label>
+                            <input
+                                type="number"
+                                className="border p-4 rounded-lg w-full"
+                                value={averageTicket}
+                                onChange={(e) =>
+                                    setAverageTicket(e.target.value === "" ? "" : Number(e.target.value))
+                                }
+                            />
+                            <p className="text-sm text-gray-600 leading-6 mt-2">
+                                Average charge per invoice. (example: 79.38)
+                            </p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Current Processing Rate (%)
+                            </label>
+                            <input
+                                type="number"
+                                className="border p-4 rounded-lg w-full"
+                                value={processingRate}
+                                onChange={(e) =>
+                                    setProcessingRate(e.target.value === "" ? "" : Number(e.target.value))
+                                }
+                            />
+                            <p className="text-sm text-gray-600 leading-6 mt-2">
+                                Enter percentage only (example: 3.20 or 3.25).
+                            </p>
+                        </div>
+
+                        <div className="sm:col-span-2">
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Flat Fee Per Transaction ($)
+                            </label>
+                            <input
+                                type="number"
+                                className="border p-4 rounded-lg w-full"
+                                value={flatFee}
+                                onChange={(e) =>
+                                    setFlatFee(e.target.value === "" ? "" : Number(e.target.value))
+                                }
+                            />
+                            <p className="text-sm text-gray-600 leading-6 mt-2">
+                                Enter dollar amount only (example: 0.30).
+                            </p>
+                        </div>
+
+                    </div>
+
+                    {/* TIME SAVINGS SELECTOR */}
+                    <div className="mt-10 mb-6 text-center bg-[#f7faf7] border border-[#2c4a30]/20 rounded-xl p-6">
+                        <p className="text-base font-semibold text-[#2c4a30] mb-3">
+                            Estimated Time Savings Percentage
+                        </p>
+
+                        <p className="text-sm text-gray-700 mb-4">
+                            Adjust based on your confidence level. Medium-stage operators often report 50–90% reduction in administrative time.
+                        </p>
+
+                        <select
+                            value={timeSavingsPercent}
+                            onChange={(e) => setTimeSavingsPercent(Number(e.target.value))}
+                            className="border p-2 rounded w-32 mx-auto block"
+                        >
+                            <option value={50}>50%</option>
+                            <option value={60}>60%</option>
+                            <option value={70}>70%</option>
+                            <option value={80}>80%</option>
+                            <option value={90}>90%</option>
+                        </select>
+                    </div>
+
+                    {/* Time & Administrative Impact */}
+                    <div className="border-t border-gray-200 pt-8">
+
+                        <h3 className="text-lg font-semibold text-[#2c4a30] mb-4 text-center">
+                            Weekly Administrative Time at This Stage
+                        </h3>
+
+                        <p className="text-sm text-gray-600 text-center max-w-2xl mx-auto mb-6">
+                            Estimate the weekly hours spent managing growth complexity.
+                            Petunia Growth conservatively assumes a 50% reduction.
+                        </p>
+
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse text-sm">
+                                <thead>
+                                    <tr className="bg-[#f0f7f2] text-[#2c4a30]">
+                                        <th className="p-4 border border-gray-200 text-left font-semibold w-[45%]">
+                                            Task
+                                        </th>
+                                        <th className="p-4 border border-gray-200 text-center font-semibold w-[20%]">
+                                            Hours / Week
+                                        </th>
+                                        <th className="p-4 border border-gray-200 text-center font-semibold w-[25%]">
+                                            Hourly Rate ($)
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {tasks.map((task, i) => (
+                                        <tr key={task}>
+                                            <td className="p-4 border border-gray-200">{task}</td>
+                                            <td className="p-4 border border-gray-200">
+                                                <input
+                                                    type="number"
+                                                    className="border p-2 rounded w-full"
+                                                    onChange={(e) =>
+                                                        updateTask(i, "hours", Number(e.target.value) || 0)
+                                                    }
+                                                />
+                                            </td>
+                                            <td className="p-4 border border-gray-200">
+                                                <input
+                                                    type="number"
+                                                    className="border p-2 rounded w-full"
+                                                    onChange={(e) =>
+                                                        updateTask(i, "rate", Number(e.target.value) || 0)
+                                                    }
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {(() => {
+
+                        const totalAnnualLaborValue =
+                            taskInputs.reduce((total, task) => {
+                                return total + (task.hours || 0) * (task.rate || 0) * 52;
+                            }, 0);
+
+                        const annualLaborSavings =
+                            totalAnnualLaborValue * (timeSavingsPercent / 100);
+
+                        const totalWeeklyHours =
+                            taskInputs.reduce((sum, task) => sum + (task.hours || 0), 0);
+
+                        const totalHoursSaved =
+                            totalWeeklyHours * 52 * (timeSavingsPercent / 100);
+
+                        const weeksReclaimed =
+                            totalHoursSaved / 40;
+
+                        const totalSavings =
+                            Number(calculateSavings().replace(/,/g, ""));
+
+                        return (
+                            <div className="border-t border-gray-200 pt-8 text-center">
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+
+                                    <div>
+                                        <p className="text-sm text-gray-600">
+                                            Total Annual Admin Labor Value
+                                        </p>
+                                        <p className="text-xl font-bold text-[#2c4a30]">
+                                            ${totalAnnualLaborValue.toLocaleString()}
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p className="text-sm text-gray-600">
+                                            Estimated Labor Savings
+                                        </p>
+                                        <p className="text-xl font-bold text-[#2c4a30]">
+                                            ${annualLaborSavings.toLocaleString()}
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p className="text-sm text-gray-600">
+                                            Total Hours Saved Per Year
+                                        </p>
+                                        <p className="text-xl font-bold text-[#2c4a30]">
+                                            {totalHoursSaved.toLocaleString()} hrs
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p className="text-sm text-gray-600">
+                                            Total Estimated Annual Savings
+                                        </p>
+                                        <p className="text-xl font-bold text-[#2c4a30]">
+                                            ${totalSavings.toLocaleString()}
+                                        </p>
+                                    </div>
+
+                                </div>
+
+                                <div className="mt-8 max-w-3xl mx-auto text-center border-t border-gray-200 pt-6">
+
+                                    <p className="text-base text-gray-700 leading-7">
+                                        That’s approximately{" "}
+                                        <span className="font-semibold text-[#2c4a30]">
+                                            {weeksReclaimed.toFixed(2)} full workweeks
+                                        </span>{" "}
+                                        every year.
+                                    </p>
+
+                                    <p className="text-sm text-gray-600 mt-3 leading-6">
+                                        Time that could be spent strengthening leadership,
+                                        improving margins, mentoring managers,
+                                        or building the next stage of your business.
+                                    </p>
+
+                                </div>
+                            </div>
+                        );
+
+                    })()}
+
+                </div>
+            </section>
+
+            {/* CTA */}
+            <section className="py-16 border-t border-gray-200 text-center">
+                <h2 className="text-xl font-semibold text-[#2c4a30] mb-6">
+                    Protect Margin. Strengthen Valuation. Lead with Discipline.
+                </h2>
+
+                <Link
+                    href="/createnewaccount"
+                    className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-8 py-4 rounded-xl transition font-semibold shadow-sm hover:shadow-md"
+                >
+                    Become a Pro with Petunia
+                </Link>
+            </section>
+
+            {/* STAGE NAVIGATION */}
+            <section className="py-16 border-t border-gray-200 text-center">
+                <h3 className="text-lg font-semibold text-[#2c4a30] mb-5">
+                    Explore Other Stages
+                </h3>
+
+                <div className="flex flex-wrap md:flex-nowrap justify-center items-center gap-3 max-w-6xl mx-auto">
+
+                    <Link
+                        href="/dog-boarding-and-daycare-software-small-business"
+                        className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-4 py-2 rounded-lg transition text-sm font-semibold shadow-sm hover:shadow-md whitespace-nowrap"
+                    >
+                        Small Business →
+                    </Link>
+
+                    <Link
+                        href="/dog-boarding-and-daycare-software-medium-business"
+                        className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-4 py-2 rounded-lg transition text-sm font-semibold shadow-sm hover:shadow-md whitespace-nowrap"
+                    >
+                        Medium Business →
+                    </Link>
+
+                    <Link
+                        href="/dog-boarding-and-daycare-software-software-enterprise"
+                        className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-4 py-2 rounded-lg transition text-sm font-semibold shadow-sm hover:shadow-md whitespace-nowrap"
+                    >
+                        Multi-Location →
+                    </Link>
+
+                    <Link
+                        href="/dog-boarding-software"
+                        className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-4 py-2 rounded-lg transition text-sm font-semibold shadow-sm hover:shadow-md whitespace-nowrap"
+                    >
+                        ← Overview
+                    </Link>
+
+                </div>
+            </section>
+
+        </main>
+    );
+}

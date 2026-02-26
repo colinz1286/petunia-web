@@ -16,6 +16,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
     },
     {
+      url: `${baseUrl}/${locale}/dog-boarding-software`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/${locale}/dog-boarding-and-daycare-software-small-business`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/${locale}/dog-boarding-and-daycare-software-medium-business`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/${locale}/dog-boarding-and-daycare-software-large-business`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/${locale}/dog-boarding-and-daycare-software-enterprise`,
+      lastModified: new Date(),
+    },
+    {
       url: `${baseUrl}/${locale}/blog`,
       lastModified: new Date(),
     },

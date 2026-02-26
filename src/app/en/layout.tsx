@@ -14,11 +14,23 @@ const Header = dynamic(() => import('../../components/Header'));
 const Footer = dynamic(() => import('../../components/Footer'));
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://petuniapets.com'),
   title: {
     default: 'Petunia – The perfect app for your business. The perfect world for your pet.',
     template: '%s | Petunia',
   },
   description: 'All-in-one pet care platform trusted by owners, sitters, shelters, and clinics.',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
   icons: {
     icon: [{ url: '/favicon.png' }],
   },

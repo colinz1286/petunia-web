@@ -1,8 +1,109 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 export default function DogBoardingSoftwarePage() {
+
+  // Allow empty inputs instead of forcing 0
+  const [subscriptionCost, setSubscriptionCost] = useState<number | "">("");
+  const [processingRate, setProcessingRate] = useState<number | "">("");
+  const [flatFee, setFlatFee] = useState<number | "">("");
+  const [transactionsPerYear, setTransactionsPerYear] = useState<number | "">("");
+  const [averageTicket, setAverageTicket] = useState<number | "">("");
+  const [accountingMonthly, setAccountingMonthly] = useState<number | "">("");
+  const [hrMonthly, setHrMonthly] = useState<number | "">("");
+  const [schedulingMonthly, setSchedulingMonthly] = useState<number | "">("");
+  const [otherSoftwareMonthly, setOtherSoftwareMonthly] = useState<number | "">("");
+
+  const tasks = [
+    "Staff scheduling & shift adjustments",
+    "Invoicing & payment reconciliation",
+    "Vaccine expiration checks",
+    "Daily Task List / Checklist Prep",
+    "Playgroup & Safety Planning",
+    "Employee Performance Tracking & Raises",
+    "Hiring Prep (job descriptions / onboarding)",
+    "Accounting & Bookkeeping Prep",
+    "Financial Analysis, Budgeting, and Forecasting",
+    "Forecasting Occupancy & Labor Demand",
+    "State Paperwork and Compliance"
+  ];
+
+  const [taskInputs, setTaskInputs] = useState<{ hours: number; rate: number }[]>([]);
+
+  useEffect(() => {
+    setTaskInputs(tasks.map(() => ({ hours: 0, rate: 0 })));
+  }, []);
+
+  const updateTask = (index: number, field: "hours" | "rate", value: number) => {
+    const updated = [...taskInputs];
+    updated[index][field] = value;
+    setTaskInputs(updated);
+  };
+
+  const petuniaPlans = {
+    Starter: { monthly: 10, rate: 3.0, flat: 0.45 },
+    Growth: { monthly: 50, rate: 3.0, flat: 0.35 },
+    Pro: { monthly: 109, rate: 3.0, flat: 0.25 }
+  };
+
+  const [selectedPlan, setSelectedPlan] = useState<"" | "Starter" | "Growth" | "Pro">("");
+
+  const calculateSavings = () => {
+
+    // Default blank values to 0 safely
+    const subCost = Number(subscriptionCost) || 0;
+    const procRate = Number(processingRate) || 0;
+    const flat = Number(flatFee) || 0;
+    const txPerYear = Number(transactionsPerYear) || 0;
+    const avgTicket = Number(averageTicket) || 0;
+
+    const annualSoftware = subCost * 12;
+
+    const accountingAnnual = (Number(accountingMonthly) || 0) * 12;
+    const hrAnnual = (Number(hrMonthly) || 0) * 12;
+    const schedulingAnnual = (Number(schedulingMonthly) || 0) * 12;
+    const otherSoftwareAnnual = (Number(otherSoftwareMonthly) || 0) * 12;
+
+    const annualProcessing =
+      txPerYear *
+      ((procRate / 100) * avgTicket + flat);
+
+    const annualAdminCost = taskInputs.reduce((total, task) => {
+      return total + task.hours * task.rate * 52;
+    }, 0) * 0.5;
+
+    const petuniaSubscription =
+      selectedPlan !== ""
+        ? petuniaPlans[selectedPlan].monthly * 12
+        : 0;
+
+    const petuniaProcessing =
+      selectedPlan !== ""
+        ? txPerYear *
+        ((petuniaPlans[selectedPlan].rate / 100) * avgTicket +
+          petuniaPlans[selectedPlan].flat)
+        : 0;
+
+    const savings =
+      (
+        annualSoftware +
+        accountingAnnual +
+        hrAnnual +
+        schedulingAnnual +
+        otherSoftwareAnnual +
+        annualProcessing +
+        annualAdminCost
+      ) -
+      (petuniaSubscription + petuniaProcessing);
+
+    return savings.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+  };
+
   return (
     <main className="max-w-3xl mx-auto px-4 sm:px-6 bg-white">
       {/* HERO */}
@@ -26,17 +127,150 @@ export default function DogBoardingSoftwarePage() {
 
         <div className="mt-7 flex flex-col sm:flex-row justify-center gap-3">
           <Link
-            href="/en/createnewaccount"
+            href="/en/dog-boarding-and-daycare-software-small-business"
             className="bg-[#2c4a30] text-white px-6 py-3 rounded-md hover:bg-[#244024] transition text-center"
           >
             Start for $10/mo
           </Link>
-          <Link
-            href="/en/contact"
+          <a
+            href="mailto:admin@petuniapets.com"
             className="border border-[#2c4a30] text-[#2c4a30] px-6 py-3 rounded-md hover:bg-[#f6f6f6] transition text-center"
           >
             Talk to Us
+          </a>
+        </div>
+      </section>
+
+      {/* BUSINESS STAGE IDENTIFIER */}
+      <section className="py-14 border-t border-gray-200 text-center bg-[#fafaf8]">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-[#2c4a30] mb-6">
+          What Stage Is Your Boarding Business In?
+        </h2>
+
+        <p className="max-w-2xl mx-auto text-base leading-7 text-gray-700 mb-10">
+          Not every facility needs the same infrastructure. The question isn&apos;t
+          whether you need software — it&apos;s whether your current system is costing
+          you time, clarity, or profit.
+        </p>
+
+        <div className="max-w-4xl mx-auto space-y-6 text-left">
+
+          {/* Small Business */}
+          <Link
+            href="/en/dog-boarding-and-daycare-software-small-business"
+            className="block rounded-2xl border border-gray-200 p-8 bg-white hover:shadow-md transition text-center"
+          >
+            <h3 className="text-xl font-semibold text-[#2c4a30] mb-6">
+              Small Business / Early-Stage Operator
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm text-gray-700 leading-6 mb-6 max-w-2xl mx-auto text-left">
+              <p>• Does my state require me to keep logs?</p>
+              <p>• When should I consider hiring someone?</p>
+              <p>• Are you legally protected with proper waivers?</p>
+              <p>• Are deposits and payments organized correctly?</p>
+              <p>• Do I even need software?</p>
+              <p>• What all am I manually tracking?</p>
+              <p>• How can software save me time?</p>
+              <p>• Do I want to grow my business?</p>
+              <p>• Is this just a side hustle?</p>
+              <p>• What can I do more efficiently?</p>
+              <p>• Do I want to grow my business?</p>
+              <p>• Am I actually making money?</p>
+            </div>
+
+            <p className="text-sm font-medium text-[#2c4a30]">
+              Build the right foundation now →
+            </p>
           </Link>
+
+          {/* Medium */}
+          <Link
+            href="/en/dog-boarding-and-daycare-software-medium-business"
+            className="block rounded-2xl border border-gray-200 p-8 bg-white hover:shadow-md transition text-center"
+          >
+            <h3 className="text-xl font-semibold text-[#2c4a30] mb-6">
+              Growing Facility
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm text-gray-700 leading-6 mb-6 max-w-2xl mx-auto text-left">
+              <p>• How many staff do I need?</p>
+              <p>• What does my software actually do FOR me?</p>
+              <p>• Are spreadsheets multiplying?</p>
+              <p>• What tasks am I manually doing in my software?</p>
+              <p>• Can my software replace my spreadsheet?</p>
+              <p>• Is forecasting labor still guesswork?</p>
+              <p>• Are payment reports matching your bank deposits?</p>
+              <p>• Is management spending more time on admin tasks rather than with dogs?</p>
+              <p>• Can I grow this into something bigger?</p>
+              <p>• Are repeat clients slipping through cracks?</p>
+              <p>• Is growth creating more issues?</p>
+              <p>• How do I have more time for other things?</p>
+              <p>• Are my finances in order to get a bank loan?</p>
+              <p>• Should I expand my current footprint or move to a new location?</p>
+            </div>
+
+            <p className="text-sm font-medium text-[#2c4a30]">
+              Explore Growth infrastructure →
+            </p>
+          </Link>
+
+          {/* Large */}
+          <Link
+            href="/en/dog-boarding-and-daycare-software-large-business"
+            className="block rounded-2xl border border-gray-200 p-8 bg-white hover:shadow-md transition text-center"
+          >
+            <h3 className="text-xl font-semibold text-[#2c4a30] mb-6">
+              Large / Multi-Location
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm text-gray-700 leading-6 mb-6 max-w-2xl mx-auto text-left">
+              <p>• Are financial reports audit-ready?</p>
+              <p>• Are you considering selling?</p>
+              <p>• Is reconciliation automated?</p>
+              <p>• Are locations standardized?</p>
+              <p>• Can you prove profitability instantly?</p>
+              <p>• Does your data help identify your issues?</p>
+              <p>• Are labor ratios optimized daily?</p>
+              <p>• Is payment processing modeled institutionally?</p>
+              <p>• Do managers operate with consistent systems?</p>
+              <p>• Can leadership forecast expansion confidently?</p>
+              <p>• Can you prove profitability instantly?</p>
+              <p>• Small gains in efficiency mean big savings!</p>
+            </div>
+
+            <p className="text-sm font-medium text-[#2c4a30]">
+              View Pro-level structure →
+            </p>
+          </Link>
+
+        </div>
+
+        <div className="mt-14 max-w-2xl mx-auto text-sm text-gray-600 leading-relaxed text-center">
+          <p>
+            Petunia is designed to scale with operational complexity. The larger your
+            business — and especially the more locations you operate — the more operational
+            efficiencies and measurable cost savings we tend to uncover, particularly in
+            routine administrative tasks that quietly consume time and margin.
+            Multi-location operators benefit from centralized oversight, standardized
+            workflows, consolidated reporting, and reduced manual reconciliation across
+            teams. What may feel manageable at one location often becomes exponentially
+            inefficient across three, five, or ten. In short: the more moving parts you have, the more leverage intelligent
+            systems create.
+          </p>
+
+          <div className="mt-8 flex justify-center">
+            <a
+              href="mailto:admin@petuniapets.com"
+              className="bg-[#2c4a30] text-white px-6 py-3 rounded-md hover:bg-[#244024] transition text-center"
+            >
+              Have a Discussion with Us
+            </a>
+          </div>
+
+          <p className="mt-3 text-xs text-gray-500">
+            After our discussion, we will not contact you unless you request a follow up.
+          </p>
         </div>
       </section>
 
@@ -64,7 +298,7 @@ export default function DogBoardingSoftwarePage() {
             (and what they don&apos;t say out loud)
           </p>
           <p className="text-base leading-7 text-gray-700 max-w-2xl mx-auto">
-            Across the major platforms in this space, monthly subscriptions commonly land in the <strong>$95–$199+</strong>{' '}
+            Across the major platforms in this space, monthly subscriptions commonly land in the <strong>$95–$299+</strong>{' '}
             range, and trials are often <strong>7–14 days</strong>. That&apos;s not enough time for real boarding or grooming
             migration when you have future reservations and deposits tied to your old system.
           </p>
@@ -76,7 +310,7 @@ export default function DogBoardingSoftwarePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="rounded-xl border border-gray-200 p-5 bg-white text-center">
               <p className="text-sm font-semibold text-gray-900">Typical Monthly Subscription</p>
-              <p className="mt-2 text-2xl font-bold text-[#2c4a30]">$95–$199+</p>
+              <p className="mt-2 text-2xl font-bold text-[#2c4a30]">$95–$299+</p>
               <p className="mt-2 text-sm text-gray-600">
                 Flat-rate pricing that can be difficult for new or independent operators.
               </p>
@@ -126,7 +360,7 @@ export default function DogBoardingSoftwarePage() {
                 <p className="text-xs text-gray-600 mt-1">For new &amp; small operators</p>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-bold text-[#2c4a30]">$10</p>
+                <p className="text-3xl font-bold text-[#2c4a30]">$15</p>
                 <p className="text-xs text-gray-600 whitespace-nowrap">per month</p>
               </div>
             </div>
@@ -187,15 +421,15 @@ export default function DogBoardingSoftwarePage() {
             </div>
           </div>
 
-          {/* Pro (optional placeholder, still transparent) */}
+          {/* Pro */}
           <div className="rounded-2xl border border-gray-200 p-6 bg-white shadow-sm">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-gray-900">Pro</p>
-                <p className="text-xs text-gray-600 mt-1">For advanced ops &amp; multi-site</p>
+                <p className="text-xs text-gray-600 mt-1">For large, high-volume facilities</p>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-bold text-[#2c4a30]">$109</p>
+                <p className="text-3xl font-bold text-[#2c4a30]">$115</p>
                 <p className="text-xs text-gray-600 whitespace-nowrap">per month</p>
               </div>
             </div>
@@ -203,19 +437,21 @@ export default function DogBoardingSoftwarePage() {
             <div className="mt-5 rounded-xl bg-[#f0f7f2] border border-[#2c4a30]/10 p-4">
               <p className="text-sm font-semibold text-[#2c4a30]">Published payment processing</p>
               <p className="mt-1 text-sm text-gray-700 leading-6">
-                <strong>3.0% + $0.25</strong> per transaction (transparent)
+                <strong>3.0% + $0.25</strong> per transaction (fully transparent)
               </p>
               <p className="mt-2 text-xs text-gray-600 leading-5">
-                Higher tiers should reward you with better rates—simple, fair, and easy to understand.
+                Designed for operators processing significant transaction volume.
+                Higher scale should come with improved flat transaction components —
+                simple, fair, and predictable.
               </p>
             </div>
 
             <div className="mt-6">
               <Link
-                href="/en/contact"
-                className="block text-center border border-[#2c4a30] text-[#2c4a30] px-5 py-3 rounded-md hover:bg-[#f6f6f6] transition"
+                href="/en/createnewaccount"
+                className="block text-center bg-[#2c4a30] text-white px-5 py-3 rounded-md hover:bg-[#244024] transition"
               >
-                Talk to Sales
+                Choose Pro
               </Link>
             </div>
           </div>
@@ -226,6 +462,40 @@ export default function DogBoardingSoftwarePage() {
             Payment processing shown above is published to be fully transparent. Exact processor costs can vary by
             card type and region; Petunia&apos;s flat component is shown so you can compare platforms clearly.
           </p>
+        </div>
+
+        {/* Multi-Site & Institutional Operators */}
+        <div className="mt-8 rounded-2xl border border-[#2c4a30]/20 bg-[#f0f7f2] p-8 text-center shadow-sm">
+          <h3 className="text-xl font-semibold text-[#2c4a30] mb-3">
+            Multi-Site &amp; Institutional Operators
+          </h3>
+
+          <p className="text-base text-gray-700 max-w-3xl mx-auto leading-7">
+            If you operate multiple facilities, are preparing for expansion,
+            or are consolidating locations under centralized ownership,
+            structured financial infrastructure becomes essential.
+          </p>
+
+          <p className="text-base text-gray-700 max-w-3xl mx-auto leading-7 mt-4">
+            Petunia supports consolidated reporting, standardized workflows,
+            and clean transaction records designed to withstand audit review,
+            financing scrutiny, and acquisition diligence.
+          </p>
+
+          <p className="text-base text-gray-700 max-w-3xl mx-auto leading-7 mt-4">
+            For private equity groups, strategic buyers, or operators preparing
+            for a future exit, disciplined systems increase valuation by reducing
+            operational risk and improving financial transparency.
+          </p>
+
+          <div className="mt-6">
+            <a
+              href="mailto:admin@petuniapets.com"
+              className="inline-block bg-[#2c4a30] text-white px-6 py-3 rounded-md hover:bg-[#244024] transition"
+            >
+              Request Multi-Site or Institutional Pricing
+            </a>
+          </div>
         </div>
       </section>
 
@@ -283,6 +553,351 @@ export default function DogBoardingSoftwarePage() {
           Pricing reflects publicly available data. Petunia publishes its processing structure openly—because
           transparency shouldn’t be optional.
         </p>
+      </section>
+
+      {/* SAVINGS CALCULATOR */}
+      <section className="py-10 border-t border-gray-200">
+        <div className="text-center">
+          <h2 className="text-xl sm:text-2xl font-semibold text-[#2c4a30] mb-4">
+            Estimate Your Annual Savings
+          </h2>
+          <p className="text-sm text-gray-600 max-w-2xl mx-auto mb-8">
+            Enter your current costs and the weekly administrative hours spent per task.
+            Leave blank if your current system already automates it.
+          </p>
+        </div>
+
+        <div className="max-w-4xl mx-auto space-y-8">
+
+          {/* Petunia Plan Selection */}
+          <div className="mb-6">
+            <label className="block text-sm font-semibold text-[#2c4a30] mb-2">
+              Which Petunia plan are you considering?
+            </label>
+            <select
+              value={selectedPlan}
+              onChange={(e) =>
+                setSelectedPlan(e.target.value as "" | "Starter" | "Growth" | "Pro")
+              }
+              className="border p-3 rounded w-full"
+            >
+              <option value="">
+                Select a Plan
+              </option>
+              <option value="Starter">
+                Starter — $10/mo — 3.0% + $0.45
+              </option>
+              <option value="Growth">
+                Growth — $50/mo — 3.0% + $0.35
+              </option>
+              <option value="Pro">
+                Pro — $109/mo — 3.0% + $0.25
+              </option>
+            </select>
+          </div>
+
+          {/* Software Costs */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+            {/* Monthly Software Cost */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Current Monthly Software Cost ($)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                <input
+                  type="number"
+                  className="border p-3 pl-7 rounded w-full"
+                  min="0"
+                  step="0.01"
+                  value={subscriptionCost}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setSubscriptionCost(val === "" ? "" : Number(val));
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value !== "") {
+                      const value = Number(e.target.value);
+                      if (!isNaN(value)) {
+                        setSubscriptionCost(Number(value.toFixed(2)));
+                      }
+                    }
+                  }}
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Example: 149.00
+              </p>
+            </div>
+
+            {/* Transactions Per Year */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Total Transactions Per Year
+              </label>
+              <input
+                type="number"
+                className="border p-3 rounded w-full"
+                min="0"
+                value={transactionsPerYear}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setTransactionsPerYear(val === "" ? "" : Number(val));
+                }}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Example: 10,000
+              </p>
+            </div>
+
+            {/* Average Ticket */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Average Transaction Amount ($)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                <input
+                  type="number"
+                  className="border p-3 pl-7 rounded w-full"
+                  min="0"
+                  step="0.01"
+                  value={averageTicket}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAverageTicket(val === "" ? "" : Number(val));
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value !== "") {
+                      const value = Number(e.target.value);
+                      if (!isNaN(value)) {
+                        setAverageTicket(Number(value.toFixed(2)));
+                      }
+                    }
+                  }}
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Example: 55.00
+              </p>
+            </div>
+
+            {/* Processing Rate */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Current Processing Rate (%)
+              </label>
+              <input
+                type="number"
+                className="border p-3 rounded w-full"
+                min="0"
+                step="0.01"
+                value={processingRate}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setProcessingRate(val === "" ? "" : Number(val));
+                }}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Example: 3.2
+              </p>
+            </div>
+
+            {/* Flat Fee */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Flat Fee Per Transaction ($)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                <input
+                  type="number"
+                  className="border p-3 pl-7 rounded w-full"
+                  min="0"
+                  max="0.99"
+                  step="0.01"
+                  value={flatFee}
+                  onChange={(e) => {
+                    const val = e.target.value;
+
+                    if (val === "") {
+                      setFlatFee("");
+                      return;
+                    }
+
+                    const num = Number(val);
+                    if (!isNaN(num) && num >= 0 && num < 1) {
+                      setFlatFee(num);
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value !== "") {
+                      const value = Number(e.target.value);
+                      if (!isNaN(value)) {
+                        setFlatFee(Number(value.toFixed(2)));
+                      }
+                    }
+                  }}
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Example: 0.30
+              </p>
+            </div>
+
+            {/* Monthly Accounting Software */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Monthly Fee for Accounting Software ($)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                <input
+                  type="number"
+                  className="border p-3 pl-7 rounded w-full"
+                  min="0"
+                  step="0.01"
+                  value={accountingMonthly}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAccountingMonthly(val === "" ? "" : Number(val));
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Monthly HR Software */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Monthly Fee for HR Software ($)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                <input
+                  type="number"
+                  className="border p-3 pl-7 rounded w-full"
+                  min="0"
+                  step="0.01"
+                  value={hrMonthly}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setHrMonthly(val === "" ? "" : Number(val));
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Monthly Scheduling Software */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Monthly Fee for Scheduling Software ($)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                <input
+                  type="number"
+                  className="border p-3 pl-7 rounded w-full"
+                  min="0"
+                  step="0.01"
+                  value={schedulingMonthly}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setSchedulingMonthly(val === "" ? "" : Number(val));
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Other Software */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Monthly Fees for Other Software ($)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                <input
+                  type="number"
+                  className="border p-3 pl-7 rounded w-full"
+                  min="0"
+                  step="0.01"
+                  value={otherSoftwareMonthly}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setOtherSoftwareMonthly(val === "" ? "" : Number(val));
+                  }}
+                />
+              </div>
+            </div>
+
+          </div>
+
+          {/* Task Table */}
+          <div className="mb-6 text-base sm:text-lg text-gray-700 text-center font-medium">
+            If your current software already automates any of these processes, or makes intuitive suggestions for you, leave those fields blank.
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="bg-[#f0f7f2] text-[#2c4a30]">
+                  <th className="p-3 text-left border border-gray-200">Task</th>
+                  <th className="p-3 text-left border border-gray-200">Hours / Week</th>
+                  <th className="p-3 text-left border border-gray-200">Hourly Rate ($)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tasks.map((task, index) => (
+                  <tr key={task}>
+                    <td className="p-3 border border-gray-200">{task}</td>
+                    <td className="p-3 border border-gray-200">
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.25"
+                        className="border p-2 rounded w-full"
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateTask(index, "hours", val === "" ? 0 : Math.max(0, Number(val)));
+                        }}
+                      />
+                    </td>
+                    <td className="p-3 border border-gray-200">
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        className="border p-2 rounded w-full"
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateTask(
+                            index,
+                            "rate",
+                            val === "" ? 0 : Math.max(0, Number(val))
+                          );
+                        }}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Result */}
+          <div className="text-center pt-8">
+            <p className="text-lg font-semibold text-[#2c4a30]">
+              Estimated Annual Savings:
+            </p>
+            <p className="text-3xl font-bold text-[#2c4a30] mt-2">
+              ${calculateSavings()}
+            </p>
+            <p className="text-sm text-gray-500 mt-2">
+              Includes subscription, processing, and administrative labor comparisons.
+            </p>
+          </div>
+
+        </div>
       </section>
 
       {/* MIGRATION + TRANSITION STRUCTURE */}
@@ -356,12 +971,12 @@ export default function DogBoardingSoftwarePage() {
             a live Zoom session together. The demo only matters if the alignment is right.
           </p>
 
-          <Link
-            href="/en/contact"
+          <a
+            href="mailto:admin@petuniapets.com"
             className="inline-block bg-[#2c4a30] text-white px-6 py-3 rounded-md hover:bg-[#244024] transition"
           >
             Schedule an Operational Review
-          </Link>
+          </a>
         </div>
       </section>
 
@@ -560,12 +1175,12 @@ export default function DogBoardingSoftwarePage() {
           >
             Get Started
           </Link>
-          <Link
-            href="/en/contact"
+          <a
+            href="mailto:admin@petuniapets.com"
             className="border border-[#2c4a30] text-[#2c4a30] px-6 py-3 rounded-md hover:bg-[#f0f0f0] transition text-center"
           >
             Contact Our Team
-          </Link>
+          </a>
         </div>
 
         <div className="mt-10">
