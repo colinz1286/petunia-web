@@ -1,7 +1,6 @@
 // File: src/app/[locale]/blog/posts/non-surgical-management-of-hip-dysplasia.tsx
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -11,9 +10,6 @@ export default function NonSurgicalManagementOfHipDysplasia() {
   const title =
     'Non-Surgical Management of Hip Dysplasia in Dogs: Evidence-Based Options That Actually Improve Comfort and Mobility';
   const date = 'January 1, 2026';
-
-  const description =
-    'A comprehensive, owner-first guide to managing canine hip dysplasia without surgery, including weight and exercise plans, physical therapy, medications, joint injections, supplements, home modifications, rehab timelines, and when to reconsider surgery.';
 
   const categories = ['owner', 'vet'] as const;
 
@@ -31,13 +27,6 @@ export default function NonSurgicalManagementOfHipDysplasia() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

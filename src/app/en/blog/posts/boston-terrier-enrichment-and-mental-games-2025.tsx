@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,14 +24,6 @@ export default function BostonTerrierEnrichmentAndMentalGames2025() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="A practical guide to Boston Terrier mental enrichment, including puzzle toys, scent games, indoor activities, confidence-building exercises, daily enrichment schedules, and safe difficulty progression."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function BorderCollieGroomingGuide() {
@@ -9,16 +8,6 @@ export default function BorderCollieGroomingGuide() {
 
   return (
     <>
-      <Head>
-        <title>
-          Border Collie Grooming Guide: Coat Types, Shedding, Bathing, and Brushing Schedule | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="A complete grooming guide for Border Collies, covering coat types, brushing routines, shedding cycles, bathing schedules, ear and nail care, and long-term skin and coat health."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
 

@@ -99,6 +99,7 @@ export default function BlogPage() {
   // ---- Initialize filters from URL query params (if present) ----
   const initialBreedParam = searchParams.get('breed') ?? '';
   const initialCategoriesParam = searchParams.get('categories') ?? '';
+  const initialPageParam = Math.max(1, Number(searchParams.get('page') ?? '1') || 1);
 
   const initialCategoriesFromUrl: CategoryKey[] = initialCategoriesParam
     ? initialCategoriesParam
@@ -111,10 +112,11 @@ export default function BlogPage() {
     initialCategoriesFromUrl
   );
   const [selectedBreed, setSelectedBreed] = useState<string>(initialBreedParam); // dropdown value
-  const [visibleCount, setVisibleCount] = useState<number>(PAGE_SIZE);
+  const [visibleCount, setVisibleCount] = useState<number>(initialPageParam * PAGE_SIZE);
+  const currentPage = Math.max(1, Number(searchParams.get('page') ?? '1') || 1);
 
   // ---- Helper to build URL with current filters ----
-  const buildBlogUrl = (categories: CategoryKey[], breed: string) => {
+  const buildBlogUrl = (categories: CategoryKey[], breed: string, page = 1) => {
     const params = new URLSearchParams();
 
     if (categories.length > 0) {
@@ -125,12 +127,16 @@ export default function BlogPage() {
       params.set('breed', breed);
     }
 
+    if (page > 1) {
+      params.set('page', String(page));
+    }
+
     const queryString = params.toString();
     return queryString ? `/${locale}/blog?${queryString}` : `/${locale}/blog`;
   };
 
-  const updateUrlWithFilters = (categories: CategoryKey[], breed: string) => {
-    const targetUrl = buildBlogUrl(categories, breed);
+  const updateUrlWithFilters = (categories: CategoryKey[], breed: string, page = 1) => {
+    const targetUrl = buildBlogUrl(categories, breed, page);
     router.replace(targetUrl);
   };
 
@@ -147,10 +153,10 @@ export default function BlogPage() {
     updateUrlWithFilters(nextCategories, '');
   };
 
-  // Reset pagination whenever filters change
+  // Sync visible count to URL page and reset with filter changes
   useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
-  }, [selectedCategories, selectedBreed]);
+    setVisibleCount(currentPage * PAGE_SIZE);
+  }, [selectedCategories, selectedBreed, currentPage]);
 
   // ---- Build breed options from registry (auto-updates as you add posts) ----
   const breedOptions = useMemo(() => {
@@ -211,6 +217,15 @@ export default function BlogPage() {
   };
 
   const canLoadMore = visibleCount < filteredPosts.length;
+  const totalPages = Math.max(1, Math.ceil(filteredPosts.length / PAGE_SIZE));
+  const prevPageHref =
+    currentPage > 1
+      ? buildBlogUrl(selectedCategories, selectedBreed, currentPage - 1)
+      : null;
+  const nextPageHref =
+    currentPage < totalPages
+      ? buildBlogUrl(selectedCategories, selectedBreed, currentPage + 1)
+      : null;
 
   return (
     <>
@@ -220,6 +235,8 @@ export default function BlogPage() {
           name="description"
           content="Petunia's blog covers dog boarding tips, sitter tools, daycare safety, and expert advice for pet care professionals and pet parents."
         />
+        {prevPageHref && <link rel="prev" href={prevPageHref} />}
+        {nextPageHref && <link rel="next" href={nextPageHref} />}
       </Head>
 
       <main className="flex flex-col items-center px-4 py-10 text-center bg-[#f6efe4]">
@@ -371,11 +388,38 @@ export default function BlogPage() {
 
                 {canLoadMore && (
                   <button
-                    onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
+                    onClick={() =>
+                      updateUrlWithFilters(
+                        selectedCategories,
+                        selectedBreed,
+                        Math.min(currentPage + 1, totalPages)
+                      )
+                    }
                     className="px-4 py-2 rounded-full text-sm font-bold transition border-[3px] text-white bg-[#2c4a30] border-[#2c4a30] hover:opacity-90"
                   >
                     Load more
                   </button>
+                )}
+
+                {totalPages > 1 && (
+                  <nav
+                    aria-label="Blog pagination"
+                    className="flex flex-wrap justify-center gap-2 pt-1"
+                  >
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <Link
+                        key={page}
+                        href={buildBlogUrl(selectedCategories, selectedBreed, page)}
+                        className={`px-2 py-1 text-xs rounded border ${page === currentPage
+                          ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
+                          : 'bg-white text-[#2c4a30] border-[#d9cfc2] hover:bg-[#f6efe4]'
+                          }`}
+                        aria-current={page === currentPage ? 'page' : undefined}
+                      >
+                        {page}
+                      </Link>
+                    ))}
+                  </nav>
                 )}
               </div>
             </>

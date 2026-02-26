@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,18 +24,8 @@ export default function GoldenRetrieverPuppyTrainingCompleteGuide() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A complete, evidence-informed training playbook for Golden Retriever puppies from 8 weeks to 18 months. Covers socialization, house/crate training, leash skills, recall, bite-inhibition, alone-time training, enrichment, adolescence, safety red flags, and operator-grade checklists and templates—with veterinary-sourced citations.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

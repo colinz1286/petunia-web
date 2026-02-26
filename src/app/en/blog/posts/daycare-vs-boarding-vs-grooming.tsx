@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function DaycareVsBoardingVsGroomingBlog() {
     trainer: 'Trainers',
   };
 
-  const description =
-    'Compare daycare-only vs. adding boarding and grooming from a real facility owner&rsquo;s perspective. Learn the impact on revenue, staffing, lifestyle, compliance, and operations — plus a practical framework for choosing the right service mix.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-1">Posted on {date}</p>

@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function VeterinaryEmergencyCareShortage2025() {
@@ -9,19 +8,6 @@ export default function VeterinaryEmergencyCareShortage2025() {
 
   return (
     <>
-      <Head>
-        <title>
-          When a Vet Can’t Get Help for Her Own Dog: The Emergency-Care Shortage in Veterinary Medicine | Petunia Blog
-        </title>
-
-        <meta
-          name="description"
-          content="A Virginia veterinarian’s struggle to secure emergency care for her own dog highlights a national shortage in veterinary staffing and emergency access — what facilities should know, and how pet-care providers can respond."
-        />
-
-        {/* ❌ NO indexing tags, NO robots tags */}
-
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-2">

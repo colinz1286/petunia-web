@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,18 +22,8 @@ export default function FrenchBulldogPuppiesFirstWeeksAtHome() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A practical, evidence-informed guide for the first nights and first month with a French Bulldog puppy: what to buy, safe home setup, feeding and food transitions, crate and potty training, socialization with health safeguards, brachycephalic safety, travel, the first veterinary visit, record-keeping, and week-by-week checklists. Designed for calm, confident starts.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

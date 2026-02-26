@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function CavalierLifespanArticle() {
@@ -9,17 +8,6 @@ export default function CavalierLifespanArticle() {
 
   return (
     <>
-      <Head>
-        <title>
-          Cavalier King Charles Spaniel Lifespan: How to Help Your Dog Live Longer | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Discover the average lifespan of Cavalier King Charles Spaniels and learn proven ways to help your dog live longer through heart health, weight management, and preventive care."
-        />
-        <meta name="robots" content="all" />
-      
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on November&nbsp;6,&nbsp;2025</p>

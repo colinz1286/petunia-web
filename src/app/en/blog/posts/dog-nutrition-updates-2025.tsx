@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,14 +23,6 @@ export default function DogNutritionUpdates2025() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="New FDA-approved prescription diets in 2025 introduce novel fiber matrices and post-biotic blends aimed at reducing obesity rates in dogs. Learn what changed, how these foods work, and how veterinarians are using data-driven nutrition to improve canine health."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

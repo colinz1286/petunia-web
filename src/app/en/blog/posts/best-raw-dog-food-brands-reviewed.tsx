@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function BestRawDogFoodBrandsReviewed() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A credibility-first guide to evaluating raw dog food brands: sourcing, transparency, AAFCO statements, safety steps like HPP and third-party testing, cost/value trade-offs, and who commercial raw fits best.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

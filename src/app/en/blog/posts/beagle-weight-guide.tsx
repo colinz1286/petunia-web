@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function BeagleWeightGuide() {
@@ -9,16 +8,6 @@ export default function BeagleWeightGuide() {
 
   return (
     <>
-      <Head>
-        <title>
-          Beagle Weight Guide: Healthy Ranges, Feeding Charts, and Preventing Obesity | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Discover the ideal Beagle weight ranges, feeding guidelines, portion charts, and vet-backed strategies to prevent obesity. Keep your Beagle healthy, active, and fit for life."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
 

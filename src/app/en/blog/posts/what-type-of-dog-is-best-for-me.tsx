@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,18 +24,8 @@ export default function WhatTypeOfDogIsBestForMe() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A step-by-step, vet-informed framework to choose a dog that truly fits your life: time, space, energy, training, grooming, health risks, budget, and family goals—with archetypes, shortlists, and operator-grade checklists.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

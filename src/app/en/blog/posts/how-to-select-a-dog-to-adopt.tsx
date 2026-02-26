@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,18 +24,8 @@ export default function HowToSelectADogToAdopt() {
     breeder: 'Breeders',
     breed_specific_guides: 'Breed Specific Guides',
   };
-  const description =
-    'A step-by-step adoption guide: define your lifestyle, evaluate behavior and temperament, understand health/age trade-offs, run a structured meet-and-greet, ask the right questions, and follow a 30-day plan to set your new dog up for success. Includes checklists and red-flag audits.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

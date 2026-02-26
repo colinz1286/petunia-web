@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,15 +22,6 @@ export default function DietaryIndiscretionInDogs() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="Dietary indiscretion is one of the most common causes of vomiting and diarrhea in dogs. Learn why dogs scavenge, what they commonly ingest, warning signs of obstruction, how veterinarians diagnose these cases, and how to prevent repeat episodes."
-        />
-        <meta name="robots" content="all" />
-        
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

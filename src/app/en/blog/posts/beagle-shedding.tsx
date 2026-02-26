@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function BeagleShedding() {
@@ -9,16 +8,6 @@ export default function BeagleShedding() {
 
   return (
     <>
-      <Head>
-        <title>
-          Do Beagles Shed? Grooming, Allergy Considerations, and Household Tips | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Do Beagles shed? Learn about Beagle shedding patterns, grooming needs, allergy considerations, and household tips for keeping your home clean and your dog’s coat healthy."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on September 29, 2025</p>

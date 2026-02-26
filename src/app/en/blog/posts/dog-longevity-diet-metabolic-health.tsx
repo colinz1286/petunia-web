@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function DogLongevityDietMetabolicHealth() {
   const title =
     'Dog Longevity Diets: What Science Says About Nutrition, Metabolic Health, and Anti-Ageing Foods';
   const date = 'November 21, 2025';
-  const description =
-    'A research-based guide to how caloric density, macronutrients, omega-3s, antioxidants, feeding patterns, and emerging supplements influence dog longevity, metabolic health, and ageing.';
-
   const categories = ['owner', 'veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -29,38 +25,6 @@ export default function DogLongevityDietMetabolicHealth() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-
-        {/* JSON-LD Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: title,
-              description,
-              datePublished: date,
-              dateModified: date,
-              author: { '@type': 'Organization', name: 'Petunia' },
-              publisher: {
-                '@type': 'Organization',
-                name: 'Petunia',
-                logo: {
-                  '@type': 'ImageObject',
-                  url: 'https://www.petuniapets.com/logo.png'
-                }
-              }
-            })
-          }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
         {/* Meta */}

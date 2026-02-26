@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function DogBoardingSoftwareCostArticle() {
@@ -9,16 +8,6 @@ export default function DogBoardingSoftwareCostArticle() {
 
   return (
     <>
-      <Head>
-        <title>
-          Dog Boarding Software Doesn’t Need to Be Expensive | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Opinion: The real cost of running dog boarding software is minimal—so why are companies charging $100 or more each month? Colin Zedreck of Petunia shares why affordable, high-quality software is possible for everyone."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-2">Written by&nbsp;Colin Zedreck&nbsp;·&nbsp;November&nbsp;4,&nbsp;2025</p>

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -9,15 +8,6 @@ export default function CanineRetinalDiseasePennVet() {
 
   return (
     <>
-      <Head>
-        <title>New Penn Vet Clinic Advances Treatment for Canine Retinal Disease</title>
-        <meta
-          name="description"
-          content="Penn Vet has opened a new specialty clinic for canine retinal disease, including progressive retinal atrophy (PRA). Learn what retinal diseases are, why they matter, current treatment challenges, and new diagnostic innovations in the U.S. and UK."
-        />
-        <meta name="robots" content="all" />
-       
-      </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">
         {/* Category pills */}

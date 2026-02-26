@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -20,16 +19,8 @@ export default function HipDysplasiaInDogsCompleteGuide() {
     breeder: 'Breeders',
   };
 
-  const description =
-    'A comprehensive, evidence-based guide to hip dysplasia in dogs: what it is, why it develops, early warning signs owners miss, how veterinarians diagnose it, treatment and surgery options, realistic U.S. cost ranges, prevention myths, and how to manage dogs long-term for comfort and mobility.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

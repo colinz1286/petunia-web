@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,19 +24,8 @@ export default function WhyDoDogsLick() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A comprehensive guide to why dogs lick: normal self-grooming, affection, taste exploration, stress relief, and medical causes like allergies, pain, or nausea. Learn how to tell what is normal, what needs training, and what deserves a veterinary visit. Includes practical checklists, home-care tips, and calm behavior strategies.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference, do not use the word "index" here. */}
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

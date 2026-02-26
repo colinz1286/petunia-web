@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -26,18 +25,8 @@ export default function AreGermanShepherdsAggressiveOrDangerous() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A balanced, evidence-informed look at German Shepherd temperament and bite risk: what the data do and do not say; how genetics, socialization, training, health, and management shape behavior; line differences; scenario-based prevention; operator-grade checklists; and when to seek professional help.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

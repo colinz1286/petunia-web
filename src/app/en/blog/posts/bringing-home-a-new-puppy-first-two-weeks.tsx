@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -27,13 +26,6 @@ export default function BringingHomeANewPuppyFirstTwoWeeks() {
 
     return (
         <>
-            <Head>
-                <title>{title} – Petunia Blog</title>
-                <meta
-                    name="description"
-                    content="Your first 14 days with a puppy, step by step: house-training, crate & nighttime routines, safe early socialization before full vaccinations, meeting people & dogs, leash and alone-time foundations, enrichment, health & vaccine schedules, parasite prevention, red flags, and printable checklists—built on guidance from AVSAB, AAHA, AVMA, CAPC, and the American Heartworm Society."
-                />
-            </Head>
 
             <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
                 <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

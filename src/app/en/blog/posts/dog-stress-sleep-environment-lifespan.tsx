@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function DogStressSleepEnvironmentLifespan() {
   const title =
     'How Stress, Sleep, and Environment Affect Dog Lifespan: Daily Habits That Increase Healthspan';
   const date = 'November 30, 2025';
-  const description =
-    'A veterinarian-informed guide to how stress, sleep quality, circadian rhythm, and environmental design influence canine lifespan, including daily habits and enrichment techniques that support longevity.';
-
   const categories = ['owner', 'veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -29,37 +25,6 @@ export default function DogStressSleepEnvironmentLifespan() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-
-        {/* Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: title,
-              description,
-              datePublished: date,
-              dateModified: date,
-              author: { '@type': 'Organization', name: 'Petunia' },
-              publisher: {
-                '@type': 'Organization',
-                name: 'Petunia',
-                logo: {
-                  '@type': 'ImageObject',
-                  url: 'https://www.petuniapets.com/logo.png'
-                }
-              }
-            })
-          }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
         {/* Date */}

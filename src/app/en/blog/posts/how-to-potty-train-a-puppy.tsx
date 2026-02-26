@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function HowToPottyTrainAPuppy() {
     training: 'Training',
   };
 
-  const description =
-    'A complete housetraining playbook for new puppy families: setup, schedules by age, crate and playpen routines, reward timing, accident cleanup, apartment strategies, bad weather plans, medical watch-outs, regression fixes, and copy-paste checklists. Calm, consistent, and kinder for everyone.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

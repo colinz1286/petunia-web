@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,46 +23,8 @@ export default function HowLongDoGoldenRetrieversLive() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'How long do Golden Retrievers live? This evidence-based guide covers average lifespan ranges, major health risks, cancer rates, weight and orthopedic management, and practical daily routines that can add healthy years.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-
-        {/* JSON-LD */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: title,
-              datePublished: date,
-              dateModified: date,
-              description,
-              author: {
-                '@type': 'Organization',
-                name: 'Petunia',
-              },
-              publisher: {
-                '@type': 'Organization',
-                name: 'Petunia',
-                logo: {
-                  '@type': 'ImageObject',
-                  url: 'https://www.petuniapets.com/logo.png',
-                },
-              },
-            }),
-          }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

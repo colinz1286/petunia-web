@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,16 +23,8 @@ export default function BestGroomingToolsForBostonTerriers2025() {
     breed_specific_guides: 'Breed Specific Guides'
   };
 
-  const description =
-    'A full 2025 guide to the best grooming tools for Boston Terriers—brushes, deshedding tools, nail trimmers, wipes, sensitive skin tools, unsafe tools to avoid, recommended grooming kits, frequency chart, and how to create an effective at-home routine.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
 

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,14 +24,6 @@ export default function DogBoardingChecklistWhatToBringWhatToUploadWhenToBook() 
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="A practical, copy-ready dog boarding checklist: what to pack (food, meds, gear), what to upload (vaccines, vet info, emergency contacts), how far ahead to book, vaccine timing windows, intake forms, and when to reschedule during cough or CIRDC concerns—built for owners and boarding/daycare operators."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

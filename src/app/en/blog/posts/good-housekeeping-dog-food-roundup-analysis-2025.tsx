@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,13 +23,6 @@ export default function GoodHousekeepingDogFoodRoundupAnalysis2025() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="A careful, source-backed look at Good Housekeeping’s updated 2025 roundup of the 9 best dog food brands: what their methodology says (and doesn’t), what counts as real science in pet nutrition, and how owners can make evidence-based choices—plus WSAVA questions, AAFCO context, elimination-diet facts, and a practical checklist."
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

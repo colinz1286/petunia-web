@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,15 +23,6 @@ export default function CollapseLethargyMaropitantDogs() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="Although uncommon, maropitant (Cerenia®) can be associated with severe lethargy or collapse in dogs. Learn why this happens, emergency warning signs, immediate first steps owners can take, and how veterinarians treat these cases."
-        />
-        <meta name="robots" content="all" />
-        
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

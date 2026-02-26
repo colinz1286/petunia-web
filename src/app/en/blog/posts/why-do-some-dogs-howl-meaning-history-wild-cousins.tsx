@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -22,16 +21,8 @@ export default function WhyDoDogsHowlMeaningHistoryWildCousins() {
     vet: 'Veterinary Clinics',
   };
 
-  const metaDescription =
-    'A deep dive into dog howling: what it means, why some dogs howl and others do not, the science of wolf & coyote howls, acoustic structure, history from wolves to pets, medical and behavioral causes, training tips, and fun facts about African wild dogs, dholes, foxes, and jackals.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={metaDescription} />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

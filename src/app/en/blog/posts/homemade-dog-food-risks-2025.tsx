@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,18 +24,8 @@ export default function HomemadeDogFoodRisks2025() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A clear summary of the latest Dog Aging Project findings showing that most homemade dog diets lack essential nutrients, plus guidance for owners choosing home-prepared meals.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
 

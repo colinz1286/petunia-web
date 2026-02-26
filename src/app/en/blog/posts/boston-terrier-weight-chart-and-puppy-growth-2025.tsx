@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,17 +23,8 @@ export default function BostonTerrierWeightChartAndPuppyGrowth2025() {
     breed_specific_guides: 'Breed Specific Guides'
   };
 
-  const description =
-    'A complete 2025 guide to Boston Terrier puppy growth, including weight charts from 8 weeks to 12 months, healthy ranges, signs of underweight or overweight dogs, genetics and diet factors, growth stalls, and transitioning to adult food.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-       
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
 

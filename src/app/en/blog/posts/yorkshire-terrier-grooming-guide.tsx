@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function YorkshireTerrierGroomingGuide() {
@@ -9,16 +8,6 @@ export default function YorkshireTerrierGroomingGuide() {
 
     return (
         <>
-            <Head>
-                <title>
-                    Yorkshire Terrier Grooming and Coat Maintenance: Tips for a Silky, Healthy Coat | Petunia Blog
-                </title>
-                <meta
-                    name="description"
-                    content="Learn how to keep a Yorkshire Terrier’s coat silky, healthy, and tangle-free. This grooming guide covers brushing routines, coat types, bathing frequency, trimming, professional grooming, and puppy grooming training."
-                />
-                <meta name="robots" content="all" />
-            </Head>
 
             <article className="prose lg:prose-xl mx-auto px-4 py-8">
                 {/* DATE */}

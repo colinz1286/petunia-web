@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function EarlySignsHipDysplasiaOwnersMiss() {
   const title =
     'Early Signs of Hip Dysplasia Owners Miss: Subtle Clues Before Limping Starts';
   const date = 'December 27, 2025';
-
-  const description =
-    'A deeply practical, owner-focused guide to the early and often-overlooked signs of hip dysplasia in dogs, including behavior changes, posture shifts, movement patterns, and daily-life clues that appear long before obvious limping.';
 
   const categories = ['owner'] as const;
 
@@ -30,13 +26,6 @@ export default function EarlySignsHipDysplasiaOwnersMiss() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

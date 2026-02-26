@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function FrenchBulldogLifeExpectancyAndLifespan() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'How long do French Bulldogs live? Evidence-informed life expectancy (typically ~10–12 years), plus a practical plan to extend healthy time: weight, airway health (BOAS), heat and travel safety, orthopedic and spine protection, skin/ear care, nutrition, preventive vet work, and senior comfort. Actionable checklists and professional sources included.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

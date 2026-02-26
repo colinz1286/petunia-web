@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -22,13 +21,6 @@ export default function DemotionBlog() {
 
     return (
         <>
-            <Head>
-                <title>{title} – Petunia Blog</title>
-                <meta
-                    name="description"
-                    content="Learn how one business owner avoids demotions, and what to know legally and ethically if you need to make one. A real-world guide for handling difficult leadership transitions with dignity."
-                />
-            </Head>
 
             <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
                 <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

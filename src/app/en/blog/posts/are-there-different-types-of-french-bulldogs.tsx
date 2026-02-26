@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function AreThereDifferentTypesOfFrenchBulldogs() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'One breed, many looks: a clear, evidence-informed guide to French Bulldog “types.” Learn the recognized colors and patterns, what people mean by “blue,” “merle,” and “fluffy,” how those differ from the official breed standard, why size labels like “teacup” are marketing—plus similarities across all Frenchies, health and genetic notes (BOAS, color dilution alopecia, pigment-related deafness), and a practical buyer’s checklist with professional sources.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

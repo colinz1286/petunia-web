@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -27,18 +26,8 @@ export default function HowToChooseTheRightDogFood() {
     train: 'Training'
   };
 
-  const description =
-    'Everything you actually need to pick a safe, complete, and appropriate diet for your dog—how to read labels (AAFCO statements), match foods to life stage and size (including large-breed growth), calculate calories and portions, avoid common myths, transition safely, and connect diet to hydration, activity, and routine. Includes practical checklists and red flags.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

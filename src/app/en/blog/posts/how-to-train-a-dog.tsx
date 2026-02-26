@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -27,18 +26,8 @@ export default function HowToTrainADog() {
     train: 'Training'
   };
 
-  const description =
-    'A complete, owner-friendly training system grounded in modern learning science and welfare: setup checklists, marker training, reinforcement strategy, loose-leash, recall, leave-it/drop-it, cooperative care, housetraining/crating, socialization, behavior first-aid, and facility-grade protocols.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

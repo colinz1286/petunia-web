@@ -1,7 +1,6 @@
 // File: src/app/blog/posts/helping-a-newly-adopted-dog-settle-in.tsx
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,13 +23,6 @@ export default function HelpingANewlyAdoptedDogSettleIn() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="A research-backed, first-person guide to helping a newly adopted dog settle in — from the first 72 hours through the first few months — with routines, bonding, pet introductions, training philosophy, vet care, and global adoption insights."
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

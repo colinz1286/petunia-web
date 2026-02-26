@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -13,14 +12,6 @@ export default function LeptospirosisCoreGuidelineUpdate2024_2025() {
 
     return (
         <>
-            <Head>
-                <title>{title} – Petunia Blog</title>
-                <meta
-                    name="description"
-                    content="AAHA\u2019s 2024 update elevates leptospirosis to recommended core for most dogs, and WSAVA\u2019s 2024 global guidance outlines when lepto is core by region. Here\u2019s how schedules differ, what boarding/daycare now expect, and practical checklists you can use for travel and overdue vaccines."
-                />
-                <meta name="robots" content="all" />
-            </Head>
 
             <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
                 <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

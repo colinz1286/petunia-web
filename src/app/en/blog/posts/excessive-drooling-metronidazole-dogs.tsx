@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,14 +23,6 @@ export default function ExcessiveDroolingMetronidazoleDogs() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="Metronidazole and similar GI medications can trigger excessive drooling in some dogs. Learn why it happens, what you can do at home, risks like dehydration or toxicity, and when urgent veterinary care is needed."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

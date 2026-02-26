@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function DogLongevitySupplementsEvidence() {
   const title =
     'Dog Longevity Supplements: What Works, What Doesn’t, and What Owners Should Avoid';
   const date = 'November 29, 2025';
-  const description =
-    'A scientific guide to dog longevity supplements, including evidence-supported ingredients, promising emerging compounds, ineffective products, safety considerations, and how to work with your veterinarian to build a smart supplementation plan.';
-
   const categories = ['owner', 'veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -29,37 +25,6 @@ export default function DogLongevitySupplementsEvidence() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-
-        {/* Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: title,
-              description,
-              datePublished: date,
-              dateModified: date,
-              author: { '@type': 'Organization', name: 'Petunia' },
-              publisher: {
-                '@type': 'Organization',
-                name: 'Petunia',
-                logo: {
-                  '@type': 'ImageObject',
-                  url: 'https://www.petuniapets.com/logo.png'
-                }
-              }
-            })
-          }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
         {/* Date */}

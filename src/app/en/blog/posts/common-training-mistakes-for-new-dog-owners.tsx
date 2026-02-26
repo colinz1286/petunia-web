@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,19 +23,8 @@ export default function CommonTrainingMistakesForNewDogOwners() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Many new dog owners unintentionally make training mistakes that affect behavior and bonding. This kind, practical guide explores the most common missteps—like inconsistency, lack of patience, or misunderstanding body language—and offers humane solutions to build trust and lasting skills.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

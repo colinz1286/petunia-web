@@ -1,13 +1,19 @@
 import { MetadataRoute } from 'next'
 import { blogPosts } from './en/blog/blogposts'
 
+function getLastModified(dateString?: string): Date {
+  if (!dateString) return new Date()
+  const parsed = new Date(dateString)
+  return Number.isNaN(parsed.getTime()) ? new Date() : parsed
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://petuniapets.com'
   const locale = 'en'
 
   const blogUrls = blogPosts.map((post) => ({
     url: `${baseUrl}/${locale}/blog/${post.slug}`,
-    lastModified: new Date(), // safe fallback
+    lastModified: getLastModified(post.date),
   }))
 
   return [

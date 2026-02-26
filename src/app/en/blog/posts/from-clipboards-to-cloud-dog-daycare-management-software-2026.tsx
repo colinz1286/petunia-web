@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function FromClipboardsToCloudDogDaycareManagementSoftware2026() {
@@ -9,18 +8,6 @@ export default function FromClipboardsToCloudDogDaycareManagementSoftware2026() 
 
   return (
     <>
-      <Head>
-        <title>
-          From Clipboards to Cloud: A Data-Backed Look at How Dog Daycare Management Software Changes Daily Operations in 2026 | Petunia Blog
-        </title>
-
-        <meta
-          name="description"
-          content="A research-driven look at how dog daycare management software transforms daily workflow, reduces errors, improves staff efficiency, and increases profitability for pet care facilities in 2026."
-        />
-
-        {/* No indexing tags allowed */}
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-2">

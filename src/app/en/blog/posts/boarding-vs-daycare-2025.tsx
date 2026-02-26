@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,14 +23,6 @@ export default function BoardingVsDaycare2025() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="Understand the difference between dog boarding and dog daycare, including costs, schedules, staff ratios, and behavioral benefits. Learn how to choose the right option for your dog’s age, temperament, and lifestyle."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

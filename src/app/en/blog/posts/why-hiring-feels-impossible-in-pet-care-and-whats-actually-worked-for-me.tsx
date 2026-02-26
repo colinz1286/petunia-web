@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -22,13 +21,6 @@ export default function WhyHiringFeelsImpossibleInPetCareAndWhatsActuallyWorkedF
 
     return (
         <>
-            <Head>
-                <title>{title} – Petunia Blog</title>
-                <meta
-                    name="description"
-                    content="Hiring in pet care feels impossible — but it doesn’t have to be. Here’s what’s actually worked for one dog daycare and boarding owner after 8+ years in the industry."
-                />
-            </Head>
 
             <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
                 <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

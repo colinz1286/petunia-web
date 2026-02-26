@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function YorkshireTerrierBoardingDaycare() {
@@ -9,16 +8,6 @@ export default function YorkshireTerrierBoardingDaycare() {
 
     return (
         <>
-            <Head>
-                <title>
-                    Yorkshire Terrier in a Dog Boarding & Daycare Setting: How to Provide Safe, Enriching Care | Petunia Blog
-                </title>
-                <meta
-                    name="description"
-                    content="Learn how to provide safe, enriching, toy-breed-appropriate care for Yorkshire Terriers in boarding and daycare settings. Covers group play, feeding routines, grooming needs, health considerations, and staff best practices."
-                />
-                <meta name="robots" content="all" />
-            </Head>
 
             <article className="prose lg:prose-xl mx-auto px-4 py-8">
 

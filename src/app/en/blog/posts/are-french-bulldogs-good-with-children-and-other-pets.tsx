@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function AreFrenchBulldogsGoodWithChildrenAndOtherPets() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'French Bulldogs are typically affectionate, social companions, but no breed is “childproof.” This evidence-informed guide covers temperament, child-by-age safety, dog–dog and dog–cat introductions, resource guarding, body language, training plans, daycare/boarding policies, and ready-to-use checklists—plus professional sources.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

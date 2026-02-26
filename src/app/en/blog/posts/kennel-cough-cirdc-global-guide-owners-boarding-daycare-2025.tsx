@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -26,19 +25,8 @@ export default function KennelCoughGlobalGuide() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A long-form, international guide to kennel cough (CIRDC) for the U.S., Canada, the U.K., Ireland, Australia & New Zealand: what it is, how it spreads, life-stage treatment plans (puppies, adults, seniors), prevention that actually works, vaccine roles (Bordetella/CPIV, canine influenza), isolation timelines, and protecting seniors when younger dogs attend daycare or boarding.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference: never use “index,follow” */}
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

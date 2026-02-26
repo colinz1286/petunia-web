@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,19 +24,8 @@ export default function RealTimeReservationsOnlineBookingDogBoardingDaycareSoftw
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Why real-time reservations and mobile-friendly online booking are the backbone of modern dog boarding software and dog daycare software. Learn how live availability, deposits, capacity logic, vaccine/waiver gates, and waitlists raise occupancy, cut admin time, and improve safety. Includes step-by-step implementation guidance, KPIs, and checklists.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference, do not use the word "index" here. */}
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function FutureOfDogLongevityMedicine() {
   const title =
     'The Future of Veterinary Longevity Medicine: Senolytics, Gene Therapy, and What’s Coming After LOY-002';
   const date = 'November 25, 2025';
-  const description =
-    'A forward-looking examination of senolytics, gene therapy, microbiome modulation, metabolic switching, regulatory milestones after LOY-002, realistic timelines, and ethical considerations shaping the future of canine longevity medicine.';
-
   const categories = ['owner', 'veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -29,38 +25,6 @@ export default function FutureOfDogLongevityMedicine() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-
-        {/* JSON-LD Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: title,
-              description,
-              datePublished: date,
-              dateModified: date,
-              author: { '@type': 'Organization', name: 'Petunia' },
-              publisher: {
-                '@type': 'Organization',
-                name: 'Petunia',
-                logo: {
-                  '@type': 'ImageObject',
-                  url: 'https://www.petuniapets.com/logo.png'
-                }
-              }
-            })
-          }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
         {/* Date */}

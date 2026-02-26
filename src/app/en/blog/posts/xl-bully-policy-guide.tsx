@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function XLBullyPolicyGuide() {
@@ -9,16 +8,6 @@ export default function XLBullyPolicyGuide() {
 
   return (
     <>
-      <Head>
-        <title>
-          Understanding the XL Bully Ban in the UK: Facts, Safety, and Guidance for Pet Owners and Facilities | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="A clear and factual overview of the UK’s XL Bully legislation — what the law states, how exemptions work, and what both dog owners and pet care professionals should know to stay safe and compliant."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-2">

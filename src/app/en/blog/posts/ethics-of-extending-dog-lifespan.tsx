@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function EthicsOfExtendingDogLifespan() {
   const title =
     'The Ethics of Extending Canine Lifespan: Owner Expectations, Quality of Life, and the Future of Ageing Science';
   const date = 'December 4, 2025';
-  const description =
-    'An in-depth exploration of the ethical questions surrounding canine lifespan extension, including owner expectations, quality-of-life considerations, veterinary counseling, accessibility challenges, and humane decision-making in the era of longevity medicine.';
-
   const categories = ['owner', 'veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -29,37 +25,6 @@ export default function EthicsOfExtendingDogLifespan() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-
-        {/* Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: title,
-              description,
-              datePublished: date,
-              dateModified: date,
-              author: { '@type': 'Organization', name: 'Petunia' },
-              publisher: {
-                '@type': 'Organization',
-                name: 'Petunia',
-                logo: {
-                  '@type': 'ImageObject',
-                  url: 'https://www.petuniapets.com/logo.png'
-                }
-              }
-            })
-          }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
 

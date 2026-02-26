@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function BorderCollieExerciseRequirements() {
@@ -9,16 +8,6 @@ export default function BorderCollieExerciseRequirements() {
 
   return (
     <>
-      <Head>
-        <title>
-          How Much Exercise Do Border Collies Need? Daily Activity, Mental Work, and Energy Levels | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Learn how much exercise Border Collies really need, including daily physical activity, mental stimulation, enrichment, and working-style exercise ideal for this high-drive breed."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
 

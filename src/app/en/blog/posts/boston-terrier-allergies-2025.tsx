@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,16 +23,8 @@ export default function BostonTerrierAllergies2025() {
     breed_specific_guides: 'Breed Specific Guides'
   };
 
-  const description =
-    'A complete 2025 guide to Boston Terrier allergies, including food, environmental, and seasonal triggers, unique itching patterns, common allergens, home care strategies, vet treatment options, and how allergies lead to secondary infections.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
 

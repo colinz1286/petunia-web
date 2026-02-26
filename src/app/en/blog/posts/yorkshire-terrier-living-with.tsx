@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function YorkshireTerrierLivingWith() {
@@ -9,16 +8,6 @@ export default function YorkshireTerrierLivingWith() {
 
     return (
         <>
-            <Head>
-                <title>
-                    Living with a Yorkshire Terrier: Ideal Family Fit, Apartment Life and Lifestyle Considerations | Petunia Blog
-                </title>
-                <meta
-                    name="description"
-                    content="A complete guide to living with Yorkshire Terriers, including ideal home environments, compatibility with families and other pets, apartment suitability, exercise needs, daily routines, and lifestyle considerations."
-                />
-                <meta name="robots" content="all" />
-            </Head>
 
             <article className="prose lg:prose-xl mx-auto px-4 py-8">
 

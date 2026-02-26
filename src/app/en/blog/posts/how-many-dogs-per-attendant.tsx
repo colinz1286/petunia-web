@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function HowManyDogsPerAttendant() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'What does “ratio” really mean in dog daycare? A practical, transparent guide to staff-to-dog ratios, line-of-sight supervision, risk variables, training/credentials, the regulatory landscape, a comparison table that puts ratios in context, and a 15-question owner tour checklist—plus day structure examples and a big FAQ.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

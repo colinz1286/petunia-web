@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -9,15 +8,6 @@ export default function PetLifetimeCostsStudy() {
 
   return (
     <>
-      <Head>
-        <title>Pet Owners Underestimate Lifetime Costs: New Study Reveals Hidden Financial Risk</title>
-        <meta
-          name="description"
-          content="A 2025 deep dive into the lifetime costs of pet ownership. New research shows most owners underestimate the financial commitment, leaving families unprepared for emergencies. Learn real cost breakdowns, hidden expenses, and planning strategies."
-        />
-        <meta name="robots" content="all" />
-       
-      </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">
         {/* Category pills */}

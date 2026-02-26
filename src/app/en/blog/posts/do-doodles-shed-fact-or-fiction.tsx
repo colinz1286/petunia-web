@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,19 +24,8 @@ export default function DoDoodlesShedFactOrFiction() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Do doodles (Goldendoodles, Labradoodles, Bernedoodles, and other Poodle mixes) actually not shed? This long-form, evidence-informed guide explains what “shedding” means, how dog allergens work (Can f proteins), why “hypoallergenic breed” claims are misleading, and how coat genetics (RSPO2 furnishings, MC5R shedding, KRT71 curl, FGF5 length) drive real-world variability. Includes buyer checklists, grooming schedules, and allergen-management plans with sources.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

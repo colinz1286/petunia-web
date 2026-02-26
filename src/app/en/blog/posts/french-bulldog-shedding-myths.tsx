@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function FrenchBulldogSheddingMyths() {
@@ -9,14 +8,6 @@ export default function FrenchBulldogSheddingMyths() {
 
   return (
     <>
-      <Head>
-        <title>French Bulldog Shedding Myths: What Owners Really Need to Know | Petunia Blog</title>
-        <meta
-          name="description"
-          content="French Bulldogs are often labeled as hypoallergenic, but is that true? Learn the facts about shedding, seasonal patterns, and grooming tips to keep your Frenchie healthy."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on September 26, 2025</p>

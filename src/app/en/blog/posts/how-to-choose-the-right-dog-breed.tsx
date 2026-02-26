@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,14 +22,6 @@ export default function HowToChooseTheRightDogBreed() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="A practical, evidence-aligned framework for choosing the right dog breed for your life. Evaluate time to train, daily lifestyle, socialization effort, disposable income and total cost of ownership, size and space, local restrictions, health and grooming needs, and more—plus worksheets, decision trees, and pro tips from years of hands-on boarding and daycare operations."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

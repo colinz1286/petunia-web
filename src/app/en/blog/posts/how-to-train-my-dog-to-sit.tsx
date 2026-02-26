@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -26,19 +25,8 @@ export default function HowToTrainMyDogToSit() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A calm, step-by-step guide to teaching sit: readiness checks by age and temperament, lure-and-reward vs. shaping, adding a verbal cue and hand signal, consistency for multi-person households, breed-by-breed notes, training aids, session plans, common mistakes, and gentle troubleshooting.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference, do not use the word "index" here. */}
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function FDAVeterinaryLongevityClaims() {
   const title =
     'How the FDA Evaluates Veterinary Longevity Claims: Conditional Approval, “Reasonable Expectation of Effectiveness,” Endpoints, and What Owners Should Understand';
   const date = 'December 25, 2025';
-  const description =
-    'A clear, owner-first explanation of how the FDA (CVM) evaluates new animal drugs with longevity-style claims, what conditional approval really means, what “reasonable expectation of effectiveness” does (and does not) prove, what endpoints matter, and how to read headlines without getting misled.';
-
   const categories = ['veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -39,36 +35,6 @@ export default function FDAVeterinaryLongevityClaims() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: title,
-              description,
-              datePublished: date,
-              dateModified: date,
-              author: { '@type': 'Organization', name: 'Petunia' },
-              publisher: {
-                '@type': 'Organization',
-                name: 'Petunia',
-                logo: {
-                  '@type': 'ImageObject',
-                  url: 'https://www.petuniapets.com/logo.png',
-                },
-              },
-            }),
-          }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
         <p className="text-sm text-gray-600 mb-2">Posted on {date}</p>

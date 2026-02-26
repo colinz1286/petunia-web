@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -21,34 +20,8 @@ export default function ExtendingGreatDaneLifespan2025() {
     rescue: 'Rescues',
   };
 
-  const description =
-    'Learn research-based ways to extend a Great Dane’s lifespan, including weight management, exercise, sleep quality, gut health, and preventive veterinary care.';
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: title,
-    datePublished: date,
-    dateModified: date,
-    author: { '@type': 'Organization', name: 'Petunia Pets' },
-    publisher: { '@type': 'Organization', name: 'Petunia Pets' },
-    description,
-    image: `https://cdn.petuniapets.com/blog/extending-great-dane-lifespan-2025.jpg`,
-  };
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

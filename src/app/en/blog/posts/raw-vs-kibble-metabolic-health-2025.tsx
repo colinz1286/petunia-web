@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,34 +22,8 @@ export default function RawVsKibbleMetabolicHealth2025() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'University of Helsinki researchers report major metabolic differences between raw meat-based and kibble diets in dogs, highlighting how carbohydrate load shapes blood sugar and lipid markers.';
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: title,
-    datePublished: date,
-    dateModified: date,
-    author: { '@type': 'Organization', name: 'Petunia Pets' },
-    publisher: { '@type': 'Organization', name: 'Petunia Pets' },
-    description,
-    image: `https://cdn.petuniapets.com/blog/raw-vs-kibble-metabolic-health-2025.jpg`,
-  };
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

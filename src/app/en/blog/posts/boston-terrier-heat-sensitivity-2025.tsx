@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,16 +23,8 @@ export default function BostonTerrierHeatSensitivity2025() {
     breed_specific_guides: 'Breed Specific Guides'
   };
 
-  const description =
-    'A complete 2025 guide to Boston Terrier heat sensitivity, explaining why Bostons overheat quickly, early signs of heat stress, safe temperature thresholds, cooling strategies, activities to avoid, and emergency steps for heatstroke.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
 

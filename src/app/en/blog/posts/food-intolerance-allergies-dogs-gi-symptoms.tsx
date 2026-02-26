@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,14 +23,6 @@ export default function FoodIntoleranceAllergiesDogsGISymptoms() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="Food intolerance and food allergy can both cause vomiting, diarrhea, gas, and chronic soft stool in dogs. Learn the difference, common triggers, how elimination diets work, and why many limited-ingredient foods fail."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

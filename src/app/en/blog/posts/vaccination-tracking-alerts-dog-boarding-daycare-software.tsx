@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -26,19 +25,8 @@ export default function VaccinationTrackingAlertsForBoardingAndDaycare() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Why vaccination tracking and automated alerts are mission-critical in dog boarding & dog daycare software. Learn core vs non-core vaccines, regional nuances, airtight policy design, booking-flow enforcement, owner uploads, audit-ready reporting, and the KPIs that move occupancy, safety, and trust.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference, do not use the word "index" here. */}
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

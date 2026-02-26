@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function SeniorDogHealthProblems() {
@@ -9,16 +8,6 @@ export default function SeniorDogHealthProblems() {
 
   return (
     <>
-      <Head>
-        <title>
-          Top 10 Senior Dog Health Problems (and How to Support Aging Pets) | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Learn about the top 10 health problems senior dogs face, including arthritis, dementia, heart issues, and more. Explore tips on diet, exercise, and how to support aging dogs at home and in boarding."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on September 27, 2025</p>

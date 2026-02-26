@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,14 +23,6 @@ export default function CompetingWithoutAPriceWar2026to2029() {
 
     return (
         <>
-            <Head>
-                <title>{title} – Petunia Blog</title>
-                <meta
-                    name="description"
-                    content="A data-driven guide for boarding and daycare owners on how to compete without discounting from 2026–2029, using trust signals, proof, and retention strategies grounded in consumer behavior and economic research."
-                />
-                <meta name="robots" content="all" />
-            </Head>
 
             <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
                 <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,18 +24,8 @@ export default function UnderstandingDogBodyLanguage() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Learn to read your dog\'s signals with confidence—from happy wiggles and play bows to subtle stress cues like lip-licks, yawns, and whale eye. This long-form, evidence-informed guide blends veterinary behavior guidance (AAHA, AVSAB), DogFACS insights, and real-world scenarios so you can respond early, prevent conflicts, and build an even better relationship. Includes step-by-step play and greeting checklists, ladder-of-aggression context, and when to call a professional.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

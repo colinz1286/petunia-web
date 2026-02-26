@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function BeagleHowling() {
@@ -9,16 +8,6 @@ export default function BeagleHowling() {
 
   return (
     <>
-      <Head>
-        <title>
-          Why Do Beagles Howl? Understanding Their Vocal Behavior and What It Means | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Why do Beagles howl? Learn why Beagles are such vocal dogs, what their howls mean, and how to manage excessive howling using science-backed behavior guidance."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on December 3, 2025</p>

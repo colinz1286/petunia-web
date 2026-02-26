@@ -1,7 +1,6 @@
 // File: src/app/[locale]/blog/posts/what-is-the-bite-force-of-a-cane-corso.tsx
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,19 +23,8 @@ export default function WhatIsTheBiteForceOfACaneCorso() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Cane Corso bite force: what science actually measures (Newtons, not viral PSI lists), how skull size and shape affect force, what peer-reviewed studies say about dogs versus wolves, why breed-specific PSI claims are unreliable, and how to compare numbers responsibly. Data and sources only—no fear-mongering.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per project standards, avoid the word that triggers lint; use "all". */}
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,19 +23,8 @@ export default function CommonHealthProblemsInFrenchBulldogs() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'What health issues are most common in French Bulldogs? A practical, evidence-informed guide to airway (BOAS), heat risk, skin/ear disease, eyes, spine & knees (IVDD, patellar luxation), GI problems, dental care, and more—plus early signs, home systems, boarding/daycare protocols, and veterinarian-approved checklists.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-       
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

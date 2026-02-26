@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -9,15 +8,6 @@ export default function CaliforniaAnaplasmosisSpike() {
 
   return (
     <>
-      <Head>
-        <title>California Dogs &amp; Tick-Borne Bacteria: Why Anaplasmosis Has Tripled</title>
-        <meta
-          name="description"
-          content="Dogs in California are testing positive for anaplasmosis at nearly 3× historical rates. Learn about tick surveillance, overlapping tick-borne diseases, prevention strategies, and what boarding/daycare facilities must do to stay safe."
-        />
-        <meta name="robots" content="all" />
-       
-      </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">
         {/* Category pills */}

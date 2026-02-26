@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,17 +23,8 @@ export default function DoBostonTerriersGetColdEasily2025() {
     breed_specific_guides: 'Breed Specific Guides'
   };
 
-  const description =
-    'A complete 2025 guide explaining why Boston Terriers get cold easily, early warning signs of discomfort, winter exercise safety, essential cold-weather gear, home heating adjustments, and when cold sensitivity indicates a health issue.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
 

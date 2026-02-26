@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -22,16 +21,8 @@ export default function HowMuchDoesDogBoardingDaycareSoftwareCost2025() {
     vet: 'Veterinary Clinics',
   };
 
-  const metaDescription =
-    '2025 pricing guide for dog boarding & daycare software: real-world ranges, pricing models, add-ons (SMS, email, modules), hidden fees, ROI math, migration costs, and how Petunia sets pricing at $5/month for boarding/daycare businesses (30-day free trial).';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={metaDescription} />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

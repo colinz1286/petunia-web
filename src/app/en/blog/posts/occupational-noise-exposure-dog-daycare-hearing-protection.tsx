@@ -1,7 +1,6 @@
 // File: src/app/[locale]/blog/posts/occupational-noise-exposure-dog-daycare-hearing-protection.tsx
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -27,14 +26,6 @@ export default function OccupationalNoiseExposureDogDaycare() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="A comprehensive, facility-owner-first guide to occupational noise exposure in dog boarding and daycare: OSHA and NIOSH thresholds, hearing conservation basics, real-world noise risks, and practical solutions that employees will actually use."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

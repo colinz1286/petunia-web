@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function YorkshireTerrierHealthLifespan() {
@@ -9,16 +8,6 @@ export default function YorkshireTerrierHealthLifespan() {
 
     return (
         <>
-            <Head>
-                <title>
-                    Health & Lifespan of the Yorkshire Terrier: Common Conditions and How to Prevent Them | Petunia Blog
-                </title>
-                <meta
-                    name="description"
-                    content="Learn about the most common health conditions in Yorkshire Terriers, including dental disease, tracheal collapse, and luxating patella. Understand lifespan, preventive care strategies, early warning signs, and veterinary recommendations for a long, healthy life."
-                />
-                <meta name="robots" content="all" />
-            </Head>
 
             <article className="prose lg:prose-xl mx-auto px-4 py-8">
 

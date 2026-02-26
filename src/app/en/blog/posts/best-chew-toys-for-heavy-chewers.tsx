@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,19 +22,8 @@ export default function BestChewToysForHeavyChewers() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A research-backed buyer’s guide to power-chew toys: correct sizing to reduce choke risk, safer materials, brand & model recommendations, hardness tests, what to avoid (antlers, bones, hooves, rope ingestion hazards), cleaning routines, replacement intervals, and facility SOPs.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference, do not use the word "index" here. */}
-        <meta name="robots" content="all" />
-        <meta property="og:title" content="Best Chew Toys for Heavy Chewers" />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,18 +24,8 @@ export default function ScentEnrichmentForDogsResearchSafe() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A comprehensive, evidence-informed guide to scent enrichment for dogs—what shelter and kennel research suggests, which approaches are safest, how to run low-risk sniff activities, and how to avoid common pitfalls like concentrated essential oils.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function SeparationAnxietyDogs() {
@@ -9,16 +8,6 @@ export default function SeparationAnxietyDogs() {
 
   return (
     <>
-      <Head>
-        <title>
-          Signs of Separation Anxiety in Dogs (and How to Help Them Cope) | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Learn the signs of separation anxiety in dogs, from pacing and barking to destructive behavior. Explore proven coping strategies including enrichment, daycare, and when to seek professional help."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on September 26, 2025</p>

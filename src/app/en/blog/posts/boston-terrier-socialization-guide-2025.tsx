@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,17 +23,8 @@ export default function BostonTerrierSocializationGuide2025() {
     breed_specific_guides: 'Breed Specific Guides'
   };
 
-  const description =
-    'A comprehensive 2025 Boston Terrier socialization guide covering timing windows, confidence building, safe exposure techniques, structured play, common mistakes, and adult socialization strategies.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
 

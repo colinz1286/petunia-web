@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function BorderCollieTrainingGuide() {
@@ -9,16 +8,6 @@ export default function BorderCollieTrainingGuide() {
 
   return (
     <>
-      <Head>
-        <title>
-          Border Collie Training Guide: Obedience, Recall, Mental Stimulation, and Herding Instincts | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="A complete Border Collie training guide covering obedience, recall, herding instincts, mental stimulation, crate training, and problem-prevention strategies for this intelligent working breed."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
 

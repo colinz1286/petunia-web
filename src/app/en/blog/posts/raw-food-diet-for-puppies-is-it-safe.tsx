@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function RawFoodDietForPuppiesIsItSafe() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A high-stakes, evidence-first guide to raw feeding puppies: growth nutrition basics, calcium and phosphorus risks, commercial vs homemade considerations, and when raw is not recommended.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

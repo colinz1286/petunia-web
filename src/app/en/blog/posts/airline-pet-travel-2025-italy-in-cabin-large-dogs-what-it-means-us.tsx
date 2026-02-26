@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,14 +23,6 @@ export default function AirlinePetTravel2025ItalyInCabinLargeDogsWhatItMeansUS()
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="Italy’s aviation authority (ENAC) approved guidelines in 2025 that let airlines seat medium- and large-breed dogs in the cabin beside their owners. What that means for U.S. flyers: how the rules work, where they don’t apply, current United & Delta policies, carrier specs, a turn-key prep template, and how CDC dog-import rules interact with airline policies."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

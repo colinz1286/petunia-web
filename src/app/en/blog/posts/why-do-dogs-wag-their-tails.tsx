@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,19 +23,8 @@ export default function WhyDoDogsWagTheirTails() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Dogs wag for many reasons: arousal, intention, and emotional valence—sometimes friendly, sometimes conflicted, sometimes stressed. This evidence-informed guide explains tail anatomy and biomechanics, left–right asymmetry research, breed/tail-shape caveats, life-stage nuances, safety with kids, training applications, health issues (like “limber tail”), and how to build calm, reliable communication at home and in public. Includes checklists, scenarios, and practical routines.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference, do not use the word "index" here. */}
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

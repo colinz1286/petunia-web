@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function EssentialFeaturesDogBoardingDaycareSoftware() {
@@ -8,13 +7,6 @@ export default function EssentialFeaturesDogBoardingDaycareSoftware() {
 
   return (
     <>
-      <Head>
-        <title>What Are the Essential Features for Dog Boarding and Daycare Software?</title>
-        <meta
-          name="description"
-          content="Neutral, practical guidance for facility owners, operators, and managers on the must-have features for dog boarding/daycare software—plus how to avoid overpriced, double-dipping payment processing."
-        />
-      </Head>
 
       <article className="mx-auto max-w-3xl px-5 py-10 prose prose-zinc prose-headings:font-semibold prose-h2:mt-10">
         <header className="not-prose mb-8">

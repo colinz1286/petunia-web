@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -27,14 +26,6 @@ export default function TrackingMedicationsInDogBoardingSoftware() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="Why medication tracking is even more critical in boarding than daycare, and how Petunia surfaces meds before arrival, during overnight stays, and at check-out. Practical playbooks for appetite-dependent dosing, insulin, seizure plans, anxiety cases, documentation, and owner communication."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

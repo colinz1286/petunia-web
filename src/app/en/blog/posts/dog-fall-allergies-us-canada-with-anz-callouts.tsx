@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -9,15 +8,6 @@ export default function DogFallAllergiesUSCanadaWithANZCallouts() {
 
   return (
     <>
-      <Head>
-        <title>Dog Fall Allergies: U.S./Canada Guide with Australia/NZ Spring Callouts</title>
-        <meta
-          name="description"
-          content="A veterinary-informed 2025 guide to dog fall allergies across the U.S. and Canada, with seasonal callouts for Australia and New Zealand. Learn symptom patterns, pollen calendars, home care that helps, and when to involve your veterinarian."
-        />
-        {/* House rule: robots=all */}
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">
         {/* Category pills */}

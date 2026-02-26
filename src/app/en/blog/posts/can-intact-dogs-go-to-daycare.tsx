@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function CanIntactDogsGoToDaycare() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Clear, respectful guidance for families with intact dogs (males and females, including in-heat): why many daycares restrict intact dogs, real behavior and health considerations, insurance/operations drivers, humane alternatives, planning around heat cycles, and a practical week-by-week enrichment plan—plus a 15-question FAQ.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

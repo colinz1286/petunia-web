@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,14 +23,6 @@ export default function FdaApproves12MonthFleaTickInjectionDogsBravectoQuantum20
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="Bravecto Quantum is the first FDA-approved flea & tick injection for dogs that protects for 8–12 months. Learn what was approved, how it works, who is eligible, safety and side effects, vet Q&A, and cost comparisons vs. monthly or 12-week chews—written in plain English for owners and boarding/daycare operators."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

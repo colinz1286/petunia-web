@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -21,14 +20,6 @@ export default function NewFranchiseModelsInPetServices() {
 
     return (
         <>
-            <Head>
-                <title>{title} – Petunia Blog</title>
-                <meta
-                    name="description"
-                    content="An in-depth look at the rise of new franchise models in pet services. How brands like Skiptown are combining daycare, boarding, grooming, retail, and tech-enabled experiences to shape the next wave of scalable pet care chains."
-                />
-                <meta name="robots" content="all" />
-            </Head>
 
             <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
                 <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -26,19 +25,8 @@ export default function DoDogsOnlySeeBlackAndWhite() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Do dogs really see only black and white? No. Dogs are dichromats with a blue–yellow color space, rod-dominant retinas, and a reflective tapetum for low light. This long-form, evidence-informed guide explains photoreceptors, cone opsins, acuity, flicker, motion, and practical choices for toys, training, agility, senior support, and home design—with sources.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,18 +22,8 @@ export default function AreLabradorRetrieversGoodFamilyDogs() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A practical, operator-grade look at whether Labrador Retrievers fit family life—temperament, safety with kids, training, exercise, health risks, grooming, costs, routines, and decision checklists—backed by veterinary sources.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

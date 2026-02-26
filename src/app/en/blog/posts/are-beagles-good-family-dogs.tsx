@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function AreBeaglesGoodFamilyDogs() {
@@ -9,16 +8,6 @@ export default function AreBeaglesGoodFamilyDogs() {
 
   return (
     <>
-      <Head>
-        <title>
-          Are Beagles Good Family Dogs? Temperament, Training, and Suitability for Kids | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Are Beagles good family dogs? Learn about their temperament, suitability for children, training needs, behavior traits, shedding considerations, and what families should expect."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
 

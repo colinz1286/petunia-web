@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -20,14 +19,6 @@ export default function WhyDoesMyDogBarkAtNight() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="If your dog won’t stop barking at night, there’s usually a reason—ranging from loneliness or anxiety to medical discomfort or outside noises. Learn why dogs bark after dark, quick home fixes that actually work, and when it’s time to consult a trainer or veterinarian."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,19 +23,8 @@ export default function ColoradoDogBoardingDaycareLaws2025() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A clear, owner-first breakdown of Colorado boarding and daycare laws under PACFA: licensing rules, inspections, sanitation standards, emergency protocols, and how to verify any facility in the state.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
         <article className="prose prose-sm sm:prose-base lg:prose-lg text-[#2c4a30]">

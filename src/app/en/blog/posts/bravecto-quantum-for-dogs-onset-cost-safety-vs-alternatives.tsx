@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -9,15 +8,6 @@ export default function BravectoQuantumForDogs() {
 
   return (
     <>
-      <Head>
-        <title>Bravecto Quantum for Dogs: Onset, Cost &amp; Safety vs. Alternatives</title>
-        <meta
-          name="description"
-          content="A veterinary-informed 2025 guide to Bravecto Quantum for dogs: how fast it works, cost comparisons, safety evidence, and alternatives for flea and tick prevention worldwide."
-        />
-        <meta name="robots" content="all" />
-        
-      </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">
         {/* Category pills */}

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,13 +22,6 @@ export default function FDARawPetFoodAdvisoryJuly2025() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="FDA’s July 29, 2025 advisory warns against feeding specific lots of Darwin’s Natural Pet Products (raw), with E. coli O157:H7 genetically linked to a child’s illness and Salmonella findings. FDA also posted a June 18, 2025 Warning Letter to Answers Pet Food citing Salmonella and Listeria across sampled lots. Here’s what happened, how to check lots, symptoms to watch for in people and pets, how to clean safely, how to report, and what to know about refunds and returns."
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

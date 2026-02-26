@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,14 +23,6 @@ export default function Glp1ForDogsHypeVsDataRisksTimelinePlaybook() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="GLP-1 weight-management drugs for dogs are getting attention thanks to an under-skin implant (OKV-119) in development. Here is a balanced, evidence-based guide: what GLP-1 does, the state of the science, real timelines, safety questions, FDA paths, off-label rules, and a proven weight-loss plan that boarding/daycare operators and owners can implement today."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

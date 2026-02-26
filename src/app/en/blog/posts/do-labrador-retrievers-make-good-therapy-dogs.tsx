@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,19 +24,8 @@ export default function DoLabsMakeGoodTherapyDogs() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Labs are friendly, biddable, and people-focused—great raw material for therapy work—but success hinges on genetics, socialization, impulse control, handler skill, and welfare-first infection control. This operator-grade guide details the differences between therapy dogs vs. service/ESA, settings where Labs shine, breed-specific pitfalls, training steps (CGC → registration → AKC Therapy Dog titles), facility SOPs, insurance, and ethical red-flags—plus checklists you can copy-paste.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

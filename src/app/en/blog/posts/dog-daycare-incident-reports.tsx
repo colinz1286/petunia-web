@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function DogDaycareIncidentReports() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A calm, step-by-step playbook for owners who received a dog daycare incident report (or worry they might). Learn what a proper report includes, how to triage and decide on a vet visit, what to say to the facility, how costs/coverage usually work, resolution pathways, red flags, and ready-to-use communication templates.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

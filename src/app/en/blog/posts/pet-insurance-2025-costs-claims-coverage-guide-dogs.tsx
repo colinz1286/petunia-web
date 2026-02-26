@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,14 +23,6 @@ export default function PetInsurance2025CostsClaimsCoverageGuideDogs() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="A 2025 deep dive on pet insurance for dogs: current average premiums, why prices are rising, what claims actually reimburse after deductibles and co-insurance, the most common claim types, and precise break-even math. Practical steps to lower your premium without gutting value, plus a shopping checklist you can use in five minutes."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

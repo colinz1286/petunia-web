@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function HowManyVariantsOfDoodlesExist() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Doodles—poodle crosses—come in dozens of variants from Labradoodles and Goldendoodles to Bernedoodles, Aussiedoodles, and Sheepadoodles. This extensive guide covers the most popular doodles in detail, temperament differences, hypoallergenic myths, grooming realities, health concerns, and what prospective owners need to know before choosing a doodle mix.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

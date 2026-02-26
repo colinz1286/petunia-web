@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,17 +22,8 @@ export default function BostonTerrierTemperament() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Learn the true Boston Terrier temperament: affectionate, smart, sensitive, deeply bonded, social, and shaped by early training and structure. Includes personality traits, emotional needs, social behavior, and red flags.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

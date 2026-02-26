@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,19 +23,8 @@ export default function AreCaneCorsosGoodFamilyDogs() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Cane Corsos can be steady, affectionate guardians in the right home, but they are powerful working dogs with strong protective instincts. This evidence-informed guide walks through temperament, socialization, training difficulty, and day-to-day management for babies, toddlers, school-age kids, teens, adults, and older adults. It also covers busy families, multi-pet homes, boarding/daycare fit, health considerations, insurance and legal issues, and a first-90-days plan.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference, do not use the word "index" here. */}
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,15 +23,6 @@ export default function PersistentVomitingDespiteMaropitantDogs() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="Maropitant (Cerenia®) is a powerful anti-vomiting medication, yet some dogs continue vomiting despite treatment. Learn why this happens, the physiologic pathways involved, emergency warning signs, and what veterinarians do next."
-        />
-        <meta name="robots" content="all" />
-        
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

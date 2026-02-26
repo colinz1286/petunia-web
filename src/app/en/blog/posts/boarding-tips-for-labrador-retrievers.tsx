@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,18 +22,8 @@ export default function BoardingTipsForLabradorRetrievers() {
     walker: 'Dog Walkers',
   };
 
-  const description =
-    'Practical, health-first guidance to prepare your Labrador Retriever for safe, low-stress boarding and daycare—vaccines, facility standards, play-style management, heat/water safety, packing lists, and more.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

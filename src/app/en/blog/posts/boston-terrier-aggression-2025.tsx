@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,16 +23,8 @@ export default function BostonTerrierAggression2025() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A 2025 guide to Boston Terrier aggression covering fear-based behavior, resource guarding, dog reactivity, common triggers, early training strategies, and when aggression indicates a deeper medical or behavioral issue.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

@@ -1,7 +1,6 @@
 // File: src/app/blog/posts/dog-daycare-and-separation-anxiety.tsx
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,13 +23,6 @@ export default function DogDaycareAndSeparationAnxiety() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="A neutral, research-informed guide that explains separation anxiety, how dog daycare can help (and when it might not), early socialization, facility design, risks of overstimulation, owner checklists, and respectful questions to ask providers."
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

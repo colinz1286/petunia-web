@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function YorkshireTerrierTrainingGuide() {
@@ -9,16 +8,6 @@ export default function YorkshireTerrierTrainingGuide() {
 
     return (
         <>
-            <Head>
-                <title>
-                    Training a Yorkshire Terrier: Managing Terrier Tenacity and Toy Breed Challenges | Petunia Blog
-                </title>
-                <meta
-                    name="description"
-                    content="Learn how to train a Yorkshire Terrier using positive reinforcement, structured routines, terrier-appropriate strategies, and toy-breed specific handling. This guide covers barking, socialization, crate training, and common behavior challenges."
-                />
-                <meta name="robots" content="all" />
-            </Head>
 
             <article className="prose lg:prose-xl mx-auto px-4 py-8">
 

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function IsRawDogFoodWorthTheCost() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A practical cost breakdown of raw feeding: commercial vs homemade budgets, comparisons to premium kibble and fresh food, hidden costs (storage, prep, supplements), and how to decide if raw is worth it for your household.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

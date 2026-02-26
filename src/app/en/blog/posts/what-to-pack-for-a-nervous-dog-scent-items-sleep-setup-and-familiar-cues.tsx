@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,18 +24,8 @@ export default function WhatToPackForANervousDogScentItemsSleepSetupAndFamiliarC
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A thorough packing guide for nervous boarding dogs: which scent items help most, how to set up sleep and routine cues, and what to avoid to prevent stress and GI upset.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

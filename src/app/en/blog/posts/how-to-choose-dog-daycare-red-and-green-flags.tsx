@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function WhelpingComplicationsEveryBreederShouldKnow() {
@@ -9,16 +8,6 @@ export default function WhelpingComplicationsEveryBreederShouldKnow() {
 
   return (
     <>
-      <Head>
-        <title>
-          Whelping Complications Every Breeder Should Know: Early Warning Signs, Emergencies, and When to Call the Vet | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Learn the early warning signs of whelping complications—dystocia, retained placenta, hypocalcemia, and postpartum risks—and when to contact your veterinarian for safe outcomes."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-2">Written on&nbsp;October&nbsp;30,&nbsp;2025</p>

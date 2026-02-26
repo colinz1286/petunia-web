@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function SeniorDogScreeningGuide2026() {
   const title =
     'Senior Dog Screening Guide (2026): Bloodwork, Mobility Tests, Cognitive Assessments, Early Detection';
   const date = 'November 24, 2025';
-  const description =
-    'A veterinarian-backed 2026 guide to senior dog screenings, including bloodwork, mobility exams, cognitive assessments, early-detection red flags, and what owners should prioritize for healthy ageing.';
-
   const categories = ['owner', 'veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -29,38 +25,6 @@ export default function SeniorDogScreeningGuide2026() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-
-        {/* JSON-LD Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: title,
-              description,
-              datePublished: date,
-              dateModified: date,
-              author: { '@type': 'Organization', name: 'Petunia' },
-              publisher: {
-                '@type': 'Organization',
-                name: 'Petunia',
-                logo: {
-                  '@type': 'ImageObject',
-                  url: 'https://www.petuniapets.com/logo.png'
-                }
-              }
-            })
-          }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
         {/* Meta */}

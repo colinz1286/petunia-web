@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,19 +24,8 @@ export default function DoGoldenRetrieversShedALot() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Yes—Golden Retrievers shed. This evidence-informed field guide explains why, how to manage “coat blow,” allergy realities and dander control, grooming schedules and tools, bathing & drying protocols, nutrition for skin/coat, medical red flags for excessive hair loss, and copy/paste checklists that keep hair under control.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

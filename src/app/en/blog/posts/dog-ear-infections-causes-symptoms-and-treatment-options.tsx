@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -19,14 +18,6 @@ export default function DogEarInfectionsCausesSymptomsAndTreatmentOptions() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="Dog ear infections are among the most common veterinary visits. Learn to recognize early signs, understand yeast and bacterial causes, and discover safe home care and preventive tips for swimmers and allergy-prone dogs."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

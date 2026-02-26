@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,14 +23,6 @@ export default function TemperamentTestingDogsBoardingDaycare() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="A complete step-by-step temperament testing procedure for dog boarding and daycare facilities. Learn how to evaluate behavior, body language, play style, energy level, social tolerance, triggers, and stress signals to determine whether a dog is a safe and appropriate fit for group play or overnight boarding."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

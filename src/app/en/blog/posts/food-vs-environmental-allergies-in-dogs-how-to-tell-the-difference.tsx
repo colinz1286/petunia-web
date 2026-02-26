@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -9,15 +8,6 @@ export default function FoodVsEnvironmentalAllergiesInDogs() {
 
   return (
     <>
-      <Head>
-        <title>Food vs. Environmental Allergies in Dogs: How to Tell the Difference</title>
-        <meta
-          name="description"
-          content="A veterinary-informed, owner-friendly guide to separating food allergies from environmental allergies in dogs. Learn patterns, run a correct elimination diet, manage flares day to day, and know when to ask your vet about advanced care."
-        />
-        {/* House rule: never use the forbidden word and keep robots to 'all' */}
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">
         {/* Category pills */}

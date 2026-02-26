@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function UkAnimalWelfareReforms2025() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Plain-English, owner-first breakdown of the UK Animal Welfare Strategy (Dec 2025): proposed actions to curb low-welfare dog breeding and puppy farming, improve traceability and enforcement, regulate breeding-related services, and phase out certain cruel practices (plus what to watch in 2026).';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

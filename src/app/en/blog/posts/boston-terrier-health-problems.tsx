@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,16 +22,8 @@ export default function BostonTerrierHealthProblems() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A 2025 guide to the most common Boston Terrier health problems, including eye issues, breathing challenges, allergies, joint concerns, temperature sensitivity, and essential preventive care.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

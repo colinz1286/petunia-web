@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,34 +9,8 @@ export default function LeptospirosisInDogsSymptomsPrevention2025() {
   const title =
     'Leptospirosis in Dogs: Symptoms, Transmission, and Protection (2025 Update)';
   const date = 'October 24, 2025';
-  const description =
-    'Leptospirosis is a serious bacterial disease that affects both dogs and humans. Learn the early symptoms, how it spreads, treatment options, and the latest 2025 prevention recommendations.';
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: title,
-    datePublished: date,
-    dateModified: date,
-    author: { '@type': 'Organization', name: 'Petunia Pets' },
-    publisher: { '@type': 'Organization', name: 'Petunia Pets' },
-    description,
-    image: 'https://cdn.petuniapets.com/blog/leptospirosis-in-dogs-symptoms-prevention-2025.jpg',
-  };
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Written on {date}</p>

@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function BoxerSkinIssues() {
@@ -9,17 +8,6 @@ export default function BoxerSkinIssues() {
 
   return (
     <>
-      <Head>
-        <title>
-          Boxer Skin Issues Explained: Allergies, Lumps, and Early Warning Signs | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Boxers are prone to skin issues including allergies, lumps, and tumors. Learn the early warning signs, treatment options, and care tips for maintaining healthy skin in your Boxer."
-        />
-        <meta name="robots" content="all" />
-        
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on September 30, 2025</p>

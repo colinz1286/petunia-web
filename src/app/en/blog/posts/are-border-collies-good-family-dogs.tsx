@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function AreBorderColliesGoodFamilyDogs() {
@@ -9,16 +8,6 @@ export default function AreBorderColliesGoodFamilyDogs() {
 
   return (
     <>
-      <Head>
-        <title>
-          Are Border Collies Good Family Dogs? Temperament, Behavior, and Suitability for Kids | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Are Border Collies good family dogs? Learn about their temperament, intelligence, behavior around children, energy levels, and whether this high-drive working breed fits into family life."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,19 +23,8 @@ export default function DoGermanShepherdsShedALot() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'German Shepherds are heavy, year-round shedders with seasonal “coat blows.” This evidence-informed guide explains why they shed, how to groom them efficiently, what counts as normal vs. abnormal shedding, nutrition and skin-health basics, home allergen control, daycare/boarding policies, and step-by-step checklists.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

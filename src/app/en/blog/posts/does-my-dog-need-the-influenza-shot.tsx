@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -26,14 +25,6 @@ export default function DoesMyDogNeedTheInfluenzaShot() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="A thorough, evidence-aligned guide to the canine influenza (dog flu) vaccine: how canine flu emerged, why vaccines were developed, who truly needs it, how facilities decide to require it, whether most clinics carry it, expected side effects, and a straightforward decision tool owners can use with their veterinarian—plus timelines, dosing, and outbreak scenarios."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -26,18 +25,8 @@ export default function WhatHealthIssuesDoGoldenRetrieversHave() {
         breed_specific_guides: 'Breed Specific Guides',
     };
 
-    const description =
-        'Common Golden Retriever health problems—what to watch for and how to prevent them. Covers cancer risks, skin &amp; ear disease, orthopedic issues, eyes (GRPU, cataracts), heart screening (cardiac), hypothyroidism, ichthyosis, GI emergencies, senior care, and life-stage checklists with operator-grade routines.';
-
     return (
         <>
-            <Head>
-                <title>{title} – Petunia Blog</title>
-                <meta name="description" content={description} />
-                <meta name="robots" content="index,follow" />
-                <meta property="og:title" content={title} />
-                <meta property="og:description" content={description} />
-            </Head>
 
             <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
                 {/* Meta */}

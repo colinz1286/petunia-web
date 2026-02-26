@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function YorkshireTerrierPuppyCare() {
@@ -9,16 +8,6 @@ export default function YorkshireTerrierPuppyCare() {
 
     return (
         <>
-            <Head>
-                <title>
-                    Yorkshire Terrier Puppy Care: A Complete First Year Guide | Petunia Blog
-                </title>
-                <meta
-                    name="description"
-                    content="Learn how to raise a healthy, confident Yorkshire Terrier puppy. This complete first-year guide covers vaccinations, training, grooming, socialization, feeding schedules, and toy breed safety tips."
-                />
-                <meta name="robots" content="all" />
-            </Head>
 
             <article className="prose lg:prose-xl mx-auto px-4 py-8">
                 {/* DATE */}

@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function BeagleExerciseRequirements() {
@@ -9,16 +8,6 @@ export default function BeagleExerciseRequirements() {
 
   return (
     <>
-      <Head>
-        <title>
-          Beagle Exercise Requirements: How Much Activity Do They Really Need? | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Learn how much exercise Beagles really need, why they are such energetic dogs, and how proper activity prevents behavior issues, obesity, and excess shedding."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on December 3, 2025</p>

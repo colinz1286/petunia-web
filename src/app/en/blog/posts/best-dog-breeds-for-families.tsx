@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function BestFamilyDogBreeds() {
@@ -9,16 +8,6 @@ export default function BestFamilyDogBreeds() {
 
   return (
     <>
-      <Head>
-        <title>
-          Best Dog Breeds for Families with Young Kids | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Looking for the best dog breeds for families with young kids? Explore top family-friendly breeds, challenges, safety tips, and daycare insights to help you choose the right dog."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on September 27, 2025</p>

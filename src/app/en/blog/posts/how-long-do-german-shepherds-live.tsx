@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function HowLongDoGermanShepherdsLive() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'German Shepherds typically live around 10 years on average, but healthspan varies widely. This evidence-informed guide explains what shapes lifespan and quality of life, from genetics, weight, nutrition, and exercise to preventive vet care, dental health, parasite control, GDV risk, and senior planning. Includes step-by-step routines, screening timelines, and ready-to-use checklists.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

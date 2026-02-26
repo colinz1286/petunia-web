@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function BostonTerrierCoatCare() {
@@ -9,16 +8,6 @@ export default function BostonTerrierCoatCare() {
 
   return (
     <>
-      <Head>
-        <title>
-          Boston Terrier Coat Care: Shedding, Allergies, and Skin Health | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Learn how to care for your Boston Terrier’s coat. Understand shedding patterns, allergy considerations, and common skin health issues with tips for grooming and prevention."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on September 29, 2025</p>

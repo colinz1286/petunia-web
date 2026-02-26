@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function PrivateEquityVeterinaryClinicConsolidationPricesContinui
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A factual, owner-first guide to private-equity consolidation in veterinary care: what consolidation is, what credible evidence suggests about pricing and transparency, and how to protect continuity.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

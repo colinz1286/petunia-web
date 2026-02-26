@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function DogBreedsForOlderCouples() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'For older couples, choosing a dog requires balancing love for animals with energy, health, and lifestyle. This comprehensive guide offers kind, practical advice: questions to ask yourself, gentle breeds to consider, the realities of aging, and ways to ensure both you and your dog thrive.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

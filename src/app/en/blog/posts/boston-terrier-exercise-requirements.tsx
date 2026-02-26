@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,16 +22,8 @@ export default function BostonTerrierExerciseRequirements() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Learn exactly how much exercise Boston Terriers need by age, including walking targets, mental enrichment, safe weather adjustments, and signs of under-exercising.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

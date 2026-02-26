@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function CompaniesBehindCanineLongevity() {
   const title =
     'The Companies Behind Canine Longevity: Who They’re Developing, and How Their Science Holds Up';
   const date = 'December 5, 2025';
-  const description =
-    'A deep dive into the biotech and research groups shaping the future of canine longevity, including Loyal, Embark, the Dog Ageing Project, university laboratories, funding transparency, scientific rigor, and realistic expectations for anti-ageing breakthroughs.';
-
   const categories = ['owner', 'veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -29,38 +25,6 @@ export default function CompaniesBehindCanineLongevity() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-
-        {/* JSON-LD Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: title,
-              description,
-              datePublished: date,
-              dateModified: date,
-              author: { '@type': 'Organization', name: 'Petunia' },
-              publisher: {
-                '@type': 'Organization',
-                name: 'Petunia',
-                logo: {
-                  '@type': 'ImageObject',
-                  url: 'https://www.petuniapets.com/logo.png'
-                }
-              }
-            })
-          }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
 

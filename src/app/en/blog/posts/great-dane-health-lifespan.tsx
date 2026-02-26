@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function GreatDaneHealthLifespan() {
@@ -9,16 +8,6 @@ export default function GreatDaneHealthLifespan() {
 
   return (
     <>
-      <Head>
-        <title>
-          Great Dane Health and Lifespan: How to Support a Giant Breed | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Great Danes are gentle giants with unique health challenges and shorter lifespans. Learn about common health issues, diet, exercise, and care strategies to support a long and healthy life."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on October 1, 2025</p>

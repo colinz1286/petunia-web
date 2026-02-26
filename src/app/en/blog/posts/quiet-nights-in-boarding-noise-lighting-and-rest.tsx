@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function QuietNightsInBoarding() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'An evidence-based blueprint for restful overnights in kennels and boarding: realistic decibel levels, what lighting does (and doesn’t) change, circadian basics, quiet-hour protocols, staff routines, enrichment that promotes sleep, and how to measure success.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

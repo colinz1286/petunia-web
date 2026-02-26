@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,14 +24,6 @@ export default function HypoallergenicDogBreedsGuide() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="A practical guide to hypoallergenic dog breeds, how allergies actually work, and which low-shedding breeds may be better for families sensitive to pet dander. Includes breed descriptions and tips for choosing a dog that fits your home and health needs."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

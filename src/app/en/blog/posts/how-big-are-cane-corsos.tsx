@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function HowBigAreCaneCorsos() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A complete size and cost guide to Cane Corsos: height and weight ranges by life stage, growth curves, how much food they eat, monthly feeding budgets, bed and crate sizes, harness and leash choices, transportation and housing considerations, and realistic veterinary and surgery costs for large dogs. Includes owner checklists, sample meal math, and a first-90-days setup plan.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

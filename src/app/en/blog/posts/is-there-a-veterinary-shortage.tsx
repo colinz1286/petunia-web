@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,19 +22,8 @@ export default function IsThereAVeterinaryShortage() {
     breeder: 'Breeders',
   };
 
-  const description =
-    'A practical, evidence-informed look at today&#39;s veterinary workforce: what &#34;shortage&#34; really means, why local and specialty gaps persist, how much veterinary school costs, salary ranges, and where relief may come from over the next 10–15 years. Includes action steps for owners, clinics, students, and policymakers, plus a selected source list.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference, avoid the word "index" here. */}
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

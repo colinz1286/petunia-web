@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function DogVaccines() {
@@ -9,16 +8,6 @@ export default function DogVaccines() {
 
   return (
     <>
-      <Head>
-        <title>
-          Most Common Dog Vaccines: What They Protect Against and Why They Matter | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Learn about the most common dog vaccines, what they protect against, boarding and daycare requirements, and emerging vaccines that may benefit your pet."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on September 26, 2025</p>

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,20 +23,8 @@ export default function OlliesLawExplained2025() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A comprehensive, operator-focused guide to Massachusetts&rsquo; &ldquo;Ollie&rsquo;s Law&rdquo;: origins, what the statute does, the 2024&ndash;2026 rollout timeline, where similar rules already exist (Iowa, UK, ACT Australia, NZ local councils, Canadian cities), and how staffing ratios, injury reporting, inspections, and training standards will change economics for dog boarding/daycare. Includes pragmatic playbooks, cost models, sample SOPs, and strategic positioning for facilities using modern dog boarding and dog daycare software.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference, avoid the word "index" here. */}
-        <meta name="robots" content="all" />
-        
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

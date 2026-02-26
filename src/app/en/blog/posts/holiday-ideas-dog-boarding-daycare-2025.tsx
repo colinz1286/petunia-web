@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function HolidayIdeasDogBoardingDaycare2025() {
@@ -9,18 +8,6 @@ export default function HolidayIdeasDogBoardingDaycare2025() {
 
   return (
     <>
-      <Head>
-        <title>
-          Holiday Ideas for Dog Boarding &amp; Daycare Facilities: 15 Festive Ways to Surprise and Delight Your Clients in 2025 | Petunia Blog
-        </title>
-
-        <meta
-          name="description"
-          content="Fifteen creative, fun, and affordable holiday ideas for dog boarding and daycare facilities in 2025 — including Santa photos, craft projects, client gifts, themed events, and low-cost ways to build loyalty and engagement."
-        />
-
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-2">

@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function CavalierHealthRisks() {
@@ -9,17 +8,6 @@ export default function CavalierHealthRisks() {
 
   return (
     <>
-      <Head>
-        <title>
-          Cavalier King Charles Spaniel Health Risks: Heart, Eyes, and Lifespan | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Learn about the most common health risks in Cavalier King Charles Spaniels, including heart disease, eye problems, and factors that affect their lifespan. Discover tips to support a healthier, longer life."
-        />
-        <meta name="robots" content="all" />
-        
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on September 28, 2025</p>

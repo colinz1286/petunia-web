@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -11,17 +10,8 @@ export default function NewYorkSafePetBoardingActFullArticle() {
     'New York’s Safe Pet Boarding Act: What It Would Change for Dog Boarding & Daycare Facilities';
   const date = 'January 15, 2026';
 
-  const description =
-    'A full, detailed, factual explanation of New York’s proposed Safe Pet Boarding Act (A09123 / S08510), including every operational, staffing, facility, training, recordkeeping, inspection, and enforcement requirement for dog boarding and daycare businesses.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

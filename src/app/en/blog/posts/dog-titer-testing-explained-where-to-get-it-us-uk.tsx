@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -9,14 +8,6 @@ export default function DogTiterTestingExplained() {
 
   return (
     <>
-      <Head>
-        <title>Dog Titer Testing Explained + Where to Get It (U.S. + UK Resources)</title>
-        <meta
-          name="description"
-          content="A veterinary-informed guide to dog titer testing: what it is, when it matters, how reliable it is, and where owners can access testing in the U.S. and UK."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">
         {/* Categories */}

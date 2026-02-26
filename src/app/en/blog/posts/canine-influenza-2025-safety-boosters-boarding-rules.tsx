@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -9,14 +8,6 @@ export default function CanineInfluenza2025() {
 
   return (
     <>
-      <Head>
-        <title>Canine Influenza 2025: Safety, Boosters &amp; Boarding Rules</title>
-        <meta
-          name="description"
-          content="A veterinary-informed 2025 guide to canine influenza: current vaccine safety, booster recommendations, global boarding requirements, and practical owner advice."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">
         {/* Category pills */}

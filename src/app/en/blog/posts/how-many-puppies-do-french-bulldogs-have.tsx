@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function HowManyPuppiesDoFrenchBulldogsHave() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'How many puppies do French Bulldogs have? Most litters are small—often 2–4—with higher-than-average rates of assisted delivery (C-sections). This guide explains typical litter size, why it varies, ethical breeding standards, pregnancy timelines, whelping vs. planned C-section, neonatal care, costs, and practical checklists. Professional veterinary sources included.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

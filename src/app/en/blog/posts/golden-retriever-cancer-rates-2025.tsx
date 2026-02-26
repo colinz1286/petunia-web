@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function GoldenRetrieverCancerRates2025() {
@@ -9,16 +8,6 @@ export default function GoldenRetrieverCancerRates2025() {
 
   return (
     <>
-      <Head>
-        <title>
-          Golden Retriever Cancer Rates: What Every Owner Should Know in 2025 | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="An evidence-based 2025 update on Golden Retriever cancer rates — covering the latest research, early detection tips, and how owners can reduce risk through weight, genetics, and preventive care."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-2">Written on&nbsp;November&nbsp;2,&nbsp;2025</p>

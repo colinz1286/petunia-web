@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function BorderCollieHealthGuide() {
@@ -9,16 +8,6 @@ export default function BorderCollieHealthGuide() {
 
   return (
     <>
-      <Head>
-        <title>
-          Border Collie Health Guide: Joint Care, Seizures, and Longevity | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Border Collies are active, intelligent dogs with unique health needs. Learn about joint care, seizures, and how to support longevity in this detailed breed health guide."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on October 1, 2025</p>

@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function FrenchBulldogGroomingRoutine() {
@@ -9,16 +8,6 @@ export default function FrenchBulldogGroomingRoutine() {
 
   return (
     <>
-      <Head>
-        <title>
-          French Bulldog Grooming Routine: How Often to Bathe, Brush, and Clean Folds | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Learn the ideal French Bulldog grooming routine, including how often to bathe, brush, and clean facial folds. Keep your Frenchie’s coat, skin, and wrinkles healthy and odor-free."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on November&nbsp;5,&nbsp;2025</p>

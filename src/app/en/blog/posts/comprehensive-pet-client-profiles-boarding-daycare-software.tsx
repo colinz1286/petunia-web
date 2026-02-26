@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,20 +23,8 @@ export default function ComprehensivePetClientProfilesBoardingDaycareSoftware() 
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Why deep, structured pet and client profiles are the backbone of modern dog boarding software and dog daycare software. Learn the data fields that matter, how to capture them without creating friction, and how to turn profiles into safety, speed, and revenue wins across your team.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference, do not use the word "index" here. */}
-        <meta name="robots" content="all" />
-        
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

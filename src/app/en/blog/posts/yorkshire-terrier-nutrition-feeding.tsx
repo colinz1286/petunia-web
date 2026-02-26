@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function YorkshireTerrierNutritionFeeding() {
@@ -9,16 +8,6 @@ export default function YorkshireTerrierNutritionFeeding() {
 
     return (
         <>
-            <Head>
-                <title>
-                    Yorkshire Terrier Nutrition & Feeding: What to Feed a Toy Breed with Big Personality | Petunia Blog
-                </title>
-                <meta
-                    name="description"
-                    content="Learn how to feed a Yorkshire Terrier properly from puppyhood through adulthood. This guide covers portion sizes, calorie needs, feeding schedules, toy-breed metabolism, dental health, and veterinary-supported nutrition guidelines."
-                />
-                <meta name="robots" content="all" />
-            </Head>
 
             <article className="prose lg:prose-xl mx-auto px-4 py-8">
 

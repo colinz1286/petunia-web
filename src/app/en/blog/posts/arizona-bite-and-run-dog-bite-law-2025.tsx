@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,18 +24,8 @@ export default function ArizonaBiteAndRunDogBiteLaw2025() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A plain-English guide to Arizona&#39;s 2025 &#34;Bite and Run&#34; law: when owners must share contact info after a dog bite, penalties, exceptions, and how similar laws could spread.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

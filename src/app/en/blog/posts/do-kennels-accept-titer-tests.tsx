@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,19 +23,8 @@ export default function DoKennelsAcceptTiterTests() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Do kennels accept titer tests instead of vaccine records? A practical, evidence-informed guide to what titers do (and don’t) prove, how U.S. rabies law impacts boarding/daycare, examples of state and municipal rules, common facility policies, how to ask your kennel, medical exemptions, and owner/operator checklists.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

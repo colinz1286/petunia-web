@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,15 +23,6 @@ export default function CommonGIProblemsInDogs() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="Vomiting, diarrhea, gas, appetite changes, and abnormal stools are among the most common gastrointestinal issues in dogs. Learn what causes GI distress, which symptoms are serious, how vets evaluate digestive problems, and when professional care is necessary."
-        />
-        <meta name="robots" content="all" />
-        
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

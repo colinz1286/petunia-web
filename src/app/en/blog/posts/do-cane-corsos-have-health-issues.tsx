@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,20 +23,8 @@ export default function DoCaneCorsosHaveHealthIssues() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'An evidence-informed, practical guide to Cane Corso health from puppyhood through senior years: growth and joints, skin and allergies, eyes, heart, gastrointestinal and bloat risk, neurology, dental, parasites, weight and nutrition, exercise, realistic U.S. cost ranges, and when dog health insurance makes sense. Includes screening timelines, home checklists, and a first-90-days plan for new owners.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference, avoid the word "index" here. */}
-        <meta name="robots" content="all" />
-        
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

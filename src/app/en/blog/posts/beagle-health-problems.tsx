@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function BeagleHealthProblems() {
@@ -9,16 +8,6 @@ export default function BeagleHealthProblems() {
 
   return (
     <>
-      <Head>
-        <title>
-          Beagle Health Problems: The Most Common Conditions Owners Should Watch For | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Learn the most common Beagle health problems, including obesity, allergies, ear infections, thyroid disorders, and genetic conditions. Evidence-based guidance for early detection and prevention."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on December 3, 2025</p>

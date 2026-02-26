@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,18 +24,8 @@ export default function AddisonsDiseaseDogs() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A practical, evidence-aware guide to Addison’s disease (hypoadrenocorticism) in dogs: what it is, why it is called the “great pretender,” early and crisis signs, ACTH stimulation test, lifelong treatment (glucocorticoids, mineralocorticoids), stress dosing, monitoring plans, travel/boarding checklists, and owner SOPs.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

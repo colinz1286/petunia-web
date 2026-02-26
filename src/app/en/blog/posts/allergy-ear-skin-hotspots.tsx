@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function AllergySkinIssues() {
@@ -9,16 +8,6 @@ export default function AllergySkinIssues() {
 
   return (
     <>
-      <Head>
-        <title>
-          Ear Infections, Hot Spots, and Skin Irritation: The Allergy Connection | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Learn how allergies cause ear infections, hot spots, and skin irritation in dogs. Discover the connection, early warning signs, and prevention and treatment tips for healthier pets."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on September 30, 2025</p>

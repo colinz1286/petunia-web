@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,13 +24,6 @@ export default function WhereDoRescueDogsComeFrom() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="A factual, source-backed explainer on where U.S. rescue dogs come from: community intakes (strays and owner surrenders), organizational transfers, law-enforcement seizures and hoarding cases, disaster and special-case pipelines, and international imports. Built from national sheltering datasets and veterinary/public-health sources—no opinions, just definitions, counts, and data limitations."
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

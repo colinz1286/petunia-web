@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,19 +22,8 @@ export default function WhyDoesMyDogsBreathStink() {
     breeder: 'Breeders',
   };
 
-  const description =
-    'A 4,000+ word, evidence-informed guide to dog halitosis: how dental disease actually develops, the specific smells that mean “go now,” what really fixes it (and what doesn&#39;t), realistic U.S. cost ranges, which breeds are higher-risk, and a step-by-step plan to keep teeth healthy for life. Includes VOHC-style home care and clinic checklists.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference, avoid the word "index" here. */}
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function WestieAllergies() {
@@ -9,16 +8,6 @@ export default function WestieAllergies() {
 
   return (
     <>
-      <Head>
-        <title>
-          West Highland White Terrier Allergies: Why Westies Scratch and What Helps | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="West Highland White Terriers are prone to allergies that cause scratching, itching, and skin issues. Learn why Westies develop allergies, the signs to watch for, and the best treatments and prevention tips."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on October 1, 2025</p>

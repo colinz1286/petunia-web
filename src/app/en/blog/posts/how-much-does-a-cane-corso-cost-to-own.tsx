@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,19 +23,8 @@ export default function HowMuchDoesACaneCorsoCostToOwn() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A practical, number-driven guide to Cane Corso ownership costs: purchase or adoption ranges, food and calories by life stage, preventive care, expected vet bills and big-ticket surgeries, insurance versus self-insuring, daycare and boarding, training, gear, and an evidence-informed lifetime total with sample budgets.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference, avoid the word "index" here. */}
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

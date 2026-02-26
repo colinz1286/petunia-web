@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,19 +22,8 @@ export default function HowDoIStartADogRescueOrShelter() {
     breeder: 'Breeders',
   };
 
-  const description =
-    'An in-depth, practical roadmap to launching a foster-based rescue or a brick-and-mortar shelter: realistic startup budgets, whether you can begin from home, state and country licensing examples (US, UK, Ireland, Canada, Australia, New Zealand), required qualifications, where to source dogs ethically, and how to market beyond social media. Includes operations checklists and a 12-month execution plan.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference, avoid the word "index" here. */}
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,14 +23,6 @@ export default function AdvocacyPressureOnBoardingSafetyPractices() {
 
     return (
         <>
-            <Head>
-                <title>{title} – Petunia Blog</title>
-                <meta
-                    name="description"
-                    content="A deep look at the structural safety gaps in dog boarding and daycare across the United States, including staffing ratios, absentee ownership, state-by-state regulation, and why national standards may be necessary."
-                />
-                <meta name="robots" content="all" />
-            </Head>
 
             <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
                 <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

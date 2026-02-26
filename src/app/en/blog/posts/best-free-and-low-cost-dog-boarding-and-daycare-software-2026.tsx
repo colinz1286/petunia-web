@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -28,13 +27,6 @@ export default function BestFreeAndLowCostDogBoardingAndDaycareSoftware2026() {
 
   return (
     <>
-      <Head>
-        <title>{title}</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10">
         {/* Header */}

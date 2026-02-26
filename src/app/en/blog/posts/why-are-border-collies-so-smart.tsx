@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function WhyAreBorderColliesSoSmart() {
@@ -9,16 +8,6 @@ export default function WhyAreBorderColliesSoSmart() {
 
   return (
     <>
-      <Head>
-        <title>
-          Why Are Border Collies So Smart? Understanding Their Intelligence and Mental Needs | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Learn why Border Collies are considered the smartest dog breed. Explore working-dog intelligence, herding instincts, problem-solving skills, and the mental stimulation Border Collies need."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
 

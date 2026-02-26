@@ -1,7 +1,6 @@
 // File: src/app/blog/posts/dog-daycare-boarding-kpi-playbook.tsx
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -20,15 +19,8 @@ export default function DogDaycareBoardingKPIPlaybook() {
         owner: 'Pet Owners',
     };
 
-    const description =
-        'An operator-grade, numbers-first guide for dog daycare and boarding businesses. Formulas, benchmarks, dashboards, capacity math, labor efficiency, safety and compliance, pricing effects, and a 90-day turnaround plan.';
-
     return (
         <>
-            <Head>
-                <title>{title} – Petunia Blog</title>
-                <meta name="description" content={description} />
-            </Head>
 
             <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
                 <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

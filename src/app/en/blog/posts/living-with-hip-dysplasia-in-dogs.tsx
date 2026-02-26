@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function LivingWithHipDysplasiaInDogs() {
   const title =
     'Living With Hip Dysplasia in Dogs: Daily Routines, Home Setup, Exercise, Flare Plans, and Long-Term Quality of Life';
   const date = 'January 9, 2026';
-
-  const description =
-    'A comprehensive, owner-first guide to living with canine hip dysplasia day to day, including home traction, stairs and cars, sleep comfort, exercise routines, flare plans, mental enrichment, grooming and handling tips, travel, seasons, and how to monitor progress over time.';
 
   const categories = ['owner'] as const;
 
@@ -30,13 +26,6 @@ export default function LivingWithHipDysplasiaInDogs() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

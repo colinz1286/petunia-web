@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,14 +23,6 @@ export default function ShouldDaycareOnlyExpandIntoBoarding() {
 
     return (
         <>
-            <Head>
-                <title>{title} – Petunia Blog</title>
-                <meta
-                    name="description"
-                    content="Thinking about adding boarding to a daycare-only business? Here is a realistic, operator-first framework covering 24/7 responsibility, staffing, home-based limitations, licensing, liability, and facility requirements."
-                />
-                <meta name="robots" content="all" />
-            </Head>
 
             <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
                 <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

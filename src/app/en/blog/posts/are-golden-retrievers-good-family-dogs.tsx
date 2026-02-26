@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,18 +24,8 @@ export default function AreGoldenRetrieversGoodFamilyDogs() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A field-tested, evidence-informed guide to Golden Retrievers as family dogs: temperament, kid safety systems, training and enrichment, exercise needs, shedding/grooming, health predispositions, budgeting, adoption vs. breeder due diligence, travel/boarding policies, and ready-to-use checklists. Professional veterinary sources included.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

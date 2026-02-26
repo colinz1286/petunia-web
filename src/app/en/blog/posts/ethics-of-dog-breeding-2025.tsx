@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function EthicsOfDogBreeding2025() {
@@ -9,16 +8,6 @@ export default function EthicsOfDogBreeding2025() {
 
   return (
     <>
-      <Head>
-        <title>
-          The Ethics of Dog Breeding in 2025: Balancing Profit, Purpose, and Preservation | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Explore the ethics of dog breeding in 2025 — how responsible breeders balance profit, purpose, and preservation while protecting canine welfare and genetic diversity."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-2">Written by&nbsp;Colin Zedreck&nbsp;·&nbsp;November 3,&nbsp;2025</p>

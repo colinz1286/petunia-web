@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,16 +9,8 @@ export default function WhyDogsAreAfraidOfVacuums() {
   const title =
     'Why Dogs Are Afraid of Vacuums (And How to Fix It): Noise, Instinct, and a Step-by-Step Training Plan';
   const date = 'January 7, 2026';
-  const description =
-    'A detailed, practical guide explaining why dogs fear vacuums, how to tell fear from excitement, what makes it worse, and a clear step-by-step plan to help your dog stay calm safely.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* META */}

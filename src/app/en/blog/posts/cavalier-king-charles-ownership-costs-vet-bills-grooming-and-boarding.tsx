@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function CavalierKingCharlesOwnershipCosts() {
   const title =
     'Cavalier King Charles Ownership Costs: Vet Bills, Grooming, and Boarding';
   const date = 'September 18, 2025';
-  const description =
-    'A full, operator-grade breakdown of Cavalier King Charles Spaniel ownership costs: realistic budgets for vet care, grooming, food, insurance, daycare/boarding, travel, training, supplies, and senior care—plus cost-control systems that keep comfort high without surprise bills.';
-
   const categoryLabels: Record<string, string> = {
     owner: 'Pet Owners',
     boarding: 'Boarding',
@@ -28,15 +24,6 @@ export default function CavalierKingCharlesOwnershipCosts() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* House rule: do not use the forbidden word; use "all" */}
-        <meta name="robots" content="all" />
-       
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

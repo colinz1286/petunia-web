@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function PsychologyOfHopeInCanineLongevity() {
   const title =
     'The Psychology of Hope in Longevity Medicine: Why Owners Want Anti-Ageing Solutions — and How to Stay Grounded in Science';
   const date = 'December 7, 2025';
-  const description =
-    'A deep exploration of the emotional drivers behind longevity medicine for dogs, including grief avoidance, attachment psychology, marketing risks, red flags, rational evaluation of claims, and the ethical difference between extending life and extending suffering.';
-
   const categories = ['owner', 'veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -29,38 +25,6 @@ export default function PsychologyOfHopeInCanineLongevity() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-
-        {/* JSON-LD Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: title,
-              description,
-              datePublished: date,
-              dateModified: date,
-              author: { '@type': 'Organization', name: 'Petunia' },
-              publisher: {
-                '@type': 'Organization',
-                name: 'Petunia',
-                logo: {
-                  '@type': 'ImageObject',
-                  url: 'https://www.petuniapets.com/logo.png'
-                }
-              }
-            })
-          }}
-        />
-      </Head>
 
       {/* MAIN */}
       <main className="max-w-3xl mx-auto px-4 py-10">

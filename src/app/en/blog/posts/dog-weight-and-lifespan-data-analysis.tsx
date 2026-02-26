@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function DogWeightAndLifespanDataAnalysis() {
     const title =
         'How Weight Impacts Lifespan: Why Lean Dogs Live Up to 2.5 Years Longer (Data Breakdown)';
     const date = 'November 23, 2025';
-    const description =
-        'A detailed analysis of how body weight affects canine lifespan, including the Purina study, inflammation pathways, metabolic disease risk, body condition scoring, and safe weight reduction strategies.';
-
     const categories = ['owner', 'veterinary'] as const;
 
     const categoryLabels: Record<string, string> = {
@@ -29,38 +25,6 @@ export default function DogWeightAndLifespanDataAnalysis() {
 
     return (
         <>
-            <Head>
-                <title>{title} – Petunia Blog</title>
-                <meta name="description" content={description} />
-                <meta name="robots" content="all" />
-
-                <meta property="og:title" content={title} />
-                <meta property="og:description" content={description} />
-
-                {/* Structured Data */}
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            '@context': 'https://schema.org',
-                            '@type': 'BlogPosting',
-                            headline: title,
-                            description,
-                            datePublished: date,
-                            dateModified: date,
-                            author: { '@type': 'Organization', name: 'Petunia' },
-                            publisher: {
-                                '@type': 'Organization',
-                                name: 'Petunia',
-                                logo: {
-                                    '@type': 'ImageObject',
-                                    url: 'https://www.petuniapets.com/logo.png'
-                                }
-                            }
-                        })
-                    }}
-                />
-            </Head>
 
             <main className="max-w-3xl mx-auto px-4 py-10">
                 <p className="text-sm text-gray-600 mb-2">Posted on {date}</p>

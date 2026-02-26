@@ -10,6 +10,356 @@ export type BlogPostEntry = {
 
 export const blogPosts: BlogPostEntry[] = [
     {
+        slug: 'dog-travel-paperwork-folder-checklist-2025',
+        title: 'Dog Travel Paperwork Folder: The Exact Documents to Carry for Flights, Borders, and Emergency Vet Visits',
+        date: 'December 24, 2025',
+        description:
+            'A practical, evidence-aware guide to dog travel paperwork folder: the exact documents to carry for flights, borders, and emergency vet visits, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/dog-travel-paperwork-folder-checklist-2025'),
+        categories: ["owner","vet"],
+    },
+    {
+        slug: 'dog-daycare-boarding-laws-by-state-2026-update',
+        title: 'Dog Daycare and Boarding Laws by State (2026 Update): What Changed Since 2025',
+        date: 'January 2, 2026',
+        description:
+            'A practical, evidence-aware guide to dog daycare and boarding laws by state (2026 update): what changed since 2025, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/dog-daycare-boarding-laws-by-state-2026-update'),
+        categories: ["owner","boarding","vet"],
+    },
+    {
+        slug: 'safe-dog-to-attendant-ratios-evidence-state-rules',
+        title: 'How Many Dogs Per Attendant Is Actually Safe? Evidence, State Rules, and Practical Ratios',
+        date: 'January 3, 2026',
+        description:
+            'A practical, evidence-aware guide to how many dogs per attendant is actually safe? evidence, state rules, and practical ratios, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/safe-dog-to-attendant-ratios-evidence-state-rules'),
+        categories: ["owner","boarding","vet"],
+    },
+    {
+        slug: 'cdc-dog-reentry-checklist-2026-us-owners',
+        title: 'CDC Dog Re-Entry Checklist (2026): Step-by-Step for U.S. Owners Returning from Abroad',
+        date: 'January 4, 2026',
+        description:
+            'A practical, evidence-aware guide to cdc dog re-entry checklist (2026): step-by-step for u.s. owners returning from abroad, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/cdc-dog-reentry-checklist-2026-us-owners'),
+        categories: ["owner","vet"],
+    },
+    {
+        slug: 'cfia-dog-import-checklist-2026-us-owners',
+        title: 'CFIA Dog Import Checklist (2026): What U.S. Owners Need Before Entering Canada',
+        date: 'January 5, 2026',
+        description:
+            'A practical, evidence-aware guide to cfia dog import checklist (2026): what u.s. owners need before entering canada, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/cfia-dog-import-checklist-2026-us-owners'),
+        categories: ["owner","vet"],
+    },
+    {
+        slug: 'pet-insurance-travel-boarding-incidents-coverage-guide',
+        title: 'Pet Insurance for Travel and Boarding Incidents: What Is Covered, Denied, and Misunderstood',
+        date: 'January 6, 2026',
+        description:
+            'A practical, evidence-aware guide to pet insurance for travel and boarding incidents: what is covered, denied, and misunderstood, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/pet-insurance-travel-boarding-incidents-coverage-guide'),
+        categories: ["owner"],
+    },
+    {
+        slug: 'dog-boarding-vaccination-rules-by-facility-type',
+        title: 'Dog Boarding Vaccination Rules by Facility Type: Core, Optional, and High-Risk Scenario Policies',
+        date: 'January 13, 2026',
+        description:
+            'A practical, evidence-aware guide to dog boarding vaccination rules by facility type: core, optional, and high-risk scenario policies, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/dog-boarding-vaccination-rules-by-facility-type'),
+        categories: ["owner","boarding","vet"],
+    },
+    {
+        slug: 'kennel-cough-exposure-timeline-return-to-group-care',
+        title: 'Kennel Cough Exposure Timeline: When Dogs Are Contagious and When They Can Return to Group Care',
+        date: 'January 16, 2026',
+        description:
+            'A practical, evidence-aware guide to kennel cough exposure timeline: when dogs are contagious and when they can return to group care, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/kennel-cough-exposure-timeline-return-to-group-care'),
+        categories: ["owner","boarding","vet"],
+    },
+    {
+        slug: 'metronidazole-red-flag-side-effects-dogs',
+        title: 'Metronidazole in Dogs: Red-Flag Side Effects, Timing Patterns, and When to Stop and Call Your Vet',
+        date: 'January 17, 2026',
+        description:
+            'A practical, evidence-aware guide to metronidazole in dogs: red-flag side effects, timing patterns, and when to stop and call your vet, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/metronidazole-red-flag-side-effects-dogs'),
+        categories: ["owner","vet"],
+    },
+    {
+        slug: 'maropitant-cerenia-persistent-symptoms-next-steps',
+        title: 'Maropitant (Cerenia) in Dogs: Why Symptoms Can Persist and How Vets Troubleshoot Next Steps',
+        date: 'January 18, 2026',
+        description:
+            'A practical, evidence-aware guide to maropitant (cerenia) in dogs: why symptoms can persist and how vets troubleshoot next steps, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/maropitant-cerenia-persistent-symptoms-next-steps'),
+        categories: ["owner","vet"],
+    },
+    {
+        slug: 'labrador-lifespan-data-healthspan-guide-2026',
+        title: 'Average Lifespan of Labrador Retrievers: What the Data Really Shows and How Owners Extend Healthspan',
+        date: 'January 20, 2026',
+        description:
+            'A practical, evidence-aware guide to average lifespan of labrador retrievers: what the data really shows and how owners extend healthspan, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/labrador-lifespan-data-healthspan-guide-2026'),
+        categories: ["owner","breed_specific_guides"],
+        breed: 'Labrador Retriever',
+    },
+    {
+        slug: 'golden-vs-labrador-shedding-comparison',
+        title: 'Do Golden Retrievers Shed More Than Labs? A Seasonal Shedding Comparison for Owners',
+        date: 'January 21, 2026',
+        description:
+            'A practical, evidence-aware guide to do golden retrievers shed more than labs? a seasonal shedding comparison for owners, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/golden-vs-labrador-shedding-comparison'),
+        categories: ["owner","breed_specific_guides"],
+        breed: 'Golden Retriever',
+    },
+    {
+        slug: 'beagle-shedding-skin-health-warning-signs',
+        title: 'Beagle Shedding and Skin Health: When Hair Loss Is Normal vs a Medical Warning Sign',
+        date: 'January 22, 2026',
+        description:
+            'A practical, evidence-aware guide to beagle shedding and skin health: when hair loss is normal vs a medical warning sign, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/beagle-shedding-skin-health-warning-signs'),
+        categories: ["owner","breed_specific_guides","vet"],
+        breed: 'Beagle',
+    },
+    {
+        slug: 'boxer-skin-problems-diagnostic-flowchart',
+        title: 'Boxer Skin Problems: Diagnostic Flowchart for Allergies, Infections, and Mast Cell Concerns',
+        date: 'January 23, 2026',
+        description:
+            'A practical, evidence-aware guide to boxer skin problems: diagnostic flowchart for allergies, infections, and mast cell concerns, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/boxer-skin-problems-diagnostic-flowchart'),
+        categories: ["owner","breed_specific_guides","vet"],
+        breed: 'Boxer',
+    },
+    {
+        slug: 'cavalier-heart-disease-early-monitoring-plan',
+        title: 'Cavalier Heart Disease Risk: Early Monitoring Plan Every Owner Should Start Before Symptoms',
+        date: 'January 24, 2026',
+        description:
+            'A practical, evidence-aware guide to cavalier heart disease risk: early monitoring plan every owner should start before symptoms, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/cavalier-heart-disease-early-monitoring-plan'),
+        categories: ["owner","breed_specific_guides","vet"],
+        breed: 'Cavalier King Charles Spaniel',
+    },
+    {
+        slug: 'dachshund-back-health-home-setup-guide',
+        title: 'Dachshund Back Health at Home: Daily Setup to Reduce Disc Injury Risk',
+        date: 'January 25, 2026',
+        description:
+            'A practical, evidence-aware guide to dachshund back health at home: daily setup to reduce disc injury risk, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/dachshund-back-health-home-setup-guide'),
+        categories: ["owner","breed_specific_guides"],
+        breed: 'Dachshund',
+    },
+    {
+        slug: 'cane-corso-bite-force-trend-vs-reality',
+        title: 'Cane Corso Bite Force Search Trend vs Reality: Temperament, Management, and Family Safety',
+        date: 'January 26, 2026',
+        description:
+            'A practical, evidence-aware guide to cane corso bite force search trend vs reality: temperament, management, and family safety, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/cane-corso-bite-force-trend-vs-reality'),
+        categories: ["owner","breed_specific_guides"],
+        breed: 'Cane Corso',
+    },
+    {
+        slug: 'westie-allergy-management-12-week-plan',
+        title: 'Westie Allergy Management Plan: 12-Week Protocol for Itch, Ears, and Skin Flare Reduction',
+        date: 'January 27, 2026',
+        description:
+            'A practical, evidence-aware guide to westie allergy management plan: 12-week protocol for itch, ears, and skin flare reduction, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/westie-allergy-management-12-week-plan'),
+        categories: ["owner","breed_specific_guides","vet"],
+        breed: 'West Highland White Terrier',
+    },
+    {
+        slug: 'boarding-intake-forms-that-prevent-incidents',
+        title: 'Boarding Intake Forms That Prevent Incidents: Exact Questions Most Facilities Forget',
+        date: 'January 29, 2026',
+        description:
+            'A practical, evidence-aware guide to boarding intake forms that prevent incidents: exact questions most facilities forget, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/boarding-intake-forms-that-prevent-incidents'),
+        categories: ["boarding","owner"],
+    },
+    {
+        slug: 'dog-boarding-trial-stay-protocol',
+        title: 'Dog Boarding Trial Stay Protocol: How to Test Fit Before a Long Trip',
+        date: 'January 30, 2026',
+        description:
+            'A practical, evidence-aware guide to dog boarding trial stay protocol: how to test fit before a long trip, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/dog-boarding-trial-stay-protocol'),
+        categories: ["owner","boarding"],
+    },
+    {
+        slug: 'daycare-dropoff-stress-vs-separation-anxiety-7-day-guide',
+        title: 'Daycare Drop-Off Stress vs Separation Anxiety: How to Tell the Difference in 7 Days',
+        date: 'January 31, 2026',
+        description:
+            'A practical, evidence-aware guide to daycare drop-off stress vs separation anxiety: how to tell the difference in 7 days, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/daycare-dropoff-stress-vs-separation-anxiety-7-day-guide'),
+        categories: ["owner","boarding","vet"],
+    },
+    {
+        slug: 'dog-boarding-cost-benchmarks-by-service-level-2026',
+        title: 'Dog Boarding Cost Benchmarks by Service Level: What Owners Are Actually Paying in 2026',
+        date: 'February 1, 2026',
+        description:
+            'A practical, evidence-aware guide to dog boarding cost benchmarks by service level: what owners are actually paying in 2026, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/dog-boarding-cost-benchmarks-by-service-level-2026'),
+        categories: ["owner","boarding"],
+    },
+    {
+        slug: 'pet-boarding-emergency-plan-template-sops',
+        title: 'Pet Boarding Emergency Plan Template: Heat, Injury, Outbreak, and Evacuation SOPs',
+        date: 'February 2, 2026',
+        description:
+            'A practical, evidence-aware guide to pet boarding emergency plan template: heat, injury, outbreak, and evacuation sops, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/pet-boarding-emergency-plan-template-sops'),
+        categories: ["boarding","owner","vet"],
+    },
+    {
+        slug: 'returning-home-from-boarding-48-hour-normal-vs-vet',
+        title: 'Returning Home from Boarding: What Is Normal for 48 Hours and What Needs a Vet Call',
+        date: 'February 3, 2026',
+        description:
+            'A practical, evidence-aware guide to returning home from boarding: what is normal for 48 hours and what needs a vet call, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/returning-home-from-boarding-48-hour-normal-vs-vet'),
+        categories: ["owner","boarding","vet"],
+    },
+    {
+        slug: 'dog-daycare-compatibility-testing-group-matching',
+        title: 'Dog Daycare Compatibility Testing: Safer Group Matching for High-Energy and Nervous Dogs',
+        date: 'February 4, 2026',
+        description:
+            'A practical, evidence-aware guide to dog daycare compatibility testing: safer group matching for high-energy and nervous dogs, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/dog-daycare-compatibility-testing-group-matching'),
+        categories: ["boarding","owner"],
+    },
+    {
+        slug: 'canine-influenza-2026-vaccine-boarding-outbreak-guide',
+        title: 'Canine Influenza in 2026: Vaccine Timing, Boarding Policies, and Outbreak Response for Owners',
+        date: 'February 10, 2026',
+        description:
+            'A practical, evidence-aware guide to canine influenza in 2026: vaccine timing, boarding policies, and outbreak response for owners, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/canine-influenza-2026-vaccine-boarding-outbreak-guide'),
+        categories: ["owner","boarding","vet"],
+    },
+    {
+        slug: 'leptospirosis-vaccine-decision-guide-region-lifestyle',
+        title: 'Leptospirosis Vaccine Decision Guide: Region, Lifestyle, and Boarding Risk in One Framework',
+        date: 'February 11, 2026',
+        description:
+            'A practical, evidence-aware guide to leptospirosis vaccine decision guide: region, lifestyle, and boarding risk in one framework, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/leptospirosis-vaccine-decision-guide-region-lifestyle'),
+        categories: ["owner","boarding","vet"],
+    },
+    {
+        slug: 'senior-dogs-boarding-medication-mobility-sleep-setup',
+        title: 'Senior Dogs and Boarding: Medication, Mobility, and Sleep Setup That Reduce Setbacks',
+        date: 'February 12, 2026',
+        description:
+            'A practical, evidence-aware guide to senior dogs and boarding: medication, mobility, and sleep setup that reduce setbacks, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/senior-dogs-boarding-medication-mobility-sleep-setup'),
+        categories: ["owner","boarding","vet"],
+    },
+    {
+        slug: 'raw-feeding-while-traveling-risk-controls-guide',
+        title: 'Raw Feeding While Traveling: Safe Handling, Boarding Communication, and Risk Controls',
+        date: 'February 13, 2026',
+        description:
+            'A practical, evidence-aware guide to raw feeding while traveling: safe handling, boarding communication, and risk controls, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/raw-feeding-while-traveling-risk-controls-guide'),
+        categories: ["owner","boarding","vet","food"],
+    },
+    {
+        slug: 'dog-import-denial-case-study-12-common-mistakes',
+        title: 'Dog Import Denial Case Study: 12 Real Mistakes That Trigger Border or Airline Rejection',
+        date: 'February 18, 2026',
+        description:
+            'A practical, evidence-aware guide to dog import denial case study: 12 real mistakes that trigger border or airline rejection, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/dog-import-denial-case-study-12-common-mistakes'),
+        categories: ["owner","vet"],
+    },
+    {
+        slug: 'international-pet-travel-timeline-60-days',
+        title: 'International Pet Travel Timeline (60 Days): Vet Appointments, Forms, and Checkpoints by Week',
+        date: 'February 19, 2026',
+        description:
+            'A practical, evidence-aware guide to international pet travel timeline (60 days): vet appointments, forms, and checkpoints by week, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/international-pet-travel-timeline-60-days'),
+        categories: ["owner","vet"],
+    },
+    {
+        slug: 'dog-microchip-compliance-travel-formatting-errors',
+        title: 'Dog Microchip Compliance for Travel: Formatting Errors That Break Entry Documents',
+        date: 'February 20, 2026',
+        description:
+            'A practical, evidence-aware guide to dog microchip compliance for travel: formatting errors that break entry documents, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/dog-microchip-compliance-travel-formatting-errors'),
+        categories: ["owner","vet"],
+    },
+    {
+        slug: 'airline-pet-carrier-checkin-rejections-prevention',
+        title: 'Airline Pet Carrier Failures: The Most Common Check-In Rejections and How to Prevent Them',
+        date: 'February 21, 2026',
+        description:
+            'A practical, evidence-aware guide to airline pet carrier failures: the most common check-in rejections and how to prevent them, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/airline-pet-carrier-checkin-rejections-prevention'),
+        categories: ["owner"],
+    },
+    {
+        slug: 'traveling-with-dogs-on-chronic-meds-vet-letter-template',
+        title: 'Traveling with Dogs on Chronic Meds: Vet Letter Template, Dosing Plan, and Border-Friendly Documentation',
+        date: 'February 22, 2026',
+        description:
+            'A practical, evidence-aware guide to traveling with dogs on chronic meds: vet letter template, dosing plan, and border-friendly documentation, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/traveling-with-dogs-on-chronic-meds-vet-letter-template'),
+        categories: ["owner","vet"],
+    },
+    {
+        slug: 'boarding-vs-sitting-medically-complex-dogs-framework',
+        title: 'Dog Boarding vs In-Home Sitting for Medically Complex Dogs: Risk Comparison Framework',
+        date: 'February 23, 2026',
+        description:
+            'A practical, evidence-aware guide to dog boarding vs in-home sitting for medically complex dogs: risk comparison framework, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/boarding-vs-sitting-medically-complex-dogs-framework'),
+        categories: ["owner","boarding","sitter","vet"],
+    },
+    {
+        slug: 'pet-owner-documentation-audit-travel-boarding',
+        title: 'Pet Owner Documentation Audit: How to Verify Every Record Before Travel or Boarding',
+        date: 'February 24, 2026',
+        description:
+            'A practical, evidence-aware guide to pet owner documentation audit: how to verify every record before travel or boarding, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/pet-owner-documentation-audit-travel-boarding'),
+        categories: ["owner","boarding","vet"],
+    },
+    {
+        slug: 'dog-travel-rules-monitoring-guide-2026',
+        title: '2026 Dog Travel Rules Monitoring Guide: How to Track Policy Changes Before They Affect Your Trip',
+        date: 'February 25, 2026',
+        description:
+            'A practical, evidence-aware guide to 2026 dog travel rules monitoring guide: how to track policy changes before they affect your trip, including actionable checklists, common mistakes, and owner-first decision frameworks.',
+        component: () => import('./posts/dog-travel-rules-monitoring-guide-2026'),
+        categories: ["owner","vet"],
+    },
+    {
+        slug: 'dog-import-canada-2026-checklist-us-owners',
+        title: 'Dog Import to Canada in 2026: Checklist for U.S. Owners (Airline, CFIA, Border, and Return-to-U.S. Rules)',
+        date: 'February 26, 2026',
+        description:
+            'A practical 2026 checklist for U.S. owners traveling with dogs to Canada and back, covering airline policy layers, CFIA entry workflow, return-to-U.S. requirements, common denial mistakes, and a step-by-step planning timeline.',
+        component: () => import('./posts/dog-import-canada-2026-checklist-us-owners'),
+        categories: ['owner', 'vet'],
+    },
+    {
         slug: 'pet-boarding-market-exploding-2031-forecast',
         title: 'Pet Boarding Market Exploding Globally: What Facility Owners Need to Know About Growth Through 2031',
         date: 'February 17, 2026',
@@ -258,7 +608,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'A practical, real-world discussion for dog-industry businesses on whether cash discounts actually help, including fee tradeoffs, tax and lender optics, operational friction, client behavior, brand perception, safety risks, and a simple decision framework—without claiming there is one “right” answer.',
         component: () => import('./posts/should-i-offer-a-cash-discount'),
-        categories: ['owner', 'boarding', 'daycare', 'sitter', 'walker', 'trainer'],
+        categories: ['owner', 'boarding', 'daycare', 'sitter', 'walker', 'train'],
     },
     {
         slug: 'study-mushroom-supplement-cognitive-function-senior-dogs',
@@ -358,7 +708,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             'A comprehensive, owner-first guide explaining the real differences between supplements and prescription drugs in dog longevity, including regulatory standards, evidence requirements, biomarker pitfalls, quality and contamination risks, drug interactions, and how to make safer, veterinarian-guided decisions.',
         component: () => import('./posts/supplements-vs-drugs-dog-longevity'),
-        categories: ['owner', 'veter'],
+        categories: ['owner', 'vet'],
     },
     {
         slug: 'should-you-join-dog-longevity-study',
@@ -1756,7 +2106,7 @@ export const blogPosts: BlogPostEntry[] = [
     {
         slug: 'boston-terrier-breed-guide-2025',
         title: 'Boston Terrier Breed Guide 2025: Temperament, Care, Health & Training',
-        date: 'Noevmber 1, 2025',
+        date: 'November 1, 2025',
         description:
             'A complete 2025 guide to the Boston Terrier breed. Learn about temperament, size, activity needs, health risks, ideal homes, training expectations, and long-term care.',
         component: () => import('./posts/boston-terrier-breed-guide-2025'),
@@ -2114,7 +2464,7 @@ export const blogPosts: BlogPostEntry[] = [
             'Compare the pros and cons of daycare packages and monthly memberships, and explore the impact on cash flow, loyalty, and admin complexity.',
         component: () =>
             import('./posts/dog-daycare-packages-vs-monthly-memberships-a-balanced-look-at-two-common-pricing-models') as Promise<{ default: React.ComponentType<object> }>,
-        categories: ['owner', 'breeder', 'breed specific guides'],
+        categories: ['owner', 'breeder', 'breed_specific_guides'],
         breed: 'Dachshund',
     },
     {
@@ -2321,15 +2671,6 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['owner', 'boarding']
     },
     {
-        slug: 'how-to-choose-dog-daycare-red-and-green-flags',
-        title: 'How to Choose the Right Dog Daycare: Red Flags, Green Flags, and Behavior-Based Standards',
-        date: 'November 1, 2025',
-        description:
-            'An evidence-based guide to identifying quality dog daycare facilities — learn the red flags of unsafe programs, the green flags of great care, and why behavioral science should guide your choice.',
-        component: () => import('./posts/how-to-choose-dog-daycare-red-and-green-flags'),
-        categories: ['owner']
-    },
-    {
         slug: 'golden-retriever-cancer-rates-2025',
         title: 'Golden Retriever Cancer Rates: What Every Owner Should Know in 2025',
         date: 'November 2, 2025',
@@ -2514,12 +2855,12 @@ export const blogPosts: BlogPostEntry[] = [
         categories: ['boarding'],
     },
     {
-        slug: 'are-pet-insurance-premiums-worth-it-in-2025',
+        slug: 'pet-insurance-dog-daycare-2025',
         title: 'Pet Insurance and Dog Daycare: What’s Covered, What’s Not',
         date: 'October 11, 2025',
         description:
             'Pet insurance can offset daycare-related accident and illness costs—but not daily fees. Learn what’s covered, what’s excluded, and how to choose the right plan with real examples from leading providers.',
-        component: () => import('./posts/are-pet-insurance-premiums-worth-it-in-2025'),
+        component: () => import('./posts/pet-insurance-dog-daycare-2025'),
         categories: ['owner'],
     },
     {
@@ -2673,7 +3014,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             "Dachshunds are trending in urban settings and influencer circles in 2025. Discover why this playful breed is having a cultural moment, what drives the trend, and what it means for owners.",
         component: () => import('./posts/dachshund-it-dog-2025'),
-        categories: ['owner', 'trends', 'breeder']
+        categories: ['owner', 'breeder']
     },
     {
         slug: 'french-bulldogs-most-popular-2025',
@@ -2682,7 +3023,7 @@ export const blogPosts: BlogPostEntry[] = [
         description:
             "French Bulldogs continue to dominate in 2025, according to AKC registration. Explore why they remain so popular, the challenges of ownership, and what it means for breeders and pet owners.",
         component: () => import('./posts/french-bulldogs-most-popular-2025'),
-        categories: ['owner', 'breeder', 'breed specific guides'],
+        categories: ['owner', 'breeder', 'breed_specific_guides'],
         breed: 'French Bulldog',
     },
     {
@@ -4224,7 +4565,7 @@ export const blogPosts: BlogPostEntry[] = [
             'A warm, professional, and neutral guide for pet owners on how dogs typically adjust to boarding—what facilities like ours do to help, what you can do to prepare, and how different regulations in the U.S., Canada, the U.K./Ireland, Australia, and New Zealand shape good practice.',
         component: () =>
             import('./posts/how-will-my-dog-adjust-to-boarding') as Promise<{ default: React.ComponentType<object> }>,
-        categories: ['boarding', 'pet-owners'],
+        categories: ['boarding', 'owner'],
     },
     {
         slug: 'choosing-boarding-daycare-software-2025',
@@ -4444,6 +4785,26 @@ export const blogPosts: BlogPostEntry[] = [
             'A practical guide for business owners on how to prevent, handle, and legally navigate employee demotions—with leadership strategies and legal insights.',
         component: () =>
             import('./posts/demotion-handling-and-legal-risks') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['boarding'],
+    },
+    {
+        slug: 'dog-heart-murmurs-guide-2025',
+        title: 'Heart Murmurs in Dogs: Detection, Testing & What It Means for Your Pet',
+        date: 'December 2, 2025',
+        description:
+            'A clear, supportive guide for dog owners on how heart murmurs are detected, tested, graded, and managed — including life expectancy based on severity.',
+        component: () =>
+            import('./posts/dog-heart-murmurs-guide-2025') as Promise<{ default: React.ComponentType<object> }>,
+        categories: ['owner', 'vet'],
+    },
+    {
+        slug: 'essential-features-dog-boarding-daycare-software',
+        title: 'What Are the Essential Features for Dog Boarding and Daycare Software?',
+        date: 'January 15, 2024',
+        description:
+            'Neutral, practical guidance for facility owners, operators, and managers on the must-have features for dog boarding/daycare software—plus how to avoid overpriced, double-dipping payment processing.',
+        component: () =>
+            import('./posts/essential-features-dog-boarding-daycare-software') as Promise<{ default: React.ComponentType<object> }>,
         categories: ['boarding'],
     },
 ];

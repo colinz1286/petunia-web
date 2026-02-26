@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function BorderCollieBehaviorProblems() {
@@ -9,16 +8,6 @@ export default function BorderCollieBehaviorProblems() {
 
   return (
     <>
-      <Head>
-        <title>
-          Border Collie Behavior Problems: Nipping, Herding, Reactivity, and How to Manage Them | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Learn the most common Border Collie behavior problems—including nipping, herding, reactivity, excessive barking, and overstimulation—plus practical solutions to manage and prevent them."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
 

@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function DogBoardingPreparationGuide() {
@@ -9,16 +8,6 @@ export default function DogBoardingPreparationGuide() {
 
   return (
     <>
-      <Head>
-        <title>
-          Dog Boarding Preparation Guide: How to Make Drop-Off Stress-Free for You and Your Pet | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Reduce stress for both you and your dog on boarding day. Learn proven pre-drop-off routines, scent transfer tips, and owner strategies for a calm, confident goodbye."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-2">Written on&nbsp;October&nbsp;31,&nbsp;2025</p>

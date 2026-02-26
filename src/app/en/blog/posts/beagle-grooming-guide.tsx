@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function BeagleGroomingGuide() {
@@ -9,16 +8,6 @@ export default function BeagleGroomingGuide() {
 
   return (
     <>
-      <Head>
-        <title>
-          Beagle Grooming Guide: Coat Care, Ear Cleaning, Bathing, and Nail Trimming | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="A complete Beagle grooming guide covering coat maintenance, ear care, bathing, nail trimming, skin health, and tools. Evidence-based tips for keeping your Beagle clean and healthy."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on December 3, 2025</p>

@@ -1,14 +1,11 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
 export default function TypesOfLabradorRetrieversEnglishVsField() {
   const locale = useLocale();
 
-  const title =
-    'Types of Labrador Retrievers (English vs Field): The Complete, Vet-Informed Owner’s Guide';
   const date = 'April 13, 2025';
   const categories = ['owner', 'breed_specific_guides'] as const;
 
@@ -24,18 +21,8 @@ export default function TypesOfLabradorRetrieversEnglishVsField() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'English vs Field Labrador Retrievers: temperament, build, energy, training needs, health, working ability, and family fit—plus breeder questions, adoption tips, and day-to-day routines. One breed, two common lines.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

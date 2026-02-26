@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -9,16 +8,6 @@ export default function DaycareForIntactDogsPolicies() {
 
   return (
     <>
-      <Head>
-        <title>Daycare for Intact Dogs: Policies, Heat Cycles &amp; Safety (U.S. + UK/AU)</title>
-        <meta
-          name="description"
-          content="A practical, evidence-aligned guide to running dog daycare with intact males and females: policy design, heat-cycle management, grouping, safety SOPs, owner communication, and legal/insurance considerations across the U.S., UK, and Australia."
-        />
-        {/* House rule */}
-        <meta name="robots" content="all" />
-       
-      </Head>
 
       <article className="mx-auto max-w-3xl px-4 py-10">
         {/* Category pills */}

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,14 +23,6 @@ export default function TheSitterSurgeRiskHowSideHustlesCouldPressureBoardingAnd
 
     return (
         <>
-            <Head>
-                <title>{title} – Petunia Blog</title>
-                <meta
-                    name="description"
-                    content="A data-driven analysis of the potential “sitter surge” facing boarding and daycare facilities from 2026–2029, examining how side hustles, gig work, and labor-market shifts could increase competition, pressure prices, and reshape demand—without fear-mongering."
-                />
-                <meta name="robots" content="all" />
-            </Head>
 
             <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
                 <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

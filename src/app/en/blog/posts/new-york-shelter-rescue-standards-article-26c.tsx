@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -21,19 +20,8 @@ export default function NewYorkShelterRescueStandardsArticle26C() {
         breeder: 'Breeders',
     };
 
-    const description =
-        'A plain-English guide to New York’s new Article 26-C shelter and rescue standards, explaining why rescues may ask more questions, move more slowly, or charge more, and how higher standards can improve animal welfare, transparency, and adopter confidence.';
-
     return (
         <>
-            <Head>
-                <title>{title} – Petunia Blog</title>
-                <meta name="description" content={description} />
-                <meta name="robots" content="all" />
-                
-                <meta property="og:title" content={title} />
-                <meta property="og:description" content={description} />
-            </Head>
 
             <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
                 {/* Meta */}

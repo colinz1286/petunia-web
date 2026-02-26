@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,19 +22,8 @@ export default function LabradorPuppiesForSaleNearMeGuide() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A practical, vet-informed guide for families searching “Labrador puppies for sale near me.” Learn how to evaluate rescues and responsible breeders, what health testing to ask for (hips, elbows, eyes, DNA), what contracts and guarantees should say, how to spot red flags, and how to assess puppy temperament so you find the right Lab for your home.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per your strict preference */}
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

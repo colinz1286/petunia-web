@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function SenolyticsForDogsExplained() {
   const title =
     'Senolytics for Dogs Explained: What They Are, What They Claim to Do, What Evidence Exists, Safety Concerns, and What Is Still Unknown';
   const date = 'December 25, 2025';
-  const description =
-    'A comprehensive, owner-first guide to senolytics in dogs: what cellular senescence is, why senolytics are studied for healthy aging, what outcomes researchers measure (biomarkers vs real-world function), the biggest safety and interaction concerns for senior dogs, and how owners can evaluate claims without hype.';
-
   const categories = ['veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -39,36 +35,6 @@ export default function SenolyticsForDogsExplained() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: title,
-              description,
-              datePublished: date,
-              dateModified: date,
-              author: { '@type': 'Organization', name: 'Petunia' },
-              publisher: {
-                '@type': 'Organization',
-                name: 'Petunia',
-                logo: {
-                  '@type': 'ImageObject',
-                  url: 'https://www.petuniapets.com/logo.png',
-                },
-              },
-            }),
-          }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
         <p className="text-sm text-gray-600 mb-2">Posted on {date}</p>

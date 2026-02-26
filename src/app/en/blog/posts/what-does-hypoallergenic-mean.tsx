@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,18 +24,8 @@ export default function WhatDoesHypoallergenicMean() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    '“Hypoallergenic” is one of the most misunderstood words in the dog world. This evidence-informed guide explains what the term actually means, why no breed is truly allergen-free, how dog allergens work (Can f proteins), and how coat genetics and grooming influence shedding and allergen spread. Includes common myths, a practical buyer’s checklist, breed-by-breed profiles often recommended for allergy-aware homes, and a home allergy-control plan.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

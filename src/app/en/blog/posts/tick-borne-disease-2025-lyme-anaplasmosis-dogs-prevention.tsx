@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,14 +23,6 @@ export default function TicksSurging2025LymeAnaplasmosisDogsPrevention() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="News-validated surge: tick-bite ER visits up nationally in 2025 and California reporting a rise in canine anaplasmosis exposure. What this means for dogs: state snapshots (CA, NY, VA/GA), disease risks, prevention products (monthly, 12-week, and once-yearly options), owner checklists, and boarding/daycare grooming & yard SOPs."
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

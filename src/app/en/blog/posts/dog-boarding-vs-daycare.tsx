@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,41 +23,8 @@ export default function DogBoardingVsDaycare() {
         breed_specific_guides: 'Breed Specific Guides',
     };
 
-    const description =
-        'Dog boarding vs daycare explained: what each service includes, how to evaluate facility fit, costs, risks, benefits, and how to pick what’s right for your dog with confidence.';
-
     return (
         <>
-            <Head>
-                <title>{title} – Petunia Blog</title>
-                <meta name="description" content={description} />
-                <meta name="robots" content="all" />
-                <meta property="og:title" content={title} />
-                <meta property="og:description" content={description} />
-
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            '@context': 'https://schema.org',
-                            '@type': 'BlogPosting',
-                            headline: title,
-                            description,
-                            datePublished: date,
-                            dateModified: date,
-                            author: { '@type': 'Organization', name: 'Petunia' },
-                            publisher: {
-                                '@type': 'Organization',
-                                name: 'Petunia',
-                                logo: {
-                                    '@type': 'ImageObject',
-                                    url: 'https://www.petuniapets.com/logo.png',
-                                },
-                            },
-                        }),
-                    }}
-                />
-            </Head>
 
             <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
                 <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

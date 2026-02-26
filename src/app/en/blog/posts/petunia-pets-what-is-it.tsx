@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -21,147 +20,9 @@ export default function PetuniaPetsWhatIsIt() {
     vet: 'Veterinary Clinics',
   };
 
-  const metaDescription =
-    'Petunia Pets is modern dog boarding & daycare software: real-time booking, vaccine & waiver enforcement, reminders, grooming add-ons, multi-location, iOS & web. $5/month for businesses with a 30-day free trial; owners are free.';
-
   // JSON-LD for Organization + SoftwareApplication + FAQPage
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'Organization',
-        '@id': 'https://www.petuniapets.com/#org',
-        name: 'Petunia Pets',
-        legalName: 'Berkley Creek Software LLC',
-        url: 'https://www.petuniapets.com/',
-        areaServed: ['US', 'CA', 'GB', 'IE', 'AU', 'NZ'],
-        contactPoint: {
-          '@type': 'ContactPoint',
-          contactType: 'customer support',
-          email: 'admin@petuniapets.com',
-          availableLanguage: ['en'],
-        },
-      },
-      {
-        '@type': 'SoftwareApplication',
-        '@id': 'https://www.petuniapets.com/#app',
-        name: 'Petunia',
-        alternateName: 'Petunia Pets',
-        applicationCategory: 'BusinessApplication',
-        operatingSystem: 'iOS, Web',
-        url: 'https://www.petuniapets.com/',
-        installUrl: 'https://apps.apple.com/us/app/petunia-pets/id6744536836',
-        offers: [
-          {
-            '@type': 'Offer',
-            description: 'Free for individual pet owners',
-            price: '0',
-            priceCurrency: 'USD',
-            category: 'free',
-          },
-          {
-            '@type': 'Offer',
-            description:
-              'Boarding & daycare businesses (30-day free trial; then $5/month)',
-            price: '5',
-            priceCurrency: 'USD',
-            category: 'subscription',
-            areaServed: ['US', 'CA', 'GB', 'IE', 'AU', 'NZ'],
-          },
-        ],
-        softwareHelp: {
-          '@type': 'CreativeWork',
-          about: 'Support via email; calls scheduled as needed',
-          url: 'mailto:admin@petuniapets.com',
-        },
-        publisher: {
-          '@id': 'https://www.petuniapets.com/#org',
-        },
-      },
-      {
-        '@type': 'FAQPage',
-        '@id': 'https://www.petuniapets.com/petunia-pets-what-is-it/#faq',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'Is Petunia Pets free for pet owners?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Yes. Owner accounts are free.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'How much does Petunia Pets cost for businesses?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Boarding and daycare businesses pay $5 per month in USD after a 30-day free trial.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Does Petunia Pets have an Android app?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Not yet. Android users can access Petunia Pets on any modern mobile browser.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Can I upload vaccine records from my phone?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Yes. You can upload vaccine images and set expiration dates; reminders are sent before expiry.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Do I have to sign a waiver for every booking?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'No. You will only be asked to sign again if your facility updates its waiver.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'How are no-shows and deposits handled?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Facilities set their own deposit, cancellation, and no-show policies inside Petunia Pets. The app tracks no-shows; in-app payments are on the roadmap.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Can I export my data?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Self-service exports are not available yet. Facilities can request specific exports and we can build them.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'When are payments and staff scheduling coming?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Payments are targeted for 6–10 months and staff scheduling for 3–6 months, subject to change based on demand.',
-            },
-          },
-        ],
-      },
-    ],
-  };
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={metaDescription} />
-        <meta name="robots" content="all" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

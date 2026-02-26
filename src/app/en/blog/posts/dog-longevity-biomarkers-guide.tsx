@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function DogLongevityBiomarkersGuide() {
   const title =
     'Dog Longevity Biomarkers: Which Ones Matter, Which Ones Mislead, and How Owners Can Interpret “Healthy Aging” Claims';
   const date = 'December 25, 2025';
-  const description =
-    'A practical, owner-first guide to dog longevity biomarkers: what a biomarker is, which categories are most meaningful, why surrogate endpoints can mislead, how trials use biomarkers, how to interpret lab-style claims in headlines, and what questions to ask your vet or a study team.';
-
   const categories = ['veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -39,36 +35,6 @@ export default function DogLongevityBiomarkersGuide() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: title,
-              description,
-              datePublished: date,
-              dateModified: date,
-              author: { '@type': 'Organization', name: 'Petunia' },
-              publisher: {
-                '@type': 'Organization',
-                name: 'Petunia',
-                logo: {
-                  '@type': 'ImageObject',
-                  url: 'https://www.petuniapets.com/logo.png',
-                },
-              },
-            }),
-          }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
         <p className="text-sm text-gray-600 mb-2">Posted on {date}</p>

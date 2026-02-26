@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function ShouldYouJoinDogLongevityStudy() {
   const title =
     'Should You Enroll Your Dog in a Longevity Study? A Clear, Owner-First Checklist for Safety, Endpoints, Costs, and Real Expectations';
   const date = 'December 25, 2025';
-  const description =
-    'A thorough, owner-first guide to deciding whether to join a dog longevity study: what questions to ask about endpoints, placebo and blinding, safety monitoring, withdrawal rules, costs, time commitments, data privacy, and how to decide calmly when you feel hopeful or anxious.';
-
   const categories = ['owner', 'veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -39,36 +35,6 @@ export default function ShouldYouJoinDogLongevityStudy() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: title,
-              description,
-              datePublished: date,
-              dateModified: date,
-              author: { '@type': 'Organization', name: 'Petunia' },
-              publisher: {
-                '@type': 'Organization',
-                name: 'Petunia',
-                logo: {
-                  '@type': 'ImageObject',
-                  url: 'https://www.petuniapets.com/logo.png',
-                },
-              },
-            }),
-          }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
         <p className="text-sm text-gray-600 mb-2">Posted on {date}</p>

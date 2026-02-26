@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function HowMuchDoFrenchBulldogsCost() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'French Bulldog cost breakdown with realistic numbers: purchase or adoption fees, first-year setup, annual vet/food/insurance, lifetime totals, and risk-adjusted “Frenchie factors” like BOAS and IVDD. Includes money-saving systems, checklists, and professional sources.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,19 +24,8 @@ export default function CanineAllergiesExplained() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A practical, evidence-aware guide to dog allergies: food vs. environmental triggers, flea allergy dermatitis, how to run an elimination diet, ear/skin flare protocols, meds and nutraceuticals, home tweaks, grooming, and SOPs for daily management.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-      
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

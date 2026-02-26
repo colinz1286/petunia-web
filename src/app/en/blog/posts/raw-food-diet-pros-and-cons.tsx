@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,18 +22,8 @@ export default function RawFoodDietProsAndCons() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'A balanced, evidence-driven review of raw dog food diets: claimed benefits, what research supports or does not support, common veterinary concerns, nutrition risks, and how owners can decide responsibly.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function AKCNewBreeds2026OwnersGuide() {
     breed_specific_guides: 'Breed Specific Guides',
   };
 
-  const description =
-    'Owner-first guide to the American Kennel Club’s newly recognized dog breeds for 2026, plus a practical “should you actually get one?” breakdown: exercise, grooming, training style, common behavior pitfalls, and how to find a reputable breeder instead of impulse buying.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,18 +23,8 @@ export default function DogDaycareBoardingWaiversExplained() {
     breed_specific_guides: "Breed Specific Guides",
   };
 
-  const description =
-    "A plain-English deep dive into pet-care waivers: what you’re signing, which clauses matter, how negligence vs. gross negligence works, what consumer-notice laws require in some states, how to respond after an incident, and practical templates you can use today.";
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="index,follow" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,19 +22,8 @@ export default function ChristmasTreeHolidayDecorDogs() {
     breeder: 'Breeders',
   };
 
-  const description =
-    'A comprehensive Christmas safety guide covering the most common holiday decor dangers for dogs, including tinsel, ornament hooks, tree water, lights and cords, toxic plants, ingestion symptoms, and clear guidance on when emergency care is needed.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

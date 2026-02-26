@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,13 +24,6 @@ export default function BreederQuestionsResponsibleAnswers() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="A long-form, source-backed guide to the questions ethical breeders should be prepared to answer—covering health testing (OFA/CHIC, BVA, PennHIP), infectious-disease screening (Brucella canis), pregnancy and whelping protocols, early socialization, temperament, contracts and pet-purchase laws, microchipping, vaccination and deworming schedules, genetic diversity and COI, after-sale support, and what documents to show buyers."
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

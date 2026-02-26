@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -10,9 +9,6 @@ export default function LoyalLOY002Explained() {
   const title =
     'LOY-002 Explained: What It Is, Who It Is For, What the FDA Milestone Actually Means, What Trials Measure, and What Is Still Unknown';
   const date = 'December 25, 2025';
-  const description =
-    'A comprehensive, owner-first deep dive into LOY-002: what it is designed to do, eligibility basics, how the conditional approval pathway and “reasonable expectation of effectiveness” are commonly misunderstood, what endpoints are being measured, what safety questions matter most for senior dogs, and how to evaluate claims without false certainty.';
-
   const categories = ['veterinary'] as const;
 
   const categoryLabels: Record<string, string> = {
@@ -39,36 +35,6 @@ export default function LoyalLOY002Explained() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: title,
-              description,
-              datePublished: date,
-              dateModified: date,
-              author: { '@type': 'Organization', name: 'Petunia' },
-              publisher: {
-                '@type': 'Organization',
-                name: 'Petunia',
-                logo: {
-                  '@type': 'ImageObject',
-                  url: 'https://www.petuniapets.com/logo.png',
-                },
-              },
-            }),
-          }}
-        />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
         <p className="text-sm text-gray-600 mb-2">Posted on {date}</p>

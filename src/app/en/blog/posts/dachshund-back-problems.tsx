@@ -1,7 +1,6 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function DachshundBackProblems() {
@@ -9,17 +8,6 @@ export default function DachshundBackProblems() {
 
   return (
     <>
-      <Head>
-        <title>
-          Dachshund Back Problems Explained: Prevention and Care Tips | Petunia Blog
-        </title>
-        <meta
-          name="description"
-          content="Dachshunds are prone to back problems like intervertebral disc disease (IVDD). Learn the causes, prevention tips, treatment options, and how to keep your Dachshund’s spine healthy."
-        />
-        <meta name="robots" content="all" />
-        
-      </Head>
 
       <article className="prose lg:prose-xl mx-auto px-4 py-8">
         <p className="text-sm text-gray-500 mb-4">Written on September 28, 2025</p>

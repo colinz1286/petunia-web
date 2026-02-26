@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function HowWillMyDogAdjustToBoarding() {
@@ -8,13 +7,6 @@ export default function HowWillMyDogAdjustToBoarding() {
 
   return (
     <>
-      <Head>
-        <title>How Will My Dog Handle or Adjust to Being Boarded?</title>
-        <meta
-          name="description"
-          content="A warm, professional, and neutral guide for pet owners on how dogs typically adjust to boarding—what facilities like ours do to help, what you can do to prepare, and how different regulations in the U.S., Canada, the U.K./Ireland, Australia, and New Zealand shape good practice."
-        />
-      </Head>
 
       <article className="mx-auto max-w-3xl px-5 py-10 prose prose-zinc prose-headings:font-semibold prose-h2:mt-10">
         <header className="not-prose mb-8">

@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -23,19 +22,8 @@ export default function HowToKnowIfMyDogIsSick() {
     breeder: 'Breeders',
   };
 
-  const description =
-    'An evidence-informed, 5,000+ word guide to spotting when a dog might be sick: what to watch for, how to do quick home checks (TPR, gums/CRT, hydration), which red flags need same-day care, what a vet is likely to do, realistic U.S. cost ranges, and a calm 72-hour owner playbook. Includes puppy/senior and brachycephalic notes, vomiting vs. regurgitation, GI bleeding clues (melena), and when to call Poison Control.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        {/* Per user preference, avoid the word "index" here. */}
-        <meta name="robots" content="all" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         {/* Meta */}

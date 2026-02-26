@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,16 +23,8 @@ export default function HowOftenShouldYouBatheABostonTerrier2025() {
     breed_specific_guides: 'Breed Specific Guides'
   };
 
-  const description =
-    'A complete 2025 guide explaining how often to bathe a Boston Terrier, signs they need a bath, shampoos for sensitive skin, proper bathing steps, overbathing risks, and when medicated baths are needed.';
-
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta name="description" content={description} />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
 

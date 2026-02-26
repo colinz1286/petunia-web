@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -25,15 +24,6 @@ export default function BostonTerrierRecallTraining2025() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="A realistic, step-by-step guide to Boston Terrier recall training, covering why recall is challenging, indoor foundations, yard and long-line work, off-leash safety, reinforcement systems, common mistakes, and distraction proofing."
-        />
-        <meta name="robots" content="all" />
-        
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>

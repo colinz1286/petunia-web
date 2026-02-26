@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'next/head';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -24,14 +23,6 @@ export default function GroomingTipsForLabradorRetrievers() {
 
   return (
     <>
-      <Head>
-        <title>{title} – Petunia Blog</title>
-        <meta
-          name="description"
-          content="A comprehensive, owner-tested grooming guide for Labrador Retrievers. Learn how to control shedding, set a weekly and seasonal routine, choose the right brushes and dryers, pick safe shampoos and conditioners, understand pro groomer costs, and support a glossy coat through nutrition and supplements. Includes step-by-step checklists and FAQs built around common search questions like: Do Labs shed a lot? How often should you bathe a Lab? What tools actually work on a Labrador’s double coat?"
-        />
-        <meta name="robots" content="all" />
-      </Head>
 
       <main className="max-w-3xl mx-auto px-4 py-10 text-[#2c4a30]">
         <p className="text-sm text-gray-500 mb-2">Posted on {date}</p>
