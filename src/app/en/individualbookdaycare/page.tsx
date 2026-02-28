@@ -132,6 +132,8 @@ type RTDBUpcomingWriteRow = {
   medications?: string;
   medicationDetails?: string;
   spayedNeutered?: string;
+  paymentTotalCents?: number;
+  itemizedLineItems?: PaymentLineItem[];
 };
 
 type VaccineKey = 'Rabies' | 'Bordetella' | 'Canine Influenza' | 'Distemper';
@@ -151,6 +153,9 @@ type DaycareReservationWrite = {
   realtimeKey: string;
   isAssessment?: boolean;
   groomingAddOns?: GroomingSelections;
+  paymentIntentId?: string;
+  paymentTotalCents?: number;
+  itemizedLineItems?: PaymentLineItem[];
 };
 
 type DraftBooking = {
@@ -172,6 +177,26 @@ type DogAssessmentDoc = {
   bathSize?: string;
   bath_size?: string;
   bathsize?: string;
+};
+
+type PaymentLineItem = {
+  key: string;
+  label: string;
+  quantity: number;
+  unitCents: number;
+  totalCents: number;
+};
+
+type PaymentBreakdown = {
+  lines: PaymentLineItem[];
+  subtotalCents: number;
+};
+
+type CreateDaycarePaymentIntentResponse = {
+  clientSecret?: string;
+  paymentIntentId?: string;
+  amountCents?: number;
+  itemizedLineItems?: unknown;
 };
 
 /* =========================
@@ -204,6 +229,23 @@ const parseTimeToMinutes = (label: string) => {
 
 const sortTimeStrings = (arr: string[]) =>
   [...arr].map(s => s.trim()).filter(Boolean).sort((a, b) => parseTimeToMinutes(a) - parseTimeToMinutes(b));
+
+const parseServerItemizedLineItems = (raw: unknown): PaymentLineItem[] => {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((item): PaymentLineItem | null => {
+      if (!item || typeof item !== 'object') return null;
+      const row = item as Record<string, unknown>;
+      const key = typeof row.key === 'string' ? row.key : '';
+      const label = typeof row.label === 'string' ? row.label : '';
+      const quantity = typeof row.quantity === 'number' ? row.quantity : 0;
+      const unitCents = typeof row.unitCents === 'number' ? row.unitCents : 0;
+      const totalCents = typeof row.totalCents === 'number' ? row.totalCents : (quantity * unitCents);
+      if (!key || !label || quantity <= 0 || unitCents <= 0 || totalCents <= 0) return null;
+      return { key, label, quantity, unitCents, totalCents };
+    })
+    .filter((row): row is PaymentLineItem => row !== null);
+};
 
 const policyKeyToEnum = (raw: string): VaccineKey | null => {
   const s = raw.toLowerCase();
@@ -277,6 +319,7 @@ export default function IndividualBookDaycarePage() {
   const [groomingAvailable, setGroomingAvailable] = useState(false);
   const [groomingServices, setGroomingServices] = useState<string[]>([]);
   const [groomingServicePriceCentsByName, setGroomingServicePriceCentsByName] = useState<Record<string, number>>({});
+  const [daycarePriceCentsByTier, setDaycarePriceCentsByTier] = useState<Record<number, number>>({});
   const [petBathSizeById, setPetBathSizeById] = useState<Record<string, string>>({});
   const [groomingSelections, setGroomingSelections] = useState<GroomingSelections>({});
   const [showGroomingPrompt, setShowGroomingPrompt] = useState(false);
@@ -286,6 +329,8 @@ export default function IndividualBookDaycarePage() {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [paymentAmount, setPaymentAmount] = useState<number | null>(null);
+  const [paymentBreakdown, setPaymentBreakdown] = useState<PaymentBreakdown>({ lines: [], subtotalCents: 0 });
+  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
 
   // Vaccine alerts (read-only)
   const [requiredVaccines, setRequiredVaccines] = useState<Set<VaccineKey>>(new Set());
@@ -492,6 +537,25 @@ export default function IndividualBookDaycarePage() {
       setGroomingAvailable(!!data.groomingAvailableAsAddOnToDaycare);
       const fallbackServices = (data.groomingServices || []).map(s => (s || '').trim()).filter(Boolean);
       setGroomingServices(fallbackServices);
+
+      try {
+        const daycarePricingSnap = await getDoc(doc(db, 'businesses', bizId, 'settings', 'daycarePricing'));
+        if (daycarePricingSnap.exists()) {
+          const raw = daycarePricingSnap.data() as Record<string, number>;
+          const next: Record<number, number> = {};
+          Object.entries(raw).forEach(([tier, cents]) => {
+            const n = Number(tier);
+            if (Number.isFinite(n) && n > 0 && typeof cents === 'number' && cents > 0) {
+              next[n] = cents;
+            }
+          });
+          setDaycarePriceCentsByTier(next);
+        } else {
+          setDaycarePriceCentsByTier({});
+        }
+      } catch {
+        setDaycarePriceCentsByTier({});
+      }
 
       // Prefer pay-at-checkout daycare add-on pricing keys for daycare grooming options.
       try {
@@ -837,6 +901,65 @@ export default function IndividualBookDaycarePage() {
     bizTZ
   ]);
 
+  const buildPaymentBreakdown = useCallback((bookings: DraftBooking[]): PaymentBreakdown => {
+    const lineMap = new Map<string, PaymentLineItem>();
+
+    const addLine = (key: string, label: string, quantity: number, unitCents: number) => {
+      if (quantity <= 0 || unitCents <= 0) return;
+      const existing = lineMap.get(key);
+      if (existing) {
+        const nextQty = existing.quantity + quantity;
+        lineMap.set(key, {
+          ...existing,
+          quantity: nextQty,
+          totalCents: nextQty * existing.unitCents,
+        });
+        return;
+      }
+      lineMap.set(key, {
+        key,
+        label,
+        quantity,
+        unitCents,
+        totalCents: quantity * unitCents,
+      });
+    };
+
+    bookings.forEach((booking) => {
+      const tier = booking.petIds.length;
+      const baseCents = daycarePriceCentsByTier[tier];
+      if (typeof baseCents === 'number' && baseCents > 0) {
+        addLine(
+          `daycare-tier-${tier}`,
+          `Daycare (${tier} ${tier === 1 ? 'dog' : 'dogs'})`,
+          1,
+          baseCents
+        );
+      }
+
+      const addOns = booking.groomingAddOns || {};
+      Object.values(addOns).forEach((services) => {
+        services.forEach((serviceName) => {
+          const cents = groomingServicePriceCentsByName[serviceName];
+          if (typeof cents === 'number' && cents > 0) {
+            addLine(
+              `grooming-${serviceName.toLowerCase()}`,
+              `Grooming: ${serviceName}`,
+              1,
+              cents
+            );
+          }
+        });
+      });
+    });
+
+    const lines = Array.from(lineMap.values());
+    return {
+      lines,
+      subtotalCents: lines.reduce((sum, line) => sum + line.totalCents, 0),
+    };
+  }, [daycarePriceCentsByTier, groomingServicePriceCentsByName]);
+
   // 🔵 Stripe Payment Flow (matches iOS architecture)
   const startStripePaymentFlow = useCallback(async () => {
     if (isProcessingPayment) return;
@@ -845,6 +968,9 @@ export default function IndividualBookDaycarePage() {
     setIsProcessingPayment(true);
 
     try {
+      const localBreakdown = buildPaymentBreakdown(draftBookings);
+      setPaymentBreakdown(localBreakdown);
+
       // 🔄 STEP 1 — Sync Stripe Account Status
       const syncCallable = httpsCallable(functions, 'syncStripeAccountStatus');
       await syncCallable({ businessId });
@@ -867,24 +993,32 @@ export default function IndividualBookDaycarePage() {
         })),
       };
 
-      const result = await createCallable(payload) as {
-        data?: {
-          clientSecret?: string;
-          amountCents?: number;
-        };
-      };
+      const result = await createCallable(payload) as { data?: CreateDaycarePaymentIntentResponse };
+      const response = result?.data || {};
 
-      const clientSecret = result?.data?.clientSecret;
-      const amountCents = result?.data?.amountCents;
+      const clientSecret = response.clientSecret;
+      const amountCents = response.amountCents;
+      const nextPaymentIntentId = response.paymentIntentId;
 
       if (!clientSecret || typeof amountCents !== "number") {
         throw new Error("Invalid PaymentIntent response");
+      }
+
+      const serverLines = parseServerItemizedLineItems(response.itemizedLineItems);
+      if (serverLines.length > 0) {
+        setPaymentBreakdown({
+          lines: serverLines,
+          subtotalCents: serverLines.reduce((sum, line) => sum + line.totalCents, 0),
+        });
+      } else {
+        setPaymentBreakdown(localBreakdown);
       }
 
       console.log("✅ PaymentIntent created:", clientSecret.substring(0, 20));
 
       // 🔥 NEW — Store amount for UI display
       setPaymentAmount(amountCents);
+      setPaymentIntentId(nextPaymentIntentId || null);
 
       // Store clientSecret to render Stripe UI instead of auto-submitting
       setClientSecret(clientSecret);
@@ -899,7 +1033,8 @@ export default function IndividualBookDaycarePage() {
     isProcessingPayment,
     userId,
     draftBookings,
-    businessId
+    businessId,
+    buildPaymentBreakdown
   ]);
 
   /* =========================
@@ -964,6 +1099,9 @@ export default function IndividualBookDaycarePage() {
         if (booking.groomingAddOns && Object.keys(booking.groomingAddOns).length) {
           payload.groomingAddOns = booking.groomingAddOns;
         }
+        if (paymentIntentId) payload.paymentIntentId = paymentIntentId;
+        if (paymentAmount && paymentAmount > 0) payload.paymentTotalCents = paymentAmount;
+        if (paymentBreakdown.lines.length > 0) payload.itemizedLineItems = paymentBreakdown.lines;
 
         // Firestore
         await setDoc(doc(db, 'daycareReservations', reservationId), payload);
@@ -997,6 +1135,8 @@ export default function IndividualBookDaycarePage() {
             if (pet?.medications) base.medications = pet.medications;
             if (pet?.medicationDetails) base.medicationDetails = pet.medicationDetails;
             if (pet?.spayedNeutered) base.spayedNeutered = pet.spayedNeutered;
+            if (paymentAmount && paymentAmount > 0) base.paymentTotalCents = paymentAmount;
+            if (paymentBreakdown.lines.length > 0) base.itemizedLineItems = paymentBreakdown.lines;
 
             await rtdbSet(rtdbRef(rtdb, `upcomingReservations/${businessId}/${rtdbKey}`), base);
           }));
@@ -1005,13 +1145,16 @@ export default function IndividualBookDaycarePage() {
 
       setDraftBookings([]);
       setGroomingSelections({});
+      setPaymentBreakdown({ lines: [], subtotalCents: 0 });
+      setPaymentAmount(null);
+      setPaymentIntentId(null);
       alert(t('submission_success'));
       router.push(`/${locale}/individualupcomingappointments`);
     } catch (e) {
       console.error('❌ submitAllReservations failed:', e);
       alert(t('submission_error') || 'There was an error submitting your bookings.');
     }
-  }, [userId, draftBookings, businessId, bizTZ, pets, ownerName, router, locale, t, blackoutDates]);
+  }, [userId, draftBookings, businessId, bizTZ, pets, ownerName, router, locale, t, blackoutDates, paymentAmount, paymentBreakdown.lines, paymentIntentId]);
 
   /* =========================
      UI
@@ -1374,14 +1517,16 @@ export default function IndividualBookDaycarePage() {
             >
               <StripeCheckoutForm
                 amountCents={paymentAmount}
+                breakdown={paymentBreakdown}
                 onSuccess={async () => {
                   setClientSecret(null);
-                  setPaymentAmount(null);
                   await submitAllReservations();
                 }}
                 onCancel={() => {
                   setClientSecret(null);
                   setPaymentAmount(null);
+                  setPaymentBreakdown({ lines: [], subtotalCents: 0 });
+                  setPaymentIntentId(null);
                 }}
               />
             </Elements>
@@ -1529,10 +1674,12 @@ function GroomingModal(props: {
 
 function StripeCheckoutForm({
   amountCents,
+  breakdown,
   onSuccess,
   onCancel,
 }: {
   amountCents: number | null;
+  breakdown: PaymentBreakdown;
   onSuccess: () => void;
   onCancel: () => void;
 }) {
@@ -1572,6 +1719,24 @@ function StripeCheckoutForm({
         {amountCents !== null && (
           <div className="text-md font-semibold text-gray-700">
             Total: ${(amountCents / 100).toFixed(2)}
+          </div>
+        )}
+
+        {breakdown.lines.length > 0 && (
+          <div className="border rounded p-3 bg-gray-50 text-sm">
+            <div className="font-semibold mb-2">Invoice Summary</div>
+            <div className="space-y-1">
+              {breakdown.lines.map((line) => (
+                <div key={line.key} className="flex items-center justify-between gap-2">
+                  <span>{line.label} x{line.quantity}</span>
+                  <span>${(line.totalCents / 100).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-2 pt-2 border-t font-semibold flex items-center justify-between">
+              <span>Subtotal</span>
+              <span>${(breakdown.subtotalCents / 100).toFixed(2)}</span>
+            </div>
           </div>
         )}
 

@@ -48,6 +48,13 @@ const rtdb = getDatabase();
  * Types (mirrors SwiftUI model)
  * ========================= */
 type ServiceType = 'Daycare' | 'Boarding';
+type PaymentLineItem = {
+  key: string;
+  label: string;
+  quantity: number;
+  unitCents: number;
+  totalCents: number;
+};
 
 type Reservation = {
   // Identity
@@ -81,6 +88,8 @@ type Reservation = {
   medications?: string | null;
   medicationDetails?: string | null;
   spayedNeutered?: string | null;
+  paymentTotalCents?: number | null;
+  itemizedLineItems?: PaymentLineItem[];
 
   // Assessment flag
   isAssessment: boolean;
@@ -104,6 +113,7 @@ const formatISOToLong = (iso: string | null | undefined) => {
   if (Number.isNaN(fIn.getTime())) return iso;
   return new Intl.DateTimeFormat(undefined, { dateStyle: 'long' }).format(fIn);
 };
+const fmtCents = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
 const nowISO = () => new Date().toISOString();
 
@@ -232,6 +242,23 @@ const htmlTimeToWindow = (time: string): string => {
 
 // Keep pickups after drop-offs if times tie
 const pickupBit = (r: Reservation) => (r.isPickup ? 1 : 0);
+
+const parsePaymentLineItems = (raw: unknown): PaymentLineItem[] => {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((item): PaymentLineItem | null => {
+      if (!item || typeof item !== 'object') return null;
+      const row = item as Record<string, unknown>;
+      const key = typeof row.key === 'string' ? row.key : '';
+      const label = typeof row.label === 'string' ? row.label : '';
+      const quantity = typeof row.quantity === 'number' ? row.quantity : 0;
+      const unitCents = typeof row.unitCents === 'number' ? row.unitCents : 0;
+      const totalCents = typeof row.totalCents === 'number' ? row.totalCents : quantity * unitCents;
+      if (!key || !label || quantity <= 0 || unitCents <= 0 || totalCents <= 0) return null;
+      return { key, label, quantity, unitCents, totalCents };
+    })
+    .filter((line): line is PaymentLineItem => line !== null);
+};
 
 
 export default function BoardingAndDaycareUpcomingReservationsPage() {
@@ -483,6 +510,10 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
         const medicationDetails = (val['medicationDetails'] as string) || null;
         const spayedNeutered = (val['spayedNeutered'] as string) || null;
         const isAssessment = (val['isAssessment'] as boolean) ?? false;
+        const paymentTotalCents = typeof val['paymentTotalCents'] === 'number'
+          ? (val['paymentTotalCents'] as number)
+          : null;
+        const itemizedLineItems = parsePaymentLineItems(val['itemizedLineItems']);
 
         if (type === 'Boarding') {
           const cin = (val['checkInDate'] as string) || '';
@@ -523,6 +554,8 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
               medications,
               medicationDetails,
               spayedNeutered,
+              paymentTotalCents,
+              itemizedLineItems,
               isAssessment,
             });
           }
@@ -553,6 +586,8 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
               medications,
               medicationDetails,
               spayedNeutered,
+              paymentTotalCents,
+              itemizedLineItems,
               isAssessment,
             });
           }
@@ -586,6 +621,8 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
             medications,
             medicationDetails,
             spayedNeutered,
+            paymentTotalCents,
+            itemizedLineItems,
             isAssessment,
           });
         }
@@ -1197,6 +1234,24 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                                 {r.groomingAddOns.join(', ')}
                               </div>
                             ) : null}
+
+                            {!!r.itemizedLineItems?.length && (
+                              <div className="text-gray-600 text-[12px] mt-2 border rounded p-2 bg-gray-50">
+                                <div className="font-semibold text-gray-700 mb-1">Invoice Summary</div>
+                                {r.itemizedLineItems.map((line) => (
+                                  <div key={line.key} className="flex items-center justify-between gap-2">
+                                    <span>{line.label} x{line.quantity}</span>
+                                    <span>{fmtCents(line.totalCents)}</span>
+                                  </div>
+                                ))}
+                                {typeof r.paymentTotalCents === 'number' && r.paymentTotalCents > 0 && (
+                                  <div className="mt-1 pt-1 border-t font-semibold flex items-center justify-between">
+                                    <span>Total Paid</span>
+                                    <span>{fmtCents(r.paymentTotalCents)}</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
 
                             {hasMedications(r) && r.medicationDetails?.trim() && (
                               <div className="text-gray-600 text-[12px] mt-1">

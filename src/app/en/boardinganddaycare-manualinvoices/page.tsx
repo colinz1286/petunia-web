@@ -9,6 +9,7 @@ import {
   getDoc,
   getDocs,
   query,
+  setDoc,
   where,
 } from 'firebase/firestore';
 import { getDatabase, ref as rtdbRef, onValue, off as rtdbOff, DataSnapshot } from 'firebase/database';
@@ -31,6 +32,8 @@ type InvoiceLibraryItem = {
   priceCents: number;
   category: string;
   serviceContext?: string;
+  billingModel?: string;
+  petCount?: number;
   active: boolean;
 };
 
@@ -57,6 +60,14 @@ const sanitizeFirebaseKey = (input: string) =>
   input.trim().split(/[.\#$\[\]\/:]/g).join('-');
 
 const normalize = (input: string) => input.trim().toLowerCase();
+const normalizeServiceLabel = (input: string) =>
+  normalize(input).replace(/\s*-\s*\$?\d[\d,]*(?:\.\d{1,2})?\s*$/g, '');
+const slugify = (input: string) =>
+  normalize(input)
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 80);
+const autoDaycareAddonItemId = (serviceName: string) => `auto_daycare_addon_${slugify(serviceName) || 'item'}`;
 
 const formatOwnerName = (fullName: string) => {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
@@ -86,8 +97,47 @@ const chooseBaseItem = (items: InvoiceLibraryItem[], serviceType: string) => {
   return best?.item || null;
 };
 
+const extractPetCountFromName = (name: string): number | null => {
+  const value = (name || '').toLowerCase();
+  const match = value.match(/(?:^|\D)(\d+)\s*dog(?:s)?(?:\D|$)/i);
+  if (!match?.[1]) return null;
+  const count = Number(match[1]);
+  return Number.isFinite(count) && count > 0 ? count : null;
+};
+
+const chooseDaycareTierBaseItem = (items: InvoiceLibraryItem[], petCount: number) => {
+  let exact: { item: InvoiceLibraryItem; score: number } | null = null;
+  let fallback: { item: InvoiceLibraryItem; score: number } | null = null;
+
+  for (const item of items) {
+    if (!item.active) continue;
+    if (normalize(item.category) !== 'daycare') continue;
+
+    const context = normalize(item.serviceContext || 'none');
+    let score = 100;
+    if (context === 'daycare') score += 20;
+    if (context === 'none' || context === 'universal') score += 10;
+
+    const rawPetCount = typeof item.petCount === 'number' && item.petCount > 0
+      ? item.petCount
+      : extractPetCountFromName(item.name);
+    const billingModel = normalize(item.billingModel || '');
+    const isPerAppointment = billingModel === 'perappointment';
+
+    if ((isPerAppointment || rawPetCount != null) && rawPetCount === petCount) {
+      const exactScore = score + 40;
+      if (!exact || exactScore > exact.score) exact = { item, score: exactScore };
+      continue;
+    }
+
+    if (!fallback || score > fallback.score) fallback = { item, score };
+  }
+
+  return exact?.item || fallback?.item || null;
+};
+
 const chooseGroomingItem = (items: InvoiceLibraryItem[], serviceName: string, serviceType: string) => {
-  const targetName = normalize(serviceName);
+  const targetName = normalizeServiceLabel(serviceName);
   const service = normalize(serviceType);
   let best: { item: InvoiceLibraryItem; score: number } | null = null;
 
@@ -97,7 +147,7 @@ const chooseGroomingItem = (items: InvoiceLibraryItem[], serviceName: string, se
     const category = normalize(item.category);
     if (category !== 'grooming' && category !== 'addon' && category !== 'add-on') continue;
 
-    const itemName = normalize(item.name);
+    const itemName = normalizeServiceLabel(item.name);
     if (itemName !== targetName) continue;
 
     const context = normalize(item.serviceContext || 'none');
@@ -224,10 +274,80 @@ export default function BoardingAndDaycareManualInvoicesPage() {
       priceCents: typeof value.priceCents === 'number' ? value.priceCents : 0,
       category: (value.category as string) || '',
       serviceContext: (value.serviceContext as string) || 'none',
+      billingModel: typeof value.billingModel === 'string' ? value.billingModel : undefined,
+      petCount: typeof value.petCount === 'number' ? value.petCount : undefined,
       active: value.active !== false,
     }));
 
     setInvoiceItems(parsed);
+  }, []);
+
+  const syncDaycareAddOnsToInvoiceLibrary = useCallback(async (businessId: string) => {
+    const [librarySnap, addOnSnap] = await Promise.all([
+      getDoc(doc(db, 'businesses', businessId, 'settings', 'invoiceItemLibrary')),
+      getDoc(doc(db, 'businesses', businessId, 'settings', 'daycareAddOnPricing')),
+    ]);
+
+    const libraryData = librarySnap.data() || {};
+    const existingItems = (libraryData.items || {}) as Record<string, Record<string, unknown>>;
+
+    const addOnData = addOnSnap.data() || {};
+    const addOnServices = (addOnData.services || {}) as Record<string, { priceCents?: number }>;
+
+    const existingNames = new Set(
+      Object.values(existingItems)
+        .map((v) => (typeof v.name === 'string' ? normalizeServiceLabel(v.name) : ''))
+        .filter(Boolean)
+    );
+
+    const patch: Record<string, unknown> = {};
+
+    for (const [serviceName, serviceValue] of Object.entries(addOnServices)) {
+      const trimmedName = serviceName.trim();
+      const normalizedName = normalizeServiceLabel(trimmedName);
+      const priceCents = typeof serviceValue?.priceCents === 'number' ? serviceValue.priceCents : 0;
+      if (!trimmedName || !normalizedName || priceCents <= 0) continue;
+
+      const itemId = autoDaycareAddonItemId(trimmedName);
+      const existing = existingItems[itemId] || {};
+      const existingAutoSource = typeof existing.autoSource === 'string' ? normalize(existing.autoSource) : '';
+
+      // If this exact auto-managed item already exists, keep it synced.
+      if (existingAutoSource === 'daycareaddonpricing') {
+        patch[itemId] = {
+          ...(existing || {}),
+          name: trimmedName,
+          priceCents,
+          category: 'grooming',
+          serviceContext: 'daycare',
+          active: true,
+          autoManaged: true,
+          autoSource: 'daycareAddOnPricing',
+        };
+        continue;
+      }
+
+      // If a business already created a line item with this name, do not duplicate it.
+      if (existingNames.has(normalizedName)) continue;
+
+      patch[itemId] = {
+        name: trimmedName,
+        priceCents,
+        category: 'grooming',
+        serviceContext: 'daycare',
+        active: true,
+        autoManaged: true,
+        autoSource: 'daycareAddOnPricing',
+      };
+    }
+
+    if (Object.keys(patch).length > 0) {
+      await setDoc(
+        doc(db, 'businesses', businessId, 'settings', 'invoiceItemLibrary'),
+        { items: patch },
+        { merge: true }
+      );
+    }
   }, []);
 
   const loadExistingInvoices = useCallback(async (businessId: string) => {
@@ -320,11 +440,9 @@ export default function BoardingAndDaycareManualInvoicesPage() {
         setErrorMsg(null);
 
         const businessId = await resolveBusinessId(user.uid);
-        await Promise.all([
-          loadJoinRequests(businessId),
-          loadInvoiceLibrary(businessId),
-          loadExistingInvoices(businessId),
-        ]);
+        await loadJoinRequests(businessId);
+        await syncDaycareAddOnsToInvoiceLibrary(businessId);
+        await Promise.all([loadInvoiceLibrary(businessId), loadExistingInvoices(businessId)]);
         observeCheckIns(businessId);
       } catch (error) {
         console.error('Failed to load invoice setup:', error);
@@ -341,7 +459,15 @@ export default function BoardingAndDaycareManualInvoicesPage() {
       rRef.current = null;
       rCb.current = null;
     };
-  }, [router, resolveBusinessId, loadJoinRequests, loadInvoiceLibrary, loadExistingInvoices, observeCheckIns]);
+  }, [
+    router,
+    resolveBusinessId,
+    loadJoinRequests,
+    syncDaycareAddOnsToInvoiceLibrary,
+    loadInvoiceLibrary,
+    loadExistingInvoices,
+    observeCheckIns,
+  ]);
 
   const toggleDog = (dogId: string) => {
     const dog = dogs.find((d) => d.id === dogId);
@@ -375,15 +501,30 @@ export default function BoardingAndDaycareManualInvoicesPage() {
     const quantityByItemId = new Map<string, number>();
     const warnings: string[] = [];
 
-    for (const dog of ownerDogs) {
-      const serviceKey = normalize(dog.type) === 'boarding' ? 'boarding' : 'daycare';
-      const baseItem = chooseBaseItem(invoiceItems, serviceKey);
+    const daycareDogs = ownerDogs.filter((dog) => normalize(dog.type) !== 'boarding');
+    const boardingDogs = ownerDogs.filter((dog) => normalize(dog.type) === 'boarding');
 
+    if (daycareDogs.length > 0) {
+      const daycareBaseItem = chooseDaycareTierBaseItem(invoiceItems, daycareDogs.length);
+      if (daycareBaseItem) {
+        const qty = quantityByItemId.get(daycareBaseItem.id) || 0;
+        quantityByItemId.set(daycareBaseItem.id, qty + 1);
+      } else {
+        warnings.push(`No daycare invoice item found for ${daycareDogs.length} dogs.`);
+      }
+    }
+
+    for (const dog of boardingDogs) {
+      const baseItem = chooseBaseItem(invoiceItems, 'boarding');
       if (baseItem) {
         quantityByItemId.set(baseItem.id, (quantityByItemId.get(baseItem.id) || 0) + 1);
       } else {
-        warnings.push(`${dog.name}: no ${serviceKey} invoice item found`);
+        warnings.push(`${dog.name}: no boarding invoice item found`);
       }
+    }
+
+    for (const dog of ownerDogs) {
+      const serviceKey = normalize(dog.type) === 'boarding' ? 'boarding' : 'daycare';
 
       for (const grooming of dog.groomingAddOns) {
         const groomingItem = chooseGroomingItem(invoiceItems, grooming, serviceKey);

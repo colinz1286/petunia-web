@@ -37,6 +37,13 @@ const rtdb = getDatabase(app);
 /** ============== Types (mirrors iOS model) ============== */
 type FSMap = Record<string, unknown>;
 type GroomingMap = Record<string, string[]>;
+type PaymentLineItem = {
+  key: string;
+  label: string;
+  quantity: number;
+  unitCents: number;
+  totalCents: number;
+};
 
 type Reservation = {
   id: string;
@@ -72,6 +79,8 @@ type Reservation = {
   businessAddress: string;
   petNames: string[];
   groomingSummaryByPetName: Record<string, string[]>;
+  paymentTotalCents?: number | null;
+  itemizedLineItems?: PaymentLineItem[];
 };
 
 /** ============== Helpers ============== */
@@ -86,6 +95,7 @@ const endOfDay = (d: Date) => {
 const formatDate = (d: Date) => new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(d);
 
 const cleanPhone = (raw: string) => (raw || '').replace(/[^\d]/g, '');
+const fmtCents = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
 function parseGroomingMap(data: FSMap): GroomingMap {
   const m = (data['groomingAddOns'] as Record<string, unknown>) || {};
@@ -96,6 +106,24 @@ function parseGroomingMap(data: FSMap): GroomingMap {
     }
   }
   return out;
+}
+
+function parsePaymentLineItems(data: FSMap): PaymentLineItem[] {
+  const raw = data['itemizedLineItems'];
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((item): PaymentLineItem | null => {
+      if (!item || typeof item !== 'object') return null;
+      const row = item as Record<string, unknown>;
+      const key = typeof row.key === 'string' ? row.key : '';
+      const label = typeof row.label === 'string' ? row.label : '';
+      const quantity = typeof row.quantity === 'number' ? row.quantity : 0;
+      const unitCents = typeof row.unitCents === 'number' ? row.unitCents : 0;
+      const totalCents = typeof row.totalCents === 'number' ? row.totalCents : quantity * unitCents;
+      if (!key || !label || quantity <= 0 || unitCents <= 0 || totalCents <= 0) return null;
+      return { key, label, quantity, unitCents, totalCents };
+    })
+    .filter((line): line is PaymentLineItem => line !== null);
 }
 
 // ✅ Parses "yyyy-MM-dd" (legacy, matches iOS)
@@ -180,6 +208,7 @@ export default function IndividualUpcomingAppointmentsPage() {
       if (endOfDay(date) < new Date()) return; // filter only
 
       const grooming = parseGroomingMap(data);
+      const itemizedLineItems = parsePaymentLineItems(data);
 
       out.push({
         id: d.id,
@@ -199,6 +228,8 @@ export default function IndividualUpcomingAppointmentsPage() {
         businessAddress: '',
         petNames: [],
         groomingSummaryByPetName: {},
+        paymentTotalCents: typeof data['paymentTotalCents'] === 'number' ? (data['paymentTotalCents'] as number) : null,
+        itemizedLineItems,
       });
     });
     return out;
@@ -228,6 +259,7 @@ export default function IndividualUpcomingAppointmentsPage() {
       if (keepUntil < now) return;
 
       const grooming = parseGroomingMap(data);
+      const itemizedLineItems = parsePaymentLineItems(data);
 
       out.push({
         id: d.id,
@@ -246,6 +278,8 @@ export default function IndividualUpcomingAppointmentsPage() {
         businessAddress: '',
         petNames: [],
         groomingSummaryByPetName: {},
+        paymentTotalCents: typeof data['paymentTotalCents'] === 'number' ? (data['paymentTotalCents'] as number) : null,
+        itemizedLineItems,
       });
     });
 
@@ -604,6 +638,26 @@ function AppointmentCard({
                 </div>
               ))}
           </div>
+        </div>
+      )}
+
+      {!!res.itemizedLineItems?.length && (
+        <div className="text-sm mt-3 border rounded p-3 bg-gray-50">
+          <div className="font-semibold">Invoice Summary</div>
+          <div className="mt-1 space-y-1">
+            {res.itemizedLineItems.map((line) => (
+              <div key={line.key} className="flex items-center justify-between gap-2 text-[13px] text-gray-700">
+                <span>{line.label} x{line.quantity}</span>
+                <span>{fmtCents(line.totalCents)}</span>
+              </div>
+            ))}
+          </div>
+          {typeof res.paymentTotalCents === 'number' && res.paymentTotalCents > 0 && (
+            <div className="mt-2 pt-2 border-t font-semibold flex items-center justify-between text-[13px]">
+              <span>Total Paid</span>
+              <span>{fmtCents(res.paymentTotalCents)}</span>
+            </div>
+          )}
         </div>
       )}
 
