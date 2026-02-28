@@ -73,5 +73,7 @@
   "assessment_drop_times": "Assessment Drop-Off Times",
   "assessment_pickup_times": "Assessment Pick-Up Times",
   "no_assessment_day": "No assessments on",
-  "assessment_time_settings_accessibility": "Configure assessment availability times"
+  "assessment_time_settings_accessibility": "Configure assessment availability times",
+  "manage_pay_at_checkout_items_title": "Manage Pay At Checkout Items",
+  "manage_pay_at_checkout_items_subtitle": "Configure daycare and grooming pricing used for pay-at-booking checkout."
 }

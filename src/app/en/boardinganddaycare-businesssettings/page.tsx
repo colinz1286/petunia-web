@@ -7,7 +7,6 @@ import {
     getFirestore,
     collection,
     doc,
-    getDoc,
     getDocs,
     query,
     where,
@@ -21,7 +20,6 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 import { initializeApp } from 'firebase/app';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { currencyTextToCents, centsToCurrencyText } from '@/lib/currencyUtils';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -39,7 +37,7 @@ const functions = getFunctions(app);
 
 export default function BusinessSettingsPage() {
     const t = useTranslations('boardingAndDaycareBusinessSettings');
-    const _locale = useLocale(); // eslint-disable-line @typescript-eslint/no-unused-vars
+    const _locale = useLocale();
     const router = useRouter();
 
     const [businessId, setBusinessId] = useState('');
@@ -58,13 +56,6 @@ export default function BusinessSettingsPage() {
     const [offersGrooming, setOffersGrooming] = useState(false);
     const [offersTraining, setOffersTraining] = useState(false);
     const [groomingServices, setGroomingServices] = useState<string[]>(['']);
-    const [groomingPricingItems, setGroomingPricingItems] = useState<string[]>(['']);
-    const [groomingServicePrices, setGroomingServicePrices] = useState<Record<string, string>>({});
-    const [groomingServiceCategories, setGroomingServiceCategories] = useState<Record<string, string>>({});
-
-
-    const [daycareAddOnServices, setDaycareAddOnServices] = useState<string[]>(['']);
-    const [daycareAddOnServicePrices, setDaycareAddOnServicePrices] = useState<Record<string, string>>({});
     const [requiresAssessment, setRequiresAssessment] = useState(false);
     const [temperamentTestRequired, setTemperamentTestRequired] = useState(false);
 
@@ -82,54 +73,6 @@ export default function BusinessSettingsPage() {
     const [stripePayoutsEnabled, setStripePayoutsEnabled] = useState(false);
     const [stripeOnboardingComplete, setStripeOnboardingComplete] = useState(false);
     const [stripeLoading, setStripeLoading] = useState(false);
-
-    // --- Daycare Pricing Settings (matches iOS; stored in /settings/daycarePricing) ---
-    const [daycarePrice1Pet, setDaycarePrice1Pet] = useState('');
-    const [daycarePrice2Pets, setDaycarePrice2Pets] = useState('');
-    const [daycarePrice3Pets, setDaycarePrice3Pets] = useState('');
-    const [daycarePrice4Pets, setDaycarePrice4Pets] = useState('');
-    const [daycarePrice5Pets, setDaycarePrice5Pets] = useState('');
-    const [maxDaycarePricingRows, setMaxDaycarePricingRows] = useState(3); // starts 1–3, expands to 5
-
-    const daycarePricePayloadFromFields = (): Record<string, number> => {
-        const payload: Record<string, number> = {};
-
-        const add = (petCount: number, value: string) => {
-            const cents = currencyTextToCents(value);
-            if (cents > 0) payload[String(petCount)] = cents;
-        };
-
-        add(1, daycarePrice1Pet);
-        add(2, daycarePrice2Pets);
-        add(3, daycarePrice3Pets);
-        add(4, daycarePrice4Pets);
-        add(5, daycarePrice5Pets);
-
-        return payload;
-    };
-
-    // NEW — Daycare Add-On Pricing Payload (parity with iOS)
-    const daycareAddOnPricingPayloadFromFields = (): { services: Record<string, { priceCents: number }> } => {
-        const servicesPayload: Record<string, { priceCents: number }> = {};
-
-        for (const service of daycareAddOnServices) {
-            const trimmed = service.trim();
-            if (!trimmed) continue;
-
-            const priceText = daycareAddOnServicePrices[trimmed] || '';
-            const cents = currencyTextToCents(priceText);
-
-            if (cents > 0) {
-                servicesPayload[trimmed] = {
-                    priceCents: cents,
-                };
-            }
-        }
-
-        return {
-            services: servicesPayload,
-        };
-    };
 
     // NEW — Boarding “What To Bring” lists (matches iOS)
     const [boardingRequiredItems, setBoardingRequiredItems] = useState<string[]>(['']);
@@ -310,38 +253,6 @@ export default function BusinessSettingsPage() {
                 setOffersGrooming(data.offersGrooming || false);
                 setOffersTraining(data.offersTraining || false);
                 setGroomingServices(data.groomingServices || ['']);
-                // --- Load Grooming Pricing (parity with iOS) ---
-                try {
-                    const groomingRef = doc(db, 'businesses', docSnap.id, 'settings', 'groomingPricing');
-                    const groomingSnap = await getDoc(groomingRef);
-
-                    if (groomingSnap.exists()) {
-                        const groomingData = groomingSnap.data();
-                        const services = groomingData.grooming?.services || {};
-
-                        const itemNames = Object.keys(services).sort();
-                        setGroomingPricingItems(itemNames.length > 0 ? itemNames : ['']);
-
-                        const priceMap: Record<string, string> = {};
-                        const categoryMap: Record<string, string> = {};
-
-                        for (const name of itemNames) {
-                            const cents = services[name]?.priceCents;
-                            if (typeof cents === 'number') {
-                                priceMap[name] = centsToCurrencyText(cents);
-                            }
-
-                            if (typeof services[name]?.category === 'string') {
-                                categoryMap[name] = services[name].category;
-                            }
-                        }
-
-                        setGroomingServicePrices(priceMap);
-                        setGroomingServiceCategories(categoryMap);
-                    }
-                } catch {
-                    // silent fail
-                }
 
                 setRequiresAssessment(data.requiresAssessment || false);
 
@@ -361,60 +272,6 @@ export default function BusinessSettingsPage() {
                 setStripeChargesEnabled(!!stripeData.chargesEnabled);
                 setStripePayoutsEnabled(!!stripeData.payoutsEnabled);
                 setStripeOnboardingComplete(!!stripeData.onboardingComplete);
-
-                // --- Load Daycare Pricing (matches iOS; /businesses/{businessId}/settings/daycarePricing) ---
-                try {
-                    const pricingRef = doc(db, 'businesses', docSnap.id, 'settings', 'daycarePricing');
-                    const pricingSnap = await getDoc(pricingRef);
-
-                    if (pricingSnap.exists()) {
-                        const pricingData = pricingSnap.data() as Record<string, number>;
-
-                        if (typeof pricingData['1'] === 'number') setDaycarePrice1Pet(centsToCurrencyText(pricingData['1']));
-                        if (typeof pricingData['2'] === 'number') setDaycarePrice2Pets(centsToCurrencyText(pricingData['2']));
-                        if (typeof pricingData['3'] === 'number') setDaycarePrice3Pets(centsToCurrencyText(pricingData['3']));
-
-                        if (typeof pricingData['4'] === 'number') {
-                            setDaycarePrice4Pets(centsToCurrencyText(pricingData['4']));
-                            setMaxDaycarePricingRows((prev) => Math.max(prev, 4));
-                        }
-
-                        if (typeof pricingData['5'] === 'number') {
-                            setDaycarePrice5Pets(centsToCurrencyText(pricingData['5']));
-                            setMaxDaycarePricingRows((prev) => Math.max(prev, 5));
-                        }
-                    }
-                } catch {
-                    // Silent fail (matches iOS behavior: defaults are safe)
-                }
-
-                // --- Load Daycare Add-On Pricing (parity with iOS) ---
-                try {
-                    const addOnRef = doc(db, 'businesses', docSnap.id, 'settings', 'daycareAddOnPricing');
-                    const addOnSnap = await getDoc(addOnRef);
-
-                    if (addOnSnap.exists()) {
-                        const addOnData = addOnSnap.data();
-                        const services = addOnData.services || {};
-
-                        // 🔥 CRITICAL — Repopulate service array (same fix as iOS)
-                        const serviceNames = Object.keys(services).sort();
-                        setDaycareAddOnServices(serviceNames.length > 0 ? serviceNames : ['']);
-
-                        const priceMap: Record<string, string> = {};
-
-                        for (const name of serviceNames) {
-                            const cents = services[name]?.priceCents;
-                            if (typeof cents === 'number') {
-                                priceMap[name] = centsToCurrencyText(cents);
-                            }
-                        }
-
-                        setDaycareAddOnServicePrices(priceMap);
-                    }
-                } catch {
-                    // silent fail (matches iOS behavior)
-                }
 
                 // NEW — What To Bring (Boarding only)
                 setBoardingRequiredItems(data.boardingRequiredItems || ['']);
@@ -641,66 +498,6 @@ export default function BusinessSettingsPage() {
                 enableFinancialManagement: optionalFeatures.financialManagement,
             },
         });
-
-        // --- NEW: Save Daycare Pricing separately (matches iOS) ---
-        if (offersDaycare) {
-            const pricingPayload = daycarePricePayloadFromFields();
-            const pricingRef = doc(db, 'businesses', businessId, 'settings', 'daycarePricing');
-
-            // Match iOS behavior: only write if at least one price exists
-            if (Object.keys(pricingPayload).length > 0) {
-                await setDoc(pricingRef, pricingPayload, { merge: false });
-            }
-        }
-
-        // --- Save Daycare Add-On Pricing (parity with iOS) ---
-        if (offersDaycare) {
-            const addOnPayload = daycareAddOnPricingPayloadFromFields();
-            const addOnRef = doc(db, 'businesses', businessId, 'settings', 'daycareAddOnPricing');
-
-            if (Object.keys(addOnPayload.services || {}).length > 0) {
-                await setDoc(addOnRef, addOnPayload, { merge: false });
-            }
-        }
-
-        // --- Save Grooming Pricing (parity with iOS) ---
-        if (offersGrooming) {
-            const servicesPayload: Record<string, { priceCents: number; category?: string }> = {};
-
-            for (const item of groomingPricingItems) {
-                const trimmed = item.trim();
-                if (!trimmed) continue;
-
-                const priceText = groomingServicePrices[trimmed] || '';
-                const cents = currencyTextToCents(priceText);
-
-                if (cents > 0) {
-                    const serviceData: { priceCents: number; category?: string } = {
-                        priceCents: cents,
-                    };
-
-                    if (groomingServiceCategories[trimmed]) {
-                        serviceData.category = groomingServiceCategories[trimmed];
-                    }
-
-                    servicesPayload[trimmed] = serviceData;
-                }
-            }
-
-            if (Object.keys(servicesPayload).length > 0) {
-                const groomingRef = doc(db, 'businesses', businessId, 'settings', 'groomingPricing');
-
-                await setDoc(
-                    groomingRef,
-                    {
-                        grooming: {
-                            services: servicesPayload,
-                        },
-                    },
-                    { merge: false }
-                );
-            }
-        }
 
         // keep waiver subdoc behavior simple/consistent
         const waiverRef = doc(db, 'businesses', businessId, 'settings', 'clientWaiver');
@@ -1105,9 +902,32 @@ export default function BusinessSettingsPage() {
                                     />
 
                                     {daycarePayAtBookingEnabled && (
-                                        <p className="text-xs text-gray-500 ml-8">
-                                            Clients pay in full when booking daycare. Deposits are not supported.
-                                        </p>
+                                        <>
+                                            <p className="text-xs text-gray-500 ml-8">
+                                                Clients pay in full when booking daycare. Deposits are not supported.
+                                            </p>
+
+                                            <div className="mt-3 ml-8 border rounded p-3 bg-gray-50">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => router.push(`/${_locale}/boardinganddaycare-payatcheckoutitems`)}
+                                                    className="w-full text-left"
+                                                >
+                                                    <div className="flex items-center justify-between gap-3">
+                                                        <div>
+                                                            <p className="font-semibold text-sm text-[color:var(--color-accent)]">
+                                                                {t('manage_pay_at_checkout_items_title')}
+                                                            </p>
+                                                            <p className="text-xs text-gray-500 mt-1">
+                                                                {t('manage_pay_at_checkout_items_subtitle')}
+                                                            </p>
+                                                        </div>
+
+                                                        <span className="text-gray-400 text-lg">›</span>
+                                                    </div>
+                                                </button>
+                                            </div>
+                                        </>
                                     )}
 
                                     <Toggle
@@ -1185,241 +1005,6 @@ export default function BusinessSettingsPage() {
                                             </p>
                                         )}
                                 </div>
-                            )}
-                        </div>
-                    )}
-
-                    {offersDaycare && (
-                        <div className="mt-10 space-y-3">
-                            <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
-                                Daycare Pricing
-                            </h2>
-
-                            <p className="text-xs text-gray-500 text-center">
-                                Enter daycare pricing by number of pets. Maximum of 5 pets.
-                            </p>
-
-                            <input
-                                value={daycarePrice1Pet}
-                                onChange={(e) => setDaycarePrice1Pet(e.target.value)}
-                                placeholder="Daycare price (1 pet)"
-                                className="w-full border px-3 py-2 rounded text-sm"
-                                inputMode="decimal"
-                            />
-
-                            <input
-                                value={daycarePrice2Pets}
-                                onChange={(e) => setDaycarePrice2Pets(e.target.value)}
-                                placeholder="Daycare price (2 pets)"
-                                className="w-full border px-3 py-2 rounded text-sm"
-                                inputMode="decimal"
-                            />
-
-                            <input
-                                value={daycarePrice3Pets}
-                                onChange={(e) => setDaycarePrice3Pets(e.target.value)}
-                                placeholder="Daycare price (3 pets)"
-                                className="w-full border px-3 py-2 rounded text-sm"
-                                inputMode="decimal"
-                            />
-
-                            {maxDaycarePricingRows >= 4 && (
-                                <input
-                                    value={daycarePrice4Pets}
-                                    onChange={(e) => setDaycarePrice4Pets(e.target.value)}
-                                    placeholder="Daycare price (4 pets)"
-                                    className="w-full border px-3 py-2 rounded text-sm"
-                                    inputMode="decimal"
-                                />
-                            )}
-
-                            {maxDaycarePricingRows >= 5 && (
-                                <input
-                                    value={daycarePrice5Pets}
-                                    onChange={(e) => setDaycarePrice5Pets(e.target.value)}
-                                    placeholder="Daycare price (5 pets)"
-                                    className="w-full border px-3 py-2 rounded text-sm"
-                                    inputMode="decimal"
-                                />
-                            )}
-
-                            {maxDaycarePricingRows < 5 && (
-                                <button
-                                    onClick={() => setMaxDaycarePricingRows((prev) => prev + 1)}
-                                    className="text-sm text-green-700 underline"
-                                >
-                                    Add pricing for {maxDaycarePricingRows + 1} pets
-                                </button>
-                            )}
-                        </div>
-                    )}
-
-                    {offersGrooming && (
-                        <div className="mt-10 space-y-3">
-                            <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
-                                Grooming Pricing
-                            </h2>
-
-                            <p className="text-xs text-gray-500 text-center">
-                                Add grooming menu items and pricing.
-                            </p>
-
-                            {groomingPricingItems.map((item, index) => {
-                                const trimmed = item.trim();
-
-                                return (
-                                    <div key={`gpi-${index}`} className="space-y-2">
-                                        <div className="flex gap-2">
-                                            <input
-                                                value={item}
-                                                placeholder={`Menu Item ${index + 1}`}
-                                                onChange={(e) => {
-                                                    const updated = [...groomingPricingItems];
-                                                    updated[index] = e.target.value.slice(0, 80);
-                                                    setGroomingPricingItems(updated);
-                                                }}
-                                                className="flex-1 border px-3 py-2 rounded text-sm"
-                                            />
-
-                                            {groomingPricingItems.length > 1 && (
-                                                <button
-                                                    onClick={() => {
-                                                        const removed = groomingPricingItems[index].trim();
-                                                        setGroomingPricingItems(prev => prev.filter((_, i) => i !== index));
-                                                        if (removed) {
-                                                            setGroomingServicePrices(prev => {
-                                                                const copy = { ...prev };
-                                                                delete copy[removed];
-                                                                return copy;
-                                                            });
-                                                        }
-                                                    }}
-                                                    className="text-red-600 font-bold text-lg"
-                                                >
-                                                    &times;
-                                                </button>
-                                            )}
-                                        </div>
-
-                                        {trimmed !== '' && (
-                                            <>
-                                                <input
-                                                    value={groomingServicePrices[trimmed] || ''}
-                                                    placeholder={`Price for ${trimmed}`}
-                                                    inputMode="decimal"
-                                                    onChange={(e) =>
-                                                        setGroomingServicePrices(prev => ({
-                                                            ...prev,
-                                                            [trimmed]: e.target.value,
-                                                        }))
-                                                    }
-                                                    className="w-full border px-3 py-2 rounded text-sm"
-                                                />
-
-                                                {/* Category Picker (Parity with iOS) */}
-                                                <select
-                                                    value={groomingServiceCategories[trimmed] || ''}
-                                                    onChange={(e) =>
-                                                        setGroomingServiceCategories(prev => {
-                                                            const updated = { ...prev };
-                                                            if (e.target.value === '') {
-                                                                delete updated[trimmed];
-                                                            } else {
-                                                                updated[trimmed] = e.target.value;
-                                                            }
-                                                            return updated;
-                                                        })
-                                                    }
-                                                    className="w-full border px-3 py-2 rounded text-sm mt-1"
-                                                >
-                                                    <option value="">None</option>
-                                                    <option value="bath">Bath</option>
-                                                </select>
-                                            </>
-                                        )}
-                                    </div>
-                                );
-                            })}
-
-                            {groomingPricingItems.length < 25 && (
-                                <button
-                                    onClick={() => setGroomingPricingItems(prev => [...prev, ''])}
-                                    className="text-sm text-green-700 underline"
-                                >
-                                    Add Another Menu Item
-                                </button>
-                            )}
-                        </div>
-                    )}
-
-                    {offersDaycare && (
-                        <div className="mt-10 space-y-3">
-                            <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
-                                Additional Daycare Add-On Services
-                            </h2>
-
-                            <p className="text-xs text-gray-500 text-center">
-                                Optional services that can be added to daycare bookings.
-                            </p>
-
-                            {daycareAddOnServices.map((service, index) => {
-                                const trimmed = service.trim();
-
-                                return (
-                                    <div key={`addon-${index}`} className="space-y-2">
-                                        <div className="flex gap-2">
-                                            <input
-                                                value={service}
-                                                placeholder={`Add-On Service ${index + 1}`}
-                                                onChange={(e) => {
-                                                    const updated = [...daycareAddOnServices];
-                                                    updated[index] = e.target.value.slice(0, 50);
-                                                    setDaycareAddOnServices(updated);
-                                                }}
-                                                className="flex-1 border px-3 py-2 rounded text-sm"
-                                            />
-
-                                            {daycareAddOnServices.length > 1 && (
-                                                <button
-                                                    onClick={() =>
-                                                        setDaycareAddOnServices(prev =>
-                                                            prev.filter((_, i) => i !== index)
-                                                        )
-                                                    }
-                                                    className="text-red-600 font-bold text-lg"
-                                                >
-                                                    &times;
-                                                </button>
-                                            )}
-                                        </div>
-
-                                        {trimmed !== '' && (
-                                            <input
-                                                value={daycareAddOnServicePrices[trimmed] || ''}
-                                                placeholder={`Price for ${trimmed}`}
-                                                inputMode="decimal"
-                                                onChange={(e) =>
-                                                    setDaycareAddOnServicePrices(prev => ({
-                                                        ...prev,
-                                                        [trimmed]: e.target.value,
-                                                    }))
-                                                }
-                                                className="w-full border px-3 py-2 rounded text-sm"
-                                            />
-                                        )}
-                                    </div>
-                                );
-                            })}
-
-                            {daycareAddOnServices.length < 10 && (
-                                <button
-                                    onClick={() =>
-                                        setDaycareAddOnServices(prev => [...prev, ''])
-                                    }
-                                    className="text-sm text-green-700 underline"
-                                >
-                                    Add Another Add-On Service
-                                </button>
                             )}
                         </div>
                     )}
@@ -2092,4 +1677,3 @@ function Toggle({
         </label>
     );
 }
-

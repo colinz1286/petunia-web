@@ -1,0 +1,11 @@
+{
+  "title": "Pay At Checkout Items",
+  "daycareTitle": "Daycare Pay At Booking Items",
+  "daycareDescription": "Configure daycare items that must be paid immediately upon booking.",
+  "daycareManageButton": "Manage Daycare Pay At Booking Pricing",
+  "boardingTitle": "Boarding Deposits",
+  "boardingDescription": "Boarding deposit settings are configured in Business Settings.",
+  "groomingTitle": "Grooming Pay At Booking Items",
+  "groomingDescription": "Standalone grooming services and deposits can be configured here.",
+  "groomingManageButton": "Manage Grooming Pay At Booking Pricing"
+}

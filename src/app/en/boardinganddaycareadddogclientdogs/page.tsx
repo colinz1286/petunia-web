@@ -11,6 +11,9 @@ import {
     getDocs,
     query,
     where,
+    doc,
+    setDoc,
+    serverTimestamp,
 } from 'firebase/firestore';
 import {
     getDatabase,
@@ -43,6 +46,7 @@ export default function BoardingAndDaycareAddDogClientDogsPage() {
     const clientId = searchParams.get('clientId');
 
     const [businessIdSanitized, setBusinessIdSanitized] = useState('');
+    const [businessIdRaw, setBusinessIdRaw] = useState('');
     interface Dog {
         id: string;
         petName?: string;
@@ -75,12 +79,19 @@ export default function BoardingAndDaycareAddDogClientDogsPage() {
             }
 
             try {
-                const q = query(
-                    collection(db, 'businesses'),
-                    where('ownerId', '==', user.uid)
-                );
+                const q = query(collection(db, 'businesses'), where('ownerId', '==', user.uid));
                 const snap = await getDocs(q);
-                const docA = snap.docs[0];
+                let docA = snap.docs[0];
+
+                // Fallback parity with iOS ownerIds model
+                if (!docA) {
+                    const q2 = query(
+                        collection(db, 'businesses'),
+                        where('ownerIds', 'array-contains', user.uid)
+                    );
+                    const snap2 = await getDocs(q2);
+                    docA = snap2.docs[0];
+                }
 
                 if (!docA) {
                     setErrorMsg(t('error_business_not_found'));
@@ -89,6 +100,7 @@ export default function BoardingAndDaycareAddDogClientDogsPage() {
                 }
 
                 const raw = docA.id;
+                setBusinessIdRaw(raw);
 
                 const sanitized = raw.trim().replace(/[.\#$\[\]\/:]/g, '-');
                 setBusinessIdSanitized(sanitized);
@@ -135,17 +147,26 @@ export default function BoardingAndDaycareAddDogClientDogsPage() {
     /** Step 3 — Add dog to property */
     const addDogToProperty = async (dog: Dog, type: 'Daycare' | 'Boarding') => {
         try {
+            if (!clientId) {
+                setErrorMsg(t('error_adding_dog'));
+                return;
+            }
             const today = new Date().toISOString().split('T')[0];
+            const reservationId = crypto.randomUUID();
 
             const path = rtdbRef(
                 rtdb,
-                `checkIns/${businessIdSanitized}/${today}/${dog.id}`
+                `checkIns/${businessIdSanitized}/${today}/${reservationId}`
             );
 
             const payload = {
+                reservationId,
                 id: dog.id,
+                dogId: dog.id,
                 name: dog.petName || dog.name || 'Unnamed',
                 owner: ownerName,
+                userId: clientId,
+                ownerUserId: clientId,
                 type: type,
                 checkInTime: new Date().toISOString(),
                 currentFood: dog.currentFood ?? '',
@@ -157,6 +178,18 @@ export default function BoardingAndDaycareAddDogClientDogsPage() {
             };
 
             await rtdbSet(path, payload);
+
+            // Ensure client notes doc exists immediately (parity with iOS)
+            if (businessIdRaw) {
+                await setDoc(
+                    doc(db, 'clientNotes', clientId, 'businesses', businessIdRaw),
+                    {
+                        lastUpdated: serverTimestamp(),
+                        updatedBy: auth.currentUser?.email || auth.currentUser?.uid || 'system',
+                    },
+                    { merge: true }
+                );
+            }
 
             router.push(`/${locale}/boardinganddaycaredogsonproperty`);
         } catch (error) {

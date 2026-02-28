@@ -1,0 +1,21 @@
+{
+  "loading": "Loading daycare pricing...",
+  "back": "Back",
+  "title": "Daycare Pay At Booking Pricing",
+  "pricingIntro": "Enter daycare pricing by number of dogs (up to 10).",
+  "tierPricePlaceholder": "Price for {count} Dog{suffix}",
+  "helperTextOne": "Daycare rate charged when 1 dog is booked.",
+  "helperTextMany": "Daycare rate charged when {count} dogs are booked together.",
+  "addTierButton": "Add pricing tier for {count} dogs",
+  "addonTitle": "Grooming Add-Ons (Daycare)",
+  "addonDescription": "Optional grooming services that can be added during daycare booking.",
+  "addonServicePlaceholder": "Add-On Service Name",
+  "addonPricePlaceholder": "Price for {name}",
+  "addAddonButton": "Add Grooming Add-On",
+  "noticeUnableToResolve": "Unable to resolve business.",
+  "noticeEnterOnePrice": "Please enter at least one valid price.",
+  "noticeSaveSuccess": "Daycare pricing saved successfully.",
+  "noticeSaveFailed": "Failed to save daycare settings.",
+  "saveButton": "Save Daycare Pricing & Add-Ons",
+  "savingButton": "Saving..."
+}

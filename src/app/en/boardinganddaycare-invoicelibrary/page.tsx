@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import {
@@ -24,7 +24,11 @@ type InvoiceItem = {
     priceCents: number;
     category: string;
     serviceContext?: string; // NEW (optional)
+    billingModel?: string;
+    petCount?: number;
     active: boolean;
+    createdAt?: unknown;
+    updatedAt?: unknown;
 };
 
 export default function BoardingAndDaycareInvoiceLibraryPage() {
@@ -42,7 +46,7 @@ export default function BoardingAndDaycareInvoiceLibraryPage() {
     const [editingItem, setEditingItem] = useState<InvoiceItem | null>(null);
 
     // Resolve businessId (ownerId OR ownerIds model)
-    async function resolveBusinessIdForOwner(uid: string): Promise<string | null> {
+    const resolveBusinessIdForOwner = useCallback(async (uid: string): Promise<string | null> => {
         try {
             const r1 = await getDocs(
                 query(collection(db, 'businesses'), where('ownerId', '==', uid))
@@ -58,7 +62,7 @@ export default function BoardingAndDaycareInvoiceLibraryPage() {
         } catch { }
 
         return null;
-    }
+    }, [db]);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -83,7 +87,7 @@ export default function BoardingAndDaycareInvoiceLibraryPage() {
         });
 
         return () => unsubscribe();
-    }, [auth]);
+    }, [auth, resolveBusinessIdForOwner]);
 
     // Snapshot listener
     useEffect(() => {
@@ -129,7 +133,11 @@ export default function BoardingAndDaycareInvoiceLibraryPage() {
                         priceCents?: unknown;
                         category?: unknown;
                         serviceContext?: unknown; // NEW
+                        billingModel?: unknown;
+                        petCount?: unknown;
                         active?: unknown;
+                        createdAt?: unknown;
+                        updatedAt?: unknown;
                     };
 
                     hydrated.push({
@@ -140,7 +148,15 @@ export default function BoardingAndDaycareInvoiceLibraryPage() {
                         serviceContext: typeof value.serviceContext === 'string'
                             ? value.serviceContext
                             : 'none',
-                        active: typeof value.active === 'boolean' ? value.active : true
+                        billingModel: typeof value.billingModel === 'string'
+                            ? value.billingModel
+                            : 'perVisit',
+                        petCount: typeof value.petCount === 'number'
+                            ? value.petCount
+                            : 1,
+                        active: typeof value.active === 'boolean' ? value.active : true,
+                        createdAt: value.createdAt,
+                        updatedAt: value.updatedAt
                     });
                 }
 
@@ -178,6 +194,8 @@ export default function BoardingAndDaycareInvoiceLibraryPage() {
         price: string,
         category: string,
         serviceContext: string,
+        billingModel: string,
+        petCount: number,
         active: boolean
     ) => {
         if (!businessId) return;
@@ -193,7 +211,10 @@ export default function BoardingAndDaycareInvoiceLibraryPage() {
             name,
             priceCents,
             category,
+            billingModel,
+            petCount,
             active,
+            createdAt: editingItem?.createdAt ?? new Date(),
             updatedAt: new Date()
         };
 
@@ -202,11 +223,6 @@ export default function BoardingAndDaycareInvoiceLibraryPage() {
             payload.serviceContext = deleteField();
         } else {
             payload.serviceContext = serviceContext;
-        }
-
-        // Only set createdAt for new items
-        if (!editingItem) {
-            payload.createdAt = new Date();
         }
 
         try {
@@ -373,6 +389,8 @@ function InvoiceEditorModal({
         price: string,
         category: string,
         serviceContext: string,
+        billingModel: string,
+        petCount: number,
         active: boolean
     ) => void;
     onClose: () => void; // RESTORED
@@ -393,8 +411,12 @@ function InvoiceEditorModal({
         return 'none';
     });
 
+    const [billingModel, setBillingModel] = useState(existing?.billingModel ?? 'perVisit');
+    const [petCount, setPetCount] = useState(existing?.petCount ?? 1);
     const [active, setActive] = useState(existing?.active ?? true);
     const [showContextInfo, setShowContextInfo] = useState(false);
+    const [showBillingModelInfo, setShowBillingModelInfo] = useState(false);
+    const [showPetCountInfo, setShowPetCountInfo] = useState(false);
 
     return (
         <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4">
@@ -428,9 +450,89 @@ function InvoiceEditorModal({
                         <option value="boarding">Boarding</option>
                         <option value="grooming">Grooming</option>
                         <option value="training">Training</option>
-                        <option value="addon">Add-on</option>
+                        <option value="add-on">Add-on</option>
                         <option value="retail">Retail</option>
                     </select>
+
+                    <div className="relative">
+                        <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm font-medium">Billing Model</span>
+
+                            <button
+                                type="button"
+                                onClick={() => setShowBillingModelInfo(prev => !prev)}
+                                className="text-xs w-5 h-5 flex items-center justify-center rounded-full border border-gray-400 text-gray-600 hover:bg-gray-100"
+                            >
+                                i
+                            </button>
+                        </div>
+
+                        <select
+                            className="w-full border p-2 rounded"
+                            value={billingModel}
+                            onChange={(e) => setBillingModel(e.target.value)}
+                        >
+                            <option value="perVisit">Per Visit</option>
+                            <option value="monthlyPass">Monthly Pass</option>
+                            <option value="package">Package</option>
+                        </select>
+
+                        {showBillingModelInfo && (
+                            <div className="absolute z-50 mt-2 w-full bg-white border rounded shadow-lg p-3 text-xs text-gray-600 space-y-2">
+                                <p className="font-semibold">Billing Model</p>
+                                <p>Per Visit: Charged each time the service is performed.</p>
+                                <p>Monthly Pass: A subscription-style product that covers multiple visits within a billing cycle.</p>
+                                <p>Package: A bundle of prepaid sessions.</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="relative">
+                        <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm font-medium">Pet Count: {petCount}</span>
+
+                            <button
+                                type="button"
+                                onClick={() => setShowPetCountInfo(prev => !prev)}
+                                className="text-xs w-5 h-5 flex items-center justify-center rounded-full border border-gray-400 text-gray-600 hover:bg-gray-100"
+                            >
+                                i
+                            </button>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setPetCount((v) => Math.max(1, v - 1))}
+                                className="px-3 py-1 border rounded"
+                            >
+                                -
+                            </button>
+                            <input
+                                type="number"
+                                min={1}
+                                max={5}
+                                value={petCount}
+                                onChange={(e) => setPetCount(Math.max(1, Math.min(5, Number(e.target.value) || 1)))}
+                                className="w-20 border p-2 rounded text-center"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setPetCount((v) => Math.min(5, v + 1))}
+                                className="px-3 py-1 border rounded"
+                            >
+                                +
+                            </button>
+                        </div>
+
+                        {showPetCountInfo && (
+                            <div className="absolute z-50 mt-2 w-full bg-white border rounded shadow-lg p-3 text-xs text-gray-600 space-y-2">
+                                <p className="font-semibold">Pet Count</p>
+                                <p>This defines how many dogs this price covers.</p>
+                                <p>For grooming or training, this is usually 1 because each dog is billed individually.</p>
+                            </div>
+                        )}
+                    </div>
 
                     <div className="relative">
                         <div className="flex items-center justify-between mb-1">
@@ -483,10 +585,11 @@ function InvoiceEditorModal({
                         Cancel
                     </button>
                     <button
-                        onClick={() => onSave(name, price, category, serviceContext, active)}
+                        onClick={() => onSave(name, price, category, serviceContext, billingModel, petCount, active)}
                         className="px-4 py-2 bg-[#1F4D2E] hover:bg-[#163A22] text-white rounded font-semibold"
                         style={{ display: 'inline-block', minWidth: '90px' }}
                         type="button"
+                        disabled={name.trim().length === 0 || Number.isNaN(parseFloat(price))}
                     >
                         Save
                     </button>

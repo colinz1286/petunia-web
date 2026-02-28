@@ -49,8 +49,11 @@ const rtdb = getDatabase();
  *  ========================= */
 type Dog = {
   id: string;
+  reservationId?: string | null;
   name: string;
   owner: string;
+  ownerUserId?: string | null;
+  userId?: string | null;
   type: 'Daycare' | 'Boarding' | string;
   checkInTime: string; // ISO
   groomingAddOns: string[];
@@ -241,8 +244,11 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
             const checkInTime = (v.checkInTime as string) || '';
             const dog: Dog = {
               id: dogNode.key!,
+              reservationId: (v.reservationId as string) || dogNode.key || null,
               name,
               owner,
+              ownerUserId: (v.ownerUserId as string) || null,
+              userId: (v.userId as string) || null,
               type,
               checkInTime,
               groomingAddOns: (v.groomingAddOns as string[]) || [],
@@ -443,6 +449,12 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
           return;
         }
 
+        // Primary source (parity with iOS): ownerUserId from check-in record
+        if (dog.ownerUserId && dog.ownerUserId.trim().length > 0) {
+          router.push(`/${locale}/boardinganddaycareindividualclientnotes/${dog.ownerUserId}`);
+          return;
+        }
+
         const ownerUid = await fetchOwnerUidByNameScoped(dog.owner);
         if (!ownerUid) {
           alert('Unable to resolve this client.');
@@ -554,21 +566,33 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
             {t('dogs_on_property')}
           </h1>
 
-          {/* Top-right Add Dog button */}
-          <button
-            onClick={() => router.push(`/${locale}/boardinganddaycareadddogclientlist`)}
-            className="absolute right-0 top-1/2 -translate-y-1/2 text-[color:var(--color-accent)] hover:text-green-700"
-            aria-label="Add Dog"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              className="w-7 h-7"
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-3">
+            {/* Manual Invoice Page */}
+            <button
+              onClick={() => router.push(`/${locale}/boardinganddaycare-manualinvoices`)}
+              className="text-[color:var(--color-accent)] hover:text-green-700 text-2xl leading-none"
+              aria-label="Manual Invoices"
+              title="Manual Invoices"
             >
-              <path d="M12 5v14m7-7H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </button>
+              $
+            </button>
+
+            {/* Top-right Add Dog button */}
+            <button
+              onClick={() => router.push(`/${locale}/boardinganddaycareadddogclientlist`)}
+              className="text-[color:var(--color-accent)] hover:text-green-700"
+              aria-label="Add Dog"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                className="w-7 h-7"
+              >
+                <path d="M12 5v14m7-7H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
         </div>
 
 

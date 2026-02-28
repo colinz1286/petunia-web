@@ -1,0 +1,14 @@
+{
+  "loading": "Loading grooming pricing...",
+  "back": "Back",
+  "title": "Grooming Pay At Booking Pricing",
+  "serviceNamePlaceholder": "Service Name",
+  "pricePlaceholder": "Price for {name}",
+  "categoryNone": "None",
+  "categoryBath": "Bath",
+  "addServiceButton": "Add Grooming Service",
+  "noticeSaveSuccess": "Grooming pricing saved successfully.",
+  "noticeSaveFailed": "Failed to save grooming pricing.",
+  "saveButton": "Save Grooming Pricing",
+  "savingButton": "Saving..."
+}
