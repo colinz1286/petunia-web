@@ -163,6 +163,17 @@ type DraftBooking = {
   groomingAddOns?: GroomingSelections;
 };
 
+type DaycareAddOnPricingDoc = {
+  services?: Record<string, { priceCents?: number }>;
+};
+
+type DogAssessmentDoc = {
+  notes?: string;
+  bathSize?: string;
+  bath_size?: string;
+  bathsize?: string;
+};
+
 /* =========================
    Small helpers
    ========================= */
@@ -265,6 +276,8 @@ export default function IndividualBookDaycarePage() {
   const [draftBookings, setDraftBookings] = useState<DraftBooking[]>([]);
   const [groomingAvailable, setGroomingAvailable] = useState(false);
   const [groomingServices, setGroomingServices] = useState<string[]>([]);
+  const [groomingServicePriceCentsByName, setGroomingServicePriceCentsByName] = useState<Record<string, number>>({});
+  const [petBathSizeById, setPetBathSizeById] = useState<Record<string, string>>({});
   const [groomingSelections, setGroomingSelections] = useState<GroomingSelections>({});
   const [showGroomingPrompt, setShowGroomingPrompt] = useState(false);
   const [pendingDraft, setPendingDraft] = useState<DraftBooking | null>(null);
@@ -281,6 +294,41 @@ export default function IndividualBookDaycarePage() {
   const [isLoadingAlerts, setIsLoadingAlerts] = useState(false);
 
   const bizTZ = businessTimeZoneId || Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const normalizeText = useCallback((value: string) => value.trim().toLowerCase(), []);
+
+  const extractBathSizeFromAssessment = useCallback((assessment: DogAssessmentDoc): string | null => {
+    const direct = assessment.bathSize || assessment.bath_size || assessment.bathsize;
+    if (typeof direct === 'string' && direct.trim() !== '') {
+      return direct.trim();
+    }
+
+    const notes = (assessment.notes || '').trim();
+    if (!notes) return null;
+
+    const match = notes.match(/bath\s*size\s*[:\-]\s*([a-z0-9+\- ]+)/i)
+      || notes.match(/bath\s*[:\-]\s*([a-z0-9+\- ]+)/i);
+
+    if (!match?.[1]) return null;
+    const parsed = match[1].trim();
+    return parsed === '' ? null : parsed;
+  }, []);
+
+  const findBathServiceForSize = useCallback((bathSize: string, services: string[]): string | null => {
+    const normalizedSize = normalizeText(bathSize);
+    if (!normalizedSize) return null;
+
+    const bathServices = services.filter((service) => normalizeText(service).startsWith('bath'));
+    if (bathServices.length === 0) return null;
+
+    const exact = bathServices.find((service) => {
+      const normalizedService = normalizeText(service);
+      return normalizedService === `bath - ${normalizedSize}` || normalizedService === `bath ${normalizedSize}`;
+    });
+    if (exact) return exact;
+
+    return bathServices.find((service) => normalizeText(service).includes(normalizedSize)) || null;
+  }, [normalizeText]);
 
   /* =========================
    Vaccine loading + alerts
@@ -442,7 +490,35 @@ export default function IndividualBookDaycarePage() {
 
       // Grooming
       setGroomingAvailable(!!data.groomingAvailableAsAddOnToDaycare);
-      setGroomingServices((data.groomingServices || []).map(s => (s || '').trim()).filter(Boolean));
+      const fallbackServices = (data.groomingServices || []).map(s => (s || '').trim()).filter(Boolean);
+      setGroomingServices(fallbackServices);
+
+      // Prefer pay-at-checkout daycare add-on pricing keys for daycare grooming options.
+      try {
+        const addOnSnap = await getDoc(doc(db, 'businesses', bizId, 'settings', 'daycareAddOnPricing'));
+        if (addOnSnap.exists()) {
+          const addOnData = addOnSnap.data() as DaycareAddOnPricingDoc;
+          const servicesMap = addOnData.services || {};
+          const pricedServices = Object.keys(servicesMap)
+            .map((s) => s.trim())
+            .filter(Boolean)
+            .sort((a, b) => a.localeCompare(b));
+
+          const pricesByName: Record<string, number> = {};
+          for (const [serviceName, service] of Object.entries(servicesMap)) {
+            if (typeof service?.priceCents === 'number') {
+              pricesByName[serviceName] = service.priceCents;
+            }
+          }
+          setGroomingServicePriceCentsByName(pricesByName);
+
+          if (pricedServices.length > 0) {
+            setGroomingServices(pricedServices);
+          }
+        }
+      } catch {
+        // Keep fallback service names from business doc.
+      }
 
       // Time map
       const map = (data.dropOffTimesDaycare || {}) as WeekdayMap;
@@ -515,6 +591,37 @@ export default function IndividualBookDaycarePage() {
     return () => unsub();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessId, locale, router]);
+
+  useEffect(() => {
+    const hydrateBathSizes = async () => {
+      if (!businessId || pets.length === 0) {
+        setPetBathSizeById({});
+        return;
+      }
+
+      const rows = await Promise.all(
+        pets.map(async (pet) => {
+          try {
+            const ref = doc(db, 'dogAssessments', pet.id, 'businesses', businessId);
+            const snap = await getDoc(ref);
+            if (!snap.exists()) return [pet.id, ''] as const;
+            const parsed = extractBathSizeFromAssessment(snap.data() as DogAssessmentDoc) || '';
+            return [pet.id, parsed] as const;
+          } catch {
+            return [pet.id, ''] as const;
+          }
+        })
+      );
+
+      const next: Record<string, string> = {};
+      for (const [petId, bathSize] of rows) {
+        if (bathSize) next[petId] = bathSize;
+      }
+      setPetBathSizeById(next);
+    };
+
+    void hydrateBathSizes();
+  }, [businessId, pets, extractBathSizeFromAssessment]);
 
   // 1) filterUnavailableTimes (keep as-is; shown here for placement)
   const filterUnavailableTimes = useCallback(
@@ -726,7 +833,8 @@ export default function IndividualBookDaycarePage() {
     resetFormAfterDraft,
     pickUpTimeRequired,
     selectedPickUpTime,
-    blackoutDates
+    blackoutDates,
+    bizTZ
   ]);
 
   // 🔵 Stripe Payment Flow (matches iOS architecture)
@@ -754,6 +862,8 @@ export default function IndividualBookDaycarePage() {
           dropOffTime: b.dropOffTime,
           pickUpTime: b.pickUpTime,
           isAssessment: b.isAssessment,
+          // Include selected daycare grooming add-ons so checkout can price them.
+          groomingAddOns: b.groomingAddOns || {},
         })),
       };
 
@@ -1126,10 +1236,16 @@ export default function IndividualBookDaycarePage() {
                 <div className="flex justify-end gap-3">
                   <button
                     onClick={() => {
-                      // Prepare empty selections buckets for each pet, then open the modal
+                      // Prepare selections for each pet, auto-prefilling matching bath size when available.
                       setGroomingSelections((prev) => {
                         const cp = { ...prev };
-                        pendingDraft.petIds.forEach((pid) => { if (!cp[pid]) cp[pid] = []; });
+                        pendingDraft.petIds.forEach((pid) => {
+                          if (cp[pid]?.length) return;
+
+                          const bathSize = petBathSizeById[pid];
+                          const matchedBath = bathSize ? findBathServiceForSize(bathSize, groomingServices) : null;
+                          cp[pid] = matchedBath ? [matchedBath] : [];
+                        });
                         return cp;
                       });
                       setShowGroomingUI(true);
@@ -1159,6 +1275,13 @@ export default function IndividualBookDaycarePage() {
           {showGroomingUI && pendingDraft && (
             <GroomingModal
               services={groomingServices}
+              servicePriceCentsByName={groomingServicePriceCentsByName}
+              preferredBathServiceByPetId={pendingDraft.petIds.reduce<Record<string, string>>((acc, pid) => {
+                const bathSize = petBathSizeById[pid];
+                const matched = bathSize ? findBathServiceForSize(bathSize, groomingServices) : null;
+                if (matched) acc[pid] = matched;
+                return acc;
+              }, {})}
               pets={pets.filter((p) => pendingDraft.petIds.includes(p.id))}
               selections={groomingSelections}
               onClose={() => {
@@ -1293,14 +1416,33 @@ export default function IndividualBookDaycarePage() {
    ========================= */
 function GroomingModal(props: {
   services: string[];
+  servicePriceCentsByName: Record<string, number>;
+  preferredBathServiceByPetId: Record<string, string>;
   pets: Pet[];
   selections: GroomingSelections;
   onSave: (sel: GroomingSelections) => void;
   onClose: () => void;
   t: ReturnType<typeof useTranslations>;
 }) {
-  const { services, pets, selections, onSave, onClose, t } = props;
+  const { services, servicePriceCentsByName, preferredBathServiceByPetId, pets, selections, onSave, onClose, t } = props;
   const [localSel, setLocalSel] = useState<GroomingSelections>(() => ({ ...selections }));
+
+  const isBathService = useCallback((service: string) => service.trim().toLowerCase().startsWith('bath'), []);
+
+  useEffect(() => {
+    // If a dog has a preferred bath service, remove any other bath-size selections for that dog.
+    setLocalSel((prev) => {
+      const next: GroomingSelections = { ...prev };
+      for (const pet of pets) {
+        const preferred = preferredBathServiceByPetId[pet.id];
+        if (!preferred) continue;
+        const current = next[pet.id] || [];
+        const cleaned = current.filter((svc) => !isBathService(svc) || svc === preferred);
+        next[pet.id] = cleaned;
+      }
+      return next;
+    });
+  }, [pets, preferredBathServiceByPetId, isBathService]);
 
   const toggle = (petId: string, service: string, on: boolean) => {
     setLocalSel((prev) => {
@@ -1342,7 +1484,13 @@ function GroomingModal(props: {
               ) : (
                 <div className="grid grid-cols-1 gap-2">
                   {services.map((svc) => {
+                    const preferredBath = preferredBathServiceByPetId[pet.id];
+                    const hideBecauseWrongBathSize =
+                      !!preferredBath && isBathService(svc) && svc !== preferredBath;
+                    if (hideBecauseWrongBathSize) return null;
+
                     const on = (localSel[pet.id] || []).includes(svc);
+                    const priceCents = servicePriceCentsByName[svc];
                     return (
                       <label key={`${pet.id}-${svc}`} className="flex items-center gap-2 text-sm">
                         <input
@@ -1350,7 +1498,10 @@ function GroomingModal(props: {
                           checked={on}
                           onChange={(e) => toggle(pet.id, svc, e.target.checked)}
                         />
-                        <span>{svc}</span>
+                        <span>
+                          {svc}
+                          {typeof priceCents === 'number' ? ` - $${(priceCents / 100).toFixed(2)}` : ''}
+                        </span>
                       </label>
                     );
                   })}

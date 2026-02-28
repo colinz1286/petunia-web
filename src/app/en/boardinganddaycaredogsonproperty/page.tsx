@@ -49,6 +49,7 @@ const rtdb = getDatabase();
  *  ========================= */
 type Dog = {
   id: string;
+  dogId?: string | null;
   reservationId?: string | null;
   name: string;
   owner: string;
@@ -68,6 +69,8 @@ type Dog = {
 };
 
 type FilterType = 'Daycare' | 'Boarding' | 'Grooming';
+
+const BATH_SIZE_OPTIONS = ['Small', 'Medium', 'Large', 'XL', 'XXL'] as const;
 
 /** =========================
  *  Helpers
@@ -161,6 +164,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
   const [showAssessmentModal, setShowAssessmentModal] = useState(false);
   const [assessmentDog, setAssessmentDog] = useState<Dog | null>(null);
   const [assessmentNotes, setAssessmentNotes] = useState('');
+  const [assessmentBathSize, setAssessmentBathSize] = useState('');
   const [assessmentLoading, setAssessmentLoading] = useState(false);
   const [assessmentError, setAssessmentError] = useState<string | null>(null);
   const [assessmentSaveMsg, setAssessmentSaveMsg] = useState<string | null>(null);
@@ -244,6 +248,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
             const checkInTime = (v.checkInTime as string) || '';
             const dog: Dog = {
               id: dogNode.key!,
+              dogId: (v.dogId as string) || dogNode.key || null,
               reservationId: (v.reservationId as string) || dogNode.key || null,
               name,
               owner,
@@ -261,7 +266,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
             };
 
             if (businessIdRaw) {
-              fetchFeedingInfo(owner, dog.id, businessIdRaw)
+              fetchFeedingInfo(owner, dog.dogId || dog.id, businessIdRaw)
                 .then((feed) => {
                   if (feed.currentFood || feed.feedingAmount) {
                     setDogs((prev) =>
@@ -472,6 +477,12 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
   );
 
   /** -------- Assessment Modal actions -------- */
+  const parseBathSizeFromNotes = useCallback((notes: string): string => {
+    const match = notes.match(/bath\s*size\s*[:\-]\s*(small|medium|large|xl|xxl)/i)
+      || notes.match(/bath\s*[:\-]\s*(small|medium|large|xl|xxl)/i);
+    return match?.[1] ? match[1].toUpperCase().replace('MEDIUM', 'Medium').replace('SMALL', 'Small').replace('LARGE', 'Large').replace('XXL', 'XXL').replace('XL', 'XL') : '';
+  }, []);
+
   const openAssessment = useCallback(async (dog: Dog) => {
     try {
       if (!auth.currentUser) {
@@ -482,19 +493,32 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
 
       setAssessmentDog(dog);
       setAssessmentNotes('');
+      setAssessmentBathSize('');
       setAssessmentError(null);
       setAssessmentSaveMsg(null);
       setAssessmentLoading(true);
       setShowAssessmentModal(true);
 
       // Load (if exists)
-      const ref = doc(db, 'dogAssessments', dog.id, 'businesses', businessIdRaw);
-      const snap = await getDoc(ref);
+      const canonicalDogId = (dog.dogId || dog.id || '').trim();
+      const legacyDogId = (dog.id || '').trim();
+
+      const primaryRef = doc(db, 'dogAssessments', canonicalDogId, 'businesses', businessIdRaw);
+      const primarySnap = await getDoc(primaryRef);
+
+      let snap = primarySnap;
+      if (!snap.exists() && legacyDogId && legacyDogId !== canonicalDogId) {
+        const legacyRef = doc(db, 'dogAssessments', legacyDogId, 'businesses', businessIdRaw);
+        snap = await getDoc(legacyRef);
+      }
       if (snap.exists()) {
         const data = snap.data();
         setAssessmentNotes((data?.notes as string) || '');
+        const directBathSize = (data?.bathSize as string) || '';
+        setAssessmentBathSize(directBathSize || parseBathSizeFromNotes((data?.notes as string) || ''));
       } else {
         setAssessmentNotes('');
+        setAssessmentBathSize('');
       }
     } catch (e) {
       console.error('❌ load assessment failed:', e);
@@ -502,7 +526,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
     } finally {
       setAssessmentLoading(false);
     }
-  }, [businessIdRaw, router, locale]);
+  }, [businessIdRaw, router, locale, parseBathSizeFromNotes]);
 
   /** -------- Open Grooming Modal -------- */
   const openGrooming = useCallback((dog: Dog) => {
@@ -516,6 +540,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
     setShowAssessmentModal(false);
     setAssessmentDog(null);
     setAssessmentNotes('');
+    setAssessmentBathSize('');
     setAssessmentError(null);
     setAssessmentSaveMsg(null);
   }, []);
@@ -529,9 +554,12 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
       if (!assessmentDog || !businessIdRaw) return;
 
       const trimmed = assessmentNotes.slice(0, 2000);
-      const ref = doc(db, 'dogAssessments', assessmentDog.id, 'businesses', businessIdRaw);
+      const canonicalDogId = (assessmentDog.dogId || assessmentDog.id || '').trim();
+      const ref = doc(db, 'dogAssessments', canonicalDogId, 'businesses', businessIdRaw);
       const payload: Record<string, unknown> = {
+        dogId: canonicalDogId,
         notes: trimmed,
+        bathSize: assessmentBathSize.trim(),
         lastUpdated: serverTimestamp(),
       };
       if (auth.currentUser.email) payload.updatedBy = auth.currentUser.email;
@@ -544,7 +572,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
       setAssessmentError('Failed to save.');
       setAssessmentSaveMsg(null);
     }
-  }, [assessmentDog, assessmentNotes, businessIdRaw]);
+  }, [assessmentDog, assessmentNotes, assessmentBathSize, businessIdRaw]);
 
   /** UI */
   return (
@@ -829,6 +857,24 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
                   {assessmentError && (
                     <p className="text-sm text-red-600 mb-2">❌ {assessmentError}</p>
                   )}
+
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Bath Size
+                    </label>
+                    <select
+                      value={assessmentBathSize}
+                      onChange={(e) => setAssessmentBathSize(e.target.value)}
+                      className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:ring-2 focus:ring-blue-200"
+                    >
+                      <option value="">Not set</option>
+                      {BATH_SIZE_OPTIONS.map((size) => (
+                        <option key={size} value={size}>
+                          {size}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
                   <textarea
                     value={assessmentNotes}

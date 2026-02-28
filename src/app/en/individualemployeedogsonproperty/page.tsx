@@ -39,9 +39,11 @@ const firebaseConfig = {
 if (!getApps().length) initializeApp(firebaseConfig);
 
 type FilterKey = 'daycare' | 'boarding' | 'grooming';
+const BATH_SIZE_OPTIONS = ['Small', 'Medium', 'Large', 'XL', 'XXL'] as const;
 
 type CheckedInDog = {
     id: string;
+    dogId?: string;
     name: string;
     owner: string;
     type: string; // "Daycare" | "Boarding" (string for forward-compat)
@@ -88,6 +90,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
     const [showAssessmentModal, setShowAssessmentModal] = useState(false);
     const [assessmentDog, setAssessmentDog] = useState<CheckedInDogLive | null>(null);
     const [assessmentNotes, setAssessmentNotes] = useState('');
+    const [assessmentBathSize, setAssessmentBathSize] = useState('');
     const [assessmentLoading, setAssessmentLoading] = useState(false);
     const [assessmentError, setAssessmentError] = useState<string | null>(null);
     const [assessmentSaveMsg, setAssessmentSaveMsg] = useState<string | null>(null);
@@ -123,6 +126,12 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
 
     const hasGrooming = (d: CheckedInDog): boolean =>
         Array.isArray(d.groomingAddOns) && d.groomingAddOns.length > 0;
+
+    const parseBathSizeFromNotes = useCallback((notes: string): string => {
+        const match = notes.match(/bath\s*size\s*[:\-]\s*(small|medium|large|xl|xxl)/i)
+            || notes.match(/bath\s*[:\-]\s*(small|medium|large|xl|xxl)/i);
+        return match?.[1] ? match[1].toUpperCase().replace('MEDIUM', 'Medium').replace('SMALL', 'Small').replace('LARGE', 'Large').replace('XXL', 'XXL').replace('XL', 'XL') : '';
+    }, []);
 
     const isIntact = (d: CheckedInDog): boolean =>
         (d.spayedNeutered ?? '').trim().toLowerCase() === 'no';
@@ -386,6 +395,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
 
                         const dog: CheckedInDogLive = {
                             id: dogId,
+                            dogId: raw.dogId ? String(raw.dogId) : dogId,
                             dateKey,
                             name: String(raw.name ?? ''),
                             owner: String(raw.owner ?? ''),
@@ -400,7 +410,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                             isAssessment: Boolean(raw.isAssessment),
                         };
 
-                        fetchFeedingInfo(dog.owner, dog.id).then((feed) => {
+                        fetchFeedingInfo(dog.owner, dog.dogId || dog.id).then((feed) => {
                             if (feed.currentFood || feed.feedingAmount) {
                                 setDogsLive((prev) =>
                                     prev.map((d) =>
@@ -479,6 +489,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
         if (!businessIdRaw) return;
         setAssessmentDog(dog);
         setAssessmentNotes('');
+        setAssessmentBathSize('');
         setAssessmentError(null);
         setAssessmentSaveMsg(null);
         setAssessmentLoading(true);
@@ -486,13 +497,25 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
 
         try {
             const fs = getFirestore();
-            const ref = doc(fs, 'dogAssessments', dog.id, 'businesses', businessIdRaw);
-            const snap = await getDoc(ref);
+            const canonicalDogId = (dog.dogId || dog.id || '').trim();
+            const legacyDogId = (dog.id || '').trim();
+
+            const primaryRef = doc(fs, 'dogAssessments', canonicalDogId, 'businesses', businessIdRaw);
+            const primarySnap = await getDoc(primaryRef);
+
+            let snap = primarySnap;
+            if (!snap.exists() && legacyDogId && legacyDogId !== canonicalDogId) {
+                const legacyRef = doc(fs, 'dogAssessments', legacyDogId, 'businesses', businessIdRaw);
+                snap = await getDoc(legacyRef);
+            }
             if (snap.exists()) {
                 const data = snap.data();
                 setAssessmentNotes((data?.notes as string) ?? '');
+                const directBathSize = (data?.bathSize as string) || '';
+                setAssessmentBathSize(directBathSize || parseBathSizeFromNotes((data?.notes as string) || ''));
             } else {
                 setAssessmentNotes('');
+                setAssessmentBathSize('');
             }
         } catch (e) {
             console.error('❌ load assessment failed:', e);
@@ -500,12 +523,13 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
         } finally {
             setAssessmentLoading(false);
         }
-    }, [businessIdRaw]);
+    }, [businessIdRaw, parseBathSizeFromNotes]);
 
     const closeAssessment = useCallback(() => {
         setShowAssessmentModal(false);
         setAssessmentDog(null);
         setAssessmentNotes('');
+        setAssessmentBathSize('');
         setAssessmentError(null);
         setAssessmentSaveMsg(null);
     }, []);
@@ -515,9 +539,12 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
             if (!assessmentDog || !businessIdRaw) return;
             const fs = getFirestore();
             const trimmed = assessmentNotes.slice(0, 2000);
-            const ref = doc(fs, 'dogAssessments', assessmentDog.id, 'businesses', businessIdRaw);
+            const canonicalDogId = (assessmentDog.dogId || assessmentDog.id || '').trim();
+            const ref = doc(fs, 'dogAssessments', canonicalDogId, 'businesses', businessIdRaw);
             const payload: Record<string, unknown> = {
+                dogId: canonicalDogId,
                 notes: trimmed,
+                bathSize: assessmentBathSize.trim(),
                 lastUpdated: serverTimestamp(),
             };
             const auth = getAuth();
@@ -530,7 +557,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
             setAssessmentError('Failed to save.');
             setAssessmentSaveMsg(null);
         }
-    }, [assessmentDog, assessmentNotes, businessIdRaw]);
+    }, [assessmentDog, assessmentNotes, assessmentBathSize, businessIdRaw]);
 
     // ---------------------------------------------------------------------------
     // UI Bits
@@ -808,6 +835,24 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                                     {assessmentError && (
                                         <p className="text-sm text-red-600 dark:text-red-400 mb-2">❌ {assessmentError}</p>
                                     )}
+
+                                    <div className="mb-3">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                                            Bath Size
+                                        </label>
+                                        <select
+                                            value={assessmentBathSize}
+                                            onChange={(e) => setAssessmentBathSize(e.target.value)}
+                                            className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 p-2 text-sm outline-none focus:ring-2 focus:ring-blue-200 dark:bg-neutral-900"
+                                        >
+                                            <option value="">Not set</option>
+                                            {BATH_SIZE_OPTIONS.map((size) => (
+                                                <option key={size} value={size}>
+                                                    {size}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
 
                                     <textarea
                                         value={assessmentNotes}
