@@ -100,6 +100,54 @@ const formatCheckIn = (iso: string, locale: string) => {
   return new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short' }).format(d);
 };
 
+const parseBathSizeFromNotesText = (notes: string): string => {
+  const match = notes.match(/bath\s*size\s*[:\-]\s*(small|medium|large|xl|xxl)/i)
+    || notes.match(/bath\s*[:\-]\s*(small|medium|large|xl|xxl)/i);
+  return match?.[1]
+    ? match[1]
+      .toUpperCase()
+      .replace('MEDIUM', 'Medium')
+      .replace('SMALL', 'Small')
+      .replace('LARGE', 'Large')
+      .replace('XXL', 'XXL')
+      .replace('XL', 'XL')
+    : '';
+};
+
+const normalizeBathSize = (raw: string | null | undefined): string => {
+  const v = (raw || '').trim().toLowerCase();
+  if (v === 'small') return 'Small';
+  if (v === 'medium') return 'Medium';
+  if (v === 'large') return 'Large';
+  if (v === 'xl') return 'XL';
+  if (v === 'xxl') return 'XXL';
+  return '';
+};
+
+const isBathLikeService = (service: string): boolean => {
+  return service.trim().toLowerCase().includes('bath');
+};
+
+const isSizedBathService = (service: string): boolean => {
+  const s = service.trim().toLowerCase();
+  if (!s.includes('bath')) return false;
+  return ['small', 'medium', 'large', 'xl', 'xxl'].some((size) => {
+    const rx = new RegExp(`(^|\\W)${size}(\\W|$)`, 'i');
+    return rx.test(s);
+  });
+};
+
+const resolveSizedBathService = (services: string[], bathSize: string): string => {
+  const target = bathSize.trim().toLowerCase();
+  const match = services.find((service) => {
+    const s = service.trim().toLowerCase();
+    if (!s.includes('bath')) return false;
+    const rx = new RegExp(`(^|\\W)${target}(\\W|$)`, 'i');
+    return rx.test(s);
+  });
+  return match || `Bath - ${bathSize}`;
+};
+
 /** -------- Fetch feeding info from Firestore -------- */
 async function fetchFeedingInfo(
   ownerName: string,
@@ -238,14 +286,32 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
     const cb = (snap: DataSnapshot) => {
       try {
         const list: Dog[] = [];
+        const orphanGroomingByDogId = new Map<string, string[]>();
         snap.forEach((dateNode) => {
           dateNode.forEach((dogNode) => {
             const v = dogNode.val() as Record<string, unknown> | null;
             if (!v) return;
-            const name = (v.name as string) || t('unknown_dog');
-            const owner = (v.owner as string) || t('unknown_owner');
-            const type = (v.type as string) || 'Daycare';
+            const nameRaw = (v.name as string) || '';
+            const ownerRaw = (v.owner as string) || '';
+            const typeRaw = (v.type as string) || '';
             const checkInTime = (v.checkInTime as string) || '';
+            const groomingAddOns = (v.groomingAddOns as string[]) || [];
+
+            // Some legacy/incorrect writes create a node under dogId with only groomingAddOns.
+            // Capture these and merge onto the real check-in row so we don't render Unknown duplicates.
+            const hasCoreFields = !!nameRaw && !!ownerRaw && !!typeRaw && !!checkInTime;
+            if (!hasCoreFields) {
+              const orphanDogId = ((v.dogId as string) || dogNode.key || '').trim();
+              if (orphanDogId && groomingAddOns.length > 0) {
+                const prev = orphanGroomingByDogId.get(orphanDogId) || [];
+                orphanGroomingByDogId.set(orphanDogId, Array.from(new Set([...prev, ...groomingAddOns])));
+              }
+              return;
+            }
+
+            const name = nameRaw;
+            const owner = ownerRaw;
+            const type = typeRaw;
             const dog: Dog = {
               id: dogNode.key!,
               dogId: (v.dogId as string) || dogNode.key || null,
@@ -256,7 +322,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
               userId: (v.userId as string) || null,
               type,
               checkInTime,
-              groomingAddOns: (v.groomingAddOns as string[]) || [],
+              groomingAddOns,
               allergies: (v.allergies as string) || null,
               pickUpDate: (v.pickUpDate as string) || null,
               medications: (v.medications as string) || null,
@@ -283,7 +349,18 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
             list.push(dog);
           });
         });
-        setDogs(list);
+        const mergedList = list.map((dog) => {
+          const canonicalDogId = (dog.dogId || '').trim();
+          if (!canonicalDogId) return dog;
+          const orphan = orphanGroomingByDogId.get(canonicalDogId);
+          if (!orphan || orphan.length === 0) return dog;
+          return {
+            ...dog,
+            groomingAddOns: Array.from(new Set([...(dog.groomingAddOns || []), ...orphan])),
+          };
+        });
+
+        setDogs(mergedList);
         setIsLoading(false);
         setErrorMsg(null);
       } catch (e) {
@@ -390,6 +467,43 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
         return;
       }
 
+      // Convert generic "Bath" selection into a size-specific service using assessment bath size.
+      let resolvedGroomingOptions = [...groomingOptions];
+      const hasGenericBath = resolvedGroomingOptions.some(
+        (service) => isBathLikeService(service) && !isSizedBathService(service)
+      );
+      const hasExplicitSizedBath = resolvedGroomingOptions.some((service) => isSizedBathService(service));
+
+      if (hasGenericBath && !hasExplicitSizedBath && businessIdRaw) {
+        const canonicalDogId = (groomingDog.dogId || groomingDog.id || '').trim();
+        const legacyDogId = (groomingDog.id || '').trim();
+
+        const primaryRef = doc(db, 'dogAssessments', canonicalDogId, 'businesses', businessIdRaw);
+        const primarySnap = await getDoc(primaryRef);
+
+        let snap = primarySnap;
+        if (!snap.exists() && legacyDogId && legacyDogId !== canonicalDogId) {
+          const legacyRef = doc(db, 'dogAssessments', legacyDogId, 'businesses', businessIdRaw);
+          snap = await getDoc(legacyRef);
+        }
+
+        const data = snap.exists() ? snap.data() : {};
+        const directBathSize = normalizeBathSize((data?.bathSize as string) || '');
+        const notesBathSize = normalizeBathSize(parseBathSizeFromNotesText((data?.notes as string) || ''));
+        const resolvedBathSize = directBathSize || notesBathSize;
+
+        if (resolvedBathSize) {
+          const sizedBathService = resolveSizedBathService(availableGroomingServices, resolvedBathSize);
+          const withoutGenericBath = resolvedGroomingOptions.filter(
+            (service) => !(isBathLikeService(service) && !isSizedBathService(service))
+          );
+          if (!withoutGenericBath.some((service) => service.trim().toLowerCase() === sizedBathService.trim().toLowerCase())) {
+            withoutGenericBath.push(sizedBathService);
+          }
+          resolvedGroomingOptions = withoutGenericBath;
+        }
+      }
+
       // Step 2: Write to RTDB
       const updateRef = rtdbRef(
         rtdb,
@@ -397,12 +511,12 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
       );
 
       await rtdbRemove(updateRef); // clear existing
-      await set(updateRef, groomingOptions); // write new array
+      await set(updateRef, resolvedGroomingOptions); // write resolved array
 
       // Step 3: Optimistic UI update
       setDogs((prev) =>
         prev.map((d) =>
-          d.id === groomingDog.id ? { ...d, groomingAddOns: groomingOptions } : d
+          d.id === groomingDog.id ? { ...d, groomingAddOns: resolvedGroomingOptions } : d
         )
       );
 
@@ -414,7 +528,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
     } finally {
       setGroomingSaving(false);
     }
-  }, [groomingDog, groomingOptions, businessIdSanitized]);
+  }, [groomingDog, groomingOptions, businessIdSanitized, businessIdRaw, availableGroomingServices]);
 
   /** -------- Client Notes (Business Owner) -------- */
   const fetchOwnerUidByNameScoped = useCallback(
@@ -477,11 +591,6 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
   );
 
   /** -------- Assessment Modal actions -------- */
-  const parseBathSizeFromNotes = useCallback((notes: string): string => {
-    const match = notes.match(/bath\s*size\s*[:\-]\s*(small|medium|large|xl|xxl)/i)
-      || notes.match(/bath\s*[:\-]\s*(small|medium|large|xl|xxl)/i);
-    return match?.[1] ? match[1].toUpperCase().replace('MEDIUM', 'Medium').replace('SMALL', 'Small').replace('LARGE', 'Large').replace('XXL', 'XXL').replace('XL', 'XL') : '';
-  }, []);
 
   const openAssessment = useCallback(async (dog: Dog) => {
     try {
@@ -515,7 +624,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
         const data = snap.data();
         setAssessmentNotes((data?.notes as string) || '');
         const directBathSize = (data?.bathSize as string) || '';
-        setAssessmentBathSize(directBathSize || parseBathSizeFromNotes((data?.notes as string) || ''));
+        setAssessmentBathSize(directBathSize || parseBathSizeFromNotesText((data?.notes as string) || ''));
       } else {
         setAssessmentNotes('');
         setAssessmentBathSize('');
@@ -526,7 +635,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
     } finally {
       setAssessmentLoading(false);
     }
-  }, [businessIdRaw, router, locale, parseBathSizeFromNotes]);
+  }, [businessIdRaw, router, locale]);
 
   /** -------- Open Grooming Modal -------- */
   const openGrooming = useCallback((dog: Dog) => {

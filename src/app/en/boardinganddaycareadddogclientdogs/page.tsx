@@ -66,7 +66,7 @@ export default function BoardingAndDaycareAddDogClientDogsPage() {
     const [loading, setLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-    const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
+    const [selectedDogIds, setSelectedDogIds] = useState<Set<string>>(new Set());
 
     const [showTypePrompt, setShowTypePrompt] = useState(false);
 
@@ -145,39 +145,48 @@ export default function BoardingAndDaycareAddDogClientDogsPage() {
     }, [clientId, t]);
 
     /** Step 3 — Add dog to property */
-    const addDogToProperty = async (dog: Dog, type: 'Daycare' | 'Boarding') => {
+    const addDogsToProperty = async (type: 'Daycare' | 'Boarding') => {
         try {
             if (!clientId) {
                 setErrorMsg(t('error_adding_dog'));
                 return;
             }
+
+            const dogsToAdd = dogs.filter((dog) => selectedDogIds.has(dog.id));
+            if (dogsToAdd.length === 0) {
+                setErrorMsg(t('error_adding_dog'));
+                return;
+            }
+
             const today = new Date().toISOString().split('T')[0];
-            const reservationId = crypto.randomUUID();
 
-            const path = rtdbRef(
-                rtdb,
-                `checkIns/${businessIdSanitized}/${today}/${reservationId}`
-            );
+            for (const dog of dogsToAdd) {
+                const reservationId = crypto.randomUUID();
+                const path = rtdbRef(
+                    rtdb,
+                    `checkIns/${businessIdSanitized}/${today}/${reservationId}`
+                );
 
-            const payload = {
-                reservationId,
-                id: dog.id,
-                dogId: dog.id,
-                name: dog.petName || dog.name || 'Unnamed',
-                owner: ownerName,
-                userId: clientId,
-                ownerUserId: clientId,
-                type: type,
-                checkInTime: new Date().toISOString(),
-                currentFood: dog.currentFood ?? '',
-                feedingAmount: dog.feedingAmount ?? '',
-                medications: dog.medications ?? '',
-                medicationDetails: dog.medicationDetails ?? '',
-                spayedNeutered: dog.spayedNeutered ?? '',
-                groomingAddOns: dog.groomingAddOns ?? [],
-            };
+                const payload = {
+                    reservationId,
+                    id: dog.id,
+                    dogId: dog.id,
+                    name: dog.petName || dog.name || 'Unnamed',
+                    owner: ownerName,
+                    userId: clientId,
+                    ownerUserId: clientId,
+                    type: type,
+                    checkInTime: new Date().toISOString(),
+                    currentFood: dog.currentFood ?? '',
+                    feedingAmount: dog.feedingAmount ?? '',
+                    medications: dog.medications ?? '',
+                    medicationDetails: dog.medicationDetails ?? '',
+                    spayedNeutered: dog.spayedNeutered ?? '',
+                    groomingAddOns: dog.groomingAddOns ?? [],
+                };
 
-            await rtdbSet(path, payload);
+                await rtdbSet(path, payload);
+            }
 
             // Ensure client notes doc exists immediately (parity with iOS)
             if (businessIdRaw) {
@@ -196,6 +205,15 @@ export default function BoardingAndDaycareAddDogClientDogsPage() {
             console.error('Failed to add dog:', error);
             setErrorMsg(t('error_adding_dog'));
         }
+    };
+
+    const toggleDogSelection = (dogId: string) => {
+        setSelectedDogIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(dogId)) next.delete(dogId);
+            else next.add(dogId);
+            return next;
+        });
     };
 
     /** UI rendering */
@@ -233,9 +251,17 @@ export default function BoardingAndDaycareAddDogClientDogsPage() {
                         key={dog.id}
                         className="p-4 bg-white border rounded-xl shadow-sm"
                     >
-                        <p className="font-semibold mb-2">
-                            🐶 {dog.petName || dog.name}
-                        </p>
+                        <div className="flex items-start justify-between gap-3">
+                            <p className="font-semibold mb-2">
+                                🐶 {dog.petName || dog.name}
+                            </p>
+                            <input
+                                type="checkbox"
+                                checked={selectedDogIds.has(dog.id)}
+                                onChange={() => toggleDogSelection(dog.id)}
+                                aria-label={`Select ${dog.petName || dog.name || 'dog'}`}
+                            />
+                        </div>
 
                         {dog.breed && (
                             <p className="text-sm text-gray-600">
@@ -260,21 +286,25 @@ export default function BoardingAndDaycareAddDogClientDogsPage() {
                                 {t('feeding_amount_label')}: {dog.feedingAmount} cups
                             </p>
                         )}
-
-                        <button
-                            onClick={() => {
-                                setSelectedDog(dog);
-                                setShowTypePrompt(true);
-                            }}
-                            className="w-full bg-green-700 text-white py-2 rounded-lg text-sm mt-3"
-                        >
-                            {t('add_dog_button')}
-                        </button>
                     </div>
                 ))}
             </div>
 
-            {showTypePrompt && selectedDog && (
+            {dogs.length > 0 && (
+                <button
+                    onClick={() => setShowTypePrompt(true)}
+                    disabled={selectedDogIds.size === 0}
+                    className={`w-full py-2 rounded-lg text-sm mt-4 ${
+                        selectedDogIds.size === 0
+                            ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                            : 'bg-green-700 text-white'
+                    }`}
+                >
+                    Add Selected Dogs ({selectedDogIds.size})
+                </button>
+            )}
+
+            {showTypePrompt && selectedDogIds.size > 0 && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
                     <div className="bg-white p-6 rounded-xl w-full max-w-sm text-center">
                         <h2 className="text-lg font-semibold mb-4">
@@ -282,21 +312,23 @@ export default function BoardingAndDaycareAddDogClientDogsPage() {
                         </h2>
 
                         <button
-                            onClick={() => addDogToProperty(selectedDog, 'Daycare')}
+                            onClick={() => addDogsToProperty('Daycare')}
                             className="w-full bg-blue-600 text-white py-2 rounded mb-2"
                         >
                             {t('daycare_button')}
                         </button>
 
                         <button
-                            onClick={() => addDogToProperty(selectedDog, 'Boarding')}
+                            onClick={() => addDogsToProperty('Boarding')}
                             className="w-full bg-purple-600 text-white py-2 rounded mb-2"
                         >
                             {t('boarding_button')}
                         </button>
 
                         <button
-                            onClick={() => setShowTypePrompt(false)}
+                            onClick={() => {
+                                setShowTypePrompt(false);
+                            }}
                             className="w-full bg-gray-300 py-2 rounded"
                         >
                             {t('cancel_button')}

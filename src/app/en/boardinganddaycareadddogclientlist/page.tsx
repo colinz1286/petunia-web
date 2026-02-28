@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -36,8 +36,15 @@ export default function BoardingAndDaycareAddDogsClientListPage() {
     const [clients, setClients] = useState<
         { id: string; userId: string; fullName: string }[]
     >([]);
+    const [clientSearch, setClientSearch] = useState('');
     const [loading, setLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+    const visibleClients = useMemo(() => {
+        const query = clientSearch.trim().toLowerCase();
+        if (!query) return clients;
+        return clients.filter((client) => client.fullName.toLowerCase().includes(query));
+    }, [clients, clientSearch]);
 
     /** ----------------------------------------------------
      * Step 1 — Resolve businessId
@@ -137,14 +144,35 @@ export default function BoardingAndDaycareAddDogsClientListPage() {
                 {t('select_client_title')}
             </h1>
 
+            <div className="mb-4">
+                <label htmlFor="client-search" className="block text-sm font-medium mb-1">
+                    Search client
+                </label>
+                <input
+                    id="client-search"
+                    type="text"
+                    value={clientSearch}
+                    onChange={(e) => setClientSearch(e.target.value)}
+                    placeholder="Type a client name..."
+                    autoComplete="off"
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                />
+            </div>
+
             {clients.length === 0 && (
                 <p className="text-gray-600 text-center">
                     {t('no_clients_found')}
                 </p>
             )}
 
+            {clients.length > 0 && visibleClients.length === 0 && (
+                <p className="text-gray-600 text-center mb-4">
+                    No matching clients.
+                </p>
+            )}
+
             <div className="space-y-4">
-                {clients.map((client) => (
+                {visibleClients.map((client) => (
                     <div
                         key={client.id}
                         className="p-4 bg-white border rounded-xl shadow-sm"

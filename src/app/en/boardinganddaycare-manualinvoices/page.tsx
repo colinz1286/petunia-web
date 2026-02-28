@@ -19,6 +19,7 @@ import { app, auth, db, functions } from '@/lib/firebaseClient';
 type DogOnProperty = {
   id: string;
   reservationId: string;
+  dogId: string;
   name: string;
   owner: string;
   userId?: string;
@@ -105,35 +106,87 @@ const extractPetCountFromName = (name: string): number | null => {
   return Number.isFinite(count) && count > 0 ? count : null;
 };
 
-const chooseDaycareTierBaseItem = (items: InvoiceLibraryItem[], petCount: number) => {
-  let exact: { item: InvoiceLibraryItem; score: number } | null = null;
-  let fallback: { item: InvoiceLibraryItem; score: number } | null = null;
+const isAssessmentLikeDaycareItem = (item: InvoiceLibraryItem) => {
+  const name = normalize(item.name || '');
+  const model = normalize(item.billingModel || '');
+  return (
+    model.includes('assessment') ||
+    model.includes('temperament') ||
+    name.includes('assessment') ||
+    name.includes('temperament')
+  );
+};
 
-  for (const item of items) {
-    if (!item.active) continue;
-    if (normalize(item.category) !== 'daycare') continue;
+const isPassLikeDaycareItem = (item: InvoiceLibraryItem) => {
+  const name = normalize(item.name || '');
+  const model = normalize(item.billingModel || '');
+  return (
+    model.includes('monthly') ||
+    model.includes('pass') ||
+    model.includes('package') ||
+    name.includes('monthly') ||
+    name.includes('pass') ||
+    name.includes('package') ||
+    name.includes('unlimited')
+  );
+};
+
+const hasPerAppointmentBilling = (item: InvoiceLibraryItem) => {
+  const model = normalize(item.billingModel || '');
+  return (
+    model === 'perappointment' ||
+    model === 'per_appointment' ||
+    model === 'perday' ||
+    model === 'per_day' ||
+    model === 'daily' ||
+    model === 'singlevisit' ||
+    model === 'single_visit'
+  );
+};
+
+const chooseDaycareTierBaseItem = (items: InvoiceLibraryItem[], petCount: number) => {
+  const eligible = items.filter((item) => {
+    if (!item.active) return false;
+    if (normalize(item.category) !== 'daycare') return false;
+    if (isAssessmentLikeDaycareItem(item)) return false;
+    if (isPassLikeDaycareItem(item)) return false;
+    return true;
+  });
+
+  let exact: { item: InvoiceLibraryItem; score: number } | null = null;
+  let genericSingleDog: { item: InvoiceLibraryItem; score: number } | null = null;
+
+  for (const item of eligible) {
+    const rawPetCount = typeof item.petCount === 'number' && item.petCount > 0
+      ? item.petCount
+      : extractPetCountFromName(item.name);
+    const isPerAppointment = hasPerAppointmentBilling(item);
+
+    // Require strong evidence that this is a daily charge line (not a pass/program).
+    if (!isPerAppointment && rawPetCount == null) continue;
 
     const context = normalize(item.serviceContext || 'none');
     let score = 100;
     if (context === 'daycare') score += 20;
     if (context === 'none' || context === 'universal') score += 10;
 
-    const rawPetCount = typeof item.petCount === 'number' && item.petCount > 0
-      ? item.petCount
-      : extractPetCountFromName(item.name);
-    const billingModel = normalize(item.billingModel || '');
-    const isPerAppointment = billingModel === 'perappointment';
-
-    if ((isPerAppointment || rawPetCount != null) && rawPetCount === petCount) {
+    if (rawPetCount != null && rawPetCount === petCount) {
       const exactScore = score + 40;
       if (!exact || exactScore > exact.score) exact = { item, score: exactScore };
       continue;
     }
 
-    if (!fallback || score > fallback.score) fallback = { item, score };
+    // Safe fallback only for single-dog daycare when there is no explicit tier count.
+    if (petCount === 1 && rawPetCount == null && isPerAppointment) {
+      if (!genericSingleDog || score > genericSingleDog.score) {
+        genericSingleDog = { item, score };
+      }
+    }
   }
 
-  return exact?.item || fallback?.item || null;
+  // For 2+ dogs we require an exact tier match to avoid accidental misbilling.
+  if (petCount >= 2) return exact?.item || null;
+  return exact?.item || genericSingleDog?.item || null;
 };
 
 const chooseGroomingItem = (items: InvoiceLibraryItem[], serviceName: string, serviceType: string) => {
@@ -389,6 +442,7 @@ export default function BoardingAndDaycareManualInvoicesPage() {
     const ref = rtdbRef(rtdb, `checkIns/${sanitized}`);
     const cb = (snap: DataSnapshot) => {
       const map = new Map<string, DogOnProperty>();
+      const orphanGroomingByDogId = new Map<string, string[]>();
 
       snap.forEach((dateNode) => {
         dateNode.forEach((dogNode) => {
@@ -397,23 +451,48 @@ export default function BoardingAndDaycareManualInvoicesPage() {
           const reservationId = reservationIdRaw.trim();
           if (!reservationId) return;
 
+          const nameRaw = ((value.name as string) || '').trim();
+          const ownerRaw = ((value.owner as string) || '').trim();
+          const typeRaw = ((value.type as string) || '').trim();
+          const groomingAddOns = Array.isArray(value.groomingAddOns)
+            ? (value.groomingAddOns as string[])
+            : [];
+
+          const hasCoreFields = !!nameRaw && !!ownerRaw && !!typeRaw;
+          if (!hasCoreFields) {
+            const orphanDogId = ((value.dogId as string) || dogNode.key || '').trim();
+            if (orphanDogId && groomingAddOns.length > 0) {
+              const prev = orphanGroomingByDogId.get(orphanDogId) || [];
+              orphanGroomingByDogId.set(orphanDogId, Array.from(new Set([...prev, ...groomingAddOns])));
+            }
+            return;
+          }
+
           const dog: DogOnProperty = {
             id: reservationId,
             reservationId,
-            name: (value.name as string) || 'Unknown Dog',
-            owner: (value.owner as string) || 'Unknown Owner',
+            dogId: ((value.dogId as string) || reservationId).trim(),
+            name: nameRaw,
+            owner: ownerRaw,
             userId: (value.userId as string) || undefined,
-            type: (value.type as string) || 'Daycare',
-            groomingAddOns: Array.isArray(value.groomingAddOns)
-              ? (value.groomingAddOns as string[])
-              : [],
+            type: typeRaw,
+            groomingAddOns,
           };
 
           map.set(dog.id, dog);
         });
       });
 
-      const list = Array.from(map.values()).sort((a, b) => {
+      const merged = Array.from(map.values()).map((dog) => {
+        const orphan = orphanGroomingByDogId.get(dog.dogId) || [];
+        if (orphan.length === 0) return dog;
+        return {
+          ...dog,
+          groomingAddOns: Array.from(new Set([...(dog.groomingAddOns || []), ...orphan])),
+        };
+      });
+
+      const list = merged.sort((a, b) => {
         const ownerCompare = a.owner.localeCompare(b.owner, undefined, { sensitivity: 'base' });
         if (ownerCompare !== 0) return ownerCompare;
         return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
@@ -510,7 +589,10 @@ export default function BoardingAndDaycareManualInvoicesPage() {
         const qty = quantityByItemId.get(daycareBaseItem.id) || 0;
         quantityByItemId.set(daycareBaseItem.id, qty + 1);
       } else {
-        warnings.push(`No daycare invoice item found for ${daycareDogs.length} dogs.`);
+        warnings.push(
+          `No valid daycare tier item found for ${daycareDogs.length} dog(s). ` +
+          `Manual invoicing ignores assessment/pass items by design.`
+        );
       }
     }
 
