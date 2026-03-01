@@ -391,6 +391,7 @@ export default function DogBoardingAndDaycareSoftwareMediumBusiness() {
             <section id="medium-calculator" className="py-14 border-t border-gray-200 scroll-mt-24">
                 <div className="text-center mb-8">
                     <h2 className="text-xl font-semibold text-[#2c4a30]">
+                        Use this Calculator to Estimate You Annual Savings by Implementing or Switching to Petunia!
                         Step 1: Measure the Financial Impact of Growth
                     </h2>
 

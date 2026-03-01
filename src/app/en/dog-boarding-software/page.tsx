@@ -591,7 +591,7 @@ export default function DogBoardingSoftwarePage() {
       <section className="py-10 border-t border-gray-200">
         <div className="text-center">
           <h2 className="text-xl sm:text-2xl font-semibold text-[#2c4a30] mb-4">
-            Estimate Your Annual Savings
+            Estimate Your Annual Savings By Implenting or Switching to Petunia!
           </h2>
           <p className="text-sm text-gray-600 max-w-2xl mx-auto mb-8">
             Enter your current costs and the weekly administrative hours spent per task.

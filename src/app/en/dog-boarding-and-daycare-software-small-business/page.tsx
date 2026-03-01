@@ -434,6 +434,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
 
             <div className="mt-6 max-w-xl mx-auto bg-[#f7faf7] border border-[#2c4a30]/20 rounded-xl p-6 text-center">
                 <p className="text-base sm:text-lg font-bold text-[#2c4a30] leading-7">
+                    Use this Calculator to Estimate You Annual Savings by Implementing or Switching to Petunia!
                     This calculator automatically assumes you are using the
                     Petunia Starter plan — $15/month with 3.0% + $0.45 per transaction.
                 </p>
