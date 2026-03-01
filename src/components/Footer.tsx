@@ -5,6 +5,8 @@ import { useLocale } from 'next-intl';
 
 export default function Footer() {
   const locale = useLocale();
+  const footerLinkClass =
+    'block py-1 hover:underline text-center sm:text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2c4a30] rounded-sm';
 
   return (
     <footer className="bg-[#2c4a30] text-white py-6 mt-12 text-sm">
@@ -13,17 +15,16 @@ export default function Footer() {
           &copy; {new Date().getFullYear()} Petunia. All rights reserved.
         </div>
 
-        <div className="flex gap-4 flex-wrap justify-center">
-          <Link href={`/${locale}/contact`} className="hover:underline">
+        <div className="w-full sm:w-auto grid grid-cols-2 sm:flex sm:flex-wrap gap-x-6 gap-y-2 justify-center sm:justify-end">
+          <Link href={`/${locale}/contact`} className={footerLinkClass}>
             Contact
           </Link>
 
-          <Link href={`/${locale}/blog`} className="hover:underline">
+          <Link href={`/${locale}/blog`} className={footerLinkClass}>
             Blog
           </Link>
 
-          {/* ✅ NEW CONSULTING LINK */}
-          <Link href={`/${locale}/consulting`} className="hover:underline">
+          <Link href={`/${locale}/consulting`} className={footerLinkClass}>
             Consulting
           </Link>
 
@@ -31,7 +32,7 @@ export default function Footer() {
             href="https://www.facebook.com/profile.php?id=61575107920935"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:underline"
+            className={footerLinkClass}
           >
             Facebook
           </a>
@@ -40,12 +41,12 @@ export default function Footer() {
             href="https://youtube.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:underline"
+            className={footerLinkClass}
           >
             YouTube
           </a>
 
-          <Link href={`/${locale}/privacypolicy`} className="hover:underline">
+          <Link href={`/${locale}/privacypolicy`} className={footerLinkClass}>
             Privacy Policy
           </Link>
         </div>
