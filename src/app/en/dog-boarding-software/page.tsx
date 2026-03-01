@@ -49,8 +49,6 @@ export default function DogBoardingSoftwarePage() {
   };
 
   const [selectedPlan, setSelectedPlan] = useState<"" | "Starter" | "Growth" | "Pro">("");
-  const [showMobileDetailedCosts, setShowMobileDetailedCosts] = useState(false);
-  const [showMobileTaskTable, setShowMobileTaskTable] = useState(false);
 
   const calculateSavings = () => {
 
@@ -629,16 +627,7 @@ export default function DogBoardingSoftwarePage() {
           </div>
 
           {/* Software Costs */}
-          <div className="md:hidden mb-4 text-left">
-            <button
-              type="button"
-              onClick={() => setShowMobileDetailedCosts((prev) => !prev)}
-              className="text-sm font-semibold text-[#2c4a30] underline"
-            >
-              {showMobileDetailedCosts ? 'Hide detailed cost inputs' : 'Show detailed cost inputs'}
-            </button>
-          </div>
-          <div className={`${showMobileDetailedCosts ? 'grid' : 'hidden'} md:grid grid-cols-1 sm:grid-cols-2 gap-6`}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
             {/* Monthly Software Cost */}
             <div>
@@ -874,17 +863,7 @@ export default function DogBoardingSoftwarePage() {
           </div>
 
           {/* Task Table */}
-          <div className="md:hidden mb-4 text-left">
-            <button
-              type="button"
-              onClick={() => setShowMobileTaskTable((prev) => !prev)}
-              className="text-sm font-semibold text-[#2c4a30] underline"
-            >
-              {showMobileTaskTable ? 'Hide administrative task inputs' : 'Show administrative task inputs'}
-            </button>
-          </div>
-
-          <div className={`${showMobileTaskTable ? 'block' : 'hidden'} md:block`}>
+          <div className="block">
             <div className="mb-6 text-base sm:text-lg text-gray-700 text-center font-medium">
               If your current software already automates any of these processes, or makes intuitive suggestions for you, leave those fields blank.
             </div>

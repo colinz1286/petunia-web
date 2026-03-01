@@ -54,11 +54,6 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
         "" | "5-9" | "10-24" | "25-49" | "50+"
     >("");
 
-    const [showMobileScaleShift, setShowMobileScaleShift] = useState(false);
-    const [showMobileEnterpriseWorks, setShowMobileEnterpriseWorks] = useState(false);
-    const [showMobileCalculatorInputs, setShowMobileCalculatorInputs] = useState(false);
-    const [showMobileOversightInputs, setShowMobileOversightInputs] = useState(false);
-    const [showMobileComparison, setShowMobileComparison] = useState(false);
 
     const [taskInputs, setTaskInputs] = useState<{
         hours: number;
@@ -308,17 +303,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                     Scale Multiplies Governance and Financial Exposure
                 </h2>
 
-                <div className="md:hidden text-left mb-5">
-                    <button
-                        type="button"
-                        onClick={() => setShowMobileScaleShift((prev) => !prev)}
-                        className="text-sm font-semibold text-[#2c4a30] underline"
-                    >
-                        {showMobileScaleShift ? 'Hide section details' : 'Show section details'}
-                    </button>
-                </div>
-
-                <div className={`${showMobileScaleShift ? 'block' : 'hidden'} md:block`}>
+                <div className="block">
                     <div className="space-y-6 text-gray-700 leading-8 max-w-3xl mx-auto">
                     <p>
                         Multi-location operations introduce cross-site staffing complexity,
@@ -351,17 +336,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                     Built for Oversight, Expansion, and Exit Readiness
                 </h2>
 
-                <div className="md:hidden text-left mb-5">
-                    <button
-                        type="button"
-                        onClick={() => setShowMobileEnterpriseWorks((prev) => !prev)}
-                        className="text-sm font-semibold text-[#2c4a30] underline"
-                    >
-                        {showMobileEnterpriseWorks ? 'Hide section details' : 'Show section details'}
-                    </button>
-                </div>
-
-                <div className={`${showMobileEnterpriseWorks ? 'block' : 'hidden'} md:block`}>
+                <div className="block">
                     <div className="space-y-6 text-gray-700 leading-8 max-w-3xl mx-auto">
                     <p>
                         Centralized dashboards, location-level accountability,
@@ -478,16 +453,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                 <div className="space-y-8 max-w-5xl mx-auto">
 
                     {/* Core Financial Inputs */}
-                    <div className="md:hidden mb-4 text-left">
-                        <button
-                            type="button"
-                            onClick={() => setShowMobileCalculatorInputs((prev) => !prev)}
-                            className="text-sm font-semibold text-[#2c4a30] underline"
-                        >
-                            {showMobileCalculatorInputs ? 'Hide calculator inputs' : 'Show calculator inputs'}
-                        </button>
-                    </div>
-                    <div className={`${showMobileCalculatorInputs ? 'grid' : 'hidden'} md:grid grid-cols-1 sm:grid-cols-2 gap-6`}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -672,17 +638,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                             This model applies your selected automation/efficiency reduction to this category.
                         </p>
 
-                        <div className="md:hidden mb-4 text-left">
-                            <button
-                                type="button"
-                                onClick={() => setShowMobileOversightInputs((prev) => !prev)}
-                                className="text-sm font-semibold text-[#2c4a30] underline"
-                            >
-                                {showMobileOversightInputs ? 'Hide enterprise task inputs' : 'Show enterprise task inputs'}
-                            </button>
-                        </div>
-
-                        <div className={`${showMobileOversightInputs ? 'block' : 'hidden'} md:hidden space-y-3`}>
+                        <div className="md:hidden space-y-3">
                             {ENTERPRISE_TASKS.map((task, index) => (
                                 <div key={task} className="rounded-xl border border-gray-200 bg-white p-4">
                                     <p className="text-sm font-semibold text-[#2c4a30] mb-3">{task}</p>
@@ -892,17 +848,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                     </p>
                 </div>
 
-                <div className="md:hidden mb-4 text-left">
-                    <button
-                        type="button"
-                        onClick={() => setShowMobileComparison((prev) => !prev)}
-                        className="text-sm font-semibold text-[#2c4a30] underline"
-                    >
-                        {showMobileComparison ? 'Hide comparison details' : 'Show comparison details'}
-                    </button>
-                </div>
-
-                <div className={`${showMobileComparison ? 'block' : 'hidden'} md:hidden space-y-3`}>
+                <div className="md:hidden space-y-3">
                     {ENTERPRISE_COMPARISON_ROWS.map((row) => (
                         <div key={row.area} className="rounded-xl border border-gray-200 bg-white p-4">
                             <p className="text-sm font-semibold text-[#2c4a30] mb-3">{row.area}</p>

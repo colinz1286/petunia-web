@@ -36,10 +36,6 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
     const petuniaPlan = { monthly: 115, rate: 3.0, flat: 0.25 };
 
     const [taskInputs, setTaskInputs] = useState<{ hours: number; rate: number }[]>([]);
-    const [showMobileFinancialExposure, setShowMobileFinancialExposure] = useState(false);
-    const [showMobileExpansionReadiness, setShowMobileExpansionReadiness] = useState(false);
-    const [showMobileCalculatorInputs, setShowMobileCalculatorInputs] = useState(false);
-    const [showMobileAdminInputs, setShowMobileAdminInputs] = useState(false);
 
     const createAccountHref = `/${locale}/createnewaccount`;
     const smallBusinessHref = `/${locale}/dog-boarding-and-daycare-software-small-business`;
@@ -211,17 +207,7 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                     Volume Magnifies Financial Exposure
                 </h2>
 
-                <div className="md:hidden text-left mb-5">
-                    <button
-                        type="button"
-                        onClick={() => setShowMobileFinancialExposure((prev) => !prev)}
-                        className="text-sm font-semibold text-[#2c4a30] underline"
-                    >
-                        {showMobileFinancialExposure ? 'Hide section details' : 'Show section details'}
-                    </button>
-                </div>
-
-                <div className={`${showMobileFinancialExposure ? 'block' : 'hidden'} md:block`}>
+                <div className="block">
                     <div className="space-y-6 text-gray-700 leading-8 max-w-3xl mx-auto">
                     <p>
                         At higher revenue levels, small inconsistencies become material financial risk.
@@ -248,17 +234,7 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                     Built for Expansion, Valuation, and Exit Readiness
                 </h2>
 
-                <div className="md:hidden text-left mb-5">
-                    <button
-                        type="button"
-                        onClick={() => setShowMobileExpansionReadiness((prev) => !prev)}
-                        className="text-sm font-semibold text-[#2c4a30] underline"
-                    >
-                        {showMobileExpansionReadiness ? 'Hide section details' : 'Show section details'}
-                    </button>
-                </div>
-
-                <div className={`${showMobileExpansionReadiness ? 'block' : 'hidden'} md:block`}>
+                <div className="block">
                     <div className="space-y-6 text-gray-700 leading-8 max-w-2xl mx-auto">
                     <p>
                         Advanced employee management tools, structured checklists,
@@ -402,16 +378,7 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                 <div className="space-y-8 max-w-4xl mx-auto">
 
                     {/* Core Financial Inputs */}
-                    <div className="md:hidden mb-4 text-left">
-                        <button
-                            type="button"
-                            onClick={() => setShowMobileCalculatorInputs((prev) => !prev)}
-                            className="text-sm font-semibold text-[#2c4a30] underline"
-                        >
-                            {showMobileCalculatorInputs ? 'Hide calculator inputs' : 'Show calculator inputs'}
-                        </button>
-                    </div>
-                    <div className={`${showMobileCalculatorInputs ? 'grid' : 'hidden'} md:grid grid-cols-1 sm:grid-cols-2 gap-6`}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -603,17 +570,7 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                             Petunia Growth conservatively assumes a 50% reduction.
                         </p>
 
-                        <div className="md:hidden mb-4 text-left">
-                            <button
-                                type="button"
-                                onClick={() => setShowMobileAdminInputs((prev) => !prev)}
-                                className="text-sm font-semibold text-[#2c4a30] underline"
-                            >
-                                {showMobileAdminInputs ? 'Hide administrative task inputs' : 'Show administrative task inputs'}
-                            </button>
-                        </div>
-
-                        <div className={`${showMobileAdminInputs ? 'block' : 'hidden'} md:hidden space-y-3`}>
+                        <div className="md:hidden space-y-3">
                             {TASKS.map((task, i) => (
                                 <div key={task} className="rounded-xl border border-gray-200 bg-white p-4">
                                     <p className="text-sm font-semibold text-[#2c4a30] mb-3">{task}</p>

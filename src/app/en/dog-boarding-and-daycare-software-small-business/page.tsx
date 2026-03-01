@@ -29,11 +29,6 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
 
     const [taskInputs, setTaskInputs] = useState<{ hours: number; rate: number }[]>([]);
     const [timeSavingsPercent, setTimeSavingsPercent] = useState(50);
-    const [showMobileReality, setShowMobileReality] = useState(false);
-    const [showMobileStarterWorks, setShowMobileStarterWorks] = useState(false);
-    const [showMobileFeatures, setShowMobileFeatures] = useState(false);
-    const [showMobileCalculatorInputs, setShowMobileCalculatorInputs] = useState(false);
-    const [showMobileAdminInputs, setShowMobileAdminInputs] = useState(false);
 
     useEffect(() => {
         setTaskInputs(TASKS.map(() => ({ hours: 0, rate: 0 })));
@@ -199,17 +194,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                     The Reality of Building Something From Scratch
                 </h2>
 
-                <div className="md:hidden text-left mb-5">
-                    <button
-                        type="button"
-                        onClick={() => setShowMobileReality((prev) => !prev)}
-                        className="text-sm font-semibold text-[#2c4a30] underline"
-                    >
-                        {showMobileReality ? 'Hide section details' : 'Show section details'}
-                    </button>
-                </div>
-
-                <div className={`${showMobileReality ? 'block' : 'hidden'} md:block`}>
+                <div className="block">
                     <div className="space-y-5 text-gray-700 leading-8 max-w-2xl mx-auto">
                     <p>
                         When you’re small, you’re not just running a boarding facility.
@@ -269,17 +254,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                     You Don’t Need Fancy. You Need Solid.
                 </h2>
 
-                <div className="md:hidden text-left mb-5">
-                    <button
-                        type="button"
-                        onClick={() => setShowMobileStarterWorks((prev) => !prev)}
-                        className="text-sm font-semibold text-[#2c4a30] underline"
-                    >
-                        {showMobileStarterWorks ? 'Hide section details' : 'Show section details'}
-                    </button>
-                </div>
-
-                <div className={`${showMobileStarterWorks ? 'block' : 'hidden'} md:block`}>
+                <div className="block">
                     <div className="space-y-5 text-gray-700 leading-8 max-w-2xl mx-auto">
                     <p>
                         If you’re perfectly happy with your size and don’t want aggressive expansion,
@@ -355,17 +330,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                     </p>
                 </div>
 
-                <div className="md:hidden text-left mb-5 max-w-4xl mx-auto">
-                    <button
-                        type="button"
-                        onClick={() => setShowMobileFeatures((prev) => !prev)}
-                        className="text-sm font-semibold text-[#2c4a30] underline"
-                    >
-                        {showMobileFeatures ? 'Hide section details' : 'Show section details'}
-                    </button>
-                </div>
-
-                <div className={`${showMobileFeatures ? 'block' : 'hidden'} md:block`}>
+                <div className="block">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
 
                     {/* Booking & Reservations */}
@@ -452,17 +417,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                     </h2>
                 </div>
 
-                <div className="md:hidden mb-4 text-left">
-                    <button
-                        type="button"
-                        onClick={() => setShowMobileCalculatorInputs((prev) => !prev)}
-                        className="text-sm font-semibold text-[#2c4a30] underline"
-                    >
-                        {showMobileCalculatorInputs ? 'Hide calculator inputs' : 'Show calculator inputs'}
-                    </button>
-                </div>
-
-                <div className={`${showMobileCalculatorInputs ? 'grid' : 'hidden'} md:grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10`}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
 
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -622,17 +577,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                         </p>
                     </div>
 
-                    <div className="md:hidden mb-4 text-left">
-                        <button
-                            type="button"
-                            onClick={() => setShowMobileAdminInputs((prev) => !prev)}
-                            className="text-sm font-semibold text-[#2c4a30] underline"
-                        >
-                            {showMobileAdminInputs ? 'Hide administrative task inputs' : 'Show administrative task inputs'}
-                        </button>
-                    </div>
-
-                    <div className={`${showMobileAdminInputs ? 'block' : 'hidden'} md:hidden space-y-3`}>
+                    <div className="md:hidden space-y-3">
                         {TASKS.map((task, i) => (
                             <div key={task} className="rounded-xl border border-gray-200 bg-white p-4">
                                 <p className="text-sm font-semibold text-[#2c4a30] mb-3">{task}</p>
