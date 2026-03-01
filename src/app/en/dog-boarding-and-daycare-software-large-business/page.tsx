@@ -32,10 +32,33 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
     const [flatFee, setFlatFee] = useState<number | "">("");
     const [transactionsPerYear, setTransactionsPerYear] = useState<number | "">("");
     const [averageTicket, setAverageTicket] = useState<number | "">("");
-
-    const petuniaPlan = { monthly: 115, rate: 3.0, flat: 0.25 };
+    const [includeDailyOps, setIncludeDailyOps] = useState(false);
+    const [includeHrFinance, setIncludeHrFinance] = useState(false);
+    const [includeWebsiteHosting, setIncludeWebsiteHosting] = useState(false);
+    const [websiteHostingContract, setWebsiteHostingContract] = useState<"1-year" | "3-year">("1-year");
+    const [currentWebsiteHostingBilling, setCurrentWebsiteHostingBilling] = useState<"monthly" | "annual">("monthly");
+    const [currentWebsiteHostingCost, setCurrentWebsiteHostingCost] = useState<number | "">("");
 
     const [taskInputs, setTaskInputs] = useState<{ hours: number; rate: number }[]>([]);
+    const [calculationResult, setCalculationResult] = useState<{
+        totalAnnualLaborValue: number;
+        annualLaborSavings: number;
+        totalHoursSaved: number;
+        weeksReclaimed: number;
+        totalSavings: number;
+        annualSoftware: number;
+        annualCurrentWebsiteHostingCost: number;
+        accountingAnnual: number;
+        hrAnnual: number;
+        schedulingAnnual: number;
+        otherSoftwareAnnual: number;
+        annualProcessing: number;
+        petuniaSubscription: number;
+        petuniaProcessing: number;
+    } | null>(null);
+    const [lastCalculatedSignature, setLastCalculatedSignature] = useState("");
+    const [isSavingEstimate, setIsSavingEstimate] = useState(false);
+    const [estimateSaveError, setEstimateSaveError] = useState<string | null>(null);
 
     const createAccountHref = `/${locale}/createnewaccount`;
     const smallBusinessHref = `/${locale}/dog-boarding-and-daycare-software-small-business`;
@@ -55,7 +78,7 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
         setTaskInputs(updated);
     };
 
-    const calculateSavings = () => {
+    const computeEstimate = () => {
         const subCost = Number(subscriptionCost) || 0;
         const procRate = Number(processingRate) || 0;
         const flat = Number(flatFee) || 0;
@@ -63,6 +86,12 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
         const avgTicket = Number(averageTicket) || 0;
 
         const annualSoftware = subCost * 12;
+        const annualCurrentWebsiteHostingCost =
+            includeWebsiteHosting
+                ? currentWebsiteHostingBilling === "monthly"
+                    ? (Number(currentWebsiteHostingCost) || 0) * 12
+                    : (Number(currentWebsiteHostingCost) || 0)
+                : 0;
 
         const accountingAnnual = (Number(accountingMonthly) || 0) * 12;
         const hrAnnual = (Number(hrMonthly) || 0) * 12;
@@ -73,12 +102,17 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
             txPerYear *
             ((procRate / 100) * avgTicket + flat);
 
-        const petuniaSubscription = petuniaPlan.monthly * 12;
+        const petuniaSubscription =
+            (10 * 12) +
+            (includeDailyOps ? 20 * 12 : 0) +
+            (includeHrFinance ? 109 * 12 : 0) +
+            (includeWebsiteHosting
+                ? (websiteHostingContract === "1-year" ? 79 : 149 / 3)
+                : 0);
 
         const petuniaProcessing =
             txPerYear *
-            ((petuniaPlan.rate / 100) * avgTicket +
-                petuniaPlan.flat);
+            ((3.0 / 100) * avgTicket + 0.45);
 
         const totalAnnualLaborValue =
             taskInputs.reduce((total, task) => {
@@ -91,6 +125,7 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
         const savings =
             (
                 annualSoftware +
+                annualCurrentWebsiteHostingCost +
                 accountingAnnual +
                 hrAnnual +
                 schedulingAnnual +
@@ -100,23 +135,105 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
             ) -
             (petuniaSubscription + petuniaProcessing);
 
-        return savings.toLocaleString(undefined, {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        });
+        const totalWeeklyHours =
+            taskInputs.reduce((sum, task) => sum + (task.hours || 0), 0);
+
+        const totalHoursSaved =
+            totalWeeklyHours * 52 * (timeSavingsPercent / 100);
+
+        const weeksReclaimed =
+            totalHoursSaved / 40;
+
+        return {
+            totalAnnualLaborValue,
+            annualLaborSavings,
+            totalHoursSaved,
+            weeksReclaimed,
+            totalSavings: savings,
+            annualSoftware,
+            annualCurrentWebsiteHostingCost,
+            accountingAnnual,
+            hrAnnual,
+            schedulingAnnual,
+            otherSoftwareAnnual,
+            annualProcessing,
+            petuniaSubscription,
+            petuniaProcessing,
+        };
+    };
+
+    const currentInputSnapshot = {
+        subscriptionCost,
+        accountingMonthly,
+        hrMonthly,
+        schedulingMonthly,
+        otherSoftwareMonthly,
+        processingRate,
+        flatFee,
+        transactionsPerYear,
+        averageTicket,
+        includeDailyOps,
+        includeHrFinance,
+        includeWebsiteHosting,
+        websiteHostingContract,
+        currentWebsiteHostingBilling,
+        currentWebsiteHostingCost,
+        timeSavingsPercent,
+        taskInputs,
+    };
+    const currentInputSignature = JSON.stringify(currentInputSnapshot);
+    const needsRecalculate =
+        calculationResult !== null && currentInputSignature !== lastCalculatedSignature;
+
+    const handleCalculate = async () => {
+        const result = computeEstimate();
+        setCalculationResult(result);
+        setLastCalculatedSignature(currentInputSignature);
+        setEstimateSaveError(null);
+
+        const endpoint = process.env.NEXT_PUBLIC_SAVINGS_ESTIMATE_ENDPOINT;
+        if (!endpoint) {
+            return;
+        }
+
+        try {
+            setIsSavingEstimate(true);
+            const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    page: "/en/dog-boarding-and-daycare-software-large-business",
+                    segment: "large-business",
+                    createdAtClient: new Date().toISOString(),
+                    inputs: currentInputSnapshot,
+                    results: result,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Estimate save failed: ${response.status}`);
+            }
+        } catch (error) {
+            console.error(error);
+            setEstimateSaveError("Calculation shown, but estimate could not be saved.");
+        } finally {
+            setIsSavingEstimate(false);
+        }
     };
 
     const softwareApplicationSchema = {
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        name: 'Petunia Pro',
+        name: 'Petunia Platform',
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'Web',
         description:
             'Dog boarding and daycare software for established facilities focused on financial discipline and long-term value.',
         offers: {
             '@type': 'Offer',
-            price: '115',
+            price: '10',
             priceCurrency: 'USD',
         },
         areaServed: 'US',
@@ -170,19 +287,12 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                 <p className="text-base text-gray-700 leading-8 max-w-3xl mx-auto">
                     At this level, systems directly impact margin, valuation,
                     expansion potential, and eventual exit conversations.
-                    Petunia Pro is built for disciplined ownership.
+                    Petunia Platform is built for disciplined ownership.
                 </p>
 
                 <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-                    <Link
-                        href={createAccountHref}
-                        className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-8 py-4 rounded-xl transition font-semibold shadow-sm hover:shadow-md text-center"
-                    >
-                        Choose Pro — $115/month
-                    </Link>
-
                     <a
-                        href="mailto:admin@petuniapets.com?subject=Petunia Pro Owner Strategy Discussion"
+                        href="mailto:admin@petuniapets.com?subject=Petunia Platform Owner Strategy Discussion"
                         className="border border-[#2c4a30] text-[#2c4a30] px-8 py-4 rounded-xl transition font-semibold hover:bg-[#f4f4f4] text-center"
                     >
                         Discuss Long-Term Strategy
@@ -258,7 +368,7 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                     </p>
 
                     <p className="font-medium text-[#2c4a30]">
-                        Petunia Pro gives you structured financial discipline —
+                        Petunia Platform gives you structured financial discipline —
                         so scale strengthens valuation instead of increasing risk.
                     </p>
 
@@ -275,13 +385,102 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                         </p>
 
                         <a
-                            href="mailto:admin@petuniapets.com?subject=Petunia Pro Owner Strategy Discussion"
+                            href="mailto:admin@petuniapets.com?subject=Petunia Platform Owner Strategy Discussion"
                             className="inline-block bg-[#2c4a30] text-white px-8 py-3 rounded-lg hover:bg-[#243d27] transition font-semibold"
                         >
                             Schedule Owner Strategy Call
                         </a>
                     </div>
                 </div>
+                </div>
+            </section>
+
+            {/* FINALIZED PRICING MODEL */}
+            <section className="py-12 border-t border-gray-200 scroll-mt-24">
+                <div className="text-center">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-[#2c4a30] mb-3">
+                        Finalized Operator Pricing Model
+                    </h2>
+                    <p className="text-base leading-7 text-gray-700 max-w-2xl mx-auto">
+                        Start with affordable core infrastructure, then layer in advanced systems only when
+                        operational complexity justifies it. This is stage alignment, not feature gating.
+                    </p>
+                    <p className="mt-4 text-sm leading-7 text-gray-700 max-w-3xl mx-auto">
+                        Too many platforms keep raising prices while operators are still using largely the same workflows.
+                        Petunia is built to move daily operations forward with measurable improvements, not recycled feature lists.
+                    </p>
+                </div>
+
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="rounded-2xl border border-[#2c4a30]/20 bg-[#f0f7f2] p-6">
+                        <p className="text-sm font-semibold text-[#2c4a30]">Core Platform</p>
+                        <p className="mt-2 text-3xl font-bold text-[#2c4a30]">$10</p>
+                        <p className="text-sm text-gray-700">per location / month</p>
+                        <p className="mt-4 text-sm text-gray-700 leading-6">
+                            Includes booking, clients/pets, waivers, messaging, integrated payments,
+                            automated invoicing, deposit tracking, recurring revenue engine, and client portal.
+                        </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-gray-200 bg-white p-6">
+                        <p className="text-sm font-semibold text-gray-900">Add-Ons</p>
+                        <div className="mt-4 space-y-4 text-sm text-gray-700">
+                            <div className="rounded-xl border border-gray-200 p-4">
+                                <p className="font-semibold text-[#2c4a30]">
+                                    Intelligent Daily Operations System — $20 / month
+                                </p>
+                                <p className="mt-2 leading-6">
+                                    Automatically generates real-time daily checklists based on routine tasks and dogs
+                                    currently on property to reduce missed steps and daily chaos.
+                                </p>
+                            </div>
+                            <div className="rounded-xl border border-gray-200 p-4">
+                                <p className="font-semibold text-[#2c4a30]">
+                                    Employment, Human Resources &amp; Financial Management — $109 / month
+                                </p>
+                                <p className="mt-2 leading-6">
+                                    Includes intelligent scheduling, labor-to-revenue analytics, profit tracking, and
+                                    playgroup intelligence.
+                                </p>
+                                <p className="mt-2 text-xs leading-5 text-gray-600">
+                                    Requires payment processing to be enabled; transactions must run through Petunia for accurate analysis.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="rounded-2xl border border-gray-200 bg-white p-6">
+                        <p className="text-sm font-semibold text-gray-900">Website Hosting</p>
+                        <div className="mt-3 space-y-2 text-sm text-gray-700">
+                            <p><span className="font-semibold text-[#2c4a30]">1-Year Contract:</span> $79</p>
+                            <p><span className="font-semibold text-[#2c4a30]">3-Year Contract:</span> $149</p>
+                            <p className="text-xs text-gray-600 leading-5">
+                                Mirror version hosted at www.petuniapets.com/yourbusinessname with unified booking navigation.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-gray-200 bg-white p-6">
+                        <p className="text-sm font-semibold text-gray-900">Optional Services</p>
+                        <div className="mt-3 space-y-3 text-sm text-gray-700">
+                            <div>
+                                <p className="font-semibold text-[#2c4a30]">Accelerated Data Migration — $250 one-time</p>
+                                <p className="mt-1 leading-6">
+                                    Up to 6-month rollover is included free; fast-track migration is available after evaluating
+                                    facility size and complexity.
+                                </p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-[#2c4a30]">Financial History Migration — Scope-based pricing</p>
+                                <p className="mt-1 leading-6">
+                                    If historical financial reporting is requested, pricing depends on data volume and depth
+                                    of metrics carried forward.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -333,8 +532,8 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
             <section id="large-calculator" className="py-14 border-t border-gray-200 scroll-mt-24">
                 <div className="text-center mb-8">
                     <h2 className="text-xl font-semibold text-[#2c4a30]">
-                        Use this Calculator to Estimate You Annual Savings by Implementing or Switching to Petunia!
-                        Step 1: Measure the Financial Impact of Growth
+                        Use this Calculator to Estimate Your Annual Savings by Implementing or Switching to Petunia!
+                        Step 1: Measure the Financial Impact of Structured Operations
                     </h2>
 
                     <div className="mt-6 space-y-6 text-base text-gray-700 leading-8 max-w-3xl mx-auto">
@@ -353,13 +552,13 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
 
                     <div className="mt-6 space-y-6 text-base text-gray-700 leading-8 max-w-3xl mx-auto">
                         <p>
-                            The calculator begins with Petunia Pro’s annual cost already applied
-                            ($115 × 12 = $1,380). As you enter your details, the estimate adjusts in real time.
+                            The calculator begins with Core pricing ($10/location/month) and lets you
+                            layer add-ons and hosting to match your actual operating structure.
                         </p>
 
                         <p>
                             If the calculator shows meaningful annual savings or reclaimed time,
-                            that is your signal to schedule a Growth strategy discussion so we can
+                            that is your signal to schedule a strategy discussion so we can
                             validate the assumptions and refine the model with you.
                         </p>
 
@@ -376,6 +575,70 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                 </div>
 
                 <div className="space-y-8 max-w-4xl mx-auto">
+                    {/* Petunia Add-On Selection */}
+                    <div className="mb-2">
+                        <label className="block text-sm font-semibold text-[#2c4a30] mb-2">
+                            Are you planning on adding any features to your software?
+                        </label>
+                        <p className="text-xs text-gray-600 mb-3">
+                            Core Platform is automatically included at $10/location/month with 3.0% + $0.45 processing.
+                        </p>
+                        <div className="space-y-3 rounded-xl border border-gray-200 p-4 bg-white">
+                            <label className="flex items-start gap-3 text-sm text-gray-700">
+                                <input type="checkbox" checked={includeDailyOps} onChange={(e) => setIncludeDailyOps(e.target.checked)} className="mt-1" />
+                                <span><span className="font-semibold text-[#2c4a30]">Intelligent Daily Operations System</span> — $20/month</span>
+                            </label>
+                            <label className="flex items-start gap-3 text-sm text-gray-700">
+                                <input type="checkbox" checked={includeHrFinance} onChange={(e) => setIncludeHrFinance(e.target.checked)} className="mt-1" />
+                                <span><span className="font-semibold text-[#2c4a30]">Employment, Human Resources &amp; Financial Management</span> — $109/month</span>
+                            </label>
+                            <div className="pt-1 border-t border-gray-200">
+                                <label className="flex items-start gap-3 text-sm text-gray-700">
+                                    <input type="checkbox" checked={includeWebsiteHosting} onChange={(e) => setIncludeWebsiteHosting(e.target.checked)} className="mt-1" />
+                                    <span><span className="font-semibold text-[#2c4a30]">Website Hosting</span> — 1-Year: $79 or 3-Year: $149</span>
+                                </label>
+                                {includeWebsiteHosting && (
+                                    <div className="mt-3 sm:ml-7 space-y-3">
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-700 mb-1">Website Hosting Contract</label>
+                                            <select
+                                                value={websiteHostingContract}
+                                                onChange={(e) => setWebsiteHostingContract(e.target.value as "1-year" | "3-year")}
+                                                className="border p-2 rounded w-full sm:w-60"
+                                            >
+                                                <option value="1-year">1-Year Contract ($79 annualized)</option>
+                                                <option value="3-year">3-Year Contract ($49.67 annualized)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-700 mb-1">Your Current Web Hosting Billing</label>
+                                            <select
+                                                value={currentWebsiteHostingBilling}
+                                                onChange={(e) => setCurrentWebsiteHostingBilling(e.target.value as "monthly" | "annual")}
+                                                className="border p-2 rounded w-full sm:w-60"
+                                            >
+                                                <option value="monthly">Monthly</option>
+                                                <option value="annual">Annual</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-700 mb-1">
+                                                Your Current Web Hosting Cost ({currentWebsiteHostingBilling === "monthly" ? "$ / month" : "$ / year"})
+                                            </label>
+                                            <input
+                                                type="number"
+                                                className="border p-2 rounded w-full sm:w-60"
+                                                min="0"
+                                                step="0.01"
+                                                value={currentWebsiteHostingCost}
+                                                onChange={(e) => setCurrentWebsiteHostingCost(e.target.value === "" ? "" : Number(e.target.value))}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
 
                     {/* Core Financial Inputs */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -566,8 +829,8 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                         </h3>
 
                         <p className="text-sm text-gray-600 text-center max-w-2xl mx-auto mb-6">
-                            Estimate the weekly hours spent managing growth complexity.
-                            Petunia Growth conservatively assumes a 50% reduction.
+                            Estimate the weekly hours spent managing scaling complexity.
+                            Petunia conservatively assumes a 50% reduction.
                         </p>
 
                         <div className="md:hidden space-y-3">
@@ -644,39 +907,38 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                         </div>
                     </div>
 
-                    {(() => {
+                    <div className="border-t border-gray-200 pt-8 text-center">
+                        {!calculationResult && (
+                            <button
+                                type="button"
+                                onClick={handleCalculate}
+                                disabled={isSavingEstimate}
+                                className="bg-[#2c4a30] text-white px-8 py-3 rounded-md hover:bg-[#244024] transition disabled:opacity-60"
+                            >
+                                {isSavingEstimate ? "Calculating..." : "Calculate"}
+                            </button>
+                        )}
 
-                        const totalAnnualLaborValue =
-                            taskInputs.reduce((total, task) => {
-                                return total + (task.hours || 0) * (task.rate || 0) * 52;
-                            }, 0);
+                        {calculationResult && needsRecalculate && (
+                            <button
+                                type="button"
+                                onClick={handleCalculate}
+                                disabled={isSavingEstimate}
+                                className="bg-[#2c4a30] text-white px-8 py-3 rounded-md hover:bg-[#244024] transition disabled:opacity-60"
+                            >
+                                {isSavingEstimate ? "Recalculating..." : "Recalculate"}
+                            </button>
+                        )}
 
-                        const annualLaborSavings =
-                            totalAnnualLaborValue * (timeSavingsPercent / 100);
-
-                        const totalWeeklyHours =
-                            taskInputs.reduce((sum, task) => sum + (task.hours || 0), 0);
-
-                        const totalHoursSaved =
-                            totalWeeklyHours * 52 * (timeSavingsPercent / 100);
-
-                        const weeksReclaimed =
-                            totalHoursSaved / 40;
-
-                        const totalSavings =
-                            Number(calculateSavings().replace(/,/g, ""));
-
-                        return (
-                            <div className="border-t border-gray-200 pt-8 text-center">
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-
+                        {calculationResult && (
+                            <>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center mt-8">
                                     <div>
                                         <p className="text-sm text-gray-600">
                                             Total Annual Admin Labor Value
                                         </p>
                                         <p className="text-xl font-bold text-[#2c4a30]">
-                                            ${totalAnnualLaborValue.toLocaleString()}
+                                            ${calculationResult.totalAnnualLaborValue.toLocaleString()}
                                         </p>
                                     </div>
 
@@ -685,7 +947,7 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                                             Estimated Labor Savings
                                         </p>
                                         <p className="text-xl font-bold text-[#2c4a30]">
-                                            ${annualLaborSavings.toLocaleString()}
+                                            ${calculationResult.annualLaborSavings.toLocaleString()}
                                         </p>
                                     </div>
 
@@ -694,7 +956,7 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                                             Total Hours Saved Per Year
                                         </p>
                                         <p className="text-xl font-bold text-[#2c4a30]">
-                                            {totalHoursSaved.toLocaleString()} hrs
+                                            {calculationResult.totalHoursSaved.toLocaleString()} hrs
                                         </p>
                                     </div>
 
@@ -703,18 +965,19 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                                             Total Estimated Annual Savings
                                         </p>
                                         <p className="text-xl font-bold text-[#2c4a30]">
-                                            ${totalSavings.toLocaleString()}
+                                            ${calculationResult.totalSavings.toLocaleString(undefined, {
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0,
+                                            })}
                                         </p>
                                     </div>
-
                                 </div>
 
                                 <div className="mt-8 max-w-3xl mx-auto text-center border-t border-gray-200 pt-6">
-
                                     <p className="text-base text-gray-700 leading-7">
                                         That’s approximately{" "}
                                         <span className="font-semibold text-[#2c4a30]">
-                                            {weeksReclaimed.toFixed(2)} full workweeks
+                                            {calculationResult.weeksReclaimed.toFixed(2)} full workweeks
                                         </span>{" "}
                                         every year.
                                     </p>
@@ -724,12 +987,16 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                                         improving margins, mentoring managers,
                                         or building the next stage of your business.
                                     </p>
-
                                 </div>
-                            </div>
-                        );
+                            </>
+                        )}
 
-                    })()}
+                        {estimateSaveError && (
+                            <p className="text-xs text-amber-700 mt-4">
+                                {estimateSaveError}
+                            </p>
+                        )}
+                    </div>
 
                 </div>
             </section>
@@ -744,7 +1011,7 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                     href={createAccountHref}
                     className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-8 py-4 rounded-xl transition font-semibold shadow-sm hover:shadow-md"
                 >
-                    Become a Pro with Petunia
+                    Start with Core on Petunia
                 </Link>
             </section>
 

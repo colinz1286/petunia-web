@@ -50,9 +50,24 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
     const [transactionsPerYear, setTransactionsPerYear] = useState<number | "">("");
     const [averageTicket, setAverageTicket] = useState<number | "">("");
     const [timeSavingsPercent, setTimeSavingsPercent] = useState(50);
-    const [locationTier, setLocationTier] = useState<
-        "" | "5-9" | "10-24" | "25-49" | "50+"
-    >("");
+    const [includeDailyOps, setIncludeDailyOps] = useState(false);
+    const [includeHrFinance, setIncludeHrFinance] = useState(false);
+    const [includeWebsiteHosting, setIncludeWebsiteHosting] = useState(false);
+    const [websiteHostingContract, setWebsiteHostingContract] = useState<"1-year" | "3-year">("1-year");
+    const [calculationResult, setCalculationResult] = useState<{
+        totalAnnualAdminValue: number;
+        modeledAdminSavings: number;
+        annualAccountingCost: number;
+        totalSavings: number;
+        estimatedEnterpriseSubscription: number;
+        annualSoftware: number;
+        annualProcessing: number;
+        petuniaSubscription: number;
+        petuniaProcessing: number;
+    } | null>(null);
+    const [lastCalculatedSignature, setLastCalculatedSignature] = useState("");
+    const [isSavingEstimate, setIsSavingEstimate] = useState(false);
+    const [estimateSaveError, setEstimateSaveError] = useState<string | null>(null);
 
 
     const [taskInputs, setTaskInputs] = useState<{
@@ -87,23 +102,12 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
     const [accountingHoursPerWeek, setAccountingHoursPerWeek] = useState<number | "">("");
     const [accountingAnnualSalary, setAccountingAnnualSalary] = useState<number | "">("");
 
-    // Enterprise tier pricing engine
-    const enterprisePricing = {
-        "5-9": { monthly: 99, rate: 3.0, flat: 0.25, locations: 7 },
-        "10-24": { monthly: 89, rate: 3.0, flat: 0.22, locations: 17 },
-        "25-49": { monthly: 79, rate: 3.0, flat: 0.20, locations: 37 },
-        "50+": { monthly: 70, rate: 3.0, flat: 0.18, locations: 60 },
-    };
-
-    const calculateSavings = () => {
+    const computeEstimate = () => {
         const subCost = Number(subscriptionCost) || 0;
         const procRate = Number(processingRate) || 0;
         const flat = Number(flatFee) || 0;
         const txPerYear = Number(transactionsPerYear) || 0;
         const avgTicket = Number(averageTicket) || 0;
-
-        const tier =
-            locationTier !== "" ? enterprisePricing[locationTier] : null;
 
         // Competitor cost is whatever the user types — no multiplier
         const annualSoftware = subCost * 12;
@@ -127,14 +131,15 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
         const annualAccountingCost =
             acctHours * 52 * accountingHourlyRate;
 
-        const petuniaSubscription = tier
-            ? tier.monthly * 12
-            : 0;
+        const petuniaSubscription =
+            (10 * 12) +
+            (includeDailyOps ? 20 * 12 : 0) +
+            (includeHrFinance ? 109 * 12 : 0) +
+            (includeWebsiteHosting ? (websiteHostingContract === "1-year" ? 79 : 149 / 3) : 0);
 
-        const petuniaProcessing = tier
-            ? txPerYear *
-            ((tier.rate / 100) * avgTicket + tier.flat)
-            : 0;
+        const petuniaProcessing =
+            txPerYear *
+            ((3.0 / 100) * avgTicket + 0.45);
 
         const savings =
             (annualSoftware +
@@ -143,26 +148,92 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                 annualAccountingCost) -
             (petuniaSubscription + petuniaProcessing);
 
-        return savings.toLocaleString(undefined, {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        });
+        const estimatedEnterpriseSubscription = petuniaSubscription;
+
+        return {
+            totalAnnualAdminValue: taskInputs.reduce((total, task) => {
+                return total + task.hours * task.rate * task.employees * 52;
+            }, 0),
+            modeledAdminSavings: annualAdminCost,
+            annualAccountingCost,
+            totalSavings: savings,
+            estimatedEnterpriseSubscription,
+            annualSoftware,
+            annualProcessing,
+            petuniaSubscription,
+            petuniaProcessing,
+        };
+    };
+
+    const currentInputSnapshot = {
+        subscriptionCost,
+        processingRate,
+        flatFee,
+        transactionsPerYear,
+        averageTicket,
+        timeSavingsPercent,
+        includeDailyOps,
+        includeHrFinance,
+        includeWebsiteHosting,
+        websiteHostingContract,
+        accountingHoursPerWeek,
+        accountingAnnualSalary,
+        taskInputs,
+    };
+    const currentInputSignature = JSON.stringify(currentInputSnapshot);
+    const needsRecalculate =
+        calculationResult !== null && currentInputSignature !== lastCalculatedSignature;
+
+    const handleCalculate = async () => {
+        const result = computeEstimate();
+        setCalculationResult(result);
+        setLastCalculatedSignature(currentInputSignature);
+        setEstimateSaveError(null);
+
+        const endpoint = process.env.NEXT_PUBLIC_SAVINGS_ESTIMATE_ENDPOINT;
+        if (!endpoint) {
+            return;
+        }
+
+        try {
+            setIsSavingEstimate(true);
+            const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    page: "/en/dog-boarding-and-daycare-software-enterprise",
+                    segment: "enterprise",
+                    createdAtClient: new Date().toISOString(),
+                    inputs: currentInputSnapshot,
+                    results: result,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Estimate save failed: ${response.status}`);
+            }
+        } catch (error) {
+            console.error(error);
+            setEstimateSaveError("Calculation shown, but estimate could not be saved.");
+        } finally {
+            setIsSavingEstimate(false);
+        }
     };
 
     const softwareApplicationSchema = {
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        name: 'Petunia Enterprise',
+        name: 'Petunia Platform',
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'Web',
         description:
-            'Enterprise software for multi-location dog boarding and daycare operators with centralized oversight and financial controls.',
+            'Multi-location software for dog boarding and daycare operators with centralized oversight and financial controls.',
         offers: {
-            '@type': 'AggregateOffer',
-            lowPrice: '70',
-            highPrice: '99',
+            '@type': 'Offer',
+            price: '10',
             priceCurrency: 'USD',
-            offerCount: '4',
         },
         areaServed: 'US',
         url: '/en/dog-boarding-and-daycare-software-enterprise',
@@ -170,34 +241,34 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
 
     const faqItems = [
         {
-            question: 'Is Petunia Enterprise only for private equity groups?',
+            question: 'Is this platform only for private equity groups?',
             answer:
-                'No. Petunia Enterprise is built for both private equity-backed multi-location groups and large independent owner-led operators who need disciplined oversight at scale.',
+                'No. This platform is built for both private equity-backed multi-location groups and large independent owner-led operators who need disciplined oversight at scale.',
         },
         {
-            question: 'What stage of operation is a fit for Enterprise?',
+            question: 'What stage of operation is a fit for multi-location operators?',
             answer:
-                'Enterprise is generally best for groups managing multiple locations, complex staffing, cross-location reconciliation, and leadership teams that need consolidated reporting.',
+                'Multi-location operations are generally best for groups managing multiple locations, complex staffing, cross-location reconciliation, and leadership teams that need consolidated reporting.',
         },
         {
-            question: 'How does Enterprise help with due diligence and exit readiness?',
+            question: 'How does this platform help with due diligence and exit readiness?',
             answer:
-                'Enterprise centralizes operational and financial visibility, standardizes workflows, and improves reporting consistency, which supports cleaner diligence conversations and better strategic optionality.',
+                'This platform centralizes operational and financial visibility, standardizes workflows, and improves reporting consistency, which supports cleaner diligence conversations and better strategic optionality.',
         },
         {
             question: 'Can we model ROI before making a decision?',
             answer:
-                'Yes. The enterprise calculator on this page lets you model software, processing, administrative workload, and accounting burden to estimate annual financial impact.',
+                'Yes. The multi-location calculator on this page lets you model software, processing, administrative workload, and accounting burden to estimate annual financial impact.',
         },
         {
             question: 'What if we are a large single owner, not a PE platform?',
             answer:
-                'The same systems still apply. Founder-led operators at large scale use Enterprise to protect margin, reclaim executive time, and run cleaner operations as they continue to grow.',
+                'The same systems still apply. Founder-led operators at large scale use this platform to protect margin, reclaim executive time, and run cleaner operations as they continue to grow.',
         },
         {
-            question: 'Does Enterprise support phased rollout across locations?',
+            question: 'Does this platform support phased rollout across locations?',
             answer:
-                'Yes. Enterprise planning can be phased by location group so leadership can standardize operations while managing onboarding risk.',
+                'Yes. Phased planning can be applied by location group so leadership can standardize operations while managing onboarding risk.',
         },
     ];
 
@@ -214,7 +285,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
             {
                 '@type': 'ListItem',
                 position: 2,
-                name: 'Enterprise Dog Boarding and Daycare Software',
+                name: 'Multi-Location Dog Boarding and Daycare Software',
                 item: '/en/dog-boarding-and-daycare-software-enterprise',
             },
         ],
@@ -254,17 +325,17 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
             {/* HERO */}
             <section className="py-16 text-center">
                 <h1 className="text-3xl sm:text-4xl font-bold text-[#2c4a30] mb-6">
-                    Enterprise Software for Multi-Location Dog Boarding & Daycare Operators
+                    Multi-Location Software for Dog Boarding & Daycare Operators
                 </h1>
 
                 <p className="text-base sm:text-lg text-gray-700 leading-8 max-w-3xl mx-auto mb-6">
-                    At enterprise scale, software is not an operations convenience.
+                    At multi-location scale, software is not an operations convenience.
                     It is a control system for margin protection, reporting integrity,
                     and institutional execution across every location.
                 </p>
 
                 <p className="text-base text-gray-700 leading-8 max-w-3xl mx-auto">
-                    Petunia Enterprise is built for centralized ownership groups,
+                    This platform is built for centralized ownership groups,
                     private equity-backed platforms, and founder-led large operators that need
                     standardized workflows, consolidated visibility, and disciplined financial infrastructure.
                 </p>
@@ -274,11 +345,11 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                         href={contactHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-8 py-4 rounded-xl transition font-semibold shadow-sm hover:shadow-md text-center"
                     >
-                        Request Enterprise Consultation
+                        Request Multi-Location Consultation
                     </Link>
 
                     <a
-                        href="mailto:admin@petuniapets.com?subject=Petunia Enterprise Owner or Investor Review"
+                        href="mailto:admin@petuniapets.com?subject=Petunia Multi-Location Owner or Investor Review"
                         className="border border-[#2c4a30] text-[#2c4a30] px-8 py-4 rounded-xl transition font-semibold hover:bg-[#f4f4f4] text-center"
                     >
                         Owner or Investor Strategy Call
@@ -312,7 +383,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                     </p>
 
                     <p>
-                        At this level, small process gaps become enterprise-level risk:
+                        At this level, small process gaps become multi-location-level risk:
                         audit inconsistency, margin leakage, weak reporting controls,
                         and delayed executive decision-making.
                     </p>
@@ -320,7 +391,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                     <p>
                         For private equity groups, this is about diligence quality, integration discipline,
                         and defensible reporting across locations. For independent owners, it is about
-                        protecting hard-earned margin while keeping leadership time focused on growth.
+                        protecting hard-earned margin while keeping leadership time focused on expansion.
                     </p>
 
                     <p className="font-medium text-[#2c4a30]">
@@ -357,12 +428,12 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                     </p>
 
                     <p className="font-medium text-[#2c4a30]">
-                        Petunia Enterprise supports controlled scalability without introducing unnecessary complexity.
+                        Petunia supports controlled scalability without introducing unnecessary complexity.
                     </p>
 
                     <div className="mt-10 max-w-3xl mx-auto bg-[#f7faf7] border border-[#2c4a30]/15 rounded-2xl p-8 text-center">
                         <h3 className="text-lg font-semibold text-[#2c4a30] mb-4">
-                            Enterprise Alignment Review
+                            Multi-Location Alignment Review
                         </h3>
 
                         <p className="text-gray-700 leading-8 max-w-2xl mx-auto mb-6">
@@ -373,13 +444,13 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
 
                         <div className="flex flex-col sm:flex-row justify-center gap-3">
                             <a
-                                href="mailto:admin@petuniapets.com?subject=Petunia Enterprise Alignment Review - Owner"
+                                href="mailto:admin@petuniapets.com?subject=Petunia Multi-Location Alignment Review - Owner"
                                 className="inline-block bg-[#2c4a30] text-white px-8 py-3 rounded-lg hover:bg-[#243d27] transition font-semibold"
                             >
                                 Owner-Led Review
                             </a>
                             <a
-                                href="mailto:admin@petuniapets.com?subject=Petunia Enterprise Alignment Review - Investor"
+                                href="mailto:admin@petuniapets.com?subject=Petunia Multi-Location Alignment Review - Investor"
                                 className="inline-block border border-[#2c4a30] text-[#2c4a30] px-8 py-3 rounded-lg hover:bg-[#f4f4f4] transition font-semibold"
                             >
                                 Investor / PE Review
@@ -390,16 +461,105 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                 </div>
             </section>
 
+            {/* FINALIZED PRICING MODEL */}
+            <section className="py-12 border-t border-gray-200 scroll-mt-24">
+                <div className="text-center">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-[#2c4a30] mb-3">
+                        Finalized Operator Pricing Model
+                    </h2>
+                    <p className="text-base leading-7 text-gray-700 max-w-2xl mx-auto">
+                        Start with affordable core infrastructure, then layer in advanced systems only when
+                        operational complexity justifies it. This is stage alignment, not feature gating.
+                    </p>
+                    <p className="mt-4 text-sm leading-7 text-gray-700 max-w-3xl mx-auto">
+                        Too many platforms keep raising prices while operators are still using largely the same workflows.
+                        Petunia is built to move daily operations forward with measurable improvements, not recycled feature lists.
+                    </p>
+                </div>
+
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="rounded-2xl border border-[#2c4a30]/20 bg-[#f0f7f2] p-6">
+                        <p className="text-sm font-semibold text-[#2c4a30]">Core Platform</p>
+                        <p className="mt-2 text-3xl font-bold text-[#2c4a30]">$10</p>
+                        <p className="text-sm text-gray-700">per location / month</p>
+                        <p className="mt-4 text-sm text-gray-700 leading-6">
+                            Includes booking, clients/pets, waivers, messaging, integrated payments,
+                            automated invoicing, deposit tracking, recurring revenue engine, and client portal.
+                        </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-gray-200 bg-white p-6">
+                        <p className="text-sm font-semibold text-gray-900">Add-Ons</p>
+                        <div className="mt-4 space-y-4 text-sm text-gray-700">
+                            <div className="rounded-xl border border-gray-200 p-4">
+                                <p className="font-semibold text-[#2c4a30]">
+                                    Intelligent Daily Operations System — $20 / month
+                                </p>
+                                <p className="mt-2 leading-6">
+                                    Automatically generates real-time daily checklists based on routine tasks and dogs
+                                    currently on property to reduce missed steps and daily chaos.
+                                </p>
+                            </div>
+                            <div className="rounded-xl border border-gray-200 p-4">
+                                <p className="font-semibold text-[#2c4a30]">
+                                    Employment, Human Resources &amp; Financial Management — $109 / month
+                                </p>
+                                <p className="mt-2 leading-6">
+                                    Includes intelligent scheduling, labor-to-revenue analytics, profit tracking, and
+                                    playgroup intelligence.
+                                </p>
+                                <p className="mt-2 text-xs leading-5 text-gray-600">
+                                    Requires payment processing to be enabled; transactions must run through Petunia for accurate analysis.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="rounded-2xl border border-gray-200 bg-white p-6">
+                        <p className="text-sm font-semibold text-gray-900">Website Hosting</p>
+                        <div className="mt-3 space-y-2 text-sm text-gray-700">
+                            <p><span className="font-semibold text-[#2c4a30]">1-Year Contract:</span> $79</p>
+                            <p><span className="font-semibold text-[#2c4a30]">3-Year Contract:</span> $149</p>
+                            <p className="text-xs text-gray-600 leading-5">
+                                Mirror version hosted at www.petuniapets.com/yourbusinessname with unified booking navigation.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-gray-200 bg-white p-6">
+                        <p className="text-sm font-semibold text-gray-900">Optional Services</p>
+                        <div className="mt-3 space-y-3 text-sm text-gray-700">
+                            <div>
+                                <p className="font-semibold text-[#2c4a30]">Accelerated Data Migration — $250 one-time</p>
+                                <p className="mt-1 leading-6">
+                                    Up to 6-month rollover is included free; fast-track migration is available after evaluating
+                                    facility size and complexity.
+                                </p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-[#2c4a30]">Financial History Migration — Scope-based pricing</p>
+                                <p className="mt-1 leading-6">
+                                    If historical financial reporting is requested, pricing depends on data volume and depth
+                                    of metrics carried forward.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* SELF-REQUALIFICATION SECTION */}
             <div className="mt-16 max-w-3xl mx-auto border-t border-gray-200 pt-12 text-center">
                 <h3 className="text-lg font-semibold text-[#2c4a30] mb-4">
-                    Not Sure Enterprise Is the Right Stage?
+                    Not Sure Multi-Location Is the Right Stage?
                 </h3>
 
                 <p className="space-y-6 text-gray-700 leading-8 max-w-2xl mx-auto">
-                    If you are still operating as a single facility or an early growth team,
+                    If you are still operating as a single facility or an early expansion team,
                     one of the lower-stage models may be a better fit right now.
-                    Enterprise is designed for centralized, multi-location operators.
+                    This stage is designed for centralized, multi-location operators.
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
@@ -430,7 +590,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
             <section id="enterprise-calculator" className="py-14 border-t border-gray-200 scroll-mt-24">
                 <div className="text-center mb-8">
                     <h2 className="text-xl font-semibold text-[#2c4a30]">
-                        Step 1: Model Enterprise-Level Financial Impact
+                        Step 1: Model Multi-Location Financial Impact
                     </h2>
 
                     <div className="mt-6 space-y-6 text-base text-gray-700 leading-8 max-w-3xl mx-auto">
@@ -455,28 +615,57 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                     {/* Core Financial Inputs */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">
-                                Number of Locations (Tier)
-                            </label>
-                            <select
-                                className="border p-4 rounded-lg w-full"
-                                value={locationTier}
-                                onChange={(e) =>
-                                    setLocationTier(
-                                        e.target.value as "" | "5-9" | "10-24" | "25-49" | "50+"
-                                    )
-                                }
-                            >
-                                <option value="">Select # of Locations Range</option>
-                                <option value="5-9">5-9 Locations</option>
-                                <option value="10-24">10-24 Locations</option>
-                                <option value="25-49">25-49 Locations</option>
-                                <option value="50+">50+ Locations</option>
-                            </select>
-                            <p className="text-sm text-gray-600 leading-6 mt-2">
-                                Select your current location count range to apply enterprise tier pricing.
+                        <div className="sm:col-span-2 rounded-xl border border-gray-200 p-4 bg-[#fafaf8]">
+                            <p className="text-sm font-semibold text-[#2c4a30] mb-2">
+                                Core Platform is automatically included at $10/location/month with 3.0% + $0.45 processing.
                             </p>
+                            <p className="text-sm text-gray-700 mb-3">
+                                Select any add-ons you want included in this estimate:
+                            </p>
+                            <div className="space-y-3">
+                                <label className="flex items-start gap-2 text-sm text-gray-700">
+                                    <input
+                                        type="checkbox"
+                                        checked={includeDailyOps}
+                                        onChange={(e) => setIncludeDailyOps(e.target.checked)}
+                                        className="mt-1"
+                                    />
+                                    <span><span className="font-semibold text-[#2c4a30]">Intelligent Daily Operations System</span> — $20/month</span>
+                                </label>
+                                <label className="flex items-start gap-2 text-sm text-gray-700">
+                                    <input
+                                        type="checkbox"
+                                        checked={includeHrFinance}
+                                        onChange={(e) => setIncludeHrFinance(e.target.checked)}
+                                        className="mt-1"
+                                    />
+                                    <span><span className="font-semibold text-[#2c4a30]">Employment, Human Resources &amp; Financial Management</span> — $109/month</span>
+                                </label>
+                                <div className="space-y-2">
+                                    <label className="flex items-start gap-2 text-sm text-gray-700">
+                                        <input
+                                            type="checkbox"
+                                            checked={includeWebsiteHosting}
+                                            onChange={(e) => setIncludeWebsiteHosting(e.target.checked)}
+                                            className="mt-1"
+                                        />
+                                        <span><span className="font-semibold text-[#2c4a30]">Website Hosting</span> — 1-Year: $79 or 3-Year: $149</span>
+                                    </label>
+                                    {includeWebsiteHosting && (
+                                        <div className="max-w-xs">
+                                            <label className="block text-xs font-semibold text-gray-700 mb-1">Website Hosting Contract</label>
+                                            <select
+                                                className="border p-2 rounded w-full"
+                                                value={websiteHostingContract}
+                                                onChange={(e) => setWebsiteHostingContract(e.target.value as "1-year" | "3-year")}
+                                            >
+                                                <option value="1-year">1-Year Contract ($79 annualized)</option>
+                                                <option value="3-year">3-Year Contract ($49.67 annualized)</option>
+                                            </select>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
                         <div>
@@ -603,11 +792,11 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                     {/* TIME SAVINGS SELECTOR */}
                     <div className="mt-10 mb-6 text-center bg-[#f7faf7] border border-[#2c4a30]/20 rounded-xl p-6">
                         <p className="text-base font-semibold text-[#2c4a30] mb-3">
-                            Estimated Enterprise Admin Time Savings
+                            Estimated Multi-Location Admin Time Savings
                         </p>
 
                         <p className="text-sm text-gray-700 mb-4">
-                            Choose the percentage reduction you want to model for enterprise administrative workload.
+                            Choose the percentage reduction you want to model for multi-location administrative workload.
                         </p>
 
                         <select
@@ -615,8 +804,6 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                             onChange={(e) => setTimeSavingsPercent(Number(e.target.value))}
                             className="border p-2 rounded w-32 mx-auto block"
                         >
-                            <option value={30}>30%</option>
-                            <option value={40}>40%</option>
                             <option value={50}>50%</option>
                             <option value={60}>60%</option>
                             <option value={70}>70%</option>
@@ -630,7 +817,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                     {/* Enterprise Oversight Tasks */}
                     <div className="border-t border-gray-200 pt-8">
                         <h3 className="text-lg font-semibold text-[#2c4a30] mb-4 text-center">
-                            Weekly Enterprise Oversight Workload
+                            Weekly Multi-Location Oversight Workload
                         </h3>
 
                         <p className="text-sm text-gray-600 text-center max-w-2xl mx-auto mb-6">
@@ -689,7 +876,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                                 <thead>
                                     <tr className="bg-[#f0f7f2] text-[#2c4a30]">
                                         <th className="p-3 text-center border border-gray-200 whitespace-normal leading-tight w-[38%]">
-                                            Enterprise Task
+                                            Multi-Location Task
                                         </th>
                                         <th className="p-3 text-center border border-gray-200 whitespace-normal leading-tight w-[21%]">
                                             Hours / Week Each Employee
@@ -749,43 +936,39 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                         </div>
                     </div>
 
-                    {(() => {
-                        const totalAnnualAdminValue =
-                            taskInputs.reduce((total, task) => {
-                                return total + task.hours * task.rate * task.employees * 52;
-                            }, 0);
+                    <div className="border-t border-gray-200 pt-8 text-center">
+                        {!calculationResult && (
+                            <button
+                                type="button"
+                                onClick={handleCalculate}
+                                disabled={isSavingEstimate}
+                                className="bg-[#2c4a30] text-white px-8 py-3 rounded-md hover:bg-[#244024] transition disabled:opacity-60"
+                            >
+                                {isSavingEstimate ? "Calculating..." : "Calculate"}
+                            </button>
+                        )}
 
-                        const modeledAdminSavings = totalAnnualAdminValue * (timeSavingsPercent / 100);
+                        {calculationResult && needsRecalculate && (
+                            <button
+                                type="button"
+                                onClick={handleCalculate}
+                                disabled={isSavingEstimate}
+                                className="bg-[#2c4a30] text-white px-8 py-3 rounded-md hover:bg-[#244024] transition disabled:opacity-60"
+                            >
+                                {isSavingEstimate ? "Recalculating..." : "Recalculate"}
+                            </button>
+                        )}
 
-                        const acctHours = Number(accountingHoursPerWeek) || 0;
-                        const acctSalary = Number(accountingAnnualSalary) || 0;
-
-                        const accountingHourlyRate =
-                            acctSalary > 0 ? acctSalary / 2080 : 0;
-
-                        const annualAccountingCost =
-                            acctHours * 52 * accountingHourlyRate;
-
-                        const totalSavings =
-                            Number(calculateSavings().replace(/,/g, ""));
-
-                        const tier =
-                            locationTier !== "" ? enterprisePricing[locationTier] : null;
-
-                        const estimatedEnterpriseSubscription =
-                            tier ? tier.monthly * 12 : 0;
-
-                        return (
-                            <div className="border-t border-gray-200 pt-8 text-center">
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+                        {calculationResult && (
+                            <>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center mt-8">
 
                                     <div>
                                         <p className="text-sm text-gray-600">
                                             Total Annual Admin Labor Value
                                         </p>
                                         <p className="text-xl font-bold text-[#2c4a30]">
-                                            ${totalAnnualAdminValue.toLocaleString()}
+                                            ${calculationResult.totalAnnualAdminValue.toLocaleString()}
                                         </p>
                                     </div>
 
@@ -794,7 +977,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                                             Modeled Admin Savings ({timeSavingsPercent}%)
                                         </p>
                                         <p className="text-xl font-bold text-[#2c4a30]">
-                                            ${modeledAdminSavings.toLocaleString()}
+                                            ${calculationResult.modeledAdminSavings.toLocaleString()}
                                         </p>
                                     </div>
 
@@ -803,16 +986,16 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                                             Optional Accounting Cost Modeled
                                         </p>
                                         <p className="text-xl font-bold text-[#2c4a30]">
-                                            ${annualAccountingCost.toLocaleString()}
+                                            ${calculationResult.annualAccountingCost.toLocaleString()}
                                         </p>
                                     </div>
 
                                     <div>
                                         <p className="text-sm text-gray-600">
-                                            Enterprise Subscription (Annual)
+                                            Platform Subscription (Annual)
                                         </p>
                                         <p className="text-xl font-bold text-[#2c4a30]">
-                                            ${estimatedEnterpriseSubscription.toLocaleString()}
+                                            ${calculationResult.estimatedEnterpriseSubscription.toLocaleString()}
                                         </p>
                                     </div>
 
@@ -820,19 +1003,27 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
 
                                 <div className="mt-8 max-w-3xl mx-auto text-center border-t border-gray-200 pt-6">
                                     <p className="text-lg font-semibold text-[#2c4a30]">
-                                        Total Estimated Annual Enterprise Savings
+                                        Total Estimated Annual Savings
                                     </p>
                                     <p className="text-3xl font-bold text-[#2c4a30] mt-3">
-                                        ${totalSavings.toLocaleString()}
+                                        ${calculationResult.totalSavings.toLocaleString(undefined, {
+                                            minimumFractionDigits: 0,
+                                            maximumFractionDigits: 0,
+                                        })}
                                     </p>
                                     <p className="text-sm text-gray-500 mt-3">
-                                        Includes software, processing, enterprise oversight labor, and optional accounting elimination.
+                                        Includes software, processing, multi-location oversight labor, and optional accounting elimination.
                                     </p>
                                 </div>
+                            </>
+                        )}
 
-                            </div>
-                        );
-                    })()}
+                        {estimateSaveError && (
+                            <p className="text-xs text-amber-700 mt-4">
+                                {estimateSaveError}
+                            </p>
+                        )}
+                    </div>
 
                 </div>
             </section>
@@ -841,10 +1032,10 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
             <section id="enterprise-comparison" className="py-14 border-t border-gray-200 scroll-mt-24">
                 <div className="text-center mb-8">
                     <h2 className="text-xl font-semibold text-[#2c4a30]">
-                        Enterprise Comparison: Operational Risk vs Structured Control
+                        Multi-Location Comparison: Operational Risk vs Structured Control
                     </h2>
                     <p className="text-sm text-gray-600 mt-3 max-w-3xl mx-auto">
-                        At enterprise scale, differences in process discipline become financial outcomes.
+                        At multi-location scale, differences in process discipline become financial outcomes.
                     </p>
                 </div>
 
@@ -855,7 +1046,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                             <div className="space-y-2">
                                 <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Typical Legacy Workflow</p>
                                 <p className="text-sm text-gray-700">{row.legacy}</p>
-                                <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide pt-1">Enterprise Structured Workflow</p>
+                                <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide pt-1">Structured Workflow</p>
                                 <p className="text-sm text-gray-700">{row.structured}</p>
                             </div>
                         </div>
@@ -873,7 +1064,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                                     Typical Legacy Workflow
                                 </th>
                                 <th className="p-4 border border-gray-200 text-left font-semibold w-1/3">
-                                    Enterprise Structured Workflow
+                                    Structured Workflow
                                 </th>
                             </tr>
                         </thead>
@@ -894,7 +1085,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
             <section className="py-14 border-t border-gray-200">
                 <div className="text-center mb-8">
                     <h2 className="text-xl font-semibold text-[#2c4a30]">
-                        Enterprise FAQ
+                        Multi-Location FAQ
                     </h2>
                     <p className="text-sm text-gray-600 mt-3 max-w-3xl mx-auto">
                         Common questions from private equity teams and large independent operators.
@@ -926,11 +1117,11 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                         href={contactHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-8 py-4 rounded-xl transition font-semibold shadow-sm hover:shadow-md"
                     >
-                        Schedule Enterprise Review
+                        Schedule Multi-Location Review
                     </Link>
 
                     <a
-                        href="mailto:admin@petuniapets.com?subject=Petunia Enterprise Private Equity and Owner Discussion"
+                        href="mailto:admin@petuniapets.com?subject=Petunia Multi-Location Private Equity and Owner Discussion"
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-8 py-4 rounded-xl transition font-semibold shadow-sm hover:shadow-md"
                     >
                         Discuss PE and Owner Use Cases

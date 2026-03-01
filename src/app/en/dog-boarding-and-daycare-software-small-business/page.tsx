@@ -29,6 +29,24 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
 
     const [taskInputs, setTaskInputs] = useState<{ hours: number; rate: number }[]>([]);
     const [timeSavingsPercent, setTimeSavingsPercent] = useState(50);
+    const [calculationResult, setCalculationResult] = useState<{
+        totalAnnualLaborValue: number;
+        annualLaborSavings: number;
+        totalHoursSaved: number;
+        weeksReclaimed: number;
+        totalSavings: number;
+        annualSoftware: number;
+        accountingAnnual: number;
+        hrAnnual: number;
+        schedulingAnnual: number;
+        otherSoftwareAnnual: number;
+        annualProcessing: number;
+        petuniaSubscription: number;
+        petuniaProcessing: number;
+    } | null>(null);
+    const [lastCalculatedSignature, setLastCalculatedSignature] = useState("");
+    const [isSavingEstimate, setIsSavingEstimate] = useState(false);
+    const [estimateSaveError, setEstimateSaveError] = useState<string | null>(null);
 
     useEffect(() => {
         setTaskInputs(TASKS.map(() => ({ hours: 0, rate: 0 })));
@@ -42,7 +60,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
 
     const petuniaPlan = { monthly: 10, rate: 3.0, flat: 0.45 };
 
-    const calculateSavings = () => {
+    const computeEstimate = () => {
         const subCost = Number(subscriptionCost) || 0;
         const procRate = Number(processingRate) || 0;
         const flat = Number(flatFee) || 0;
@@ -86,16 +104,91 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
             ) -
             (petuniaSubscription + petuniaProcessing);
 
-        return savings.toLocaleString(undefined, {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        });
+        const totalWeeklyHours =
+            taskInputs.reduce((sum, task) => sum + (task.hours || 0), 0);
+
+        const totalHoursSaved =
+            totalWeeklyHours * 52 * (timeSavingsPercent / 100);
+
+        const weeksReclaimed =
+            totalHoursSaved / 40;
+
+        return {
+            totalAnnualLaborValue,
+            annualLaborSavings,
+            totalHoursSaved,
+            weeksReclaimed,
+            totalSavings: savings,
+            annualSoftware,
+            accountingAnnual,
+            hrAnnual,
+            schedulingAnnual,
+            otherSoftwareAnnual,
+            annualProcessing,
+            petuniaSubscription,
+            petuniaProcessing,
+        };
+    };
+
+    const currentInputSnapshot = {
+        subscriptionCost,
+        accountingMonthly,
+        hrMonthly,
+        schedulingMonthly,
+        otherSoftwareMonthly,
+        processingRate,
+        flatFee,
+        transactionsPerYear,
+        averageTicket,
+        timeSavingsPercent,
+        taskInputs,
+    };
+    const currentInputSignature = JSON.stringify(currentInputSnapshot);
+    const needsRecalculate =
+        calculationResult !== null && currentInputSignature !== lastCalculatedSignature;
+
+    const handleCalculate = async () => {
+        const result = computeEstimate();
+        setCalculationResult(result);
+        setLastCalculatedSignature(currentInputSignature);
+        setEstimateSaveError(null);
+
+        const endpoint = process.env.NEXT_PUBLIC_SAVINGS_ESTIMATE_ENDPOINT;
+        if (!endpoint) {
+            return;
+        }
+
+        try {
+            setIsSavingEstimate(true);
+            const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    page: "/en/dog-boarding-and-daycare-software-small-business",
+                    segment: "small-business",
+                    createdAtClient: new Date().toISOString(),
+                    inputs: currentInputSnapshot,
+                    results: result,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Estimate save failed: ${response.status}`);
+            }
+        } catch (error) {
+            console.error(error);
+            setEstimateSaveError("Calculation shown, but estimate could not be saved.");
+        } finally {
+            setIsSavingEstimate(false);
+        }
     };
 
     const softwareApplicationSchema = {
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        name: 'Petunia Starter',
+        name: 'Petunia Platform',
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'Web',
         description:
@@ -149,19 +242,19 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
 
                 <p className="text-base sm:text-lg text-gray-700 leading-8 max-w-2xl mx-auto">
                     When you’re running a small facility, every decision matters.
-                    You’re thinking about growth, hiring, pricing, legal protection,
+                    You’re thinking about expansion, hiring, pricing, legal protection,
                     and whether you’re even charging enough — all while trying to
                     make it through the week.
                 </p>
 
                 <p className="text-base sm:text-lg text-gray-700 leading-8 max-w-2xl mx-auto mt-4">
-                    You don’t need complicated enterprise software. You need clarity.
+                    You don’t need complicated multi-location software. You need clarity.
                     You need structure. You need to know you’re not missing something.
                     And maybe most importantly — you need your time back.
                 </p>
 
                 <p className="text-base sm:text-lg text-[#2c4a30] font-medium leading-8 max-w-2xl mx-auto mt-6">
-                    Petunia Starter gives you clean financial tracking, automated
+                    Petunia Platform gives you clean financial tracking, automated
                     deposits, digital waivers, and operational structure —
                     without draining your budget or overwhelming your team.
                 </p>
@@ -171,7 +264,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                         href="/en/createnewaccount"
                         className="bg-[#2c4a30] text-white px-6 py-3 rounded-md hover:bg-[#244024] transition"
                     >
-                        Start for $15/month
+                        Start for $10/month
                     </Link>
                 </div>
             </section>
@@ -182,6 +275,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                         <a href="#small-reality" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Reality</a>
                         <a href="#small-foundation" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Foundation</a>
                         <a href="#small-features" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Included</a>
+                        <a href="#small-pricing-model" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Pricing</a>
                         <a href="#small-calculator" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Calculator</a>
                         <a href="#small-cta" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Get Started</a>
                     </div>
@@ -230,7 +324,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
 
                     <p>
                         The truth is — I couldn’t justify it.
-                        The margin was thin. Growth felt uncertain.
+                        The margin was thin. Expansion felt uncertain.
                         And when you’re small, spending money feels risky.
                     </p>
 
@@ -267,7 +361,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                     </p>
 
                     <p>
-                        Petunia Starter gives you the foundation most operators never had
+                        Petunia Platform gives you the foundation most operators never had
                         in the beginning — structured deposits, real payment tracking,
                         clean reporting, legal clarity, and financial visibility.
                     </p>
@@ -292,21 +386,21 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
 
                         <Link
-                            href="/dog-boarding-and-daycare-software-medium-business"
+                            href="/en/dog-boarding-and-daycare-software-medium-business"
                             className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-6 py-5 rounded-xl transition text-sm font-semibold shadow-sm hover:shadow-md"
                         >
                             Medium Business →
                         </Link>
 
                         <Link
-                            href="/dog-boarding-and-daycare-software-large-business"
+                            href="/en/dog-boarding-and-daycare-software-large-business"
                             className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-6 py-5 rounded-xl transition text-sm font-semibold shadow-sm hover:shadow-md"
                         >
                             Large Business →
                         </Link>
 
                         <Link
-                            href="/dog-boarding-software"
+                            href="/en/dog-boarding-software"
                             className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-6 py-5 rounded-xl transition text-sm font-semibold shadow-sm hover:shadow-md"
                         >
                             ← Back to Overview
@@ -321,7 +415,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
             <section id="small-features" className="py-12 border-t border-gray-200 scroll-mt-24">
                 <div className="text-center mb-10">
                     <h2 className="text-xl font-semibold text-[#2c4a30] mb-4">
-                        What’s Included in Petunia Starter
+                        What’s Included in Petunia Platform
                     </h2>
                     <p className="text-base text-gray-700 max-w-2xl mx-auto leading-7">
                         Everything you need to run a small boarding or daycare
@@ -389,9 +483,9 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
 
                     <div className="mt-12 text-center max-w-2xl mx-auto">
                         <p className="text-sm text-gray-700 leading-7">
-                            Petunia Starter is intentionally focused. It gives you
+                            Petunia Platform is intentionally focused. It gives you
                             structure, financial clarity, and legal protection —
-                            without overwhelming you with enterprise complexity.
+                            without overwhelming you with multi-location complexity.
                         </p>
                     </div>
                 </div>
@@ -399,14 +493,131 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
 
             <div className="mt-6 max-w-xl mx-auto bg-[#f7faf7] border border-[#2c4a30]/20 rounded-xl p-6 text-center">
                 <p className="text-base sm:text-lg font-bold text-[#2c4a30] leading-7">
-                    Use this Calculator to Estimate You Annual Savings by Implementing or Switching to Petunia!
+                    Use this Calculator to Estimate Your Annual Savings by Implementing or Switching to Petunia!
                     This calculator automatically assumes you are using the
-                    Petunia Starter plan — $15/month with 3.0% + $0.45 per transaction.
+                    Petunia Platform — $10/month with 3.0% + $0.45 per transaction.
                 </p>
                 <p className="text-sm font-bold text-[#2c4a30] mt-3">
                     Includes up to 2 months of migration before subscription billing begins.
                 </p>
             </div>
+
+            {/* FINALIZED PRICING MODEL */}
+            <section id="small-pricing-model" className="py-12 border-t border-gray-200 scroll-mt-24">
+                <div className="text-center">
+                    <h2 className="text-xl font-semibold text-[#2c4a30] mb-4">
+                        Finalized Operator Pricing Model
+                    </h2>
+                    <p className="text-base text-gray-700 max-w-2xl mx-auto leading-7">
+                        Start with affordable core infrastructure, then layer in advanced systems only when
+                        your operational complexity justifies it. This is stage alignment, not feature gating.
+                    </p>
+                    <p className="mt-4 text-sm text-gray-700 max-w-2xl mx-auto leading-7">
+                        In this market, operators are too often charged more for essentially the same experience.
+                        Petunia is focused on improving the real operating layer so the software gets better as your business grows.
+                    </p>
+                </div>
+
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="rounded-2xl border border-[#2c4a30]/20 bg-[#f0f7f2] p-6">
+                        <p className="text-sm font-semibold text-[#2c4a30]">Core Platform</p>
+                        <p className="mt-2 text-3xl font-bold text-[#2c4a30]">$10</p>
+                        <p className="text-sm text-gray-700">per location / month</p>
+                        <p className="mt-4 text-sm text-gray-700 leading-6">
+                            Includes booking, clients/pets, waivers, messaging, integrated payments,
+                            automated invoicing, deposit tracking, recurring revenue engine, and client portal.
+                        </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-gray-200 bg-white p-6">
+                        <p className="text-sm font-semibold text-gray-900">Add-Ons</p>
+                        <div className="mt-4 space-y-4 text-sm text-gray-700">
+                            <div className="rounded-xl border border-gray-200 p-4">
+                                <p className="font-semibold text-[#2c4a30]">
+                                    Intelligent Daily Operations System — $20 / month
+                                </p>
+                                <p className="mt-2 leading-6">
+                                    Real-time daily checklists based on routine tasks and dogs on property to reduce misses.
+                                </p>
+                            </div>
+                            <div className="rounded-xl border border-gray-200 p-4">
+                                <p className="font-semibold text-[#2c4a30]">
+                                    Employment, Human Resources &amp; Financial Management — $109 / month
+                                </p>
+                                <p className="mt-2 leading-6">
+                                    Intelligent scheduling, labor-to-revenue analytics, profit tracking, and playgroup intelligence.
+                                </p>
+                                <p className="mt-2 text-xs text-gray-600 leading-5">
+                                    Requires Petunia payment processing so all transactions are captured for accurate analysis.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="rounded-2xl border border-gray-200 bg-white p-6">
+                        <p className="text-sm font-semibold text-gray-900">Website Hosting</p>
+                        <div className="mt-3 space-y-2 text-sm text-gray-700">
+                            <p><span className="font-semibold text-[#2c4a30]">1-Year Contract:</span> $79</p>
+                            <p><span className="font-semibold text-[#2c4a30]">3-Year Contract:</span> $149</p>
+                            <p className="text-xs text-gray-600 leading-5">
+                                Mirror version hosted at www.petuniapets.com/yourbusinessname with unified booking navigation.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-gray-200 bg-white p-6">
+                        <p className="text-sm font-semibold text-gray-900">Optional Services</p>
+                        <div className="mt-3 space-y-3 text-sm text-gray-700">
+                            <div>
+                                <p className="font-semibold text-[#2c4a30]">Accelerated Data Migration — $250 one-time</p>
+                                <p className="mt-1 leading-6">
+                                    Up to 6-month rollover remains included free; fast-track migration is available by scope review.
+                                </p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-[#2c4a30]">Financial History Migration — Scope-based pricing</p>
+                                <p className="mt-1 leading-6">
+                                    Historical financial carryover pricing depends on data volume and reporting depth requested.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-8 rounded-2xl border border-[#2c4a30]/20 bg-[#fafaf8] p-6">
+                    <h3 className="text-lg font-semibold text-[#2c4a30] text-center">
+                        Stage-Based Fit for Small Operators
+                    </h3>
+                    <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700">
+                        <div className="rounded-xl border border-gray-200 bg-white p-4">
+                            <p className="font-semibold text-[#2c4a30]">Early Stage</p>
+                            <p className="mt-2 leading-6">
+                                Start with Core to protect margin while getting legal and payment structure right.
+                            </p>
+                        </div>
+                        <div className="rounded-xl border border-gray-200 bg-white p-4">
+                            <p className="font-semibold text-[#2c4a30]">Growing Team</p>
+                            <p className="mt-2 leading-6">
+                                Add Daily Operations when handoffs and checklist consistency start breaking down.
+                            </p>
+                        </div>
+                        <div className="rounded-xl border border-gray-200 bg-white p-4">
+                            <p className="font-semibold text-[#2c4a30]">Scaling Locations</p>
+                            <p className="mt-2 leading-6">
+                                Add Employment/HR/Financial systems when labor planning and margin control become weekly priorities.
+                            </p>
+                        </div>
+                        <div className="rounded-xl border border-gray-200 bg-white p-4">
+                            <p className="font-semibold text-[#2c4a30]">Institutional Path</p>
+                            <p className="mt-2 leading-6">
+                                Layer all modules with structured migration to standardize operations and support diligence readiness.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             {/* SAVINGS CALCULATOR */}
             <section id="small-calculator" className="py-12 border-t border-gray-200 scroll-mt-24">
@@ -415,6 +626,27 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                     <h2 className="text-xl font-semibold text-[#2c4a30]">
                         Estimate Your Cost and Time Savings
                     </h2>
+                </div>
+
+                <div className="mb-8 max-w-3xl mx-auto rounded-2xl border border-[#2c4a30]/15 bg-[#f8faf8] p-5">
+                    <p className="text-sm font-semibold text-[#2c4a30] text-center">
+                        Where Small-Operator ROI Usually Shows Up First
+                    </p>
+                    <p className="mt-2 text-xs text-gray-600 text-center max-w-2xl mx-auto leading-5">
+                        We believe small operators should pay for meaningful progress and cleaner execution,
+                        not for repeated feature packaging at higher prices.
+                    </p>
+                    <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-gray-700">
+                        <div className="rounded-lg border border-gray-200 bg-white p-3">
+                            Fewer late-night admin catch-up hours
+                        </div>
+                        <div className="rounded-lg border border-gray-200 bg-white p-3">
+                            Cleaner deposits, invoicing, and margin visibility
+                        </div>
+                        <div className="rounded-lg border border-gray-200 bg-white p-3">
+                            More time for clients, dogs, and controlled expansion
+                        </div>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
@@ -654,39 +886,39 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
 
                 </div>
 
-                {(() => {
+                <div className="border-t border-gray-200 pt-8 text-center">
+                    {!calculationResult && (
+                        <button
+                            type="button"
+                            onClick={handleCalculate}
+                            disabled={isSavingEstimate}
+                            className="bg-[#2c4a30] text-white px-8 py-3 rounded-md hover:bg-[#244024] transition disabled:opacity-60"
+                        >
+                            {isSavingEstimate ? "Calculating..." : "Calculate"}
+                        </button>
+                    )}
 
-                    const totalAnnualLaborValue =
-                        taskInputs.reduce((total, task) => {
-                            return total + (task.hours || 0) * (task.rate || 0) * 52;
-                        }, 0);
+                    {calculationResult && needsRecalculate && (
+                        <button
+                            type="button"
+                            onClick={handleCalculate}
+                            disabled={isSavingEstimate}
+                            className="bg-[#2c4a30] text-white px-8 py-3 rounded-md hover:bg-[#244024] transition disabled:opacity-60"
+                        >
+                            {isSavingEstimate ? "Recalculating..." : "Recalculate"}
+                        </button>
+                    )}
 
-                    const annualLaborSavings =
-                        totalAnnualLaborValue * (timeSavingsPercent / 100);
-
-                    const totalWeeklyHours =
-                        taskInputs.reduce((sum, task) => sum + (task.hours || 0), 0);
-
-                    const totalHoursSaved =
-                        totalWeeklyHours * 52 * (timeSavingsPercent / 100);
-
-                    const weeksReclaimed =
-                        totalHoursSaved / 40;
-
-                    const totalSavings =
-                        Number(calculateSavings().replace(/,/g, ""));
-
-                    return (
-                        <div className="border-t border-gray-200 pt-8 text-center">
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+                    {calculationResult && (
+                        <>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center mt-8">
 
                                 <div className="flex flex-col justify-between h-full min-h-[110px]">
                                     <p className="text-sm text-gray-600 leading-snug min-h-[40px] flex items-center justify-center">
                                         Total Annual Admin Labor Value
                                     </p>
                                     <p className="text-xl font-bold text-[#2c4a30]">
-                                        ${totalAnnualLaborValue.toLocaleString()}
+                                        ${calculationResult.totalAnnualLaborValue.toLocaleString()}
                                     </p>
                                 </div>
 
@@ -695,7 +927,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                                         Estimated Labor Savings
                                     </p>
                                     <p className="text-xl font-bold text-[#2c4a30]">
-                                        ${annualLaborSavings.toLocaleString()}
+                                        ${calculationResult.annualLaborSavings.toLocaleString()}
                                     </p>
                                 </div>
 
@@ -704,7 +936,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                                         Total Hours Saved Per Year
                                     </p>
                                     <p className="text-xl font-bold text-[#2c4a30]">
-                                        {totalHoursSaved.toLocaleString()} hrs
+                                        {calculationResult.totalHoursSaved.toLocaleString()} hrs
                                     </p>
                                 </div>
 
@@ -713,7 +945,10 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                                         Total Estimated Annual Savings
                                     </p>
                                     <p className="text-xl font-bold text-[#2c4a30]">
-                                        ${totalSavings.toLocaleString()}
+                                        ${calculationResult.totalSavings.toLocaleString(undefined, {
+                                            minimumFractionDigits: 0,
+                                            maximumFractionDigits: 0,
+                                        })}
                                     </p>
                                 </div>
 
@@ -724,7 +959,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                                 <p className="text-base text-gray-700 leading-7">
                                     That’s approximately{" "}
                                     <span className="font-semibold text-[#2c4a30]">
-                                        {weeksReclaimed.toFixed(2)} full workweeks
+                                        {calculationResult.weeksReclaimed.toFixed(2)} full workweeks
                                     </span>{" "}
                                     every year.
                                 </p>
@@ -734,11 +969,16 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                                     spending time with your family, or growing your business —
                                     instead of managing repetitive administrative work.
                                 </p>
-
                             </div>
-                        </div>
-                    );
-                })()}
+                        </>
+                    )}
+
+                    {estimateSaveError && (
+                        <p className="text-xs text-amber-700 mt-4">
+                            {estimateSaveError}
+                        </p>
+                    )}
+                </div>
 
             </section>
 
