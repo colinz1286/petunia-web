@@ -35,7 +35,7 @@ type Employee = {
 };
 
 export default function BoardingAndDaycareManageEmployeesPage() {
-    const t = useTranslations('businessDashboard');
+    const t = useTranslations('boardingAndDaycareDashboard');
     const router = useRouter();
 
     const [, setBusinessId] = useState('');

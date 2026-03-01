@@ -54,7 +54,7 @@ type BusinessUpdatePayload = {
 
 export default function BoardingAndDaycareDashboardPage() {
   const router = useRouter();
-  const t = useTranslations('businessDashboard');
+  const t = useTranslations('boardingAndDaycareDashboard');
 
   const [businessId, setBusinessId] = useState('');
   const [isVerified, setIsVerified] = useState(false);

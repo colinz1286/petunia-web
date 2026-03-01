@@ -241,6 +241,7 @@ export default function IndividualDashboardPage() {
           <DotLink href={`/${locale}/individualnotifications`} label={t('notifications')} showDot={hasNewBusinessSignup} />
           <DashboardLink href={`/${locale}/individualsearchbusinesses`} label={t('search_businesses')} />
           <DashboardLink href={`/${locale}/individualmypets`} label={t('my_pets')} />
+          <DashboardLink href={`/${locale}/tutorialsindividuals`} label={t('tutorial_videos')} />
         </div>
 
         {/* Invite Banner */}

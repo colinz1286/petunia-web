@@ -1,7 +1,7 @@
 export default {
   en: () => ({
     adoptionApplicationForm: require('./messages/en/adoptionApplicationForm.json'),
-    businessDashboard: require('./messages/en/businessDashboard.json'),
+    boardingAndDaycareDashboard: require('./messages/en/boardingAndDaycareDashboard.json'),
     boardingAndDaycareAddDogClientDogs: require('./messages/en/boardingAndDaycareAddDogClientDogs.json'),
     boardingAndDaycareAddDogClientList: require('./messages/en/boardingAndDaycareAddDogClientList.json'),
     boardingAndDaycareBusinessSettings: require('./messages/en/boardingAndDaycareBusinessSettings.json'),
