@@ -8,7 +8,9 @@ import { useEffect, useRef, useState } from 'react';
 export default function Header() {
   const locale = useLocale();
   const [isSoftwareMenuOpen, setIsSoftwareMenuOpen] = useState(false);
+  const [isSocialMenuOpen, setIsSocialMenuOpen] = useState(false);
   const softwareMenuRef = useRef<HTMLDivElement>(null);
+  const socialMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent | TouchEvent) {
@@ -17,6 +19,12 @@ export default function Header() {
         !softwareMenuRef.current.contains(event.target as Node)
       ) {
         setIsSoftwareMenuOpen(false);
+      }
+      if (
+        socialMenuRef.current &&
+        !socialMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsSocialMenuOpen(false);
       }
     }
 
@@ -71,14 +79,17 @@ export default function Header() {
               aria-haspopup="true"
               aria-expanded={isSoftwareMenuOpen}
               className="hover:underline flex items-center gap-1"
-              onClick={() => setIsSoftwareMenuOpen((prev) => !prev)}
+              onClick={() => {
+                setIsSoftwareMenuOpen((prev) => !prev);
+                setIsSocialMenuOpen(false);
+              }}
             >
               Software
               <span className="text-xs">▾</span>
             </button>
 
             <div
-              className={`absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg transition-all duration-150 z-50 ${
+              className={`absolute left-0 sm:left-auto sm:right-0 mt-2 w-[min(22rem,calc(100vw-2rem))] sm:w-56 max-h-[70vh] overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg transition-all duration-150 z-50 ${
                 isSoftwareMenuOpen
                   ? 'opacity-100 visible'
                   : 'opacity-0 invisible group-hover:opacity-100 group-hover:visible'
@@ -155,23 +166,49 @@ export default function Header() {
             Tutorials
           </Link>
 
-          <a
-            href="https://www.facebook.com/profile.php?id=61575107920935"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            Facebook
-          </a>
+          {/* SOCIAL MEDIA DROPDOWN */}
+          <div ref={socialMenuRef} className="relative group">
+            <button
+              type="button"
+              aria-haspopup="true"
+              aria-expanded={isSocialMenuOpen}
+              className="hover:underline flex items-center gap-1"
+              onClick={() => {
+                setIsSocialMenuOpen((prev) => !prev);
+                setIsSoftwareMenuOpen(false);
+              }}
+            >
+              Social Media
+              <span className="text-xs">▾</span>
+            </button>
 
-          <a
-            href="https://youtube.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            YouTube
-          </a>
+            <div
+              className={`absolute left-0 sm:left-auto sm:right-0 mt-2 w-[min(16rem,calc(100vw-2rem))] sm:w-48 bg-white border border-gray-200 rounded-md shadow-lg transition-all duration-150 z-50 ${
+                isSocialMenuOpen
+                  ? 'opacity-100 visible'
+                  : 'opacity-0 invisible group-hover:opacity-100 group-hover:visible'
+              }`}
+            >
+              <a
+                href="https://www.facebook.com/profile.php?id=61575107920935"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-2 text-sm text-[#2c4a30] hover:bg-[#f0f7f2]"
+                onClick={() => setIsSocialMenuOpen(false)}
+              >
+                Facebook
+              </a>
+              <a
+                href="https://youtube.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-2 text-sm text-[#2c4a30] hover:bg-[#f0f7f2]"
+                onClick={() => setIsSocialMenuOpen(false)}
+              >
+                YouTube
+              </a>
+            </div>
+          </div>
         </nav>
       </div>
     </header>
