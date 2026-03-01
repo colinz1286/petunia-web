@@ -3,6 +3,20 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
+const TASKS = [
+  "Staff scheduling & shift adjustments",
+  "Invoicing & payment reconciliation",
+  "Vaccine expiration checks",
+  "Daily Task List / Checklist Prep",
+  "Playgroup & Safety Planning",
+  "Employee Performance Tracking & Raises",
+  "Hiring Prep (job descriptions / onboarding)",
+  "Accounting & Bookkeeping Prep",
+  "Financial Analysis, Budgeting, and Forecasting",
+  "Forecasting Occupancy & Labor Demand",
+  "State Paperwork and Compliance"
+];
+
 export default function DogBoardingSoftwarePage() {
 
   // Allow empty inputs instead of forcing 0
@@ -16,24 +30,10 @@ export default function DogBoardingSoftwarePage() {
   const [schedulingMonthly, setSchedulingMonthly] = useState<number | "">("");
   const [otherSoftwareMonthly, setOtherSoftwareMonthly] = useState<number | "">("");
 
-  const tasks = [
-    "Staff scheduling & shift adjustments",
-    "Invoicing & payment reconciliation",
-    "Vaccine expiration checks",
-    "Daily Task List / Checklist Prep",
-    "Playgroup & Safety Planning",
-    "Employee Performance Tracking & Raises",
-    "Hiring Prep (job descriptions / onboarding)",
-    "Accounting & Bookkeeping Prep",
-    "Financial Analysis, Budgeting, and Forecasting",
-    "Forecasting Occupancy & Labor Demand",
-    "State Paperwork and Compliance"
-  ];
-
   const [taskInputs, setTaskInputs] = useState<{ hours: number; rate: number }[]>([]);
 
   useEffect(() => {
-    setTaskInputs(tasks.map(() => ({ hours: 0, rate: 0 })));
+    setTaskInputs(TASKS.map(() => ({ hours: 0, rate: 0 })));
   }, []);
 
   const updateTask = (index: number, field: "hours" | "rate", value: number) => {
@@ -49,6 +49,8 @@ export default function DogBoardingSoftwarePage() {
   };
 
   const [selectedPlan, setSelectedPlan] = useState<"" | "Starter" | "Growth" | "Pro">("");
+  const [showMobileDetailedCosts, setShowMobileDetailedCosts] = useState(false);
+  const [showMobileTaskTable, setShowMobileTaskTable] = useState(false);
 
   const calculateSavings = () => {
 
@@ -141,8 +143,38 @@ export default function DogBoardingSoftwarePage() {
         </div>
       </section>
 
+      {/* MOBILE QUICK CTA + SECTION INDEX */}
+      <section className="md:hidden py-6 border-t border-gray-200">
+        <div className="flex flex-col gap-3 mb-4">
+          <Link
+            href="/en/createnewaccount"
+            className="bg-[#2c4a30] text-white px-6 py-3 rounded-md text-center"
+          >
+            Get Started
+          </Link>
+          <a
+            href="mailto:admin@petuniapets.com"
+            className="border border-[#2c4a30] text-[#2c4a30] px-6 py-3 rounded-md text-center"
+          >
+            Contact Our Team
+          </a>
+        </div>
+
+        <div className="rounded-xl border border-[#d9cfc2] bg-[#fafaf8] p-3">
+          <div className="flex flex-wrap gap-2">
+            <a href="#stage" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Stage</a>
+            <a href="#tiers" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Tiers</a>
+            <a href="#comparison" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Compare</a>
+            <a href="#savings" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Savings</a>
+            <a href="#migration" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Switching</a>
+            <a href="#features" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Features</a>
+            <a href="#cta" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Get Started</a>
+          </div>
+        </div>
+      </section>
+
       {/* BUSINESS STAGE IDENTIFIER */}
-      <section className="py-14 border-t border-gray-200 text-center bg-[#fafaf8]">
+      <section id="stage" className="py-14 border-t border-gray-200 text-center bg-[#fafaf8] scroll-mt-24">
         <h2 className="text-2xl sm:text-3xl font-semibold text-[#2c4a30] mb-6">
           What Stage Is Your Boarding Business In?
         </h2>
@@ -289,7 +321,7 @@ export default function DogBoardingSoftwarePage() {
       </section>
 
       {/* COMPETITIVE REALITY (HIGH LEVEL, NO NAMES) */}
-      <section className="py-10 border-t border-gray-200">
+      <section id="tiers" className="py-10 border-t border-gray-200 scroll-mt-24">
         <div className="text-center">
           <h2 className="text-xl sm:text-2xl font-semibold text-[#2c4a30] mb-1">
             What Most Platforms Charge
@@ -339,7 +371,7 @@ export default function DogBoardingSoftwarePage() {
       </section>
 
       {/* PRICING TIERS */}
-      <section className="py-10 border-t border-gray-200">
+      <section id="comparison" className="py-10 border-t border-gray-200 scroll-mt-24">
         <div className="text-center">
           <h2 className="text-xl sm:text-2xl font-semibold text-[#2c4a30] mb-3">
             Simple Tiers. Real Leverage.
@@ -500,7 +532,7 @@ export default function DogBoardingSoftwarePage() {
       </section>
 
       {/* COMPARISON CHART */}
-      <section className="py-10 border-t border-gray-200">
+      <section id="savings" className="py-10 border-t border-gray-200 scroll-mt-24">
         <div className="text-center">
           <h2 className="text-xl sm:text-2xl font-semibold text-[#2c4a30] mb-4">
             How Petunia Compares
@@ -597,7 +629,16 @@ export default function DogBoardingSoftwarePage() {
           </div>
 
           {/* Software Costs */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="md:hidden mb-4 text-left">
+            <button
+              type="button"
+              onClick={() => setShowMobileDetailedCosts((prev) => !prev)}
+              className="text-sm font-semibold text-[#2c4a30] underline"
+            >
+              {showMobileDetailedCosts ? 'Hide detailed cost inputs' : 'Show detailed cost inputs'}
+            </button>
+          </div>
+          <div className={`${showMobileDetailedCosts ? 'grid' : 'hidden'} md:grid grid-cols-1 sm:grid-cols-2 gap-6`}>
 
             {/* Monthly Software Cost */}
             <div>
@@ -833,55 +874,67 @@ export default function DogBoardingSoftwarePage() {
           </div>
 
           {/* Task Table */}
-          <div className="mb-6 text-base sm:text-lg text-gray-700 text-center font-medium">
-            If your current software already automates any of these processes, or makes intuitive suggestions for you, leave those fields blank.
+          <div className="md:hidden mb-4 text-left">
+            <button
+              type="button"
+              onClick={() => setShowMobileTaskTable((prev) => !prev)}
+              className="text-sm font-semibold text-[#2c4a30] underline"
+            >
+              {showMobileTaskTable ? 'Hide administrative task inputs' : 'Show administrative task inputs'}
+            </button>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-sm">
-              <thead>
-                <tr className="bg-[#f0f7f2] text-[#2c4a30]">
-                  <th className="p-3 text-left border border-gray-200">Task</th>
-                  <th className="p-3 text-left border border-gray-200">Hours / Week</th>
-                  <th className="p-3 text-left border border-gray-200">Hourly Rate ($)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tasks.map((task, index) => (
-                  <tr key={task}>
-                    <td className="p-3 border border-gray-200">{task}</td>
-                    <td className="p-3 border border-gray-200">
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.25"
-                        className="border p-2 rounded w-full"
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          updateTask(index, "hours", val === "" ? 0 : Math.max(0, Number(val)));
-                        }}
-                      />
-                    </td>
-                    <td className="p-3 border border-gray-200">
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        className="border p-2 rounded w-full"
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          updateTask(
-                            index,
-                            "rate",
-                            val === "" ? 0 : Math.max(0, Number(val))
-                          );
-                        }}
-                      />
-                    </td>
+          <div className={`${showMobileTaskTable ? 'block' : 'hidden'} md:block`}>
+            <div className="mb-6 text-base sm:text-lg text-gray-700 text-center font-medium">
+              If your current software already automates any of these processes, or makes intuitive suggestions for you, leave those fields blank.
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                  <tr className="bg-[#f0f7f2] text-[#2c4a30]">
+                    <th className="p-3 text-left border border-gray-200">Task</th>
+                    <th className="p-3 text-left border border-gray-200">Hours / Week</th>
+                    <th className="p-3 text-left border border-gray-200">Hourly Rate ($)</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {TASKS.map((task, index) => (
+                    <tr key={task}>
+                      <td className="p-3 border border-gray-200">{task}</td>
+                      <td className="p-3 border border-gray-200">
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.25"
+                          className="border p-2 rounded w-full"
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            updateTask(index, "hours", val === "" ? 0 : Math.max(0, Number(val)));
+                          }}
+                        />
+                      </td>
+                      <td className="p-3 border border-gray-200">
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          className="border p-2 rounded w-full"
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            updateTask(
+                              index,
+                              "rate",
+                              val === "" ? 0 : Math.max(0, Number(val))
+                            );
+                          }}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Result */}
@@ -901,7 +954,7 @@ export default function DogBoardingSoftwarePage() {
       </section>
 
       {/* MIGRATION + TRANSITION STRUCTURE */}
-      <section className="py-10 border-t border-gray-200">
+      <section id="migration" className="py-10 border-t border-gray-200 scroll-mt-24">
         <div className="text-center">
           <h2 className="text-xl sm:text-2xl font-semibold text-[#2c4a30] mb-3">
             Switching Software Shouldn’t Put Your Facility At Risk
@@ -981,7 +1034,7 @@ export default function DogBoardingSoftwarePage() {
       </section>
 
       {/* KEY FEATURES (REFRESHED) */}
-      <section className="py-10 border-t border-gray-200">
+      <section id="features" className="py-10 border-t border-gray-200 scroll-mt-24">
         <div className="text-center">
           <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-[#2c4a30]">
             The Features That Actually Matter Day-To-Day
@@ -1163,7 +1216,7 @@ export default function DogBoardingSoftwarePage() {
       </section>
 
       {/* CTA */}
-      <section className="py-10 border-t border-gray-200 text-center px-4">
+      <section id="cta" className="py-10 border-t border-gray-200 text-center px-4 scroll-mt-24">
         <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-[#2c4a30]">
           Ready to Modernize Your Boarding &amp; Daycare Business?
         </h2>

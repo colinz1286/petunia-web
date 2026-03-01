@@ -28,6 +28,15 @@ export default function AboutUsPage() {
 
         {/* Intro */}
         <h1 className="text-3xl font-bold">Why We Built Petunia</h1>
+        <div className="md:hidden rounded-xl border border-[#d9cfc2] bg-white/40 p-3 text-left">
+          <p className="text-xs font-semibold uppercase tracking-wide text-[#2c4a30] mb-2">On this page</p>
+          <div className="flex flex-wrap gap-2">
+            <a href="#about-milo-story" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Milo&rsquo;s Story</a>
+            <a href="#about-final-gift" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Final Gift</a>
+            <a href="#about-petunia" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Meet Petunia</a>
+            <a href="#about-closing" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Closing Note</a>
+          </div>
+        </div>
         <p className="text-lg leading-relaxed">
           Petunia was created in memory of a dog named <strong>Milo</strong> — a dog who changed our lives in ways we never expected.
           This app isn&rsquo;t just software. It&rsquo;s a tribute. A continuation of Milo&rsquo;s legacy. A way to bring light, warmth, and connection
@@ -35,7 +44,7 @@ export default function AboutUsPage() {
         </p>
 
         {/* Milo’s Story */}
-        <h2 className="text-2xl font-semibold">Milo&rsquo;s Story</h2>
+        <h2 id="about-milo-story" className="text-2xl font-semibold scroll-mt-24">Milo&rsquo;s Story</h2>
         <p className="text-lg leading-relaxed">
           Milo came into our lives in December of 2017, during a time when his original family could no longer care for him.
           He arrived quietly, unsure of where he belonged — and within hours, we knew he had found his forever home with us.
@@ -64,7 +73,7 @@ export default function AboutUsPage() {
         </div>
 
         {/* Gift to You */}
-        <h2 className="text-2xl font-semibold">His Final Gift To Us – Our Gift To You</h2>
+        <h2 id="about-final-gift" className="text-2xl font-semibold scroll-mt-24">His Final Gift To Us – Our Gift To You</h2>
         <p className="text-lg leading-relaxed">
           In November of 2024, Milo was diagnosed with cancer. We spent every day of his final months making him feel cherished.
           We cooked for him, stayed by his side, and soaked in every quiet moment. On December 21st, Milo passed peacefully in Erin&rsquo;s arms — the same way he entered our lives.
@@ -86,7 +95,7 @@ export default function AboutUsPage() {
         </ul>
 
         {/* Petunia Section */}
-        <h2 className="text-2xl font-semibold">A New Chapter: Meet Petunia</h2>
+        <h2 id="about-petunia" className="text-2xl font-semibold scroll-mt-24">A New Chapter: Meet Petunia</h2>
         <p className="text-lg leading-relaxed">
           After Milo passed, our hearts felt empty — but love has a way of finding its way back in. Not long after, we welcomed a new dog into our family.
           Her name is Petunia. From the moment she arrived, she brought with her a gentle spirit, a sense of calm, and a new kind of hope.
@@ -111,7 +120,7 @@ export default function AboutUsPage() {
         </div>
 
         {/* Closing Note */}
-        <p className="text-lg mt-10 italic text-[#444] leading-relaxed">
+        <p id="about-closing" className="text-lg mt-10 italic text-[#444] leading-relaxed scroll-mt-24">
           Thank you for visiting our page. Whether you&rsquo;re a business owner trying to build something meaningful,
           or a pet parent looking for connection, we hope Milo&rsquo;s story creates a feeling of love that will stay with you forever.
           <br /><br />

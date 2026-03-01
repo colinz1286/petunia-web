@@ -7,27 +7,27 @@ export default function TutorialsPage() {
   const locale = useLocale();
 
   return (
-    <div className="w-full flex flex-col items-center bg-[#f6efe4] text-[#2c4a30] px-4 py-10">
-      <div className="max-w-3xl w-full text-center">
+    <main className="w-full min-h-[70vh] flex flex-col items-center bg-[#f6efe4] text-[#2c4a30] px-4 py-8 sm:py-12">
+      <section className="w-full max-w-xl text-center">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-5">Petunia Tutorials</h1>
 
-        {/* Centered Heading */}
-        <h1 className="text-3xl font-bold mb-6">Petunia Tutorials</h1>
-
-        <p className="text-base mb-10">
-          Please tap the correct button below to be directed to the tutorials page you are looking for.
+        <p className="text-sm sm:text-base text-[#2c4a30]/80 mb-6 sm:mb-8 leading-relaxed">
+          Select the tutorials section below to continue. This page helps route you to the
+          right tutorial library.
         </p>
 
-        <div className="flex flex-col gap-6">
+        <div className="rounded-xl border border-[#d9cfc2] bg-white p-4 sm:p-6 shadow-sm">
+          <p className="text-xs sm:text-sm text-[#2c4a30]/70 mb-4">
+            Available tutorial group
+          </p>
           <Link
             href={`/${locale}/tutorialsindividuals`}
-            className="w-full text-center bg-[#2c4a30] text-white py-4 rounded-lg font-semibold hover:bg-[#3a5c3d] transition"
+            className="w-full inline-flex items-center justify-center text-center bg-[#2c4a30] text-white px-4 py-4 rounded-lg font-semibold text-base hover:bg-[#3a5c3d] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2c4a30] focus-visible:ring-offset-2"
           >
-            Individual Pet Owners
+            Individual Pet Owners Tutorials
           </Link>
         </div>
-
-        <div className="h-10" />
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

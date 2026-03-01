@@ -95,6 +95,7 @@ export default function BlogPage() {
   const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   // ---- Initialize filters from URL query params (if present) ----
   const initialBreedParam = searchParams.get('breed') ?? '';
@@ -218,6 +219,8 @@ export default function BlogPage() {
 
   const canLoadMore = visibleCount < filteredPosts.length;
   const totalPages = Math.max(1, Math.ceil(filteredPosts.length / PAGE_SIZE));
+  const hasActiveFilters = selectedCategories.length > 0 || Boolean(selectedBreed);
+  const activeFilterCount = selectedCategories.length + (selectedBreed ? 1 : 0);
   const prevPageHref =
     currentPage > 1
       ? buildBlogUrl(selectedCategories, selectedBreed, currentPage - 1)
@@ -226,6 +229,32 @@ export default function BlogPage() {
     currentPage < totalPages
       ? buildBlogUrl(selectedCategories, selectedBreed, currentPage + 1)
       : null;
+
+  useEffect(() => {
+    if (!isMobileFiltersOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMobileFiltersOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isMobileFiltersOpen]);
+
+  const categoryButtonClass = (isActive: boolean) =>
+    `px-4 py-1.5 rounded-full text-sm font-bold transition border-[3px] ${isActive
+      ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
+      : 'text-[#2c4a30] border-[#2c4a30] hover:bg-[#e4dbcb]'
+    }`;
 
   return (
     <>
@@ -256,108 +285,226 @@ export default function BlogPage() {
           Advice, how-tos, and real answers for sitters, walkers, boarding facility owners, and loving pet parents. Want to see an artitle on a specific topic? Email us at admin@petuniapets.com. We would love to hear from you!
         </p>
 
-        {/* Filter Row 1 */}
-        <div className="flex flex-wrap justify-center gap-2 mb-2 max-w-2xl">
-          {firstRow.map((key) => {
-            const isActive = selectedCategories.includes(key);
-            return (
-              <button
-                key={key}
-                onClick={() => toggleCategory(key)}
-                className={`px-4 py-1.5 rounded-full text-sm font-bold transition border-[3px] ${isActive
-                  ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
-                  : 'text-[#2c4a30] border-[#2c4a30] hover:bg-[#e4dbcb]'
-                  }`}
-              >
-                {CATEGORY_MAP[key]}
-              </button>
-            );
-          })}
+        <div className="w-full max-w-2xl mb-4 md:hidden">
+          <div className="flex items-center justify-center">
+            <button
+              type="button"
+              onClick={() => setIsMobileFiltersOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 border-[#2c4a30] text-[#2c4a30] font-semibold bg-white"
+            >
+              <span>Filters</span>
+              {activeFilterCount > 0 && (
+                <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-[#2c4a30] px-2 text-xs text-white">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
-        {/* Filter Row 2 */}
-        <div className="flex flex-wrap justify-center gap-2 mb-2 max-w-2xl">
-          {secondRow.map((key) => {
-            const isActive = selectedCategories.includes(key);
-            return (
-              <button
-                key={key}
-                onClick={() => toggleCategory(key)}
-                className={`px-4 py-1.5 rounded-full text-sm font-bold transition border-[3px] ${isActive
-                  ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
-                  : 'text-[#2c4a30] border-[#2c4a30] hover:bg-[#e4dbcb]'
-                  }`}
-              >
-                {CATEGORY_MAP[key]}
-              </button>
-            );
-          })}
-        </div>
+        <div className="w-full max-w-2xl mb-4">
+          {hasActiveFilters && (
+            <div className="flex flex-wrap justify-center gap-2 mb-2">
+              {selectedCategories.map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => {
+                    setSelectedCategories([]);
+                    updateUrlWithFilters([], selectedBreed);
+                  }}
+                  className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[#2c4a30] text-white"
+                >
+                  <span>{CATEGORY_MAP[key]}</span>
+                  <span aria-hidden="true">×</span>
+                </button>
+              ))}
 
-        {/* Filter Row 3 */}
-        <div className="flex flex-wrap justify-center gap-2 mb-2 max-w-2xl">
-          {thirdRow.map((key) => {
-            const isActive = selectedCategories.includes(key);
-            return (
-              <button
-                key={key}
-                onClick={() => toggleCategory(key)}
-                className={`px-4 py-1.5 rounded-full text-sm font-bold transition border-[3px] ${isActive
-                  ? 'bg-[#2c4a30] text-white border-[#2c4a30]'
-                  : 'text-[#2c4a30] border-[#2c4a30] hover:bg-[#e4dbcb]'
-                  }`}
-              >
-                {CATEGORY_MAP[key]}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Filter Row 4 – Breed Specific Guides dropdown */}
-        <div className="flex flex-wrap justify-center items-center gap-3 mb-8 max-w-2xl">
-          {fourthRow.map(() => (
-            <div key="breed-dropdown" className="flex items-center gap-2">
-              <label htmlFor="breedFilter" className="text-sm font-semibold text-[#2c4a30]">
-                {CATEGORY_MAP[BREED_CATEGORY_KEY]}:
-              </label>
-              <select
-                id="breedFilter"
-                value={selectedBreed}
-                onChange={(e) => {
-                  const nextBreed = e.target.value;
-
-                  // Selecting a breed clears ALL categories
-                  setSelectedCategories([]);
-
-                  // Set the new breed
-                  setSelectedBreed(nextBreed);
-
-                  // Sync URL (no categories, only breed)
-                  updateUrlWithFilters([], nextBreed);
-                }}
-                className="text-sm rounded-full border-[3px] border-[#2c4a30] bg-white px-3 py-1.5 text-[#2c4a30] hover:bg-[#e4dbcb] cursor-pointer"
-              >
-                <option value="">All Breeds</option>
-                {breedOptions.map((b) => (
-                  <option key={b} value={b}>
-                    {b}
-                  </option>
-                ))}
-              </select>
+              {selectedBreed && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedBreed('');
+                    updateUrlWithFilters(selectedCategories, '');
+                  }}
+                  className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[#2c4a30] text-white"
+                >
+                  <span>Breed: {selectedBreed}</span>
+                  <span aria-hidden="true">×</span>
+                </button>
+              )}
             </div>
-          ))}
+          )}
 
-          {(selectedCategories.length > 0 || selectedBreed) && (
+          {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="ml-1 text-xs underline text-[#2c4a30] hover:opacity-80"
+              className="text-xs underline text-[#2c4a30] hover:opacity-80"
             >
-              Clear filters
+              Clear all filters
             </button>
           )}
         </div>
 
-        {/* Blog Card List */}
+        <div className="hidden md:block w-full">
+          {/* Filter Row 1 */}
+          <div className="flex flex-wrap justify-center gap-2 mb-2 max-w-2xl mx-auto">
+            {firstRow.map((key) => {
+              const isActive = selectedCategories.includes(key);
+              return (
+                <button
+                  key={key}
+                  onClick={() => toggleCategory(key)}
+                  className={categoryButtonClass(isActive)}
+                >
+                  {CATEGORY_MAP[key]}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Filter Row 2 */}
+          <div className="flex flex-wrap justify-center gap-2 mb-2 max-w-2xl mx-auto">
+            {secondRow.map((key) => {
+              const isActive = selectedCategories.includes(key);
+              return (
+                <button
+                  key={key}
+                  onClick={() => toggleCategory(key)}
+                  className={categoryButtonClass(isActive)}
+                >
+                  {CATEGORY_MAP[key]}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Filter Row 3 */}
+          <div className="flex flex-wrap justify-center gap-2 mb-2 max-w-2xl mx-auto">
+            {thirdRow.map((key) => {
+              const isActive = selectedCategories.includes(key);
+              return (
+                <button
+                  key={key}
+                  onClick={() => toggleCategory(key)}
+                  className={categoryButtonClass(isActive)}
+                >
+                  {CATEGORY_MAP[key]}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Filter Row 4 – Breed Specific Guides dropdown */}
+          <div className="flex flex-wrap justify-center items-center gap-3 mb-8 max-w-2xl mx-auto">
+            {fourthRow.map(() => (
+              <div key="breed-dropdown" className="flex items-center gap-2">
+                <label htmlFor="breedFilter" className="text-sm font-semibold text-[#2c4a30]">
+                  {CATEGORY_MAP[BREED_CATEGORY_KEY]}:
+                </label>
+                <select
+                  id="breedFilter"
+                  value={selectedBreed}
+                  onChange={(e) => {
+                    const nextBreed = e.target.value;
+                    setSelectedCategories([]);
+                    setSelectedBreed(nextBreed);
+                    updateUrlWithFilters([], nextBreed);
+                  }}
+                  className="text-sm rounded-full border-[3px] border-[#2c4a30] bg-white px-3 py-1.5 text-[#2c4a30] hover:bg-[#e4dbcb] cursor-pointer"
+                >
+                  <option value="">All Breeds</option>
+                  {breedOptions.map((b) => (
+                    <option key={b} value={b}>
+                      {b}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {isMobileFiltersOpen && (
+          <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Blog filters">
+            <button
+              type="button"
+              aria-label="Close filters"
+              onClick={() => setIsMobileFiltersOpen(false)}
+              className="absolute inset-0 bg-black/40"
+            />
+            <div className="absolute inset-y-0 right-0 w-[86%] max-w-sm bg-[#f6efe4] border-l border-[#d9cfc2] p-4 overflow-y-auto text-left">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold text-[#2c4a30]">Filters</h2>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileFiltersOpen(false)}
+                  className="rounded-full px-2 py-1 text-sm text-[#2c4a30] border border-[#2c4a30]"
+                >
+                  Close
+                </button>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                {[...firstRow, ...secondRow, ...thirdRow].map((key) => {
+                  const isActive = selectedCategories.includes(key);
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => toggleCategory(key)}
+                      className={categoryButtonClass(isActive)}
+                    >
+                      {CATEGORY_MAP[key]}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mb-6">
+                <label htmlFor="breedFilterMobile" className="block text-sm font-semibold text-[#2c4a30] mb-2">
+                  {CATEGORY_MAP[BREED_CATEGORY_KEY]}
+                </label>
+                <select
+                  id="breedFilterMobile"
+                  value={selectedBreed}
+                  onChange={(e) => {
+                    const nextBreed = e.target.value;
+                    setSelectedCategories([]);
+                    setSelectedBreed(nextBreed);
+                    updateUrlWithFilters([], nextBreed);
+                  }}
+                  className="w-full text-sm rounded-lg border-2 border-[#2c4a30] bg-white px-3 py-2 text-[#2c4a30]"
+                >
+                  <option value="">All Breeds</option>
+                  {breedOptions.map((b) => (
+                    <option key={b} value={b}>
+                      {b}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="text-sm underline text-[#2c4a30]"
+                >
+                  Clear all
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileFiltersOpen(false)}
+                  className="ml-auto px-4 py-2 rounded-full bg-[#2c4a30] text-white text-sm font-semibold"
+                >
+                  View results
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <section className="w-full max-w-xl space-y-8">
           {visiblePosts.length === 0 ? (
             <p className="text-[#2c4a30]">No articles available for the selected filters.</p>

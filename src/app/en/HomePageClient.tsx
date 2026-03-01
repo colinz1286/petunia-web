@@ -12,15 +12,18 @@ export default function HomePageClient() {
     const contentRef = useRef<HTMLDivElement>(null);
 
     const roles = [
-        { key: 'petOwner', label: 'Pet Owner' },
-        { key: 'boarding', label: 'Boarding and Daycare Facility Owner/Manager' },
-        { key: 'groomer', label: 'Dog Groomer (Shop Owner/Manager)' }, // ✅ NEW
-        { key: 'consulting', label: 'Free Consulting (Private 1-on-1)' },
-        { key: 'sitterWalker', label: 'Pet Sitter or Dog Walker' },
-        { key: 'breeder', label: 'Breeder' },
-        { key: 'rescue', label: 'Rescue or Adoption Shelter Owner/Manager' },
-        { key: 'vetClinic', label: 'Veterinary Clinic Owner/Manager' },
+        { key: 'petOwner', label: 'Pet Owner', summary: 'Free tools for pet profiles, records, and bookings.' },
+        { key: 'boarding', label: 'Boarding and Daycare Facility Owner/Manager', summary: 'Operator-built tools for daily facility operations.' },
+        { key: 'groomer', label: 'Dog Groomer (Shop Owner/Manager)', summary: 'Organize groomer workflows and client records.' },
+        { key: 'consulting', label: 'Free Consulting (Private 1-on-1)', summary: 'Private one-on-one guidance for pet care professionals.' },
+        { key: 'sitterWalker', label: 'Pet Sitter or Dog Walker', summary: 'Upcoming sitter and walker tools with no commissions.' },
+        { key: 'breeder', label: 'Breeder', summary: 'Track litters, records, and owner transfers in one place.' },
+        { key: 'rescue', label: 'Rescue or Adoption Shelter Owner/Manager', summary: 'Upcoming free support for rescues and shelters.' },
+        { key: 'vetClinic', label: 'Veterinary Clinic Owner/Manager', summary: 'Future modern clinic workflows and record management.' },
     ];
+    const privacyPolicyHref = `/${locale}/privacypolicy`;
+    const dogBoardingSoftwareHref = `/${locale}/dog-boarding-software`;
+    const selectedRoleSummary = roles.find((role) => role.key === selectedRole)?.summary;
 
     useEffect(() => {
         if (selectedRole && contentRef.current) {
@@ -126,32 +129,57 @@ export default function HomePageClient() {
                 </p>
                 <p className="w-full max-w-2xl text-xs text-gray-500 mb-8 text-balance">
                     Looking specifically for tools built for facilities?
-                    <Link href="/dog-boarding-software" className="underline mx-1">
+                    <Link href={dogBoardingSoftwareHref} className="underline mx-1">
                         Learn more about our dog boarding software
                     </Link>
                 </p>
 
                 {/* Role Buttons */}
-                <div className="flex flex-col gap-3 w-full max-w-md mb-10">
-                    {roles.map((role) => (
-                        <button
-                            key={role.key}
-                            onClick={() => setSelectedRole(role.key)}
-                            className={`py-3 px-4 rounded text-[#2c4a30] border border-[#2c4a30] hover:bg-[#e4dbcb] transition ${selectedRole === role.key ? 'bg-[#2c4a30] text-white' : ''
-                                }`}
-                        >
-                            {role.label}
-                        </button>
-                    ))}
+                <div className="w-full max-w-md mb-10">
+                    <label htmlFor="role-select" className="block text-sm font-semibold text-[#2c4a30] mb-2">
+                        Choose your role
+                    </label>
+                    <select
+                        id="role-select"
+                        value={selectedRole ?? ''}
+                        onChange={(e) => setSelectedRole(e.target.value || null)}
+                        className="w-full md:hidden px-4 py-3 rounded border border-[#2c4a30] bg-white text-[#2c4a30]"
+                    >
+                        <option value="">Select a role to view details</option>
+                        {roles.map((role) => (
+                            <option key={role.key} value={role.key}>
+                                {role.label}
+                            </option>
+                        ))}
+                    </select>
+
+                    <div className="hidden md:flex md:flex-col gap-3">
+                        {roles.map((role) => (
+                            <button
+                                key={role.key}
+                                onClick={() => setSelectedRole(role.key)}
+                                className={`py-3 px-4 rounded text-[#2c4a30] border border-[#2c4a30] hover:bg-[#e4dbcb] transition ${selectedRole === role.key ? 'bg-[#2c4a30] text-white' : ''
+                                    }`}
+                            >
+                                {role.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {selectedRoleSummary && (
+                        <p className="text-sm text-gray-700 mt-3 md:text-center text-left">
+                            {selectedRoleSummary}
+                        </p>
+                    )}
                 </div>
 
                 {/* Dynamic Content */}
                 <div
                     ref={contentRef}
-                    className="w-full max-w-3xl mt-6 text-[#2c4a30] text-center flex flex-col items-center scroll-mt-24"
+                    className="w-full max-w-3xl mt-2 mb-6 text-[#2c4a30] text-left sm:text-center flex flex-col items-center scroll-mt-24"
                 >
                     {selectedRole === 'petOwner' && (
-                        <section className="space-y-5 w-full max-w-xl">
+                        <section className="space-y-5 w-full max-w-xl bg-white border border-[#d9cfc2] rounded-xl p-5 sm:p-8 shadow-sm">
                             <h3 className="text-2xl font-bold text-center">Welcome, Pet Owners!</h3>
                             <p className="text-lg text-balance">
                                 Petunia is free to all pet owners! This is your all-in-one hub to manage your pet&rsquo;s care — from daycare and boarding reservations to vaccination tracking and feeding instructions.
@@ -161,12 +189,9 @@ export default function HomePageClient() {
                             </p>
                             <p className="text-lg text-balance">
                                 If you&rsquo;re curious how Petunia stays free, we want to reassure you that we do not sell your personal information — you can learn more by reviewing our{' '}
-                                <a
-                                    href="http://localhost:3000/en/privacypolicy"
-                                    className="underline font-medium"
-                                >
+                                <Link href={privacyPolicyHref} className="underline font-medium">
                                     Privacy Policy
-                                </a>.
+                                </Link>.
                             </p>
                             <p className="text-lg text-balance">
                                 Our reminders keep you on top of things like annual vet visits and expiring vaccines. We&rsquo;ve built everything with love, ease, and your pet&rsquo;s safety in mind.
@@ -193,7 +218,7 @@ export default function HomePageClient() {
                     )}
 
                     {selectedRole === 'boarding' && (
-                        <section className="space-y-5 w-full max-w-xl">
+                        <section className="space-y-5 w-full max-w-xl bg-white border border-[#d9cfc2] rounded-xl p-5 sm:p-8 shadow-sm">
                             <h3 className="text-2xl font-bold text-center">
                                 Dog Boarding & Daycare Software
                             </h3>
@@ -214,12 +239,9 @@ export default function HomePageClient() {
                             </p>
                             <p className="text-lg text-balance">
                                 We want to be clear that we do not sell your data or personal information — you can learn more by reviewing our{' '}
-                                <a
-                                    href="http://localhost:3000/en/privacypolicy"
-                                    className="underline font-medium"
-                                >
+                                <Link href={privacyPolicyHref} className="underline font-medium">
                                     Privacy Policy
-                                </a>.
+                                </Link>.
                             </p>
                             <p className="text-lg text-balance">
                                 🎉{" "}
@@ -235,7 +257,7 @@ export default function HomePageClient() {
 
                     {/* ✅ NEW: Groomer Section */}
                     {selectedRole === 'groomer' && (
-                        <section className="space-y-5 w-full max-w-xl">
+                        <section className="space-y-5 w-full max-w-xl bg-white border border-[#d9cfc2] rounded-xl p-5 sm:p-8 shadow-sm">
                             <h3 className="text-2xl font-bold text-center">For Dog Groomers</h3>
 
                             <p className="text-lg text-balance">
@@ -264,12 +286,9 @@ export default function HomePageClient() {
 
                             <p className="text-lg text-balance">
                                 We want to be clear that we do not sell your data or personal information — you can learn more by reviewing our{' '}
-                                <a
-                                    href="http://localhost:3000/en/privacypolicy"
-                                    className="underline font-medium"
-                                >
+                                <Link href={privacyPolicyHref} className="underline font-medium">
                                     Privacy Policy
-                                </a>
+                                </Link>
                                 .
                             </p>
 
@@ -286,7 +305,7 @@ export default function HomePageClient() {
                     )}
 
                     {selectedRole === 'consulting' && (
-                        <section className="space-y-5 w-full max-w-xl">
+                        <section className="space-y-5 w-full max-w-xl bg-white border border-[#d9cfc2] rounded-xl p-5 sm:p-8 shadow-sm">
                             <h3 className="text-2xl font-bold text-center">
                                 Free One-on-One Consulting for Pet Care Professionals
                             </h3>
@@ -322,7 +341,7 @@ export default function HomePageClient() {
                     )}
 
                     {selectedRole === 'sitterWalker' && (
-                        <section className="space-y-5 w-full max-w-xl">
+                        <section className="space-y-5 w-full max-w-xl bg-white border border-[#d9cfc2] rounded-xl p-5 sm:p-8 shadow-sm">
                             <h3 className="text-2xl font-bold text-center">Pet Sitters & Dog Walkers</h3>
                             <p className="text-lg text-balance">
                                 This part of Petunia is coming in the first half of 2026! We&rsquo;re rolling out tools built specifically for sitters and walkers.
@@ -332,12 +351,9 @@ export default function HomePageClient() {
                             </p>
                             <p className="text-lg text-balance">
                                 If you&rsquo;re wondering how we keep pricing so low, we want to be clear that we do not sell your data or personal information — you can learn more by reviewing our{' '}
-                                <a
-                                    href="http://localhost:3000/en/privacypolicy"
-                                    className="underline font-medium"
-                                >
+                                <Link href={privacyPolicyHref} className="underline font-medium">
                                     Privacy Policy
-                                </a>.
+                                </Link>.
                             </p>
                             <p className="text-lg text-balance">
                                 If you have clients on other platforms, don’t leave your reputation behind. Invite them to join you here. Once they sign up and you approve them as a past client, they can write you a review — so your history doesn’t disappear, and your momentum doesn’t miss a step.
@@ -353,7 +369,7 @@ export default function HomePageClient() {
                     )}
 
                     {selectedRole === 'breeder' && (
-                        <section className="space-y-5 w-full max-w-xl">
+                        <section className="space-y-5 w-full max-w-xl bg-white border border-[#d9cfc2] rounded-xl p-5 sm:p-8 shadow-sm">
                             <h3 className="text-2xl font-bold text-center">For Breeders</h3>
 
                             <p className="text-lg text-balance">
@@ -374,9 +390,9 @@ export default function HomePageClient() {
                             <p className="text-lg text-balance">
                                 If you&rsquo;re wondering how we keep pricing so low, we want to be clear that we do not sell your data or personal
                                 information — you can learn more by reviewing our{' '}
-                                <a href="http://localhost:3000/en/privacypolicy" className="underline font-medium">
+                                <Link href={privacyPolicyHref} className="underline font-medium">
                                     Privacy Policy
-                                </a>
+                                </Link>
                                 .
                             </p>
 
@@ -398,26 +414,23 @@ export default function HomePageClient() {
                     )}
 
                     {selectedRole === 'rescue' && (
-                        <section className="space-y-5 w-full max-w-xl">
+                        <section className="space-y-5 w-full max-w-xl bg-white border border-[#d9cfc2] rounded-xl p-5 sm:p-8 shadow-sm">
                             <h3 className="text-2xl font-bold text-center">For Rescues & Adoption Shelters</h3>
                             <p className="text-lg text-balance">
                                 Software for rescue and shelter organizations coming in mid to late 2026. When it goes live, it will be free.
                             </p>
                             <p className="text-lg text-balance">
                                 If you’re concerned about how we’re able to keep pricing so low, rest assured we do not sell your data or personal information — you can learn more by reviewing our{' '}
-                                <a
-                                    href="http://localhost:3000/en/privacypolicy"
-                                    className="underline font-medium"
-                                >
+                                <Link href={privacyPolicyHref} className="underline font-medium">
                                     Privacy Policy
-                                </a>.
+                                </Link>.
                             </p>
                             <p className="text-lg text-balance">💚 Thank you for everything you do in helping to give animals the life they deserve.</p>
                         </section>
                     )}
 
                     {selectedRole === 'vetClinic' && (
-                        <section className="space-y-5 w-full max-w-xl">
+                        <section className="space-y-5 w-full max-w-xl bg-white border border-[#d9cfc2] rounded-xl p-5 sm:p-8 shadow-sm">
                             <h3 className="text-2xl font-bold text-center">Veterinary Clinics</h3>
                             <p className="text-lg text-balance">
                                 Coming in 2027. Most clinic software is rigid and outdated. We&rsquo;re building something better — flexible, modern, and shaped around how real veterinary teams operate.

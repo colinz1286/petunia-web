@@ -1,6 +1,74 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
+
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
+};
+
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
 export default function TutorialsPage() {
+  const router = useRouter();
+  const locale = useLocale();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        router.push(`/${locale}/loginsignup`);
+        if (isMounted) setIsCheckingAuth(false);
+        return;
+      }
+
+      try {
+        const userSnap = await getDoc(doc(db, 'users', user.uid));
+        const accountType = userSnap.data()?.accountType;
+
+        if (!userSnap.exists() || accountType !== 'Individual') {
+          router.push(`/${locale}/loginsignup`);
+          if (isMounted) setIsCheckingAuth(false);
+          return;
+        }
+
+        if (isMounted) {
+          setIsAuthorized(true);
+          setIsCheckingAuth(false);
+        }
+      } catch {
+        router.push(`/${locale}/loginsignup`);
+        if (isMounted) setIsCheckingAuth(false);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      unsub();
+    };
+  }, [router, locale]);
+
+  if (isCheckingAuth || !isAuthorized) {
+    return (
+      <div className="min-h-screen bg-[#f6efe4] text-[#2c4a30] flex items-center justify-center px-4">
+        <p className="text-sm">Checking account access...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col items-center bg-[#f6efe4] text-[#2c4a30] px-4 py-10">

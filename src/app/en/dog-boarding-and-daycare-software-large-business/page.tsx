@@ -3,8 +3,24 @@
 import Link from 'next/link';
 import Script from 'next/script';
 import { useState, useEffect } from 'react';
+import { useLocale } from 'next-intl';
+
+const TASKS = [
+    "Staff scheduling & shift adjustments",
+    "Invoicing & payment reconciliation",
+    "Vaccine expiration checks",
+    "Daily Task List / Checklist Prep",
+    "Playgroup & Safety Planning",
+    "Employee Performance Tracking & Raises",
+    "Hiring Prep (job descriptions / onboarding)",
+    "Accounting & Bookkeeping Prep",
+    "Financial Analysis, Budgeting, and Forecasting",
+    "Forecasting Occupancy & Labor Demand",
+    "State Paperwork and Compliance"
+];
 
 export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
+    const locale = useLocale();
 
     const [subscriptionCost, setSubscriptionCost] = useState<number | "">("");
     const [accountingMonthly, setAccountingMonthly] = useState<number | "">("");
@@ -19,24 +35,20 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
 
     const petuniaPlan = { monthly: 115, rate: 3.0, flat: 0.25 };
 
-    const tasks = [
-        "Staff scheduling & shift adjustments",
-        "Invoicing & payment reconciliation",
-        "Vaccine expiration checks",
-        "Daily Task List / Checklist Prep",
-        "Playgroup & Safety Planning",
-        "Employee Performance Tracking & Raises",
-        "Hiring Prep (job descriptions / onboarding)",
-        "Accounting & Bookkeeping Prep",
-        "Financial Analysis, Budgeting, and Forecasting",
-        "Forecasting Occupancy & Labor Demand",
-        "State Paperwork and Compliance"
-    ];
-
     const [taskInputs, setTaskInputs] = useState<{ hours: number; rate: number }[]>([]);
+    const [showMobileFinancialExposure, setShowMobileFinancialExposure] = useState(false);
+    const [showMobileExpansionReadiness, setShowMobileExpansionReadiness] = useState(false);
+    const [showMobileCalculatorInputs, setShowMobileCalculatorInputs] = useState(false);
+    const [showMobileAdminInputs, setShowMobileAdminInputs] = useState(false);
+
+    const createAccountHref = `/${locale}/createnewaccount`;
+    const smallBusinessHref = `/${locale}/dog-boarding-and-daycare-software-small-business`;
+    const mediumBusinessHref = `/${locale}/dog-boarding-and-daycare-software-medium-business`;
+    const enterpriseHref = `/${locale}/dog-boarding-and-daycare-software-enterprise`;
+    const overviewHref = `/${locale}/dog-boarding-software`;
 
     useEffect(() => {
-        setTaskInputs(tasks.map(() => ({ hours: 0, rate: 0 })));
+        setTaskInputs(TASKS.map(() => ({ hours: 0, rate: 0 })));
     }, []);
 
     const [timeSavingsPercent, setTimeSavingsPercent] = useState(50); // Adjustable savings selector
@@ -167,7 +179,7 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
 
                 <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
                     <Link
-                        href="/createnewaccount"
+                        href={createAccountHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-8 py-4 rounded-xl transition font-semibold shadow-sm hover:shadow-md text-center"
                     >
                         Choose Pro — $115/month
@@ -182,13 +194,35 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                 </div>
             </section>
 
+            <section className="md:hidden py-4 border-t border-gray-200">
+                <div className="rounded-xl border border-[#d9cfc2] bg-[#fafaf8] p-3">
+                    <div className="flex flex-wrap gap-2">
+                        <a href="#large-exposure" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Exposure</a>
+                        <a href="#large-readiness" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Readiness</a>
+                        <a href="#large-calculator" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Calculator</a>
+                        <a href="#large-cta" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Get Started</a>
+                    </div>
+                </div>
+            </section>
+
             {/* SCALE & OWNERSHIP SHIFT */}
-            <section className="py-14 border-t border-gray-200 text-center">
+            <section id="large-exposure" className="py-14 border-t border-gray-200 text-center scroll-mt-24">
                 <h2 className="text-xl font-semibold text-[#2c4a30] mb-6">
                     Volume Magnifies Financial Exposure
                 </h2>
 
-                <div className="space-y-6 text-gray-700 leading-8 max-w-3xl mx-auto">
+                <div className="md:hidden text-left mb-5">
+                    <button
+                        type="button"
+                        onClick={() => setShowMobileFinancialExposure((prev) => !prev)}
+                        className="text-sm font-semibold text-[#2c4a30] underline"
+                    >
+                        {showMobileFinancialExposure ? 'Hide section details' : 'Show section details'}
+                    </button>
+                </div>
+
+                <div className={`${showMobileFinancialExposure ? 'block' : 'hidden'} md:block`}>
+                    <div className="space-y-6 text-gray-700 leading-8 max-w-3xl mx-auto">
                     <p>
                         At higher revenue levels, small inconsistencies become material financial risk.
                         Deposit liability compounds. Processing spreads multiply.
@@ -205,15 +239,27 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                         Large operations require structured systems — not patched workflows.
                     </p>
                 </div>
+                </div>
             </section>
 
             {/* WHY GROWTH WORKS */}
-            <section className="py-14 border-t border-gray-200 text-center">
+            <section id="large-readiness" className="py-14 border-t border-gray-200 text-center scroll-mt-24">
                 <h2 className="text-xl font-semibold text-[#2c4a30] mb-6">
                     Built for Expansion, Valuation, and Exit Readiness
                 </h2>
 
-                <div className="space-y-6 text-gray-700 leading-8 max-w-2xl mx-auto">
+                <div className="md:hidden text-left mb-5">
+                    <button
+                        type="button"
+                        onClick={() => setShowMobileExpansionReadiness((prev) => !prev)}
+                        className="text-sm font-semibold text-[#2c4a30] underline"
+                    >
+                        {showMobileExpansionReadiness ? 'Hide section details' : 'Show section details'}
+                    </button>
+                </div>
+
+                <div className={`${showMobileExpansionReadiness ? 'block' : 'hidden'} md:block`}>
+                    <div className="space-y-6 text-gray-700 leading-8 max-w-2xl mx-auto">
                     <p>
                         Advanced employee management tools, structured checklists,
                         smarter scheduling, automated deposit tracking, and clean
@@ -260,6 +306,7 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                         </a>
                     </div>
                 </div>
+                </div>
             </section>
 
             {/* SELF-REQUALIFICATION SECTION */}
@@ -283,21 +330,21 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
 
                     <Link
-                        href="/dog-boarding-and-daycare-software-small-business"
+                        href={smallBusinessHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-6 py-5 rounded-xl transition text-sm font-semibold shadow-sm hover:shadow-md"
                     >
                         Small Business →
                     </Link>
 
                     <Link
-                        href="/dog-boarding-and-daycare-software-medium-business"
+                        href={mediumBusinessHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-6 py-5 rounded-xl transition text-sm font-semibold shadow-sm hover:shadow-md"
                     >
                         Medium Business →
                     </Link>
 
                     <Link
-                        href="/dog-boarding-software"
+                        href={overviewHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-6 py-5 rounded-xl transition text-sm font-semibold shadow-sm hover:shadow-md"
                     >
                         ← Back to Overview
@@ -307,7 +354,7 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
             </div>
 
             {/* SAVINGS CALCULATOR */}
-            <section className="py-14 border-t border-gray-200">
+            <section id="large-calculator" className="py-14 border-t border-gray-200 scroll-mt-24">
                 <div className="text-center mb-8">
                     <h2 className="text-xl font-semibold text-[#2c4a30]">
                         Step 1: Measure the Financial Impact of Growth
@@ -354,7 +401,16 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                 <div className="space-y-8 max-w-4xl mx-auto">
 
                     {/* Core Financial Inputs */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="md:hidden mb-4 text-left">
+                        <button
+                            type="button"
+                            onClick={() => setShowMobileCalculatorInputs((prev) => !prev)}
+                            className="text-sm font-semibold text-[#2c4a30] underline"
+                        >
+                            {showMobileCalculatorInputs ? 'Hide calculator inputs' : 'Show calculator inputs'}
+                        </button>
+                    </div>
+                    <div className={`${showMobileCalculatorInputs ? 'grid' : 'hidden'} md:grid grid-cols-1 sm:grid-cols-2 gap-6`}>
 
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -546,7 +602,47 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                             Petunia Growth conservatively assumes a 50% reduction.
                         </p>
 
-                        <div className="overflow-x-auto">
+                        <div className="md:hidden mb-4 text-left">
+                            <button
+                                type="button"
+                                onClick={() => setShowMobileAdminInputs((prev) => !prev)}
+                                className="text-sm font-semibold text-[#2c4a30] underline"
+                            >
+                                {showMobileAdminInputs ? 'Hide administrative task inputs' : 'Show administrative task inputs'}
+                            </button>
+                        </div>
+
+                        <div className={`${showMobileAdminInputs ? 'block' : 'hidden'} md:hidden space-y-3`}>
+                            {TASKS.map((task, i) => (
+                                <div key={task} className="rounded-xl border border-gray-200 bg-white p-4">
+                                    <p className="text-sm font-semibold text-[#2c4a30] mb-3">{task}</p>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="block text-xs text-gray-600 mb-1">Hours / Week</label>
+                                            <input
+                                                type="number"
+                                                className="border p-2 rounded w-full"
+                                                onChange={(e) =>
+                                                    updateTask(i, "hours", Number(e.target.value) || 0)
+                                                }
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-gray-600 mb-1">Hourly Rate ($)</label>
+                                            <input
+                                                type="number"
+                                                className="border p-2 rounded w-full"
+                                                onChange={(e) =>
+                                                    updateTask(i, "rate", Number(e.target.value) || 0)
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="hidden md:block overflow-x-auto">
                             <table className="w-full border-collapse text-sm">
                                 <thead>
                                     <tr className="bg-[#f0f7f2] text-[#2c4a30]">
@@ -562,7 +658,7 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {tasks.map((task, i) => (
+                                    {TASKS.map((task, i) => (
                                         <tr key={task}>
                                             <td className="p-4 border border-gray-200">{task}</td>
                                             <td className="p-4 border border-gray-200">
@@ -681,13 +777,13 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
             </section>
 
             {/* CTA */}
-            <section className="py-16 border-t border-gray-200 text-center">
+            <section id="large-cta" className="py-16 border-t border-gray-200 text-center scroll-mt-24">
                 <h2 className="text-xl font-semibold text-[#2c4a30] mb-6">
                     Protect Margin. Strengthen Valuation. Lead with Discipline.
                 </h2>
 
                 <Link
-                    href="/createnewaccount"
+                    href={createAccountHref}
                     className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-8 py-4 rounded-xl transition font-semibold shadow-sm hover:shadow-md"
                 >
                     Become a Pro with Petunia
@@ -703,28 +799,28 @@ export default function DogBoardingAndDaycareSoftwareLargeBusiness() {
                 <div className="flex flex-wrap md:flex-nowrap justify-center items-center gap-3 max-w-6xl mx-auto">
 
                     <Link
-                        href="/dog-boarding-and-daycare-software-small-business"
+                        href={smallBusinessHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-4 py-2 rounded-lg transition text-sm font-semibold shadow-sm hover:shadow-md whitespace-nowrap"
                     >
                         Small Business →
                     </Link>
 
                     <Link
-                        href="/dog-boarding-and-daycare-software-medium-business"
+                        href={mediumBusinessHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-4 py-2 rounded-lg transition text-sm font-semibold shadow-sm hover:shadow-md whitespace-nowrap"
                     >
                         Medium Business →
                     </Link>
 
                     <Link
-                        href="/dog-boarding-and-daycare-software-software-enterprise"
+                        href={enterpriseHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-4 py-2 rounded-lg transition text-sm font-semibold shadow-sm hover:shadow-md whitespace-nowrap"
                     >
                         Multi-Location →
                     </Link>
 
                     <Link
-                        href="/dog-boarding-software"
+                        href={overviewHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-4 py-2 rounded-lg transition text-sm font-semibold shadow-sm hover:shadow-md whitespace-nowrap"
                     >
                         ← Overview

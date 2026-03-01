@@ -21,6 +21,20 @@ export default function ConsultingPage() {
                     Help With the Hardest Parts of Running a Pet Care Business
                 </h1>
 
+                <div className="md:hidden rounded-xl border border-[#d9cfc2] bg-white/40 p-3 text-left">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-[#2c4a30] mb-2">On this page</p>
+                    <div className="flex flex-wrap gap-2">
+                        <a href="#consulting-beginnings" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Beginnings</a>
+                        <a href="#consulting-who" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Who I Am</a>
+                        <a href="#consulting-why" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Why This Exists</a>
+                        <a href="#consulting-private" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Private Support</a>
+                        <a href="#consulting-milo" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Milo</a>
+                        <a href="#consulting-free" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Free</a>
+                        <a href="#consulting-topics" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Topics</a>
+                        <a href="#consulting-start" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Get Started</a>
+                    </div>
+                </div>
+
                 <p className="text-sm sm:text-base text-[#555] mt-3">
                     For a list of current business topics I&rsquo;m actively helping owners with,&nbsp;
                     <a
@@ -39,7 +53,7 @@ export default function ConsultingPage() {
                 </p>
 
                 {/* Humble Beginnings */}
-                <h2 className="text-2xl font-semibold">
+                <h2 id="consulting-beginnings" className="text-2xl font-semibold scroll-mt-24">
                     I Didn&rsquo;t Start With a Perfect Facility &mdash; and I&rsquo;m still Improving Every Single Day
                 </h2>
                 <p className="text-lg leading-relaxed">
@@ -100,7 +114,7 @@ export default function ConsultingPage() {
                 </p>
 
                 {/* Credentials / Story */}
-                <h2 className="text-2xl font-semibold">Who I Am</h2>
+                <h2 id="consulting-who" className="text-2xl font-semibold scroll-mt-24">Who I Am</h2>
                 <p className="text-lg leading-relaxed">
                     I am the owner of <strong>Berkley Creek Pet Retreat</strong> in Mars, Pennsylvania.
                     What began as a small, imperfect operation has grown steadily over time through
@@ -128,7 +142,7 @@ export default function ConsultingPage() {
                 </p>
 
                 {/* Why This Exists */}
-                <h2 className="text-2xl font-semibold">Why I&rsquo;m Doing This</h2>
+                <h2 id="consulting-why" className="text-2xl font-semibold scroll-mt-24">Why I&rsquo;m Doing This</h2>
                 <p className="text-lg leading-relaxed">
                     Over the years, I have watched countless people join Facebook groups and online communities because they want to learn how
                     to get started in pet care &mdash; boarding and daycare, pet sitting, dog walking, and everything in between. Most of these
@@ -164,7 +178,7 @@ export default function ConsultingPage() {
                 </p>
 
                 {/* Privacy Promise */}
-                <h2 className="text-2xl font-semibold">Private, Judgment-Free, and Personal</h2>
+                <h2 id="consulting-private" className="text-2xl font-semibold scroll-mt-24">Private, Judgment-Free, and Personal</h2>
                 <p className="text-lg leading-relaxed">
                     That belief is what led me to offer free, one-on-one consulting for people in the pet care space. These conversations will
                     be private, personal, and judgment-free, so that people can ask honest questions without worrying about how they might be
@@ -188,7 +202,7 @@ export default function ConsultingPage() {
                 </p>
 
                 {/* Milo / Mission */}
-                <h2 className="text-2xl font-semibold">In Honor of Milo</h2>
+                <h2 id="consulting-milo" className="text-2xl font-semibold scroll-mt-24">In Honor of Milo</h2>
                 <p className="text-lg leading-relaxed">
                     This consulting work is an expansion of the Petunia Pets project and is deeply personal to me. It is done in honor of
                     <strong> Milo</strong>. When we adopted Milo, he needed a fresh start in life &mdash; and we were able to give him one.
@@ -209,7 +223,7 @@ export default function ConsultingPage() {
                 </p>
 
                 {/* Free / Community Service */}
-                <h2 className="text-2xl font-semibold">Completely Free &mdash; Always</h2>
+                <h2 id="consulting-free" className="text-2xl font-semibold scroll-mt-24">Completely Free &mdash; Always</h2>
                 <p className="text-lg leading-relaxed">
                     This consulting will always be completely free. It is my way of giving back through community service, supporting people
                     who care deeply about animals, and continuing to honor Milo by helping others build something meaningful with compassion,
@@ -233,7 +247,7 @@ export default function ConsultingPage() {
                 </p>
 
                 {/* What You Can Ask */}
-                <h2 className="text-2xl font-semibold">What You Can Ask About</h2>
+                <h2 id="consulting-topics" className="text-2xl font-semibold scroll-mt-24">What You Can Ask About</h2>
                 <ul className="list-disc list-inside space-y-2 text-lg text-left sm:text-center px-4 sm:px-0">
                     <li>Getting started in boarding, daycare, pet sitting, or dog walking</li>
                     <li>Facility setup, daily operations, staffing, and customer experience</li>
@@ -247,7 +261,7 @@ export default function ConsultingPage() {
 
                 {/* How to Get Started */}
                 <div className="mt-8 space-y-3">
-                    <h2 className="text-2xl font-semibold">How to Get Started</h2>
+                    <h2 id="consulting-start" className="text-2xl font-semibold scroll-mt-24">How to Get Started</h2>
 
                     <p className="text-lg leading-relaxed">
                         All consulting is done one-on-one and face to face via video FaceTime. This allows us to have real, focused

@@ -8,6 +8,23 @@ export default function PrivacyPolicyPage() {
           <h1 className="text-3xl font-bold mb-4">Privacy Policy for Petunia Pets</h1>
           <p className="text-sm italic mb-8">Last Updated: July 14, 2025</p>
 
+          <div className="md:hidden rounded-xl border border-[#d9cfc2] bg-white/40 p-3 text-left mb-8">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#2c4a30] mb-2">Quick links</p>
+            <div className="flex flex-wrap gap-2">
+              <a href="#policy-overview" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Overview</a>
+              <a href="#policy-owner-contact" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Ownership</a>
+              <a href="#policy-data-collected" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Data Collected</a>
+              <a href="#policy-data-use-sharing" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Data Use</a>
+              <a href="#policy-user-controls" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Your Controls</a>
+              <a href="#policy-children" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Children</a>
+              <a href="#policy-marketing" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Marketing</a>
+              <a href="#policy-legal" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Legal</a>
+              <a href="#policy-updates" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Updates</a>
+              <a href="#policy-contact" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Contact</a>
+            </div>
+          </div>
+
+          <h2 id="policy-overview" className="text-xl font-semibold mb-3 scroll-mt-24">Overview</h2>
           <p className="mb-6">
             Berkley Creek Software LLC (“we,” “us,” or “our”) respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and protect information when you use the Petunia Pets mobile app or our website at{' '}
             <a href="https://www.petuniapets.com" target="_blank" rel="noopener noreferrer" className="underline">
@@ -15,40 +32,49 @@ export default function PrivacyPolicyPage() {
             </a>.
           </p>
 
+          <h2 id="policy-owner-contact" className="text-xl font-semibold mb-3 scroll-mt-24">Ownership and Contact</h2>
           <p className="mb-6">
             Petunia Pets is owned and operated by Berkley Creek Software LLC. If you have any questions about this policy or how we handle your data, you can contact us at{' '}
             <a href="mailto:admin@petuniapets.com" className="underline">admin@petuniapets.com</a>.
           </p>
 
+          <h2 id="policy-data-collected" className="text-xl font-semibold mb-3 scroll-mt-24">What We Collect</h2>
           <p className="mb-6">
             We only collect personal information that you voluntarily provide when using the app or creating a profile. This may include your name, email address, phone number, mailing address, emergency contact information, and information about your pets such as their names, breeds, or care notes. We do not collect any sensitive personal data, such as health information, financial information, or government-issued IDs. We do not track your location or collect any data in the background. We also do not use cookies or third-party trackers, and we do not collect information from your device unless you choose to upload something, such as a pet photo.
           </p>
 
+          <h2 id="policy-data-use-sharing" className="text-xl font-semibold mb-3 scroll-mt-24">How We Use and Share Data</h2>
           <p className="mb-6">
             The information you provide is used only to support the functionality of the app. This includes enabling account creation, managing pet profiles, facilitating reservations, and supporting general app features. We do not use your information for advertising, analytics, or any other purposes. Your data is never sold, rented, or shared with any third parties. No external companies or marketing services have access to your information.
           </p>
 
+          <h2 id="policy-user-controls" className="text-xl font-semibold mb-3 scroll-mt-24">Your Data Controls</h2>
           <p className="mb-6">
             As a user, you have full control over your personal information. You may access, update, or delete any data in your profile at any time. You may also delete your account whenever you choose. If you need help with data changes or account deletion, you can contact us directly at{' '}
             <a href="mailto:admin@petuniapets.com" className="underline">admin@petuniapets.com</a>.
           </p>
 
+          <h2 id="policy-children" className="text-xl font-semibold mb-3 scroll-mt-24">Children&rsquo;s Privacy</h2>
           <p className="mb-6">
             The Petunia Pets app is not intended for children under the age of 13. We do not knowingly collect data from anyone under 13 years old. If you believe that a child has provided personal information through our platform, please contact us so we can remove the data promptly.
           </p>
 
+          <h2 id="policy-marketing" className="text-xl font-semibold mb-3 scroll-mt-24">Marketing Communications</h2>
           <p className="mb-6">
             We do not currently send marketing messages or newsletters. If we choose to implement marketing communications in the future, users will always have the ability to opt out.
           </p>
 
+          <h2 id="policy-legal" className="text-xl font-semibold mb-3 scroll-mt-24">Legal Standards</h2>
           <p className="mb-6">
             We follow principles consistent with privacy laws such as the California Consumer Privacy Act (CCPA) and the General Data Protection Regulation (GDPR). We use your data only with your consent and never sell your information under any circumstances.
           </p>
 
+          <h2 id="policy-updates" className="text-xl font-semibold mb-3 scroll-mt-24">Policy Updates</h2>
           <p className="mb-6">
             We may occasionally update this Privacy Policy. If we make changes, we will update the “Last Updated” date shown at the top of this page. You are encouraged to review this policy from time to time to stay informed.
           </p>
 
+          <h2 id="policy-contact" className="text-xl font-semibold mb-3 scroll-mt-24">Questions and Contact Information</h2>
           <p className="mb-6">
             If you have any questions or concerns about this policy or your personal data, please email us at{' '}
             <a href="mailto:admin@petuniapets.com" className="underline">admin@petuniapets.com</a>. You may also reach us by mail at Berkley Creek Software LLC, 544 Valencia Rd, Mars, PA 16046, USA.

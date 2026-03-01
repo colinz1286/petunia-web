@@ -4,6 +4,16 @@ import Link from 'next/link';
 import Script from 'next/script';
 import { useState, useEffect } from 'react';
 
+const TASKS = [
+    "Manual invoicing & reconciliation",
+    "Tracking deposits in spreadsheets",
+    "Vaccine expiration checks",
+    "Client reminders & confirmations",
+    "Daily planning & coordination",
+    "Basic bookkeeping & reporting",
+    "Tax prep document gathering",
+];
+
 export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
 
     const [subscriptionCost, setSubscriptionCost] = useState<number | "">("");
@@ -17,21 +27,16 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
     const [transactionsPerYear, setTransactionsPerYear] = useState<number | "">("");
     const [averageTicket, setAverageTicket] = useState<number | "">("");
 
-    const tasks = [
-        "Manual invoicing & reconciliation",
-        "Tracking deposits in spreadsheets",
-        "Vaccine expiration checks",
-        "Client reminders & confirmations",
-        "Daily planning & coordination",
-        "Basic bookkeeping & reporting",
-        "Tax prep document gathering",
-    ];
-
     const [taskInputs, setTaskInputs] = useState<{ hours: number; rate: number }[]>([]);
     const [timeSavingsPercent, setTimeSavingsPercent] = useState(50);
+    const [showMobileReality, setShowMobileReality] = useState(false);
+    const [showMobileStarterWorks, setShowMobileStarterWorks] = useState(false);
+    const [showMobileFeatures, setShowMobileFeatures] = useState(false);
+    const [showMobileCalculatorInputs, setShowMobileCalculatorInputs] = useState(false);
+    const [showMobileAdminInputs, setShowMobileAdminInputs] = useState(false);
 
     useEffect(() => {
-        setTaskInputs(tasks.map(() => ({ hours: 0, rate: 0 })));
+        setTaskInputs(TASKS.map(() => ({ hours: 0, rate: 0 })));
     }, []);
 
     const updateTask = (index: number, field: "hours" | "rate", value: number) => {
@@ -176,13 +181,36 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                 </div>
             </section>
 
+            <section className="md:hidden py-4 border-t border-gray-200">
+                <div className="rounded-xl border border-[#d9cfc2] bg-[#fafaf8] p-3">
+                    <div className="flex flex-wrap gap-2">
+                        <a href="#small-reality" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Reality</a>
+                        <a href="#small-foundation" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Foundation</a>
+                        <a href="#small-features" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Included</a>
+                        <a href="#small-calculator" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Calculator</a>
+                        <a href="#small-cta" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Get Started</a>
+                    </div>
+                </div>
+            </section>
+
             {/* THE SMALL BUSINESS REALITY */}
-            <section className="py-12 border-t border-gray-200">
+            <section id="small-reality" className="py-12 border-t border-gray-200 scroll-mt-24">
                 <h2 className="text-xl font-semibold text-[#2c4a30] mb-6 text-center">
                     The Reality of Building Something From Scratch
                 </h2>
 
-                <div className="space-y-5 text-gray-700 leading-8 max-w-2xl mx-auto">
+                <div className="md:hidden text-left mb-5">
+                    <button
+                        type="button"
+                        onClick={() => setShowMobileReality((prev) => !prev)}
+                        className="text-sm font-semibold text-[#2c4a30] underline"
+                    >
+                        {showMobileReality ? 'Hide section details' : 'Show section details'}
+                    </button>
+                </div>
+
+                <div className={`${showMobileReality ? 'block' : 'hidden'} md:block`}>
+                    <div className="space-y-5 text-gray-700 leading-8 max-w-2xl mx-auto">
                     <p>
                         When you’re small, you’re not just running a boarding facility.
                         You’re building your future. You’re trying to grow responsibly,
@@ -231,16 +259,28 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                     <p className="font-medium text-[#2c4a30]">
                         This isn’t “fancy software.” It’s the foundation I wish I had.
                     </p>
+                    </div>
                 </div>
             </section>
 
             {/* WHY STARTER WORKS */}
-            <section className="py-12 border-t border-gray-200 text-center">
+            <section id="small-foundation" className="py-12 border-t border-gray-200 text-center scroll-mt-24">
                 <h2 className="text-xl font-semibold text-[#2c4a30] mb-6">
                     You Don’t Need Fancy. You Need Solid.
                 </h2>
 
-                <div className="space-y-5 text-gray-700 leading-8 max-w-2xl mx-auto">
+                <div className="md:hidden text-left mb-5">
+                    <button
+                        type="button"
+                        onClick={() => setShowMobileStarterWorks((prev) => !prev)}
+                        className="text-sm font-semibold text-[#2c4a30] underline"
+                    >
+                        {showMobileStarterWorks ? 'Hide section details' : 'Show section details'}
+                    </button>
+                </div>
+
+                <div className={`${showMobileStarterWorks ? 'block' : 'hidden'} md:block`}>
+                    <div className="space-y-5 text-gray-700 leading-8 max-w-2xl mx-auto">
                     <p>
                         If you’re perfectly happy with your size and don’t want aggressive expansion,
                         what you’re really buying back is time.
@@ -260,10 +300,10 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                     <p className="font-medium text-[#2c4a30]">
                         You’re not just organizing bookings. You’re building the future of your business — correctly.
                     </p>
-                </div>
+                    </div>
 
-                {/* SELF-REQUALIFICATION SECTION */}
-                <div className="mt-16 max-w-3xl mx-auto border-t border-gray-200 pt-12 text-center">
+                    {/* SELF-REQUALIFICATION SECTION */}
+                    <div className="mt-16 max-w-3xl mx-auto border-t border-gray-200 pt-12 text-center">
                     <h3 className="text-lg font-semibold text-[#2c4a30] mb-4">
                         Not Sure If You’re Still “Small”?
                     </h3>
@@ -299,10 +339,11 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
 
                     </div>
                 </div>
+                </div>
             </section>
 
             {/* STARTER FEATURES */}
-            <section className="py-12 border-t border-gray-200">
+            <section id="small-features" className="py-12 border-t border-gray-200 scroll-mt-24">
                 <div className="text-center mb-10">
                     <h2 className="text-xl font-semibold text-[#2c4a30] mb-4">
                         What’s Included in Petunia Starter
@@ -314,7 +355,18 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                <div className="md:hidden text-left mb-5 max-w-4xl mx-auto">
+                    <button
+                        type="button"
+                        onClick={() => setShowMobileFeatures((prev) => !prev)}
+                        className="text-sm font-semibold text-[#2c4a30] underline"
+                    >
+                        {showMobileFeatures ? 'Hide section details' : 'Show section details'}
+                    </button>
+                </div>
+
+                <div className={`${showMobileFeatures ? 'block' : 'hidden'} md:block`}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
 
                     {/* Booking & Reservations */}
                     <div className="rounded-2xl border border-gray-200 p-6 bg-white">
@@ -368,14 +420,15 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                         </ul>
                     </div>
 
-                </div>
+                    </div>
 
-                <div className="mt-12 text-center max-w-2xl mx-auto">
-                    <p className="text-sm text-gray-700 leading-7">
-                        Petunia Starter is intentionally focused. It gives you
-                        structure, financial clarity, and legal protection —
-                        without overwhelming you with enterprise complexity.
-                    </p>
+                    <div className="mt-12 text-center max-w-2xl mx-auto">
+                        <p className="text-sm text-gray-700 leading-7">
+                            Petunia Starter is intentionally focused. It gives you
+                            structure, financial clarity, and legal protection —
+                            without overwhelming you with enterprise complexity.
+                        </p>
+                    </div>
                 </div>
             </section>
 
@@ -390,7 +443,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
             </div>
 
             {/* SAVINGS CALCULATOR */}
-            <section className="py-12 border-t border-gray-200">
+            <section id="small-calculator" className="py-12 border-t border-gray-200 scroll-mt-24">
 
                 <div className="text-center mb-8">
                     <h2 className="text-xl font-semibold text-[#2c4a30]">
@@ -398,7 +451,17 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                     </h2>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+                <div className="md:hidden mb-4 text-left">
+                    <button
+                        type="button"
+                        onClick={() => setShowMobileCalculatorInputs((prev) => !prev)}
+                        className="text-sm font-semibold text-[#2c4a30] underline"
+                    >
+                        {showMobileCalculatorInputs ? 'Hide calculator inputs' : 'Show calculator inputs'}
+                    </button>
+                </div>
+
+                <div className={`${showMobileCalculatorInputs ? 'grid' : 'hidden'} md:grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10`}>
 
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -558,7 +621,49 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                         </p>
                     </div>
 
-                    <div className="overflow-x-auto">
+                    <div className="md:hidden mb-4 text-left">
+                        <button
+                            type="button"
+                            onClick={() => setShowMobileAdminInputs((prev) => !prev)}
+                            className="text-sm font-semibold text-[#2c4a30] underline"
+                        >
+                            {showMobileAdminInputs ? 'Hide administrative task inputs' : 'Show administrative task inputs'}
+                        </button>
+                    </div>
+
+                    <div className={`${showMobileAdminInputs ? 'block' : 'hidden'} md:hidden space-y-3`}>
+                        {TASKS.map((task, i) => (
+                            <div key={task} className="rounded-xl border border-gray-200 bg-white p-4">
+                                <p className="text-sm font-semibold text-[#2c4a30] mb-3">{task}</p>
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Hours / Week</label>
+                                        <input
+                                            type="number"
+                                            className="border p-2 rounded w-full"
+                                            onChange={(e) =>
+                                                updateTask(i, "hours", Number(e.target.value) || 0)
+                                            }
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">
+                                            Hourly Rate of Employee or Rate at which You Pay Yourself ($)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            className="border p-2 rounded w-full"
+                                            onChange={(e) =>
+                                                updateTask(i, "rate", Number(e.target.value) || 0)
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="hidden md:block overflow-x-auto">
                         <table className="w-full border-collapse text-sm">
                             <thead>
                                 <tr className="bg-[#f0f7f2] text-[#2c4a30]">
@@ -574,7 +679,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {tasks.map((task, i) => (
+                                {TASKS.map((task, i) => (
                                     <tr key={task}>
                                         <td className="p-4 border border-gray-200">{task}</td>
                                         <td className="p-4 border border-gray-200">
@@ -712,7 +817,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
             </section>
 
             {/* CTA */}
-            <section className="py-12 border-t border-gray-200 text-center">
+            <section id="small-cta" className="py-12 border-t border-gray-200 text-center scroll-mt-24">
                 <h2 className="text-xl font-semibold text-[#2c4a30] mb-4">
                     Start Small. Build Right. Build for Work/Life Balance and Efficiency.
                 </h2>

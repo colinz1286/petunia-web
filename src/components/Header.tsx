@@ -257,7 +257,7 @@ export default function Header() {
 
             <div
               id="social-menu-desktop"
-              className={`absolute left-0 sm:left-auto sm:right-0 mt-2 w-[min(16rem,calc(100vw-2rem))] sm:w-48 bg-white border border-gray-200 rounded-md shadow-lg transition-all duration-150 z-50 ${
+              className={`${dropdownPanelClass} ${
                 isSocialMenuOpen
                   ? 'opacity-100 visible'
                   : 'opacity-0 invisible group-hover:opacity-100 group-hover:visible'

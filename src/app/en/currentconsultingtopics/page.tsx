@@ -21,6 +21,15 @@ export default function CurrentConsultingTopicsPage() {
                     Consulting Topics
                 </h1>
 
+                <div className="md:hidden rounded-xl border border-[#d9cfc2] bg-white/40 p-3 text-left">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-[#2c4a30] mb-2">On this page</p>
+                    <div className="flex flex-wrap gap-2">
+                        <a href="#topics-current" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Current</a>
+                        <a href="#topics-upcoming" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">Upcoming</a>
+                        <a href="#topics-how" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30]">How It Works</a>
+                    </div>
+                </div>
+
                 <p className="text-lg leading-relaxed">
                     This page outlines the business topics I am currently spending the most time helping
                     pet care business owners with. These areas change periodically based on demand, season,
@@ -28,7 +37,7 @@ export default function CurrentConsultingTopicsPage() {
                 </p>
 
                 {/* Current Focus */}
-                <p className="text-xl sm:text-2xl font-extrabold tracking-wide text-[#2c4a30] uppercase">
+                <p id="topics-current" className="text-xl sm:text-2xl font-extrabold tracking-wide text-[#2c4a30] uppercase scroll-mt-24">
                     Current Coverage: January&nbsp;1&nbsp;–&nbsp;31,&nbsp;2026
                 </p>
 
@@ -72,7 +81,7 @@ export default function CurrentConsultingTopicsPage() {
                 </div>
 
                 {/* Upcoming Focus */}
-                <h2 className="text-2xl font-semibold">
+                <h2 id="topics-upcoming" className="text-2xl font-semibold scroll-mt-24">
                     Upcoming Focus
                 </h2>
 
@@ -121,7 +130,7 @@ export default function CurrentConsultingTopicsPage() {
                 </div>
 
                 {/* How This Page Works */}
-                <h2 className="text-2xl font-semibold">
+                <h2 id="topics-how" className="text-2xl font-semibold scroll-mt-24">
                     How This Page Works
                 </h2>
 

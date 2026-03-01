@@ -3,8 +3,46 @@
 import Link from 'next/link';
 import Script from 'next/script';
 import { useState } from 'react';
+import { useLocale } from 'next-intl';
+
+const ENTERPRISE_TASKS = [
+    "Multi-Location Staff Scheduling Oversight",
+    "Cross-Location Deposit Reconciliation",
+    "Centralized Payroll Review",
+    "Corporate-Level Bookkeeping & Journal Entries",
+    "Financial Reporting Consolidation",
+    "Audit Preparation & Compliance Documentation",
+    "Chargeback & Refund Oversight",
+    "Executive Financial Review Meetings",
+    "State & Regulatory Filing Coordination",
+    "Operational Benchmarking & Performance Review",
+];
+
+const ENTERPRISE_COMPARISON_ROWS = [
+    {
+        area: "Deposit Reconciliation",
+        legacy: "Location-by-location manual checks with inconsistent controls.",
+        structured: "Standardized deposit logic with centralized visibility and cleaner audit trails.",
+    },
+    {
+        area: "Cross-Location Staffing",
+        legacy: "Manager-dependent scheduling with variable execution by site.",
+        structured: "Structured staffing oversight with measurable workload consistency.",
+    },
+    {
+        area: "Executive Reporting",
+        legacy: "Fragmented spreadsheets and delayed roll-up visibility.",
+        structured: "Consolidated reporting to support faster and more defensible decisions.",
+    },
+    {
+        area: "Diligence / Exit Readiness",
+        legacy: "Inconsistent records increase review friction and uncertainty.",
+        structured: "Cleaner, standardized operating data supports institutional diligence.",
+    },
+];
 
 export default function DogBoardingAndDaycareSoftwareEnterprise() {
+    const locale = useLocale();
 
     const [subscriptionCost, setSubscriptionCost] = useState<number | "">("");
     const [processingRate, setProcessingRate] = useState<number | "">("");
@@ -16,31 +54,29 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
         "" | "5-9" | "10-24" | "25-49" | "50+"
     >("");
 
-    // Enterprise Administrative & Oversight Tasks
-    const enterpriseTasks = [
-        "Multi-Location Staff Scheduling Oversight",
-        "Cross-Location Deposit Reconciliation",
-        "Centralized Payroll Review",
-        "Corporate-Level Bookkeeping & Journal Entries",
-        "Financial Reporting Consolidation",
-        "Audit Preparation & Compliance Documentation",
-        "Chargeback & Refund Oversight",
-        "Executive Financial Review Meetings",
-        "State & Regulatory Filing Coordination",
-        "Operational Benchmarking & Performance Review",
-    ];
+    const [showMobileScaleShift, setShowMobileScaleShift] = useState(false);
+    const [showMobileEnterpriseWorks, setShowMobileEnterpriseWorks] = useState(false);
+    const [showMobileCalculatorInputs, setShowMobileCalculatorInputs] = useState(false);
+    const [showMobileOversightInputs, setShowMobileOversightInputs] = useState(false);
+    const [showMobileComparison, setShowMobileComparison] = useState(false);
 
     const [taskInputs, setTaskInputs] = useState<{
         hours: number;
         rate: number;
         employees: number;
     }[]>(
-        enterpriseTasks.map(() => ({
+        ENTERPRISE_TASKS.map(() => ({
             hours: 0,
             rate: 0,
             employees: 0,
         }))
     );
+
+    const contactHref = `/${locale}/contact`;
+    const smallBusinessHref = `/${locale}/dog-boarding-and-daycare-software-small-business`;
+    const mediumBusinessHref = `/${locale}/dog-boarding-and-daycare-software-medium-business`;
+    const largeBusinessHref = `/${locale}/dog-boarding-and-daycare-software-large-business`;
+    const overviewHref = `/${locale}/dog-boarding-software`;
 
     const updateTask = (
         index: number,
@@ -240,7 +276,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
 
                 <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
                     <Link
-                        href="/en/contact"
+                        href={contactHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-8 py-4 rounded-xl transition font-semibold shadow-sm hover:shadow-md text-center"
                     >
                         Request Enterprise Consultation
@@ -255,13 +291,35 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                 </div>
             </section>
 
+            <section className="md:hidden py-4 border-t border-gray-200">
+                <div className="rounded-xl border border-[#d9cfc2] bg-[#fafaf8] p-3">
+                    <div className="flex flex-wrap gap-2">
+                        <a href="#enterprise-scale" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Scale</a>
+                        <a href="#enterprise-oversight" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Oversight</a>
+                        <a href="#enterprise-calculator" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Calculator</a>
+                        <a href="#enterprise-comparison" className="text-xs px-3 py-1.5 rounded-full border border-[#2c4a30] text-[#2c4a30]">Comparison</a>
+                    </div>
+                </div>
+            </section>
+
             {/* SCALE SHIFT */}
-            <section className="py-14 border-t border-gray-200 text-center">
+            <section id="enterprise-scale" className="py-14 border-t border-gray-200 text-center scroll-mt-24">
                 <h2 className="text-xl font-semibold text-[#2c4a30] mb-6">
                     Scale Multiplies Governance and Financial Exposure
                 </h2>
 
-                <div className="space-y-6 text-gray-700 leading-8 max-w-3xl mx-auto">
+                <div className="md:hidden text-left mb-5">
+                    <button
+                        type="button"
+                        onClick={() => setShowMobileScaleShift((prev) => !prev)}
+                        className="text-sm font-semibold text-[#2c4a30] underline"
+                    >
+                        {showMobileScaleShift ? 'Hide section details' : 'Show section details'}
+                    </button>
+                </div>
+
+                <div className={`${showMobileScaleShift ? 'block' : 'hidden'} md:block`}>
+                    <div className="space-y-6 text-gray-700 leading-8 max-w-3xl mx-auto">
                     <p>
                         Multi-location operations introduce cross-site staffing complexity,
                         fragmented reconciliation, inconsistent local workflows,
@@ -284,15 +342,27 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                         Institutional operators need standardized execution and consolidated oversight.
                     </p>
                 </div>
+                </div>
             </section>
 
             {/* WHY ENTERPRISE WORKS */}
-            <section className="py-14 border-t border-gray-200 text-center">
+            <section id="enterprise-oversight" className="py-14 border-t border-gray-200 text-center scroll-mt-24">
                 <h2 className="text-xl font-semibold text-[#2c4a30] mb-6">
                     Built for Oversight, Expansion, and Exit Readiness
                 </h2>
 
-                <div className="space-y-6 text-gray-700 leading-8 max-w-3xl mx-auto">
+                <div className="md:hidden text-left mb-5">
+                    <button
+                        type="button"
+                        onClick={() => setShowMobileEnterpriseWorks((prev) => !prev)}
+                        className="text-sm font-semibold text-[#2c4a30] underline"
+                    >
+                        {showMobileEnterpriseWorks ? 'Hide section details' : 'Show section details'}
+                    </button>
+                </div>
+
+                <div className={`${showMobileEnterpriseWorks ? 'block' : 'hidden'} md:block`}>
+                    <div className="space-y-6 text-gray-700 leading-8 max-w-3xl mx-auto">
                     <p>
                         Centralized dashboards, location-level accountability,
                         unified deposit logic, and canonical transaction data
@@ -342,6 +412,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                         </div>
                     </div>
                 </div>
+                </div>
             </section>
 
             {/* SELF-REQUALIFICATION SECTION */}
@@ -358,21 +429,21 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
                     <Link
-                        href="/dog-boarding-and-daycare-software-small-business"
+                        href={smallBusinessHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-6 py-5 rounded-xl transition text-sm font-semibold shadow-sm hover:shadow-md"
                     >
                         Small Business →
                     </Link>
 
                     <Link
-                        href="/dog-boarding-and-daycare-software-medium-business"
+                        href={mediumBusinessHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-6 py-5 rounded-xl transition text-sm font-semibold shadow-sm hover:shadow-md"
                     >
                         Medium Business →
                     </Link>
 
                     <Link
-                        href="/dog-boarding-and-daycare-software-large-business"
+                        href={largeBusinessHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-6 py-5 rounded-xl transition text-sm font-semibold shadow-sm hover:shadow-md"
                     >
                         Large Business →
@@ -381,7 +452,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
             </div>
 
             {/* SAVINGS CALCULATOR */}
-            <section className="py-14 border-t border-gray-200">
+            <section id="enterprise-calculator" className="py-14 border-t border-gray-200 scroll-mt-24">
                 <div className="text-center mb-8">
                     <h2 className="text-xl font-semibold text-[#2c4a30]">
                         Step 1: Model Enterprise-Level Financial Impact
@@ -407,7 +478,16 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                 <div className="space-y-8 max-w-5xl mx-auto">
 
                     {/* Core Financial Inputs */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="md:hidden mb-4 text-left">
+                        <button
+                            type="button"
+                            onClick={() => setShowMobileCalculatorInputs((prev) => !prev)}
+                            className="text-sm font-semibold text-[#2c4a30] underline"
+                        >
+                            {showMobileCalculatorInputs ? 'Hide calculator inputs' : 'Show calculator inputs'}
+                        </button>
+                    </div>
+                    <div className={`${showMobileCalculatorInputs ? 'grid' : 'hidden'} md:grid grid-cols-1 sm:grid-cols-2 gap-6`}>
 
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -592,7 +672,63 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                             This model applies your selected automation/efficiency reduction to this category.
                         </p>
 
-                        <div className="overflow-x-auto">
+                        <div className="md:hidden mb-4 text-left">
+                            <button
+                                type="button"
+                                onClick={() => setShowMobileOversightInputs((prev) => !prev)}
+                                className="text-sm font-semibold text-[#2c4a30] underline"
+                            >
+                                {showMobileOversightInputs ? 'Hide enterprise task inputs' : 'Show enterprise task inputs'}
+                            </button>
+                        </div>
+
+                        <div className={`${showMobileOversightInputs ? 'block' : 'hidden'} md:hidden space-y-3`}>
+                            {ENTERPRISE_TASKS.map((task, index) => (
+                                <div key={task} className="rounded-xl border border-gray-200 bg-white p-4">
+                                    <p className="text-sm font-semibold text-[#2c4a30] mb-3">{task}</p>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="block text-xs text-gray-600 mb-1">Hours / Week Each Employee</label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                step="0.25"
+                                                className="border p-2 rounded w-full"
+                                                onChange={(e) =>
+                                                    updateTask(index, "hours", Number(e.target.value) || 0)
+                                                }
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-gray-600 mb-1">Employees Assigned Across Locations</label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                step="1"
+                                                className="border p-2 rounded w-full"
+                                                onChange={(e) =>
+                                                    updateTask(index, "employees", Number(e.target.value) || 0)
+                                                }
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-gray-600 mb-1">Avg Hourly Rate ($)</label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                className="border p-2 rounded w-full"
+                                                onChange={(e) =>
+                                                    updateTask(index, "rate", Number(e.target.value) || 0)
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="hidden md:block overflow-x-auto">
                             <table className="w-full border-collapse text-sm">
                                 <thead>
                                     <tr className="bg-[#f0f7f2] text-[#2c4a30]">
@@ -611,7 +747,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {enterpriseTasks.map((task, index) => (
+                                    {ENTERPRISE_TASKS.map((task, index) => (
                                         <tr key={task}>
                                             <td className="p-3 border border-gray-200">{task}</td>
 
@@ -746,7 +882,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
             </section>
 
             {/* ENTERPRISE COMPARISON */}
-            <section className="py-14 border-t border-gray-200">
+            <section id="enterprise-comparison" className="py-14 border-t border-gray-200 scroll-mt-24">
                 <div className="text-center mb-8">
                     <h2 className="text-xl font-semibold text-[#2c4a30]">
                         Enterprise Comparison: Operational Risk vs Structured Control
@@ -756,7 +892,31 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                     </p>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="md:hidden mb-4 text-left">
+                    <button
+                        type="button"
+                        onClick={() => setShowMobileComparison((prev) => !prev)}
+                        className="text-sm font-semibold text-[#2c4a30] underline"
+                    >
+                        {showMobileComparison ? 'Hide comparison details' : 'Show comparison details'}
+                    </button>
+                </div>
+
+                <div className={`${showMobileComparison ? 'block' : 'hidden'} md:hidden space-y-3`}>
+                    {ENTERPRISE_COMPARISON_ROWS.map((row) => (
+                        <div key={row.area} className="rounded-xl border border-gray-200 bg-white p-4">
+                            <p className="text-sm font-semibold text-[#2c4a30] mb-3">{row.area}</p>
+                            <div className="space-y-2">
+                                <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Typical Legacy Workflow</p>
+                                <p className="text-sm text-gray-700">{row.legacy}</p>
+                                <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide pt-1">Enterprise Structured Workflow</p>
+                                <p className="text-sm text-gray-700">{row.structured}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full border-collapse text-sm">
                         <thead>
                             <tr className="bg-[#f0f7f2] text-[#2c4a30]">
@@ -772,26 +932,13 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td className="p-4 border border-gray-200 font-medium">Deposit Reconciliation</td>
-                                <td className="p-4 border border-gray-200">Location-by-location manual checks with inconsistent controls.</td>
-                                <td className="p-4 border border-gray-200">Standardized deposit logic with centralized visibility and cleaner audit trails.</td>
-                            </tr>
-                            <tr>
-                                <td className="p-4 border border-gray-200 font-medium">Cross-Location Staffing</td>
-                                <td className="p-4 border border-gray-200">Manager-dependent scheduling with variable execution by site.</td>
-                                <td className="p-4 border border-gray-200">Structured staffing oversight with measurable workload consistency.</td>
-                            </tr>
-                            <tr>
-                                <td className="p-4 border border-gray-200 font-medium">Executive Reporting</td>
-                                <td className="p-4 border border-gray-200">Fragmented spreadsheets and delayed roll-up visibility.</td>
-                                <td className="p-4 border border-gray-200">Consolidated reporting to support faster and more defensible decisions.</td>
-                            </tr>
-                            <tr>
-                                <td className="p-4 border border-gray-200 font-medium">Diligence / Exit Readiness</td>
-                                <td className="p-4 border border-gray-200">Inconsistent records increase review friction and uncertainty.</td>
-                                <td className="p-4 border border-gray-200">Cleaner, standardized operating data supports institutional diligence.</td>
-                            </tr>
+                            {ENTERPRISE_COMPARISON_ROWS.map((row) => (
+                                <tr key={row.area}>
+                                    <td className="p-4 border border-gray-200 font-medium">{row.area}</td>
+                                    <td className="p-4 border border-gray-200">{row.legacy}</td>
+                                    <td className="p-4 border border-gray-200">{row.structured}</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
@@ -830,7 +977,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
 
                 <div className="flex flex-col sm:flex-row justify-center gap-4">
                     <Link
-                        href="/en/contact"
+                        href={contactHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-8 py-4 rounded-xl transition font-semibold shadow-sm hover:shadow-md"
                     >
                         Schedule Enterprise Review
@@ -844,7 +991,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                     </a>
 
                     <Link
-                        href="/dog-boarding-software"
+                        href={overviewHref}
                         className="bg-[#2c4a30] hover:bg-[#243d27] text-white px-8 py-4 rounded-xl transition font-semibold shadow-sm hover:shadow-md"
                     >
                         Back to Overview
