@@ -111,7 +111,7 @@ export default function DogBoardingAndDaycareSoftwareMediumBusiness() {
 
         const petuniaProcessing =
             txPerYear *
-            ((3.0 / 100) * avgTicket + 0.45);
+            ((3.0 / 100) * avgTicket + 0.35);
 
         const totalAnnualLaborValue =
             taskInputs.reduce((total, task) => {
@@ -615,7 +615,7 @@ export default function DogBoardingAndDaycareSoftwareMediumBusiness() {
                             Are you planning on adding any features to your software?
                         </label>
                         <p className="text-xs text-gray-600 mb-3">
-                            Core Platform is automatically included at $10/location/month with 3.0% + $0.45 processing.
+                            Core Platform is automatically included at $10/location/month with 3.0% + $0.35 processing.
                         </p>
                         <div className="space-y-3 rounded-xl border border-gray-200 p-4 bg-white">
                             <label className="flex items-start gap-3 text-sm text-gray-700">

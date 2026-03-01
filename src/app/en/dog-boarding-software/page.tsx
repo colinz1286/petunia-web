@@ -173,7 +173,7 @@ export default function DogBoardingSoftwarePage() {
 
     const petuniaProcessing =
       txPerYear *
-      ((3.0 / 100) * avgTicket + 0.45);
+      ((3.0 / 100) * avgTicket + 0.35);
 
     const annualSavings =
       (
@@ -773,7 +773,7 @@ export default function DogBoardingSoftwarePage() {
               Are you planning on adding any features to your software?
             </label>
             <p className="text-xs text-gray-600 mb-3">
-              Core Platform is automatically included at $10/location/month with 3.0% + $0.45 processing.
+              Core Platform is automatically included at $10/location/month with 3.0% + $0.35 processing.
             </p>
 
             <div className="space-y-3 rounded-xl border border-gray-200 p-4 bg-white">
@@ -1433,117 +1433,6 @@ export default function DogBoardingSoftwarePage() {
               <p className="mt-2 text-sm text-gray-700 leading-6">{item.desc}</p>
             </div>
           ))}
-        </div>
-
-        <div className="mt-7 max-w-3xl mx-auto rounded-2xl bg-[#fff7ed] border border-amber-200 p-6">
-          <h3 className="text-lg font-semibold text-amber-900">
-            Expanding in the Next 6 Months
-          </h3>
-
-          <p className="mt-3 text-sm text-amber-900 leading-6">
-            Petunia is actively rolling out advanced operational infrastructure designed
-            to reduce labor waste, eliminate repetitive admin work, and professionalize
-            growing facilities.
-          </p>
-
-          <div className="mt-6 space-y-6 text-sm text-amber-900 leading-6">
-
-            <div>
-              <p className="font-semibold">
-                Labor Optimization Insights
-              </p>
-              <p>
-                Real-time staffing guidance to improve efficiency and reduce unnecessary labor costs.
-              </p>
-              <p className="mt-1 text-xs">
-                Estimated impact: 100–250 labor hours saved annually.
-              </p>
-            </div>
-
-            <div>
-              <p className="font-semibold">
-                Intelligent Operations Recommendations
-              </p>
-              <p>
-                System-driven suggestions to streamline supervision flow and daily coordination.
-              </p>
-              <p className="mt-1 text-xs">
-                Estimated impact: 40–80 hours saved annually.
-              </p>
-            </div>
-
-            <div>
-              <p className="font-semibold">
-                Automated Payments &amp; Invoicing
-              </p>
-              <p>
-                Integrated billing and deposit handling embedded directly into your booking workflow.
-              </p>
-              <p className="mt-1 text-xs">
-                Estimated impact: 80–150 hours saved annually.
-              </p>
-            </div>
-
-            <div>
-              <p className="font-semibold">
-                Advanced Financial Reporting
-              </p>
-              <p>
-                Real-time visibility into revenue performance, margin trends, and operational health.
-              </p>
-              <p className="mt-1 text-xs">
-                Estimated impact: 40–80 hours saved annually.
-              </p>
-            </div>
-
-            <div>
-              <p className="font-semibold">
-                Employee &amp; HR Management Suite
-              </p>
-              <p>
-                Centralized workforce tools for documentation, performance tracking,
-                certifications, and compliance management.
-              </p>
-              <p className="mt-1 text-xs">
-                Estimated impact: 50–100 hours saved annually.
-              </p>
-            </div>
-
-            <div>
-              <p className="font-semibold">
-                Legal &amp; Documentation Template Library
-              </p>
-              <p>
-                Professionally structured waiver templates, boarding contracts,
-                grooming agreements, employment agreements, and onboarding forms —
-                built specifically for pet care operators.
-              </p>
-              <p className="mt-1 text-xs">
-                Estimated impact: 20–60 hours saved annually in drafting,
-                revisions, and administrative document management.
-              </p>
-            </div>
-
-            <div>
-              <p className="font-semibold">
-                Hiring &amp; New Hire Toolkit
-              </p>
-              <p>
-                Offer letter templates, onboarding checklists, employee handbook
-                foundations, performance review templates, and structured training guides.
-              </p>
-              <p className="mt-1 text-xs">
-                Estimated impact: 30–70 hours saved annually in hiring and onboarding coordination.
-              </p>
-            </div>
-
-          </div>
-
-          <p className="mt-6 text-xs text-amber-900 leading-5">
-            The objective is simple: give independent operators the same structured,
-            professional infrastructure larger organizations rely on — without
-            the institutional price tag.
-          </p>
         </div>
       </section>
 

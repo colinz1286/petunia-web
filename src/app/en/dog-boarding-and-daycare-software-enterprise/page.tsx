@@ -139,7 +139,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
 
         const petuniaProcessing =
             txPerYear *
-            ((3.0 / 100) * avgTicket + 0.45);
+            ((3.0 / 100) * avgTicket + 0.35);
 
         const savings =
             (annualSoftware +
@@ -617,7 +617,7 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
 
                         <div className="sm:col-span-2 rounded-xl border border-gray-200 p-4 bg-[#fafaf8]">
                             <p className="text-sm font-semibold text-[#2c4a30] mb-2">
-                                Core Platform is automatically included at $10/location/month with 3.0% + $0.45 processing.
+                                Core Platform is automatically included at $10/location/month with 3.0% + $0.35 processing.
                             </p>
                             <p className="text-sm text-gray-700 mb-3">
                                 Select any add-ons you want included in this estimate:

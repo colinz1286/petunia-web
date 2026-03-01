@@ -58,7 +58,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
         setTaskInputs(updated);
     };
 
-    const petuniaPlan = { monthly: 10, rate: 3.0, flat: 0.45 };
+    const petuniaPlan = { monthly: 10, rate: 3.0, flat: 0.35 };
 
     const computeEstimate = () => {
         const subCost = Number(subscriptionCost) || 0;
@@ -495,7 +495,7 @@ export default function DogBoardingAndDaycareSoftwareSmallBusiness() {
                 <p className="text-base sm:text-lg font-bold text-[#2c4a30] leading-7">
                     Use this Calculator to Estimate Your Annual Savings by Implementing or Switching to Petunia!
                     This calculator automatically assumes you are using the
-                    Petunia Platform — $10/month with 3.0% + $0.45 per transaction.
+                    Petunia Platform — $10/month with 3.0% + $0.35 per transaction.
                 </p>
                 <p className="text-sm font-bold text-[#2c4a30] mt-3">
                     Includes up to 2 months of migration before subscription billing begins.
