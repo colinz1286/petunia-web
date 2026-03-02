@@ -54,12 +54,16 @@ export default function DogBoardingSoftwarePage() {
   const [includeDailyOps, setIncludeDailyOps] = useState(false);
   const [includeHrFinance, setIncludeHrFinance] = useState(false);
   const [includeWebsiteHosting, setIncludeWebsiteHosting] = useState(false);
-  const [websiteHostingContract, setWebsiteHostingContract] = useState<"1-year" | "3-year">("1-year");
   const [currentWebsiteHostingBilling, setCurrentWebsiteHostingBilling] = useState<"monthly" | "annual">("monthly");
   const [currentWebsiteHostingCost, setCurrentWebsiteHostingCost] = useState<number | "">("");
   const [timeSavingsPercent, setTimeSavingsPercent] = useState(50);
   const [calculationResult, setCalculationResult] = useState<{
     annualSavings: number;
+    totalSavings: number;
+    totalAnnualAdminValue: number;
+    annualLaborSavings: number;
+    totalHoursSaved: number;
+    weeksReclaimed: number;
     annualHoursSaved: number;
     weeklyHoursSaved: number;
     reclaimedWorkweeks: number;
@@ -118,7 +122,6 @@ export default function DogBoardingSoftwarePage() {
     includeDailyOps,
     includeHrFinance,
     includeWebsiteHosting,
-    websiteHostingContract,
     currentWebsiteHostingBilling,
     currentWebsiteHostingCost,
     timeSavingsPercent,
@@ -152,17 +155,19 @@ export default function DogBoardingSoftwarePage() {
       txPerYear *
       ((procRate / 100) * avgTicket + flat);
 
-    const annualAdminCost = visibleTasksForCalculator.reduce((total, task) => {
+    const totalAnnualAdminValue = visibleTasksForCalculator.reduce((total, task) => {
       const taskValues = taskInputs[task] ?? { hours: 0, rate: 0 };
       return total + taskValues.hours * taskValues.rate * 52;
-    }, 0) * (timeSavingsPercent / 100);
+    }, 0);
+    const annualLaborSavings = totalAnnualAdminValue * (timeSavingsPercent / 100);
+    const annualAdminCost = annualLaborSavings;
 
     const coreAnnual = 10 * 12;
-    const dailyOpsAnnual = includeDailyOps ? 20 * 12 : 0;
-    const hrFinanceAnnual = includeHrFinance ? 109 * 12 : 0;
+    const dailyOpsAnnual = includeDailyOps ? 15 * 12 : 0;
+    const hrFinanceAnnual = includeHrFinance ? 79 * 12 : 0;
     const websiteHostingAnnual =
       includeWebsiteHosting
-        ? (websiteHostingContract === "1-year" ? 79 : 149 / 3)
+        ? 7 * 12
         : 0;
 
     const petuniaSubscription =
@@ -184,19 +189,26 @@ export default function DogBoardingSoftwarePage() {
         schedulingAnnual +
         otherSoftwareAnnual +
         annualProcessing +
-        annualAdminCost
+        annualLaborSavings
       ) -
       (petuniaSubscription + petuniaProcessing);
 
     const totalWeeklyTaskHours = visibleTasksForCalculator.reduce((sum, task) => {
       return sum + (taskInputs[task]?.hours || 0);
     }, 0);
-    const annualHoursSaved = totalWeeklyTaskHours * 52 * (timeSavingsPercent / 100);
+    const totalHoursSaved = totalWeeklyTaskHours * 52 * (timeSavingsPercent / 100);
+    const annualHoursSaved = totalHoursSaved;
     const weeklyHoursSaved = totalWeeklyTaskHours * (timeSavingsPercent / 100);
-    const reclaimedWorkweeks = annualHoursSaved / 40;
+    const weeksReclaimed = totalHoursSaved / 40;
+    const reclaimedWorkweeks = weeksReclaimed;
 
     return {
       annualSavings,
+      totalSavings: annualSavings,
+      totalAnnualAdminValue,
+      annualLaborSavings,
+      totalHoursSaved,
+      weeksReclaimed,
       annualHoursSaved,
       weeklyHoursSaved,
       reclaimedWorkweeks,
@@ -425,15 +437,12 @@ export default function DogBoardingSoftwarePage() {
 
         <div className="mt-14 max-w-2xl mx-auto text-sm text-gray-600 leading-relaxed text-center">
           <p>
-            Petunia is designed to scale with operational complexity. The larger your
-            business — and especially the more locations you operate — the more operational
-            efficiencies and measurable cost savings we tend to uncover, particularly in
-            routine administrative tasks that quietly consume time and margin.
-            Multi-location operators benefit from centralized oversight, standardized
-            workflows, consolidated reporting, and reduced manual reconciliation across
-            teams. What may feel manageable at one location often becomes exponentially
-            inefficient across three, five, or ten. In short: the more moving parts you have, the more leverage intelligent
-            systems create.
+            Petunia is the software I wish had existed when I was just starting out my boarding and daycare business. Because it offers every feature I actually need to save time and grow my business.
+
+            But Petunia is also built to scale — it’s simply waiting for the day you grow and expand, and it will continue to provide everything you need as you do, eliminating the need to ever change software as you scale. No matter the size of your business, Petunia is designed to uncover meaningful efficiencies and measurable cost savings. From solo operators to multi-location teams, routine administrative tasks quietly consume time and margin — and intelligent systems help give that time back.
+
+            As you grow, those efficiencies compound. Multi-location operators benefit from centralized oversight, standardized workflows, consolidated reporting, and reduced manual reconciliation across teams. What may feel manageable at one location can become exponentially inefficient across three, five, or ten. In short: the more moving parts you have, the more leverage intelligent systems create — but the advantage starts on day one.
+
           </p>
 
           <div className="mt-8 flex justify-center">
@@ -444,10 +453,6 @@ export default function DogBoardingSoftwarePage() {
               Have a Discussion with Us
             </a>
           </div>
-
-          <p className="mt-3 text-xs text-gray-500">
-            After our discussion, we will not contact you unless you request a follow up.
-          </p>
         </div>
       </section>
 
@@ -547,7 +552,7 @@ export default function DogBoardingSoftwarePage() {
             <div className="mt-4 space-y-4 text-sm text-gray-700">
               <div className="rounded-xl border border-gray-200 p-4">
                 <p className="font-semibold text-[#2c4a30]">
-                  Intelligent Daily Operations System — $20 / month
+                  Intelligent Daily Operations System — $15 / month
                 </p>
                 <p className="mt-2 leading-6">
                   Automatically generates real-time daily checklists based on routine tasks and dogs
@@ -556,7 +561,7 @@ export default function DogBoardingSoftwarePage() {
               </div>
               <div className="rounded-xl border border-gray-200 p-4">
                 <p className="font-semibold text-[#2c4a30]">
-                  Employment, Human Resources &amp; Financial Management — $109 / month
+                  Employment, Human Resources &amp; Financial Management — $79 / month
                 </p>
                 <p className="mt-2 leading-6">
                   Includes intelligent scheduling, labor-to-revenue analytics, profit tracking, and
@@ -574,8 +579,7 @@ export default function DogBoardingSoftwarePage() {
           <div className="rounded-2xl border border-gray-200 bg-white p-6">
             <p className="text-sm font-semibold text-gray-900">Website Hosting</p>
             <div className="mt-3 space-y-2 text-sm text-gray-700">
-              <p><span className="font-semibold text-[#2c4a30]">1-Year Contract:</span> $79</p>
-              <p><span className="font-semibold text-[#2c4a30]">3-Year Contract:</span> $149</p>
+              <p><span className="font-semibold text-[#2c4a30]">$7/mo</span></p>
               <p className="text-xs text-gray-600 leading-5">
                 Mirror version hosted at www.petuniapets.com/yourbusinessname with unified booking navigation.
               </p>
@@ -700,7 +704,7 @@ export default function DogBoardingSoftwarePage() {
               <tr>
                 <td className="p-3 border border-gray-200">Monthly Cost</td>
                 <td className="p-3 border border-gray-200">$95–$199+</td>
-                <td className="p-3 border border-gray-200">$10–$109</td>
+                <td className="p-3 border border-gray-200">$10–$104</td>
               </tr>
               <tr>
                 <td className="p-3 border border-gray-200">Trial Length</td>
@@ -773,7 +777,7 @@ export default function DogBoardingSoftwarePage() {
               Are you planning on adding any features to your software?
             </label>
             <p className="text-xs text-gray-600 mb-3">
-              Core Platform is automatically included at $10/location/month with 3.0% + $0.35 processing.
+              Core Platform is automatically included at $10/month with 3.0% + $0.35 processing.
             </p>
 
             <div className="space-y-3 rounded-xl border border-gray-200 p-4 bg-white">
@@ -786,7 +790,7 @@ export default function DogBoardingSoftwarePage() {
                 />
                 <span>
                   <span className="font-semibold text-[#2c4a30]">Intelligent Daily Operations System</span>
-                  {' '}— $20/month
+                  {' '}— $15/month
                 </span>
               </label>
 
@@ -799,7 +803,7 @@ export default function DogBoardingSoftwarePage() {
                 />
                 <span>
                   <span className="font-semibold text-[#2c4a30]">Employment, Human Resources &amp; Financial Management</span>
-                  {' '}— $109/month
+                  {' '}— $79/month
                 </span>
               </label>
 
@@ -813,24 +817,12 @@ export default function DogBoardingSoftwarePage() {
                   />
                   <span>
                     <span className="font-semibold text-[#2c4a30]">Website Hosting</span>
-                    {' '}— 1-Year: $79 or 3-Year: $149
+                    {' '}— $7/mo
                   </span>
                 </label>
 
                 {includeWebsiteHosting && (
                   <div className="mt-3 sm:ml-7 space-y-3">
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">
-                      Website Hosting Contract
-                    </label>
-                    <select
-                      value={websiteHostingContract}
-                      onChange={(e) => setWebsiteHostingContract(e.target.value as "1-year" | "3-year")}
-                      className="border p-2 rounded w-full sm:w-60"
-                    >
-                      <option value="1-year">1-Year Contract ($79 annualized)</option>
-                      <option value="3-year">3-Year Contract ($49.67 annualized)</option>
-                    </select>
-
                     <div>
                       <label className="block text-xs font-semibold text-gray-700 mb-1">
                         Your Current Web Hosting Billing
@@ -1256,38 +1248,88 @@ export default function DogBoardingSoftwarePage() {
 
             {calculationResult && (
               <>
-                <p className="text-lg font-semibold text-[#2c4a30] mt-6">
-                  Estimated Annual Savings:
-                </p>
-                <p className="text-3xl font-bold text-[#2c4a30] mt-2">
-                  ${calculationResult.annualSavings.toLocaleString(undefined, {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0,
-                  })}
-                </p>
-                <p className="text-sm text-gray-500 mt-2">
-                  Includes subscription, processing, and administrative labor comparisons.
-                </p>
-
-                <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-                  <div className="rounded-xl border border-gray-200 bg-white p-4">
-                    <p className="text-xs text-gray-600 uppercase tracking-wide">Estimated Hours Saved Per Year</p>
-                    <p className="mt-2 text-2xl font-bold text-[#2c4a30]">
-                      {calculationResult.annualHoursSaved.toLocaleString(undefined, { maximumFractionDigits: 1 })} hrs
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center mt-8">
+                  <div>
+                    <p className="text-sm text-gray-600">
+                      Total Annual Admin Labor Value
                     </p>
+                    <p className="text-xl font-bold text-[#2c4a30]">
+                      ${calculationResult.totalAnnualAdminValue.toLocaleString()}
+                    </p>
+                    <div className="mt-3 rounded-lg border border-gray-200 bg-white p-2">
+                      <p className="text-xs text-gray-600 leading-5">
+                        Your current yearly admin labor cost before any time-savings assumptions.
+                      </p>
+                    </div>
                   </div>
-                  <div className="rounded-xl border border-gray-200 bg-white p-4">
-                    <p className="text-xs text-gray-600 uppercase tracking-wide">Estimated Weekly Hours Saved</p>
-                    <p className="mt-2 text-2xl font-bold text-[#2c4a30]">
-                      {calculationResult.weeklyHoursSaved.toLocaleString(undefined, { maximumFractionDigits: 1 })} hrs/week
+
+                  <div>
+                    <p className="text-sm text-gray-600">
+                      Estimated Labor Savings
                     </p>
+                    <p className="text-xl font-bold text-[#2c4a30]">
+                      ${calculationResult.annualLaborSavings.toLocaleString()}
+                    </p>
+                    <div className="mt-3 rounded-lg border border-gray-200 bg-white p-2">
+                      <p className="text-xs text-gray-600 leading-5">
+                        The labor dollars reclaimed after applying your selected time-savings percentage.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-sm text-gray-600">
+                      Total Hours Saved Per Year
+                    </p>
+                    <p className="text-xl font-bold text-[#2c4a30]">
+                      {calculationResult.totalHoursSaved.toLocaleString()} hrs
+                    </p>
+                    <div className="mt-3 rounded-lg border border-gray-200 bg-white p-2">
+                      <p className="text-xs text-gray-600 leading-5">
+                        Annual admin hours expected to be saved based on your time-savings setting.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-sm text-gray-600">
+                      Estimated Annual Cost Difference:
+                    </p>
+                    <p className="text-xl font-bold text-[#2c4a30]">
+                      ${calculationResult.totalSavings.toLocaleString(undefined, {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })}
+                    </p>
+                    <div className="mt-3 rounded-lg border border-gray-200 bg-white p-2">
+                      <p className="text-xs text-gray-600 leading-5">
+                        Current total annual software, processing, and labor costs minus estimated Petunia total costs.
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <p className="text-sm text-gray-600 mt-5 max-w-2xl mx-auto leading-6">
-                  That&apos;s about <span className="font-semibold text-[#2c4a30]">{calculationResult.reclaimedWorkweeks.toFixed(2)} full workweeks</span> reclaimed per year.
-                  Time you can reinvest in dogs, clients, team training, family, recovery, or strategic expansion instead of repetitive admin work.
+                <p className="text-sm text-gray-500 mt-2">
+                  This number takes into account what you are currently spending on software and labor,
+                  and then comparing it against the cost of Petunia Pets and the estimated labor savings cost
+                  Includes subscription, processing, and administrative labor comparisons.
                 </p>
+
+                <div className="mt-8 max-w-3xl mx-auto text-center border-t border-gray-200 pt-6">
+                  <p className="text-base text-gray-700 leading-7">
+                    That&apos;s approximately{" "}
+                    <span className="font-semibold text-[#2c4a30]">
+                      {calculationResult.weeksReclaimed.toFixed(2)} full workweeks
+                    </span>{" "}
+                    every year.
+                  </p>
+
+                  <p className="text-sm text-gray-600 mt-3 leading-6">
+                    Time that could be spent strengthening leadership,
+                    improving margins, mentoring managers,
+                    or building the next stage of your business.
+                  </p>
+                </div>
               </>
             )}
 
