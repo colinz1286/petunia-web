@@ -11,8 +11,12 @@ declare global {
   }
 }
 
-const SCRIPT_READY_TIMEOUT_MS = 10_000;
+const SCRIPT_READY_TIMEOUT_MS = 20_000;
 const POLL_INTERVAL_MS = 50;
+const SCRIPT_HOSTS = ['www.google.com', 'www.recaptcha.net'] as const;
+const SCRIPT_DATA_ATTR = 'data-petunia-recaptcha-enterprise';
+
+let ensureClientPromise: Promise<GrecaptchaEnterpriseClient> | null = null;
 
 function getRecaptchaEnterpriseSiteKey(): string {
   const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_ENTERPRISE_SITE_KEY?.trim();
@@ -22,7 +26,7 @@ function getRecaptchaEnterpriseSiteKey(): string {
   return siteKey;
 }
 
-function waitForEnterpriseClient(): Promise<GrecaptchaEnterpriseClient> {
+function waitForEnterpriseClient(timeoutMs: number): Promise<GrecaptchaEnterpriseClient> {
   return new Promise((resolve, reject) => {
     const startedAt = Date.now();
 
@@ -33,7 +37,7 @@ function waitForEnterpriseClient(): Promise<GrecaptchaEnterpriseClient> {
         return;
       }
 
-      if (Date.now() - startedAt >= SCRIPT_READY_TIMEOUT_MS) {
+      if (Date.now() - startedAt >= timeoutMs) {
         reject(new Error('reCAPTCHA Enterprise script was not ready in time.'));
         return;
       }
@@ -43,6 +47,56 @@ function waitForEnterpriseClient(): Promise<GrecaptchaEnterpriseClient> {
 
     poll();
   });
+}
+
+function buildScriptUrl(siteKey: string, host: (typeof SCRIPT_HOSTS)[number]): string {
+  return `https://${host}/recaptcha/enterprise.js?render=${encodeURIComponent(siteKey)}`;
+}
+
+function ensureScriptTag(src: string): void {
+  if (typeof document === 'undefined') return;
+
+  const existingScript = document.querySelector<HTMLScriptElement>(`script[src="${src}"]`);
+  if (existingScript) return;
+
+  const script = document.createElement('script');
+  script.src = src;
+  script.async = true;
+  script.defer = true;
+  script.setAttribute(SCRIPT_DATA_ATTR, 'true');
+  document.head.appendChild(script);
+}
+
+async function ensureEnterpriseClient(siteKey: string): Promise<GrecaptchaEnterpriseClient> {
+  const existingClient = window.grecaptcha?.enterprise;
+  if (existingClient) {
+    return existingClient;
+  }
+
+  if (!ensureClientPromise) {
+    ensureClientPromise = (async () => {
+      let lastError: Error | null = null;
+
+      for (const host of SCRIPT_HOSTS) {
+        const src = buildScriptUrl(siteKey, host);
+        ensureScriptTag(src);
+
+        try {
+          return await waitForEnterpriseClient(SCRIPT_READY_TIMEOUT_MS);
+        } catch (error) {
+          lastError = error instanceof Error
+            ? error
+            : new Error('Failed to initialize reCAPTCHA Enterprise client.');
+        }
+      }
+
+      throw lastError ?? new Error('reCAPTCHA Enterprise script was not ready in time.');
+    })().finally(() => {
+      ensureClientPromise = null;
+    });
+  }
+
+  return ensureClientPromise;
 }
 
 export async function executeRecaptchaEnterpriseAction(action: string): Promise<string> {
@@ -56,7 +110,7 @@ export async function executeRecaptchaEnterpriseAction(action: string): Promise<
   }
 
   const siteKey = getRecaptchaEnterpriseSiteKey();
-  const enterpriseClient = await waitForEnterpriseClient();
+  const enterpriseClient = await ensureEnterpriseClient(siteKey);
 
   return new Promise((resolve, reject) => {
     enterpriseClient.ready(async () => {
