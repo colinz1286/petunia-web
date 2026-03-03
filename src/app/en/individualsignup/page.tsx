@@ -24,6 +24,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
+import { executeRecaptchaEnterpriseAction } from '@/lib/recaptchaEnterprise';
 
 // ✅ Inline Firebase config for local use (consistent with other pages)
 const firebaseConfig = {
@@ -62,6 +63,7 @@ export default function IndividualSignUpPage() {
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const usStates = [
     'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS',
@@ -92,6 +94,11 @@ export default function IndividualSignUpPage() {
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
+
+    setError(null);
+    setSuccess(null);
+
     const {
       firstName, lastName, email, password, confirmPassword,
       phoneNumber, streetAddress, city, state, zipCode,
@@ -111,6 +118,10 @@ export default function IndividualSignUpPage() {
     }
 
     try {
+      setIsSubmitting(true);
+
+      const recaptchaToken = await executeRecaptchaEnterpriseAction('INDIVIDUAL_SIGNUP');
+
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCred.user;
 
@@ -119,6 +130,8 @@ export default function IndividualSignUpPage() {
       await sendVerify({
         email: email.toLowerCase(),
         uid: user.uid,
+        recaptchaToken,
+        recaptchaAction: 'INDIVIDUAL_SIGNUP',
       });
 
       const userDoc = {
@@ -162,10 +175,16 @@ export default function IndividualSignUpPage() {
           setError('An unexpected authentication error occurred.');
         }
       } else if (err instanceof Error) {
-        setError(err.message);
+        if (err.message.toLowerCase().includes('recaptcha')) {
+          setError('Security check failed. Please refresh and try again.');
+        } else {
+          setError(err.message);
+        }
       } else {
         setError('Something went wrong.');
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -209,8 +228,12 @@ export default function IndividualSignUpPage() {
         {error && <p className="text-red-600 text-sm text-center">{error}</p>}
         {success && <p className="text-green-600 text-sm text-center">{success}</p>}
 
-        <button onClick={handleSubmit} className="w-full bg-[#2c4a30] text-white py-3 rounded hover:bg-[#1e3624] transition mt-6 text-sm">
-          Create Account
+        <button
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className="w-full bg-[#2c4a30] text-white py-3 rounded hover:bg-[#1e3624] transition mt-6 text-sm disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {isSubmitting ? 'Submitting...' : 'Create Account'}
         </button>
       </div>
     </main>

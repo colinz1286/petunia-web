@@ -24,6 +24,7 @@ import {
 } from 'firebase/firestore';
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import { executeRecaptchaEnterpriseAction } from '@/lib/recaptchaEnterprise';
 
 // ✅ Inline Firebase config
 const firebaseConfig = {
@@ -105,6 +106,15 @@ export default function LoginSignupPage() {
     setIsLoggingIn(true);
 
     try {
+      await executeRecaptchaEnterpriseAction('LOGIN');
+    } catch (error) {
+      console.error('❌ reCAPTCHA Enterprise login execution failed:', error);
+      setLoginError('Security check failed. Please refresh and try again.');
+      setIsLoggingIn(false);
+      return;
+    }
+
+    try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       const uid = user.uid;
@@ -180,10 +190,24 @@ export default function LoginSignupPage() {
     // ✅ Neutral message (prevents account enumeration)
     const neutralSuccess = 'If an account exists for that email, a password reset link will be sent.';
 
+    let recaptchaToken = '';
+    try {
+      recaptchaToken = await executeRecaptchaEnterpriseAction('PASSWORD_RESET_REQUEST');
+    } catch (error) {
+      console.error('❌ reCAPTCHA Enterprise password-reset execution failed:', error);
+      setForgotMessage('Security check failed. Please refresh and try again.');
+      setIsSendingReset(false);
+      return;
+    }
+
     try {
       // 1) Prefer SES callable
       const sendReset = httpsCallable(functions, 'sendPasswordResetEmailSES');
-      await sendReset({ email: cleanEmail });
+      await sendReset({
+        email: cleanEmail,
+        recaptchaToken,
+        recaptchaAction: 'PASSWORD_RESET_REQUEST',
+      });
 
       setForgotMessage(neutralSuccess);
       setIsSendingReset(false);

@@ -21,6 +21,7 @@ import {
   collection
 } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import { executeRecaptchaEnterpriseAction } from '@/lib/recaptchaEnterprise';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -145,6 +146,9 @@ export default function BusinessSignUpPage() {
     try {
       setIsSubmitting(true);
       setError(null);
+      setSuccess(null);
+
+      const recaptchaToken = await executeRecaptchaEnterpriseAction('BUSINESS_SIGNUP');
 
       // Create auth user
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
@@ -155,6 +159,8 @@ export default function BusinessSignUpPage() {
       await sendVerify({
         email: email.toLowerCase(),
         uid: user.uid,
+        recaptchaToken,
+        recaptchaAction: 'BUSINESS_SIGNUP',
       });
 
       // Resolve timezone via callable (safe fallback to "unverified")
@@ -250,8 +256,14 @@ export default function BusinessSignUpPage() {
         void router.push(`/${locale}/loginsignup`);
       }, 1600);
     } catch (err) {
-      const errorCode = (err as { code?: string })?.code ?? 'unknown';
-      setError(mapAuthError(errorCode));
+      const errorCode = (err as { code?: string })?.code;
+      if (errorCode) {
+        setError(mapAuthError(errorCode));
+      } else if (err instanceof Error && err.message.toLowerCase().includes('recaptcha')) {
+        setError('Security check failed. Please refresh and try again.');
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
