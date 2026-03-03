@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: Mirrors iOS `.local-only/ios-real-reference/CreateAccountView.swift`.
+// Keep account-type selection and sign-up routing aligned across web and iOS.
+
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';

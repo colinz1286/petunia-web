@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/DogBoardingAndDaycareUpcomingReservationsView.swift.
+// Keep reservation grouping, status transitions, and check-in/check-out behavior aligned across both files.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';

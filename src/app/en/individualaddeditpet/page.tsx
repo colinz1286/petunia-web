@@ -1,5 +1,9 @@
 'use client';
 
+// NOTE: This web page maps to the iOS add/edit-pet flow used by
+// .local-only/ios-real-reference/IndividualAddEditPetsViewWrapper.swift
+// and launched from .local-only/ios-real-reference/IndividualMyPetsView.swift.
+// Keep pet profile fields, validation, and persistence behavior aligned.
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';

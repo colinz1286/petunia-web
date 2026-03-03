@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: Mirrors iOS `.local-only/ios-real-reference/WalkerSitterPendingRequestsView.swift`.
+// Keep join-request approval/decline behavior consistent between web and iOS.
+
 import { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';

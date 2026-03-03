@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: Mirrors iOS `.local-only/ios-real-reference/IndividualEditProfileView.swift`.
+// Keep profile edit/delete behavior aligned across web and iOS.
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {

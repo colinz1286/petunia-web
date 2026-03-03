@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/BoardingAndDaycarePendingRequestsView.swift.
+// Keep pending-request approval/decline flow and status update behavior aligned across both files.
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';

@@ -1,5 +1,9 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/BoardingAndDaycareIndividualClientView.swift.
+// Keep client detail fields, pet/vaccine state handling, and child navigation
+// (notes + vaccine/fecal files) aligned across both files.
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';

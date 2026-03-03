@@ -1,5 +1,9 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/IndividualBookServicesView.swift.
+// Keep approved-business selection and booking-entry navigation aligned.
+// Related iOS flow: IndividualSelectServiceView.swift.
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';

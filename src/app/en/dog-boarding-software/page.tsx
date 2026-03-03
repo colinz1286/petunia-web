@@ -777,7 +777,7 @@ export default function DogBoardingSoftwarePage() {
               Are you planning on adding any features to your software?
             </label>
             <p className="text-xs text-gray-600 mb-3">
-              Core Platform is automatically included at $10/month with 3.0% + $0.35 processing.
+              Core Platform is automatically included at $10/location/month with 3.0% + $0.35 processing.
             </p>
 
             <div className="space-y-3 rounded-xl border border-gray-200 p-4 bg-white">
@@ -1256,11 +1256,6 @@ export default function DogBoardingSoftwarePage() {
                     <p className="text-xl font-bold text-[#2c4a30]">
                       ${calculationResult.totalAnnualAdminValue.toLocaleString()}
                     </p>
-                    <div className="mt-3 rounded-lg border border-gray-200 bg-white p-2">
-                      <p className="text-xs text-gray-600 leading-5">
-                        Your current yearly admin labor cost before any time-savings assumptions.
-                      </p>
-                    </div>
                   </div>
 
                   <div>
@@ -1270,11 +1265,6 @@ export default function DogBoardingSoftwarePage() {
                     <p className="text-xl font-bold text-[#2c4a30]">
                       ${calculationResult.annualLaborSavings.toLocaleString()}
                     </p>
-                    <div className="mt-3 rounded-lg border border-gray-200 bg-white p-2">
-                      <p className="text-xs text-gray-600 leading-5">
-                        The labor dollars reclaimed after applying your selected time-savings percentage.
-                      </p>
-                    </div>
                   </div>
 
                   <div>
@@ -1284,11 +1274,6 @@ export default function DogBoardingSoftwarePage() {
                     <p className="text-xl font-bold text-[#2c4a30]">
                       {calculationResult.totalHoursSaved.toLocaleString()} hrs
                     </p>
-                    <div className="mt-3 rounded-lg border border-gray-200 bg-white p-2">
-                      <p className="text-xs text-gray-600 leading-5">
-                        Annual admin hours expected to be saved based on your time-savings setting.
-                      </p>
-                    </div>
                   </div>
 
                   <div>
@@ -1301,19 +1286,8 @@ export default function DogBoardingSoftwarePage() {
                         maximumFractionDigits: 0,
                       })}
                     </p>
-                    <div className="mt-3 rounded-lg border border-gray-200 bg-white p-2">
-                      <p className="text-xs text-gray-600 leading-5">
-                        Current total annual software, processing, and labor costs minus estimated Petunia total costs.
-                      </p>
-                    </div>
                   </div>
                 </div>
-
-                <p className="text-sm text-gray-500 mt-2">
-                  This number takes into account what you are currently spending on software and labor,
-                  and then comparing it against the cost of Petunia Pets and the estimated labor savings cost
-                  Includes subscription, processing, and administrative labor comparisons.
-                </p>
 
                 <div className="mt-8 max-w-3xl mx-auto text-center border-t border-gray-200 pt-6">
                   <p className="text-base text-gray-700 leading-7">

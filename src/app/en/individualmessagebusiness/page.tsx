@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/IndividualMessageBusinessView.swift.
+// Keep per-business chat behavior, read-state updates, and send flow aligned.
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useSearchParams, useRouter } from 'next/navigation';

@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: Mirrors iOS `.local-only/ios-real-reference/BreederSubmittedApplicationsView.swift`
+// and its detail view flow in the same Swift file.
+
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';

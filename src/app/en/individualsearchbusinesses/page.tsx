@@ -1,5 +1,9 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/IndividualSearchBusinessesView.swift.
+// Keep business discovery/filter behavior and request-entry navigation aligned.
+// Related web child route: /individualsendclientrequest.
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';

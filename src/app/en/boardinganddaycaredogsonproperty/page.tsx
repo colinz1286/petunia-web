@@ -1,5 +1,9 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/BoardingAndDaycareDogsOnPropertyView.swift.
+// Keep on-property dog list behavior, check-out flows, and child navigation
+// (manual invoices, add-dog flow, notes, assessment/grooming actions) aligned.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';

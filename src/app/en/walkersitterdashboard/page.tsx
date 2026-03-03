@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: Mirrors iOS `.local-only/ios-real-reference/WalkerSitterDashboardView.swift`.
+// Keep dashboard destinations and status indicators aligned across platforms.
+
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useState, useEffect } from 'react';

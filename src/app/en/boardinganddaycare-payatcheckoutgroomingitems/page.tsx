@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/BoardingAndDaycarePayAtCheckoutGroomingItemsView.swift.
+// Keep grooming service list, category mapping, and pricing persistence aligned across both files.
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';

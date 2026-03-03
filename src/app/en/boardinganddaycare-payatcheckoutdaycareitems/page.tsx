@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/BoardingAndDaycarePayAtCheckoutDaycareItemsView.swift.
+// Keep daycare pricing tiers, add-on pricing, and persistence behavior aligned across both files.
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';

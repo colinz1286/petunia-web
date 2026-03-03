@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: Mirrors iOS `.local-only/ios-real-reference/BusinessSignUpView.swift`.
+// Keep business onboarding/sign-up fields and write flow aligned across web and iOS.
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';

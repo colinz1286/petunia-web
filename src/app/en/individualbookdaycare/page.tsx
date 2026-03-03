@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/IndividualBookDaycareView.swift.
+// Keep daycare booking rules, capacity checks, and payment flow behavior aligned.
 import React, {
   useCallback,
   useEffect,

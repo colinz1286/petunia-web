@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: Mirrors iOS `.local-only/ios-real-reference/BreederSubmittedContractsView.swift`.
+// Keep submitted-contracts placeholder/state aligned across web and iOS.
+
 import React, { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';

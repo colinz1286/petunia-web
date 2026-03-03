@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/BoardingAndDaycareIndividualClientAddFecalFileView.swift.
+// Keep file upload constraints, preview/delete flow, and storage path behavior aligned across both files.
 import { useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';

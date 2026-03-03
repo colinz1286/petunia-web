@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/BoardingAndDaycareManageIndividualEmployeeView.swift.
+// Keep role/permission editing and employee removal behavior aligned across both files.
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getAuth } from 'firebase/auth';

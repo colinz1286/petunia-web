@@ -1,6 +1,9 @@
 // src/app/[locale]/individualmypets/page.tsx
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/IndividualMyPetsView.swift.
+// Keep pet list rendering, add/edit/delete behavior, and data fields aligned.
 import { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';

@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/IndividualEmployeeDogsOnPropertyView.swift.
+// Keep dogs-on-property grouping, check-out flow, and note/assessment actions aligned.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';

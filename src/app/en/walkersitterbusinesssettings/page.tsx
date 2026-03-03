@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: Mirrors iOS `.local-only/ios-real-reference/WalkerSitterBusinessSettingsView.swift`.
+// Keep walker/sitter service, waiver, and policy settings aligned across web and iOS.
+
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { getAuth } from 'firebase/auth';
 import {

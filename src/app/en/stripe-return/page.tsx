@@ -1,3 +1,7 @@
+// NOTE: Web-only Stripe return screen used by the iOS Stripe onboarding handoff flow.
+// Related iOS files: `.local-only/ios-real-reference/StripeOnboardingRequirementsView.swift`
+// and `.local-only/ios-real-reference/AppDelegate.swift` (Stripe URL callback handling).
+
 export default function StripeReturnPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-white">

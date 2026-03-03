@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/BoardingAndDaycareFinancialManagementDashboardView.swift.
+// Keep labels, available modules, and navigation targets aligned across both files.
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 

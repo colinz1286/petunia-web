@@ -1,5 +1,9 @@
 'use client';
 
+// NOTE: Mirrors the iOS individual sign-up flow entered from
+// `.local-only/ios-real-reference/CreateAccountView.swift` and routed to `IndividualSignUpView`
+// (that Swift source is referenced by iOS but is not present in this local reference folder).
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl'; // ✅ Added to access current locale

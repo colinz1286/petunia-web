@@ -1,5 +1,9 @@
 'use client';
 
+// NOTE: This web page maps to the iOS request flow launched from
+// .local-only/ios-real-reference/IndividualSearchBusinessesView.swift
+// (IndividualSendClientRequestView child destination in iOS flow).
+// Waiver actions in this page relate to .local-only/ios-real-reference/WaiverAgreementView.swift.
 import { useEffect, useState, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';

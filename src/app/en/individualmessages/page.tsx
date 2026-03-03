@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/IndividualMessagesView.swift.
+// Keep approved-business thread list behavior and chat navigation aligned.
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {

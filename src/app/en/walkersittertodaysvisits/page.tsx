@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: Mirrors iOS `.local-only/ios-real-reference/WalkerSitterTodayVisitsView.swift`.
+// Keep visit status/check-in/check-out/reporting flow aligned across web and iOS.
+
 import { useEffect, useState, ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { initializeApp, getApps, getApp } from 'firebase/app';

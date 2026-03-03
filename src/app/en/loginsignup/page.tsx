@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: Mirrors iOS login entry flow in `.local-only/ios-real-reference/WelcomeView.swift`,
+// with create-account continuation via `.local-only/ios-real-reference/CreateAccountView.swift`.
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -271,4 +274,3 @@ export default function LoginSignupPage() {
     </main>
   );
 }
-

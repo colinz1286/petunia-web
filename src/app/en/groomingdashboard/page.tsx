@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: Mirrors iOS `.local-only/ios-real-reference/GroomingDashboardView.swift`.
+// Keep dashboard actions and business-status behavior aligned across web and iOS.
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';

@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/BoardingAndDaycareBusinessSettingsView.swift.
+// Keep settings fields, validation behavior, and Firestore key usage aligned across both files.
 import { useEffect, useState, useCallback } from 'react';
 
 import { getAuth } from 'firebase/auth';

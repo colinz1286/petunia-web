@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: Mirrors iOS `.local-only/ios-real-reference/WalkerSitterClientsView.swift`
+// (including the detail flow via `WalkerSitterIndividualClientView` in that file).
+
 import { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import {

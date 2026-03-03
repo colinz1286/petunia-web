@@ -1,5 +1,9 @@
 'use client';
 
+// NOTE: This web page is intended to mirror the iOS view at
+// .local-only/ios-real-reference/IndividualEmployeeUpcomingReservationsView.swift.
+// Keep employee reservation grouping, check-in/check-out actions, and status
+// transitions aligned across both files.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';

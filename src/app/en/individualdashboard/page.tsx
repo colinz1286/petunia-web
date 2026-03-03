@@ -1,5 +1,8 @@
 'use client';
 
+// NOTE: Mirrors iOS `.local-only/ios-real-reference/IndividualDashboardView.swift`.
+// Keep dashboard navigation and user-state indicators aligned across platforms.
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
