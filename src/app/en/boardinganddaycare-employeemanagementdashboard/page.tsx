@@ -25,10 +25,14 @@ export default function BoardingAndDaycareEmployeeManagementDashboardPage() {
                         label={t('staff_directory')}
                     />
 
+                    <DashboardLink
+                        href="/boardinganddaycare-employeemanagementcompensationandpayrates"
+                        label={t('compensation_pay_rates')}
+                    />
+
                     {/* Coming Soon Buttons */}
                     <DisabledButton label={t('employee_scheduling')} />
                     <DisabledButton label={t('time_tracking_attendance')} />
-                    <DisabledButton label={t('compensation_pay_rates')} />
                     <DisabledButton label={t('performance_reviews')} />
                     <DisabledButton label={t('skills_certifications')} />
                     <DisabledButton label={t('payroll_processing')} />

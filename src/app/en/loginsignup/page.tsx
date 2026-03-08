@@ -11,16 +11,15 @@ import { useLocale } from 'next-intl';
 import {
   getAuth,
   signInWithEmailAndPassword,
-  sendPasswordResetEmail,
 } from 'firebase/auth';
 import {
   getFirestore,
+  getDoc,
+  doc,
   collection,
   query,
   where,
   getDocs,
-  getDoc,
-  doc,
 } from 'firebase/firestore';
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFunctions, httpsCallable } from 'firebase/functions';
@@ -56,37 +55,26 @@ function getFirebaseErrorCode(err: unknown): string {
   return '';
 }
 
-// Normalize business type from either flat or nested field
-function normalizeBusinessType(data: Record<string, unknown>): string {
-  const flat = (data.businessType as string | undefined) ?? '';
-  const nested = ((data.businessDetails as { type?: string } | undefined)?.type) ?? '';
-  return (flat || nested).toString().trim().toLowerCase();
+function shouldBypassRecaptchaForLocalDev(): boolean {
+  if (typeof window === 'undefined') return false;
+  if (process.env.NODE_ENV === 'production') return false;
+
+  const host = window.location.hostname;
+  return host === 'localhost' || host === '127.0.0.1';
 }
 
-// Find a business owned by this user; prefer one whose type is "breeder"
-async function findOwnersBusiness(
-  uid: string
-): Promise<{ id: string; data: () => Record<string, unknown> } | null> {
+async function runRecaptchaIfRequired(action: string): Promise<string> {
+  if (shouldBypassRecaptchaForLocalDev()) {
+    return '';
+  }
+  return executeRecaptchaEnterpriseAction(action);
+}
+
+async function findOwnersBusinessByOwnerId(uid: string): Promise<Record<string, unknown> | null> {
   const colRef = collection(db, 'businesses');
-
-  const docs: { id: string; data: () => Record<string, unknown> }[] = [];
-
-  const r1 = await getDocs(query(colRef, where('ownerIds', 'array-contains', uid)));
-  r1.forEach((d) => {
-    docs.push({ id: d.id, data: () => d.data() as Record<string, unknown> });
-  });
-
-  const r2 = await getDocs(query(colRef, where('ownerId', '==', uid)));
-  r2.forEach((d) => {
-    if (!docs.find((x) => x.id === d.id)) {
-      docs.push({ id: d.id, data: () => d.data() as Record<string, unknown> });
-    }
-  });
-
-  if (docs.length === 0) return null;
-
-  const breederDoc = docs.find((d) => normalizeBusinessType(d.data()) === 'breeder');
-  return breederDoc ?? docs[0];
+  const result = await getDocs(query(colRef, where('ownerId', '==', uid)));
+  const first = result.docs[0];
+  return first ? (first.data() as Record<string, unknown>) : null;
 }
 
 export default function LoginSignupPage() {
@@ -106,7 +94,7 @@ export default function LoginSignupPage() {
     setIsLoggingIn(true);
 
     try {
-      await executeRecaptchaEnterpriseAction('LOGIN');
+      await runRecaptchaIfRequired('LOGIN');
     } catch (error) {
       console.error('❌ reCAPTCHA Enterprise login execution failed:', error);
       setLoginError('Security check failed. Please refresh and try again.');
@@ -119,40 +107,44 @@ export default function LoginSignupPage() {
       const user = userCredential.user;
       const uid = user.uid;
 
-      const businessDoc = await findOwnersBusiness(uid);
-      if (businessDoc) {
-        const businessData = businessDoc.data();
-        const createdAtLike = businessData.createdAt as { toDate?: () => Date } | Date | undefined;
-        const createdAt =
-          createdAtLike instanceof Date ? createdAtLike : createdAtLike?.toDate?.();
-
-        const enforcementDate = new Date('2025-07-29');
-        if (createdAt && createdAt >= enforcementDate && !user.emailVerified) {
-          setLoginError('Please verify your email before logging in.');
-          setIsLoggingIn(false);
-          return;
-        }
-
-        const type = normalizeBusinessType(businessData);
-        if (type === 'breeder') {
-          router.push(`/${locale}/breederdashboard`);
-        } else if (type === 'walkersitter') {
-          router.push(`/${locale}/walkersitterdashboard`);
-        } else if (type === 'groomer' || type === 'grooming') {
-          router.push(`/${locale}/groomingdashboard`);
-        } else {
-          router.push(`/${locale}/boardinganddaycaredashboard`);
-        }
-        return;
-      }
-
       const userDoc = await getDoc(doc(db, 'users', uid));
-      if (userDoc.exists()) {
+      const userData = userDoc.data() as Record<string, unknown> | undefined;
+      const accountType = typeof userData?.accountType === 'string' ? userData.accountType : '';
+
+      if (accountType === 'Individual') {
         router.push(`/${locale}/individualdashboard`);
         return;
       }
 
-      setLoginError('Account found, but no matching profile was detected.');
+      if (accountType === 'Business') {
+        const businessData = await findOwnersBusinessByOwnerId(uid);
+        if (!businessData) {
+          setLoginError('Account found, but no matching business profile was detected.');
+          return;
+        }
+
+        const type = String((businessData.businessType as string | undefined) ?? '').trim();
+        const normalizedType = type.toLowerCase();
+
+        if (normalizedType === 'breeder') {
+          router.push(`/${locale}/breederdashboard`);
+        } else if (normalizedType === 'walkersitter' || normalizedType === 'walker/sitter') {
+          router.push(`/${locale}/walkersitterdashboard`);
+        } else if (
+          normalizedType === 'groomer' ||
+          normalizedType === 'grooming' ||
+          normalizedType === 'grooming business'
+        ) {
+          router.push(`/${locale}/groomingdashboard`);
+        } else if (normalizedType === 'boarding/daycare' || normalizedType === 'boardingdaycare') {
+          router.push(`/${locale}/boardinganddaycaredashboard`);
+        } else {
+          setLoginError('Unknown business type for this account.');
+        }
+        return;
+      }
+
+      setLoginError('Account found, but accountType is missing or invalid.');
     } catch (error: unknown) {
       console.error('❌ Login error:', error);
       const code: string = getFirebaseErrorCode(error);
@@ -192,7 +184,7 @@ export default function LoginSignupPage() {
 
     let recaptchaToken = '';
     try {
-      recaptchaToken = await executeRecaptchaEnterpriseAction('PASSWORD_RESET_REQUEST');
+      recaptchaToken = await runRecaptchaIfRequired('PASSWORD_RESET_REQUEST');
     } catch (error) {
       console.error('❌ reCAPTCHA Enterprise password-reset execution failed:', error);
       setForgotMessage('Security check failed. Please refresh and try again.');
@@ -213,25 +205,10 @@ export default function LoginSignupPage() {
       setIsSendingReset(false);
       return;
     } catch (err) {
-      console.error('❌ SES reset callable failed (falling back to Firebase mailer for dev test):', err);
-      // 2) Dev-only fallback so you’re never blocked while testing
-      try {
-        await sendPasswordResetEmail(auth, cleanEmail);
-        setForgotMessage(neutralSuccess);
-      } catch (error: unknown) {
-        console.error('❌ Firebase fallback reset failed:', error);
-        const code: string = getFirebaseErrorCode(error);
-
-        switch (code) {
-          case 'auth/invalid-email':
-            setForgotMessage('Invalid email address.');
-            break;
-          default:
-            setForgotMessage('Failed to send reset email. Please try again.');
-        }
-      } finally {
-        setIsSendingReset(false);
-      }
+      console.error('❌ SES reset callable failed:', err);
+      // Keep response neutral to prevent account enumeration.
+      setForgotMessage(neutralSuccess);
+      setIsSendingReset(false);
     }
   };
 

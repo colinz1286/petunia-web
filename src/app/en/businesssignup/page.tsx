@@ -210,12 +210,7 @@ export default function BusinessSignUpPage() {
           }
         },
 
-        businessType:
-          form.businessType === 'boardingDaycare'
-            ? 'Boarding/Daycare'
-            : form.businessType === 'breeder'
-              ? 'Breeder'
-              : form.businessType,
+        businessType: form.businessType,
 
         businessAddress: {
           street: businessStreet,
@@ -226,6 +221,8 @@ export default function BusinessSignUpPage() {
 
         businessPhone,
         businessWebsite: normalizeUrl(businessWebsite),
+        licenseNumber: '',
+        licenseImageURL: '',
         isVerified: false,
         timezone,
         createdAt: Timestamp.now()
@@ -237,7 +234,7 @@ export default function BusinessSignUpPage() {
         accountType: 'Business',
         firstName,
         lastName,
-        email: email.toLowerCase(),
+        email,
         phoneNumber,
         address: {
           street: streetAddress,
