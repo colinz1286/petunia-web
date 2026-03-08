@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
+import SoftwareCustomizationSection from '@/components/SoftwareCustomizationSection';
 
 export default function HomePageClient() {
     const locale = useLocale();
@@ -116,6 +117,10 @@ export default function HomePageClient() {
                         While the platform supports multiple areas of pet care, boarding and daycare remain at its core.
                         Every feature is shaped by real-world operations — not theory, not investors, and not bloated legacy software.
                     </p>
+                </div>
+
+                <div className="w-full max-w-4xl mb-12">
+                    <SoftwareCustomizationSection />
                 </div>
 
                 {/* Headline */}

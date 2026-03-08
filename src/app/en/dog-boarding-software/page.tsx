@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import SoftwareCustomizationSection from '@/components/SoftwareCustomizationSection';
 
 const TASKS = [
   "Staff scheduling & shift adjustments",
@@ -298,6 +299,8 @@ export default function DogBoardingSoftwarePage() {
           </a>
         </div>
       </section>
+
+      <SoftwareCustomizationSection />
 
       {/* MOBILE QUICK CTA + SECTION INDEX */}
       <section className="md:hidden py-6 border-t border-gray-200">

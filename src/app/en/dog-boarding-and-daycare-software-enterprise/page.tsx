@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Script from 'next/script';
 import { useState } from 'react';
 import { useLocale } from 'next-intl';
+import SoftwareCustomizationSection from '@/components/SoftwareCustomizationSection';
 
 const ENTERPRISE_TASKS = [
     "Multi-Location Staff Scheduling Oversight",
@@ -367,6 +368,8 @@ export default function DogBoardingAndDaycareSoftwareEnterprise() {
                     </a>
                 </div>
             </section>
+
+            <SoftwareCustomizationSection />
 
             <section className="md:hidden py-4 border-t border-gray-200">
                 <div className="rounded-xl border border-[#d9cfc2] bg-[#fafaf8] p-3">
