@@ -1,0 +1,9 @@
+{
+  "title": "Schedule Calendar",
+  "back_button": "Back",
+  "create_shift": "Create Shift",
+  "previous_day": "Previous day",
+  "next_day": "Next day",
+  "no_shifts_scheduled": "No shifts scheduled",
+  "employee_fallback": "Employee"
+}

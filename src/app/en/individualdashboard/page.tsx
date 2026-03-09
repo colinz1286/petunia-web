@@ -5,31 +5,23 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { getApp, getApps, initializeApp } from 'firebase/app';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import {
-  getAuth,
-  signOut,
-  onAuthStateChanged,
-} from 'firebase/auth';
-
-import {
-  getFirestore,
-  doc,
-  getDoc,
   collection,
   collectionGroup,
-  query,
-  where,
+  doc,
+  getDoc,
   getDocs,
+  getFirestore,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
   updateDoc,
+  where,
 } from 'firebase/firestore';
-
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} from 'firebase/storage';
-import { initializeApp } from 'firebase/app';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
@@ -43,17 +35,15 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-type InviteData = {
-  status?: 'pending' | 'accepted' | 'declined';
+type PendingInvite = {
+  businessId?: string;
   businessName?: string;
-  role?: string;
-  userId?: string;
-  [key: string]: unknown;
+  status?: 'pending' | 'accepted' | 'declined';
 };
 
 export default function IndividualDashboardPage() {
@@ -61,97 +51,146 @@ export default function IndividualDashboardPage() {
   const t = useTranslations('individualDashboard');
   const locale = useLocale();
 
-  // Route constants (prevents path typos)
-  const ROUTE_EMPLOYEE_DOGS_ON_PROPERTY = `/${locale}/individualemployeedogsonproperty`;
-
   const [firstName, setFirstName] = useState('');
   const [profileUrl, setProfileUrl] = useState('');
+  const [profilePreviewUrl, setProfilePreviewUrl] = useState('');
   const [userId, setUserId] = useState('');
   const [profileFile, setProfileFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const [reminderCount, setReminderCount] = useState(0);
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
   const [hasNewBusinessSignup, setHasNewBusinessSignup] = useState(false);
-  const [hasUnreadMessages, setHasUnreadMessages] = useState(false); // 🔴 new state
 
   const [isEmployee, setIsEmployee] = useState(false);
-  const [invite, setInvite] = useState<InviteData | null>(null);
+  const [invite, setInvite] = useState<PendingInvite | null>(null);
   const [inviteDocId, setInviteDocId] = useState('');
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
+    let notificationUnsubscribe: (() => void) | undefined;
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
         router.push(`/${locale}/loginsignup`);
         return;
       }
+
       const uid = user.uid;
       const email = user.email ?? '';
       setUserId(uid);
 
+      notificationUnsubscribe?.();
+      notificationUnsubscribe = onSnapshot(
+        query(
+          collection(db, 'users', uid, 'notifications'),
+          where('isRead', '==', false)
+        ),
+        (snapshot) => {
+          setHasUnreadNotifications(!snapshot.empty);
+        }
+      );
+
       await Promise.all([
         loadProfile(uid),
-        loadReminders(uid),
-        loadNotifications(uid),
-        checkEmployeeStatus(email),
+        loadReminderCount(uid),
         loadUnreadMessages(uid),
+        checkEmployeeStatusOrInvite(email),
+        checkForBusinessSignups(uid),
       ]);
     });
-    return () => unsub();
-  }, [router, locale]);
+
+    return () => {
+      unsubscribe();
+      notificationUnsubscribe?.();
+    };
+  }, [locale, router]);
+
+  useEffect(() => {
+    if (!profileFile) {
+      setProfilePreviewUrl('');
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(profileFile);
+    setProfilePreviewUrl(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [profileFile]);
 
   const loadProfile = async (uid: string) => {
-    const docSnap = await getDoc(doc(db, 'users', uid));
-    const data = docSnap.data();
-    setFirstName(data?.firstName || '');
-    setProfileUrl(data?.profileImageURL || '');
+    const snapshot = await getDoc(doc(db, 'users', uid));
+    const data = snapshot.data();
+    setFirstName((data?.firstName as string | undefined) ?? '');
+    setProfileUrl((data?.profileImageURL as string | undefined) ?? '');
   };
 
-  const loadReminders = async (uid: string) => {
-    const q = query(
+  const loadReminderCount = async (uid: string) => {
+    const remindersQuery = query(
       collection(db, 'users', uid, 'reminders'),
       where('isCompleted', '==', false)
     );
-    const snapshot = await getDocs(q);
+    const snapshot = await getDocs(remindersQuery);
     setReminderCount(snapshot.docs.length);
   };
 
-  const loadNotifications = async (uid: string) => {
-    const q = query(
-      collection(db, 'users', uid, 'notifications'),
-      where('type', '==', 'businessSignUp'),
-      where('isRead', '==', false)
-    );
-    const snapshot = await getDocs(q);
-    setHasNewBusinessSignup(!snapshot.empty);
-  };
-
   const loadUnreadMessages = async (uid: string) => {
-    const q = query(
+    const unreadMessagesQuery = query(
       collectionGroup(db, 'threadMessages'),
       where('receiverId', '==', uid),
       where('read', '==', false)
     );
-    const snapshot = await getDocs(q);
+    const snapshot = await getDocs(unreadMessagesQuery);
     setHasUnreadMessages(!snapshot.empty);
   };
 
-  const checkEmployeeStatus = async (email: string) => {
-    const q = query(
+  const checkEmployeeStatusOrInvite = async (email: string) => {
+    const inviteQuery = query(
       collection(db, 'employeeInvites'),
-      where('email', '==', email.toLowerCase())
+      where('email', '==', email.toLowerCase()),
+      orderBy('sentAt', 'desc'),
+      limit(1)
     );
-    const snapshot = await getDocs(q);
-    if (snapshot.empty) return;
+    const snapshot = await getDocs(inviteQuery);
 
-    const docSnap = snapshot.docs[0];
-    const data = docSnap.data() as InviteData;
-    setInviteDocId(docSnap.id);
+    if (snapshot.empty) {
+      setInvite(null);
+      setInviteDocId('');
+      setIsEmployee(false);
+      return;
+    }
+
+    const latestInvite = snapshot.docs[0];
+    const data = latestInvite.data() as PendingInvite;
+
+    setInviteDocId(latestInvite.id);
     setInvite(data);
     setIsEmployee(data.status === 'accepted');
   };
 
+  const checkForBusinessSignups = async (uid: string) => {
+    const ownerUid = 'VMIHFQTmd3T5RPf3zKibR5kF72Y2';
+    if (uid !== ownerUid) {
+      setHasNewBusinessSignup(false);
+      return;
+    }
+
+    const signupQuery = query(
+      collection(db, 'users', uid, 'notifications'),
+      where('type', '==', 'businessSignUp'),
+      where('isRead', '==', false)
+    );
+    const snapshot = await getDocs(signupQuery);
+    setHasNewBusinessSignup(!snapshot.empty);
+  };
+
   const uploadProfileImage = async () => {
-    if (!profileFile || !userId) return;
+    if (!profileFile || !userId) {
+      return;
+    }
+
     setIsUploading(true);
 
     const fileRef = ref(storage, `userProfileImages/${userId}/profile.jpg`);
@@ -160,144 +199,119 @@ export default function IndividualDashboardPage() {
 
     await updateDoc(doc(db, 'users', userId), { profileImageURL: url });
     setProfileUrl(url);
+    setProfileFile(null);
     setIsUploading(false);
   };
 
   const acceptInvite = async () => {
-    if (!userId || !inviteDocId) return;
+    if (!userId || !inviteDocId) {
+      return;
+    }
+
     await updateDoc(doc(db, 'employeeInvites', inviteDocId), {
-      userId,
-      status: 'accepted',
       role: 'default',
+      status: 'accepted',
+      userId,
     });
+
     setIsEmployee(true);
-    setInvite((prev) => (prev ? { ...prev, status: 'accepted' } : { status: 'accepted' }));
+    setInvite((current) => (current ? { ...current, status: 'accepted' } : { status: 'accepted' }));
   };
 
   const declineInvite = async () => {
-    if (!inviteDocId) return;
+    if (!inviteDocId) {
+      return;
+    }
+
     await updateDoc(doc(db, 'employeeInvites', inviteDocId), {
       status: 'declined',
     });
-    setInvite((prev) => (prev ? { ...prev, status: 'declined' } : { status: 'declined' }));
+
+    setInvite((current) => (current ? { ...current, status: 'declined' } : { status: 'declined' }));
   };
 
   const logout = async () => {
+    if (!window.confirm(t('logout_confirm_title'))) {
+      return;
+    }
+
     await signOut(auth);
     router.push(`/${locale}/loginsignup`);
   };
 
-  return (
-    <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)] px-4 py-6">
-      <div className="w-full max-w-md mx-auto px-2 sm:px-4">
-        <h1 className="text-3xl font-bold text-[color:var(--color-accent)] text-center mb-4">
-          {t('dashboard_welcome', { firstName })}
-        </h1>
+  const displayedProfileUrl = profilePreviewUrl || profileUrl;
 
-        {/* Profile Image Upload */}
-        <div className="flex justify-center mb-4">
-          <label className="cursor-pointer">
-            <input
-              type="file"
-              accept=".jpg,.jpeg,.png"
-              className="hidden"
-              onChange={(e) => setProfileFile(e.target.files?.[0] ?? null)}
-            />
-            {profileUrl ? (
-              <Image
-                src={profileUrl}
-                alt="Profile"
-                width={150}
-                height={150}
-                className="rounded-full border"
-              />
-            ) : (
-              <div className="w-36 h-36 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-4xl">
-                +
-              </div>
-            )}
-          </label>
-        </div>
+  return (
+    <div className="min-h-screen bg-[color:var(--color-background)] px-4 py-6 text-[color:var(--color-foreground)]">
+      <div className="mx-auto w-full max-w-md px-2 sm:px-4">
+        <DashboardHeader
+          welcomeLabel={t('dashboard_welcome', { firstName })}
+          profileUrl={displayedProfileUrl}
+          addPetPhotoLabel={t('add_pet_photo')}
+          isUploading={isUploading}
+          uploadingLabel={t('uploading_image')}
+          onFileSelected={setProfileFile}
+        />
 
         {profileFile && (
           <button
             type="button"
             onClick={uploadProfileImage}
-            className="block w-full text-white bg-blue-600 px-4 py-2 rounded mb-4 text-sm"
+            className="mb-4 block w-full rounded-xl bg-[#2c4a30] px-4 py-3 text-sm font-semibold text-white hover:opacity-90"
           >
             {isUploading ? t('uploading_image') : t('upload_image')}
           </button>
         )}
 
-        {/* Main Dashboard Links */}
-        <DashboardLink href={`/${locale}/individualbookservices`} label={t('book_services_title')} />
-        <DashboardLink href={`/${locale}/individualupcomingappointments`} label={t('upcoming_appointments')} />
+        <PrimaryLink href={`/${locale}/individualbookservices`} label={t('book_services_title')} />
+        <PrimaryLink href={`/${locale}/individualupcomingappointments`} label={t('upcoming_appointments')} />
 
-        <DotLink
-          href={`/${locale}/individualmessages`}
-          label={t('messages')}
-          showDot={hasUnreadMessages}
+        <DashboardMainActions
+          locale={locale}
+          reminderCount={reminderCount}
+          hasUnreadNotifications={hasUnreadNotifications}
+          hasUnreadMessages={hasUnreadMessages}
+          hasNewBusinessSignup={hasNewBusinessSignup}
+          remindersLabel={t('reminders')}
+          notificationsLabel={t('notifications')}
+          messagesLabel={t('messages_new')}
+          searchBusinessesLabel={t('search_businesses')}
+          myPetsLabel={t('my_pets')}
+          blogAndGuidesLabel={t('blog_and_guides')}
+          tutorialVideosLabel={t('tutorial_videos_new')}
         />
 
-        <div className="space-y-3 mt-4">
-          <BadgeLink href={`/${locale}/individualreminders`} label={t('reminders')} badge={reminderCount} />
-          <DotLink href={`/${locale}/individualnotifications`} label={t('notifications')} showDot={hasNewBusinessSignup} />
-          <DashboardLink href={`/${locale}/individualsearchbusinesses`} label={t('search_businesses')} />
-          <DashboardLink href={`/${locale}/individualmypets`} label={t('my_pets')} />
-          <DashboardLink href={`/${locale}/tutorialsindividuals`} label={t('tutorial_videos')} />
-        </div>
-
-        {/* Invite Banner */}
         {invite?.status === 'pending' && (
-          <div className="mt-6 bg-yellow-100 text-center p-4 rounded shadow space-y-2 text-sm">
-            <p className="font-semibold">{t('invite_banner_title')}</p>
-            <p>{invite.businessName}</p>
-            <div className="flex justify-center gap-4">
-              <button type="button" onClick={acceptInvite} className="bg-green-600 text-white px-3 py-1 rounded">
-                {t('accept')}
-              </button>
-              <button type="button" onClick={declineInvite} className="text-red-600 underline">
-                {t('decline')}
-              </button>
-            </div>
-          </div>
+          <InviteBanner
+            title={t('invite_banner_title')}
+            businessName={invite.businessName ?? ''}
+            acceptLabel={t('accept')}
+            declineLabel={t('decline')}
+            onAccept={acceptInvite}
+            onDecline={declineInvite}
+          />
         )}
 
-        {/* Employee Tools */}
-        {isEmployee && (
-          <div className="mt-6 border-t pt-4 space-y-3">
-            <h2 className="text-lg font-semibold text-center">{t('employee_tools')}</h2>
+        <EmployeeToolsSection
+          locale={locale}
+          isEmployee={isEmployee}
+          title={t('employee_tools')}
+          upcomingReservationsLabel={t('upcoming_reservations')}
+          dogsOnPropertyLabel={t('dogs_on_property')}
+          employeePortalLabel={t('employee_portal')}
+        />
 
-            <DashboardLink
-              href={`/${locale}/individualemployeeupcomingreservations`}
-              label={t('upcoming_reservations')}
-            />
+        <div className="my-4 h-px bg-black/10" />
 
-            <DashboardLink
-              href={ROUTE_EMPLOYEE_DOGS_ON_PROPERTY}
-              label={t('dogs_on_property')}
-            />
-
-            <button
-              type="button"
-              className="block w-full bg-gray-500 text-white px-4 py-2 rounded text-sm"
-              onClick={() => alert(t('feature_coming_soon'))}
-            >
-              {t('view_assigned_schedule')}
-            </button>
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <PrimaryLink href={`/${locale}/individualeditprofile`} label={t('edit_profile')} />
           </div>
-        )}
-
-        {/* Edit + Logout */}
-        <div className="flex justify-between mt-6 gap-4">
-          <div className="w-1/2">
-            <DashboardLink href={`/${locale}/individualeditprofile`} label={t('edit_profile')} />
-          </div>
-          <div className="w-1/2">
+          <div className="flex-1">
             <button
               type="button"
               onClick={logout}
-              className="w-full text-white bg-red-600 px-4 py-2 rounded text-sm"
+              className="mb-2 block w-full rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white"
             >
               {t('logout')}
             </button>
@@ -308,11 +322,198 @@ export default function IndividualDashboardPage() {
   );
 }
 
-function DashboardLink({ href, label }: { href: string; label: string }) {
+function DashboardHeader({
+  welcomeLabel,
+  profileUrl,
+  addPetPhotoLabel,
+  isUploading,
+  uploadingLabel,
+  onFileSelected,
+}: {
+  welcomeLabel: string;
+  profileUrl: string;
+  addPetPhotoLabel: string;
+  isUploading: boolean;
+  uploadingLabel: string;
+  onFileSelected: (file: File | null) => void;
+}) {
+  return (
+    <>
+      <h1 className="mb-4 text-center text-3xl font-bold text-[color:var(--color-accent)] sm:text-4xl">
+        {welcomeLabel}
+      </h1>
+
+      <div className="mb-3 flex justify-center">
+        <label className="cursor-pointer">
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png"
+            className="hidden"
+            onChange={(e) => onFileSelected(e.target.files?.[0] ?? null)}
+          />
+          {profileUrl ? (
+            <Image
+              src={profileUrl}
+              alt="Profile"
+              width={150}
+              height={150}
+              unoptimized
+              className="h-[150px] w-[150px] rounded-full border-2 border-gray-300 object-cover"
+            />
+          ) : (
+            <div className="flex h-[150px] w-[150px] flex-col items-center justify-center rounded-full bg-gray-200 text-center">
+              <span className="text-4xl text-gray-500">+</span>
+              <span className="mt-2 px-4 text-xs font-bold text-[color:var(--color-accent)]">
+                {addPetPhotoLabel}
+              </span>
+            </div>
+          )}
+        </label>
+      </div>
+
+      {isUploading && <p className="mb-3 text-center text-sm text-gray-600">{uploadingLabel}</p>}
+
+      <div className="mb-4 h-px bg-black/10" />
+    </>
+  );
+}
+
+function DashboardMainActions({
+  locale,
+  reminderCount,
+  hasUnreadNotifications,
+  hasUnreadMessages,
+  hasNewBusinessSignup,
+  remindersLabel,
+  notificationsLabel,
+  messagesLabel,
+  searchBusinessesLabel,
+  myPetsLabel,
+  blogAndGuidesLabel,
+  tutorialVideosLabel,
+}: {
+  locale: string;
+  reminderCount: number;
+  hasUnreadNotifications: boolean;
+  hasUnreadMessages: boolean;
+  hasNewBusinessSignup: boolean;
+  remindersLabel: string;
+  notificationsLabel: string;
+  messagesLabel: string;
+  searchBusinessesLabel: string;
+  myPetsLabel: string;
+  blogAndGuidesLabel: string;
+  tutorialVideosLabel: string;
+}) {
+  return (
+    <>
+      <div className="space-y-2">
+        <BadgeLink href={`/${locale}/individualreminders`} label={remindersLabel} badge={reminderCount} />
+        <DotLink
+          href={`/${locale}/individualnotifications`}
+          label={notificationsLabel}
+          showDot={hasUnreadNotifications || hasNewBusinessSignup}
+        />
+        <DotLink
+          href={`/${locale}/individualmessages`}
+          label={messagesLabel}
+          showDot={hasUnreadMessages}
+        />
+        <PrimaryLink href={`/${locale}/individualsearchbusinesses`} label={searchBusinessesLabel} />
+        <PrimaryLink href={`/${locale}/individualmypets`} label={myPetsLabel} />
+        <PrimaryLink href={`/${locale}/blog`} label={blogAndGuidesLabel} />
+        <PrimaryLink href={`/${locale}/tutorialsindividuals`} label={tutorialVideosLabel} />
+      </div>
+
+      <div className="my-4 h-px bg-black/10" />
+    </>
+  );
+}
+
+function InviteBanner({
+  title,
+  businessName,
+  acceptLabel,
+  declineLabel,
+  onAccept,
+  onDecline,
+}: {
+  title: string;
+  businessName: string;
+  acceptLabel: string;
+  declineLabel: string;
+  onAccept: () => Promise<void>;
+  onDecline: () => Promise<void>;
+}) {
+  return (
+    <div className="mb-4 rounded-xl bg-yellow-100/60 px-4 py-4 text-center">
+      <p className="font-semibold">{title}</p>
+      <p className="text-sm text-gray-600">{businessName}</p>
+      <div className="mt-3 flex justify-center gap-4">
+        <button
+          type="button"
+          onClick={() => void onAccept()}
+          className="rounded-lg bg-[#2c4a30] px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+        >
+          {acceptLabel}
+        </button>
+        <button
+          type="button"
+          onClick={() => void onDecline()}
+          className="rounded-lg border border-red-500 px-4 py-2 text-sm font-semibold text-red-600"
+        >
+          {declineLabel}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function EmployeeToolsSection({
+  locale,
+  isEmployee,
+  title,
+  upcomingReservationsLabel,
+  dogsOnPropertyLabel,
+  employeePortalLabel,
+}: {
+  locale: string;
+  isEmployee: boolean;
+  title: string;
+  upcomingReservationsLabel: string;
+  dogsOnPropertyLabel: string;
+  employeePortalLabel: string;
+}) {
+  return (
+    <>
+      <div className="my-4 h-px bg-black/10" />
+
+      {isEmployee && (
+        <div className="space-y-2">
+          <h2 className="text-center text-lg font-semibold text-black">{title}</h2>
+          <PrimaryLink
+            href={`/${locale}/individualemployeeupcomingreservations`}
+            label={upcomingReservationsLabel}
+          />
+          <PrimaryLink
+            href={`/${locale}/individualemployeedogsonproperty`}
+            label={dogsOnPropertyLabel}
+          />
+          <PrimaryLink
+            href={`/${locale}/individualemployeeportaldashboard`}
+            label={employeePortalLabel}
+          />
+        </div>
+      )}
+    </>
+  );
+}
+
+function PrimaryLink({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href}
-      className="block w-full text-white bg-[#2c4a30] hover:opacity-90 py-2 px-4 rounded text-center mb-2"
+      className="mb-2 block w-full rounded-xl bg-[#2c4a30] px-4 py-3 text-center text-sm font-semibold text-white hover:opacity-90"
     >
       {label}
     </Link>
@@ -330,9 +531,9 @@ function BadgeLink({
 }) {
   return (
     <div className="relative">
-      <DashboardLink href={href} label={label} />
+      <PrimaryLink href={href} label={label} />
       {badge > 0 && (
-        <span className="absolute top-0 right-1.5 sm:right-2 bg-white text-red-600 rounded-full px-2 py-0.5 min-w-[20px] text-[10px] sm:text-xs text-center leading-none">
+        <span className="absolute right-3 top-2 min-w-[22px] rounded-full bg-white px-2 py-1 text-center text-[10px] leading-none text-red-600">
           {badge}
         </span>
       )}
@@ -351,10 +552,8 @@ function DotLink({
 }) {
   return (
     <div className="relative">
-      <DashboardLink href={href} label={label} />
-      {showDot && (
-        <span className="absolute top-2 right-4 w-3 h-3 bg-red-600 rounded-full" />
-      )}
+      <PrimaryLink href={href} label={label} />
+      {showDot && <span className="absolute right-4 top-3 h-3 w-3 rounded-full bg-red-600" />}
     </div>
   );
 }

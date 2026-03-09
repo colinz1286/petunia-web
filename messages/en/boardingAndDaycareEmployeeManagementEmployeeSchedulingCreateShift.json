@@ -1,0 +1,14 @@
+{
+  "title": "Create Shift",
+  "select_employee_label": "Select Employee",
+  "employee_placeholder": "Employee",
+  "employee_fallback": "Employee",
+  "role_label": "Role",
+  "role_placeholder": "Kennel Tech",
+  "start_time_label": "Start Time",
+  "end_time_label": "End Time",
+  "save_button": "Save",
+  "saving": "Saving...",
+  "cancel_button": "Cancel",
+  "unknown_error": "Something went wrong."
+}

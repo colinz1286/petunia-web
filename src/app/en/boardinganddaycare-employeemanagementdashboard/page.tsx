@@ -10,19 +10,23 @@ export default function BoardingAndDaycareEmployeeManagementDashboardPage() {
     const t = useTranslations('boardingAndDaycareEmployeeManagementDashboard');
 
     return (
-        <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)] px-4 py-8">
-            <div className="w-full max-w-md mx-auto">
-
-                <h1 className="text-4xl font-bold text-[color:var(--color-accent)] text-center mb-6">
+        <div className="min-h-screen bg-[color:var(--color-background)] px-4 py-8 text-[color:var(--color-foreground)]">
+            <div className="mx-auto w-full max-w-md">
+                <h1 className="mb-6 text-center text-4xl font-bold text-[color:var(--color-accent)]">
                     {t('title')}
                 </h1>
 
-                <div className="space-y-3">
+                <hr className="mb-6 border-[color:var(--color-accent)]/20" />
 
-                    {/* ACTIVE – Staff Directory (existing page) */}
+                <div className="space-y-3">
                     <DashboardLink
                         href="/boardinganddaycare-manageemployees"
                         label={t('staff_directory')}
+                    />
+
+                    <DashboardLink
+                        href="/boardinganddaycare-employeemanagementemployeescheduling"
+                        label={t('employee_scheduling')}
                     />
 
                     <DashboardLink
@@ -30,15 +34,12 @@ export default function BoardingAndDaycareEmployeeManagementDashboardPage() {
                         label={t('compensation_pay_rates')}
                     />
 
-                    {/* Coming Soon Buttons */}
-                    <DisabledButton label={t('employee_scheduling')} />
                     <DisabledButton label={t('time_tracking_attendance')} />
                     <DisabledButton label={t('performance_reviews')} />
                     <DisabledButton label={t('skills_certifications')} />
                     <DisabledButton label={t('payroll_processing')} />
                     <DisabledButton label={t('staff_reports_analytics')} />
                     <DisabledButton label={t('employee_settings_permissions')} />
-
                 </div>
             </div>
         </div>
@@ -55,7 +56,7 @@ function DashboardLink({
     return (
         <Link
             href={href}
-            className="block w-full text-white bg-[#2c4a30] hover:opacity-90 py-2 px-4 rounded text-center text-sm"
+            className="block w-full rounded-lg bg-[color:var(--color-accent)] px-4 py-3 text-center text-sm font-semibold text-white transition-opacity hover:opacity-90"
         >
             {label}
         </Link>
@@ -70,7 +71,7 @@ function DisabledButton({
     return (
         <button
             onClick={() => alert('Feature coming soon')}
-            className="block w-full text-white bg-gray-400 cursor-not-allowed py-2 px-4 rounded text-center text-sm"
+            className="block w-full rounded-lg bg-gray-300 px-4 py-3 text-center text-sm font-semibold text-gray-600"
         >
             {label}
         </button>

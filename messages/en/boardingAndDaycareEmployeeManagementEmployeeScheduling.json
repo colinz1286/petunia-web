@@ -1,0 +1,11 @@
+{
+  "title": "Employee Scheduling",
+  "shift_templates": "Shift Templates",
+  "employee_availability": "Employee Availability",
+  "schedule_calendar": "Schedule Calendar",
+  "coverage_view": "Coverage View",
+  "conflict_detection": "Conflict Detection",
+  "open_shifts_board": "Open Shifts Board",
+  "feature_coming_soon_title": "Feature Coming Soon",
+  "feature_coming_soon_message": "This feature is coming soon."
+}

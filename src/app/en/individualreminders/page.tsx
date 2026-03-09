@@ -14,10 +14,9 @@ import {
     getFirestore,
     collection,
     getDocs,
-    Timestamp,
     QueryDocumentSnapshot
 } from 'firebase/firestore';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApp, getApps } from 'firebase/app';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -28,18 +27,99 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+const DAY_IN_MS = 86_400_000;
+const DATE_INPUT_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+type DateLike = {
+    toDate?: () => Date;
+    seconds?: number;
+};
+
+type VaccineRecord = {
+    date?: unknown;
+    expirationDate?: unknown;
+    isVaccinated?: unknown;
+} | null | undefined;
+
+const pad2 = (value: number) => String(value).padStart(2, '0');
+
+const toLocalDateKey = (date: Date): string =>
+    `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+
+const fromDateKey = (value: string): Date | null => {
+    if (!DATE_INPUT_PATTERN.test(value)) return null;
+
+    const [year, month, day] = value.split('-').map(Number);
+    const parsed = new Date(year, month - 1, day);
+
+    if (
+        Number.isNaN(parsed.getTime()) ||
+        parsed.getFullYear() !== year ||
+        parsed.getMonth() !== month - 1 ||
+        parsed.getDate() !== day
+    ) {
+        return null;
+    }
+
+    return parsed;
+};
+
+const getDateKeyFromUnknown = (value: unknown): string | null => {
+    if (!value) return null;
+
+    if (typeof value === 'string') {
+        if (DATE_INPUT_PATTERN.test(value)) return value;
+
+        const parsed = new Date(value);
+        return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().split('T')[0];
+    }
+
+    if (value instanceof Date) {
+        return Number.isNaN(value.getTime()) ? null : value.toISOString().split('T')[0];
+    }
+
+    if (typeof value === 'object' && value !== null) {
+        if ('toDate' in value && typeof (value as DateLike).toDate === 'function') {
+            const parsed = (value as DateLike).toDate!();
+            return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().split('T')[0];
+        }
+
+        if ('seconds' in value && typeof (value as DateLike).seconds === 'number') {
+            const parsed = new Date((value as DateLike).seconds! * 1000);
+            return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().split('T')[0];
+        }
+    }
+
+    return null;
+};
+
+const getDateFromUnknown = (value: unknown): Date | null => {
+    const key = getDateKeyFromUnknown(value);
+    return key ? fromDateKey(key) : null;
+};
+
+const diffInCalendarDays = (fromKey: string, toKey: string): number | null => {
+    const fromDate = fromDateKey(fromKey);
+    const toDate = fromDateKey(toKey);
+
+    if (!fromDate || !toDate) return null;
+
+    const fromUtc = Date.UTC(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
+    const toUtc = Date.UTC(toDate.getFullYear(), toDate.getMonth(), toDate.getDate());
+
+    return Math.round((toUtc - fromUtc) / DAY_IN_MS);
+};
+
 export default function IndividualRemindersPage() {
     const t = useTranslations('individualReminders');
-    t('reminders_title')
 
     const locale = useLocale();
     const router = useRouter();
 
-    const [, setUserId] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -55,29 +135,34 @@ export default function IndividualRemindersPage() {
         async function loadVaccineStatuses(uid: string) {
             const petsSnap = await getDocs(collection(db, 'users', uid, 'pets'));
             const statuses: VaccineStatus[] = [];
+            const todayKey = toLocalDateKey(new Date());
 
             petsSnap.forEach((docSnap: QueryDocumentSnapshot) => {
                 const data = docSnap.data();
                 const petName = data.petName || 'Unnamed';
-                const records = data.vaccinationRecords || {};
+                const records =
+                    data.vaccinationRecords && typeof data.vaccinationRecords === 'object'
+                        ? (data.vaccinationRecords as Record<string, VaccineRecord>)
+                        : {};
 
                 Object.entries(records).forEach(([vaccineName, vaccineData]) => {
-                    if (
-                        vaccineData &&
-                        typeof vaccineData === 'object' &&
-                        'date' in vaccineData &&
-                        vaccineData.date instanceof Timestamp
-                    ) {
-                        const date = vaccineData.date.toDate();
-                        const daysLeft = Math.floor((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+                    if (!vaccineData || typeof vaccineData !== 'object' || !vaccineData.isVaccinated) return;
 
-                        statuses.push({
-                            id: `${docSnap.id}_${vaccineName}`,
-                            petName,
-                            vaccineName,
-                            daysUntilExpiration: daysLeft
-                        });
-                    }
+                    const expirationKey =
+                        getDateKeyFromUnknown(vaccineData.date) ??
+                        getDateKeyFromUnknown(vaccineData.expirationDate);
+
+                    if (!expirationKey) return;
+
+                    const daysLeft = diffInCalendarDays(todayKey, expirationKey);
+                    if (daysLeft === null) return;
+
+                    statuses.push({
+                        id: `${docSnap.id}_${vaccineName}`,
+                        petName,
+                        vaccineName,
+                        daysUntilExpiration: daysLeft
+                    });
                 });
             });
 
@@ -87,26 +172,26 @@ export default function IndividualRemindersPage() {
         async function loadBirthdayStatuses(uid: string) {
             const petsSnap = await getDocs(collection(db, 'users', uid, 'pets'));
             const statuses: BirthdayStatus[] = [];
-
-            const now = new Date();
+            const today = new Date();
+            const todayKey = toLocalDateKey(today);
 
             petsSnap.forEach((docSnap: QueryDocumentSnapshot) => {
                 const data = docSnap.data();
                 const petName = data.petName || 'Unnamed';
-                const dobTimestamp = data.dateOfBirth as Timestamp | undefined;
+                const dob = getDateFromUnknown(data.dateOfBirth);
 
-                if (!dobTimestamp) return;
-
-                const dob = dobTimestamp.toDate();
+                if (!dob) return;
                 const dobMonth = dob.getMonth();
                 const dobDay = dob.getDate();
 
-                const nextBirthday = new Date();
+                const nextBirthday = new Date(today);
                 nextBirthday.setMonth(dobMonth);
                 nextBirthday.setDate(dobDay);
-                if (nextBirthday < now) nextBirthday.setFullYear(now.getFullYear() + 1);
+                nextBirthday.setHours(0, 0, 0, 0);
+                if (toLocalDateKey(nextBirthday) < todayKey) nextBirthday.setFullYear(today.getFullYear() + 1);
 
-                const diff = Math.floor((nextBirthday.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                const diff = diffInCalendarDays(todayKey, toLocalDateKey(nextBirthday));
+                if (diff === null) return;
 
                 statuses.push({
                     id: docSnap.id,
@@ -123,21 +208,20 @@ export default function IndividualRemindersPage() {
         async function loadCheckupStatuses(uid: string) {
             const petsSnap = await getDocs(collection(db, 'users', uid, 'pets'));
             const statuses: CheckupStatus[] = [];
-
-            const now = new Date();
+            const todayKey = toLocalDateKey(new Date());
 
             petsSnap.forEach((docSnap: QueryDocumentSnapshot) => {
                 const data = docSnap.data();
                 const petName = data.petName || 'Unnamed';
-                const lastVisitTimestamp = data.lastAnnualVetVisit as Timestamp | undefined;
+                const lastVisit = getDateFromUnknown(data.lastAnnualVetVisit);
 
-                if (!lastVisitTimestamp) return;
-
-                const lastVisit = lastVisitTimestamp.toDate();
+                if (!lastVisit) return;
                 const nextCheckup = new Date(lastVisit);
                 nextCheckup.setFullYear(nextCheckup.getFullYear() + 1);
+                nextCheckup.setHours(0, 0, 0, 0);
 
-                const diff = Math.floor((nextCheckup.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                const diff = diffInCalendarDays(todayKey, toLocalDateKey(nextCheckup));
+                if (diff === null) return;
 
                 statuses.push({
                     id: docSnap.id,
@@ -158,7 +242,6 @@ export default function IndividualRemindersPage() {
             }
 
             const uid = user.uid;
-            setUserId(uid);
 
             try {
                 await Promise.all([
@@ -236,7 +319,7 @@ export default function IndividualRemindersPage() {
                             </button>
                             {expandedVaccines && (
                                 <div className="mt-3 space-y-4">
-                                    {vaccineStatuses
+                                    {[...vaccineStatuses]
                                         .sort((a, b) => a.daysUntilExpiration - b.daysUntilExpiration)
                                         .map(v => (
                                             <div
@@ -245,11 +328,13 @@ export default function IndividualRemindersPage() {
                                             >
                                                 <p className="font-semibold text-sm">
                                                     {v.petName} — {v.vaccineName}
-                                                    {v.daysUntilExpiration <= 0 && ' 🔥'}
+                                                    {v.daysUntilExpiration <= 30 && ' 🔥'}
                                                 </p>
                                                 <p className="text-sm text-gray-600">
-                                                    {v.daysUntilExpiration <= 0
+                                                    {v.daysUntilExpiration < 0
                                                         ? t('vaccine_expired')
+                                                        : v.daysUntilExpiration === 0
+                                                            ? t('vaccine_expires_today', { defaultValue: 'Expires today' })
                                                         : t('vaccine_expires_in_days', { count: v.daysUntilExpiration })}
                                                 </p>
                                             </div>
@@ -271,7 +356,7 @@ export default function IndividualRemindersPage() {
                                     {checkupStatuses.length === 0 ? (
                                         <p className="text-sm text-gray-500">{t('no_checkup_data')}</p>
                                     ) : (
-                                        checkupStatuses
+                                        [...checkupStatuses]
                                             .sort((a, b) => a.daysUntilNextCheckup - b.daysUntilNextCheckup)
                                             .map(c => (
                                                 <div
@@ -304,7 +389,7 @@ export default function IndividualRemindersPage() {
                                     {birthdayStatuses.length === 0 ? (
                                         <p className="text-sm text-gray-500">{t('no_birthday_data')}</p>
                                     ) : (
-                                        birthdayStatuses
+                                        [...birthdayStatuses]
                                             .sort((a, b) => a.daysUntilBirthday - b.daysUntilBirthday)
                                             .map(b => (
                                                 <div

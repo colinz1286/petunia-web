@@ -1,0 +1,10 @@
+{
+  "title": "Employee Availability",
+  "back_button": "Back",
+  "start_time_label": "Start Time",
+  "end_time_label": "End Time",
+  "save_button": "Save",
+  "saving": "Saving...",
+  "saved_success": "Saved",
+  "unknown_error": "Something went wrong."
+}

@@ -1,0 +1,15 @@
+{
+  "title": "Employee Portal",
+  "back_button": "Back",
+  "employee_documents_section": "Employee Documents",
+  "documents_to_sign": "Documents To Sign",
+  "signed_documents": "Signed Documents",
+  "availability_section": "Availability",
+  "enter_availability": "Enter Availability",
+  "schedule_section": "Schedule",
+  "my_schedule": "My Schedule",
+  "request_time_off": "Request Time Off",
+  "training_policies_section": "Training & Policies",
+  "training_materials": "Training Materials",
+  "company_policies": "Company Policies"
+}

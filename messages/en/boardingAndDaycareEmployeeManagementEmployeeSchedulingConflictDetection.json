@@ -1,0 +1,8 @@
+{
+  "title": "Conflict Detection",
+  "back_button": "Back",
+  "no_conflicts_found": "No scheduling conflicts detected",
+  "overlapping_shift_conflict": "Overlapping shifts detected",
+  "shift_too_long_conflict": "Shift longer than 16 hours",
+  "employee_fallback": "Employee"
+}

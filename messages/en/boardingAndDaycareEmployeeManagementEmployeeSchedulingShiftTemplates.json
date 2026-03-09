@@ -1,0 +1,6 @@
+{
+  "title": "Shift Templates",
+  "add_shift_template": "Add Shift Template",
+  "no_shift_templates": "No shift templates",
+  "required_headcount_format": "Headcount: {count}"
+}

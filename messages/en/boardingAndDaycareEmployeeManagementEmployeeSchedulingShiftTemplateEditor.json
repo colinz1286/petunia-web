@@ -1,0 +1,13 @@
+{
+  "title": "Shift Template",
+  "template_name_label": "Template Name",
+  "template_name_placeholder": "Morning Kennel Shift",
+  "start_time_label": "Start Time",
+  "end_time_label": "End Time",
+  "break_minutes_label": "Break Minutes",
+  "required_headcount_label": "Required Headcount",
+  "save_button": "Save",
+  "saving": "Saving...",
+  "cancel_button": "Cancel",
+  "unknown_error": "Something went wrong."
+}
