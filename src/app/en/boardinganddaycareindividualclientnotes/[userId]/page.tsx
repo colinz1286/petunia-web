@@ -19,6 +19,7 @@ import {
   serverTimestamp,
   where,
 } from 'firebase/firestore';
+import BoardingAndDaycareClientDiscountAssignment from '@/components/boardinganddaycare/BoardingAndDaycareClientDiscountAssignment';
 
 // ✅ Firebase initialization (matches your pattern)
 const firebaseConfig = {
@@ -62,9 +63,15 @@ export default function BoardingAndDaycareIndividualClientNotesPage() {
 
   // ✅ Resolve businessId from the logged-in business owner
   const resolveBusinessIdForOwner = useCallback(async (ownerId: string): Promise<string> => {
-    const snap = await getDocs(query(collection(db, 'businesses'), where('ownerId', '==', ownerId)));
-    const docFound = snap.docs[0];
-    return docFound?.id || '';
+    const ownerIdSnap = await getDocs(query(collection(db, 'businesses'), where('ownerId', '==', ownerId)));
+    const ownerIdDoc = ownerIdSnap.docs[0];
+    if (ownerIdDoc) return ownerIdDoc.id;
+
+    const ownerIdsSnap = await getDocs(
+      query(collection(db, 'businesses'), where('ownerIds', 'array-contains', ownerId))
+    );
+    const ownerIdsDoc = ownerIdsSnap.docs[0];
+    return ownerIdsDoc?.id || '';
   }, []);
 
   const loadClientName = useCallback(async (uid: string) => {
@@ -222,39 +229,51 @@ export default function BoardingAndDaycareIndividualClientNotesPage() {
             <p className="text-sm">{t('loading_label')}</p>
           </div>
         ) : (
-          <div className="border border-gray-200 rounded-md p-4 bg-white text-black space-y-3">
-            {error ? <p className="text-sm text-red-600">❌ {error}</p> : null}
-
-            <textarea
-              value={notes}
-              onChange={(e) => {
-                const next = e.target.value || '';
-                setNotes(next.length > MAX_CHARS ? next.slice(0, MAX_CHARS) : next);
-              }}
-              rows={10}
-              className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm text-black outline-none focus:ring-2 focus:ring-green-700"
-              placeholder={t('notes_placeholder')}
-            />
-
-            <div className="flex items-center justify-between gap-3">
-              <p className={`text-xs ${notes.length > 1800 ? 'text-red-600' : 'text-gray-600'}`}>
-                {charCountLabel}
-              </p>
-
-              <button
-                onClick={saveNotes}
-                disabled={saving || !notes.trim()}
-                className="bg-green-700 text-white font-semibold py-2 px-4 rounded hover:opacity-90 disabled:opacity-60"
-              >
-                {saving ? t('saving_button') : t('save_button')}
-              </button>
-            </div>
-
-            {saveMessage ? (
-              <p className={`text-sm ${saveMessage.startsWith('❌') ? 'text-red-600' : 'text-green-700'}`}>
-                {saveMessage.startsWith('❌') ? saveMessage : `✅ ${saveMessage}`}
-              </p>
+          <div className="space-y-5">
+            {businessId ? (
+              <BoardingAndDaycareClientDiscountAssignment
+                businessId={businessId}
+                clientUserId={clientUserId}
+                locale={locale}
+                title="Client Discounts"
+                subtitle="Link business discount rules to this client while you review or update your private notes."
+              />
             ) : null}
+
+            <div className="border border-gray-200 rounded-md p-4 bg-white text-black space-y-3">
+              {error ? <p className="text-sm text-red-600">❌ {error}</p> : null}
+
+              <textarea
+                value={notes}
+                onChange={(e) => {
+                  const next = e.target.value || '';
+                  setNotes(next.length > MAX_CHARS ? next.slice(0, MAX_CHARS) : next);
+                }}
+                rows={10}
+                className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm text-black outline-none focus:ring-2 focus:ring-green-700"
+                placeholder={t('notes_placeholder')}
+              />
+
+              <div className="flex items-center justify-between gap-3">
+                <p className={`text-xs ${notes.length > 1800 ? 'text-red-600' : 'text-gray-600'}`}>
+                  {charCountLabel}
+                </p>
+
+                <button
+                  onClick={saveNotes}
+                  disabled={saving || !notes.trim()}
+                  className="bg-green-700 text-white font-semibold py-2 px-4 rounded hover:opacity-90 disabled:opacity-60"
+                >
+                  {saving ? t('saving_button') : t('save_button')}
+                </button>
+              </div>
+
+              {saveMessage ? (
+                <p className={`text-sm ${saveMessage.startsWith('❌') ? 'text-red-600' : 'text-green-700'}`}>
+                  {saveMessage.startsWith('❌') ? saveMessage : `✅ ${saveMessage}`}
+                </p>
+              ) : null}
+            </div>
           </div>
         )}
       </div>

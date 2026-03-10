@@ -75,5 +75,8 @@
   "no_assessment_day": "No assessments on",
   "assessment_time_settings_accessibility": "Configure assessment availability times",
   "manage_pay_at_checkout_items_title": "Manage Pay At Checkout Items",
-  "manage_pay_at_checkout_items_subtitle": "Configure daycare and grooming pricing used for pay-at-booking checkout."
+  "manage_pay_at_checkout_items_subtitle": "Configure daycare and grooming pricing used for pay-at-booking checkout.",
+  "pricing_discounts_header": "Pricing, Billing & Discounts",
+  "pricing_discounts_subtitle": "Manage discount rules in a dedicated screen so your pricing logic stays modular as boarding and invoicing tools expand.",
+  "manage_discounts_button": "Manage Discounts"
 }

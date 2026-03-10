@@ -28,6 +28,7 @@ import {
 } from 'firebase/storage';
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { useLocale } from 'next-intl';
+import BoardingAndDaycareClientDiscountAssignment from '@/components/boardinganddaycare/BoardingAndDaycareClientDiscountAssignment';
 
 // ✅ Firebase initialization
 const firebaseConfig = {
@@ -100,6 +101,7 @@ export default function BoardingAndDaycareIndividualClientPage() {
     const [pets, setPets] = useState<Pet[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [businessId, setBusinessId] = useState<string>('');
 
     // --- Waiver state ---
     const [waiverRequired, setWaiverRequired] = useState(false);
@@ -265,13 +267,22 @@ export default function BoardingAndDaycareIndividualClientPage() {
 
                 try {
                     // 1️⃣ Resolve businessId for the current owner
-                    const bizSnap = await getDocs(
-                        query(collection(db, 'businesses'), where('ownerId', '==', user.uid))
+                let businessId = '';
+                const ownerIdSnap = await getDocs(
+                    query(collection(db, 'businesses'), where('ownerId', '==', user.uid))
+                );
+                if (!ownerIdSnap.empty) {
+                    businessId = ownerIdSnap.docs[0].id;
+                } else {
+                    const ownerIdsSnap = await getDocs(
+                        query(collection(db, 'businesses'), where('ownerIds', 'array-contains', user.uid))
                     );
-                    const businessDoc = bizSnap.docs[0];
-                    const businessId = businessDoc?.id;
+                    businessId = ownerIdsSnap.docs[0]?.id || '';
+                }
 
-                    if (businessId) {
+                setBusinessId(businessId);
+
+                if (businessId) {
                         // ✅ Fetch waiverRequired directly from /businesses/{businessId}
                         const businessDocRef = doc(db, 'businesses', businessId);
                         const businessSnap = await getDoc(businessDocRef);
@@ -393,6 +404,14 @@ export default function BoardingAndDaycareIndividualClientPage() {
                 >
                     Client Notes
                 </button>
+
+                {businessId ? (
+                    <BoardingAndDaycareClientDiscountAssignment
+                        businessId={businessId}
+                        clientUserId={userId}
+                        locale={locale}
+                    />
+                ) : null}
 
                 {/* --- Waiver Section (shows before Veterinary Contact) --- */}
                 {waiverRequired && (

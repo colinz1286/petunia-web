@@ -812,6 +812,26 @@ export default function BusinessSettingsPage() {
                         )}
                     </div>
 
+                    <div className="mt-10 space-y-4">
+                        <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
+                            {t('pricing_discounts_header')}
+                        </h2>
+
+                        <div className="border rounded p-4 bg-gray-50">
+                            <p className="text-sm text-gray-600 mb-4 text-center">
+                                {t('pricing_discounts_subtitle')}
+                            </p>
+
+                            <button
+                                type="button"
+                                onClick={() => router.push(`/${_locale}/boardinganddaycare-businesssettingsdiscounts`)}
+                                className="w-full bg-[#1F4D2E] hover:bg-[#163A22] text-white font-semibold px-4 py-2 rounded-md"
+                            >
+                                {t('manage_discounts_button')}
+                            </button>
+                        </div>
+                    </div>
+
                     {offersDaycare && (
                         <div className="mt-10 space-y-6">
 

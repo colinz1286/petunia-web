@@ -38,6 +38,7 @@ interface SimpleClient {
   userFirstName: string;
   userLastName: string;
   userEmail: string;
+  assignedDiscountRuleIds: string[];
 }
 
 async function resolveBusinessIdForOwner(uid: string): Promise<string | null> {
@@ -125,6 +126,9 @@ export default function ClientManagementPage() {
               userFirstName: first,
               userLastName: last,
               userEmail: email || 'Unknown',
+              assignedDiscountRuleIds: Array.isArray(data.assignedDiscountRuleIds)
+                ? data.assignedDiscountRuleIds.filter((value): value is string => typeof value === 'string')
+                : [],
             };
           })
           .filter((c): c is SimpleClient => c !== null)
@@ -261,6 +265,12 @@ export default function ClientManagementPage() {
                 >
                   {client.userEmail}
                 </a>
+
+                <p className="text-xs text-gray-600">
+                  {client.assignedDiscountRuleIds.length > 0
+                    ? t('assigned_discounts_count', { count: client.assignedDiscountRuleIds.length })
+                    : t('assigned_discounts_none')}
+                </p>
               </div>
 
               {/* ✅ Green “View More Info” button */}
@@ -271,6 +281,16 @@ export default function ClientManagementPage() {
                 className="w-full mt-2 bg-green-500 text-white text-sm font-semibold py-2 rounded hover:bg-green-600 transition"
               >
                 View More Info
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  router.push(`/${locale}/boardinganddaycareindividualclientnotes/${client.userId}`)
+                }
+                className="w-full mt-2 bg-slate-700 text-white text-sm font-semibold py-2 rounded hover:bg-slate-800 transition"
+              >
+                {t('manage_discounts_button')}
               </button>
 
               {/* ✅ Remove Client button */}

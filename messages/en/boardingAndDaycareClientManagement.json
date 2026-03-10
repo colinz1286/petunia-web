@@ -15,5 +15,8 @@
   "vaccines_current": "Vaccines Current",
   "vaccines_not_current": "Vaccines Not Current",
   "no_information_entered": "No information entered",
-  "expiration_prefix": "Expiration:"
+  "expiration_prefix": "Expiration:",
+  "manage_discounts_button": "Manage Discounts",
+  "assigned_discounts_none": "No client-specific discounts linked.",
+  "assigned_discounts_count": "{count} linked discount(s)"
 }

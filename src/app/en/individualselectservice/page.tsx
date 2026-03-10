@@ -8,11 +8,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import {
     getFirestore,
+    collection,
     doc,
-    getDoc
+    getDoc,
+    getDocs,
+    Timestamp
 } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -23,9 +26,43 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+
+type FirestoreMap = Record<string, unknown>;
+type WaiverGate = {
+    required: boolean;
+    signed: boolean;
+};
+type VaccineKey = 'Rabies' | 'Bordetella' | 'Canine Influenza' | 'Distemper';
+type PetVaccineRecord = {
+    expiresAt: Date | null;
+    isVaccinated: boolean;
+};
+type PetVaccineIssue = {
+    petId: string;
+    petName: string;
+    issues: string[];
+};
+type VaccinationRecFS = {
+    date?: Timestamp | null;
+    expirationDate?: Timestamp | null;
+    isVaccinated?: boolean;
+} | null | undefined;
+type PetDocFS = {
+    petName?: string;
+    vaccinationRecords?: Record<string, VaccinationRecFS>;
+};
+
+const policyKeyToEnum = (raw: string): VaccineKey | null => {
+    const s = raw.toLowerCase();
+    if (s.includes('rabies')) return 'Rabies';
+    if (s.includes('bordetella')) return 'Bordetella';
+    if (s.includes('influenza') || s.includes('civ')) return 'Canine Influenza';
+    if (s.includes('distemper') || s.includes('dhpp') || s.includes('da2pp') || s.includes('dapp')) return 'Distemper';
+    return null;
+};
 
 export default function IndividualSelectServicePage() {
     const t = useTranslations('individualSelectService');
@@ -38,10 +75,123 @@ export default function IndividualSelectServicePage() {
     const [servicesOffered, setServicesOffered] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showComingSoon, setShowComingSoon] = useState(false);
+    const [showRequirementsAlert, setShowRequirementsAlert] = useState(false);
 
     const [requiresAssessment, setRequiresAssessment] = useState(false);
+    const [waiverGate, setWaiverGate] = useState<WaiverGate>({ required: false, signed: true });
+    const [vaccineIssues, setVaccineIssues] = useState<PetVaccineIssue[]>([]);
 
-    const loadBusinessServices = useCallback(async (bizId: string) => {
+    const readWaiverGate = useCallback(async (bizId: string, businessData: FirestoreMap, userId: string): Promise<WaiverGate> => {
+        const [waiverSnap, clientSnap] = await Promise.all([
+            getDoc(doc(db, 'businesses', bizId, 'settings', 'clientWaiver')),
+            getDoc(doc(db, 'userApprovedBusinesses', bizId, 'clients', userId)),
+        ]);
+
+        const waiverData = (waiverSnap.data() || {}) as FirestoreMap;
+        const clientData = (clientSnap.data() || {}) as FirestoreMap;
+
+        const required = !!businessData.waiverRequired;
+        if (!required) {
+            return { required: false, signed: true };
+        }
+
+        const features = ((businessData.features as FirestoreMap | undefined) || {}) as FirestoreMap;
+        const enforceWaiverVersion = !!features.enforceWaiverVersion;
+        const waiverVersion = typeof waiverData.waiverVersion === 'number' ? waiverData.waiverVersion : null;
+        const waiverSignedVersion = typeof clientData.waiverVersionSigned === 'number' ? clientData.waiverVersionSigned : 0;
+
+        const waiverUpdatedAt =
+            (waiverData.lastUpdated instanceof Timestamp ? waiverData.lastUpdated.toDate() : null)
+            || (businessData.waiverLastUpdated instanceof Timestamp ? businessData.waiverLastUpdated.toDate() : null);
+        const waiverSignedAt =
+            clientData.waiverSignedAt instanceof Timestamp ? clientData.waiverSignedAt.toDate() : null;
+        const waiverSignedLegacy = clientData.waiverSigned === true;
+
+        if (enforceWaiverVersion && waiverVersion !== null) {
+            return { required: true, signed: waiverSignedVersion >= waiverVersion };
+        }
+
+        if (waiverUpdatedAt && waiverSignedAt) {
+            return { required: true, signed: waiverSignedAt >= waiverUpdatedAt };
+        }
+
+        return { required: true, signed: waiverSignedAt !== null || waiverSignedLegacy };
+    }, []);
+
+    const readVaccineIssues = useCallback(async (userId: string, businessData: FirestoreMap): Promise<PetVaccineIssue[]> => {
+        const requiredVaccines = new Set<VaccineKey>();
+        const requiredVaccinationMap = ((businessData.requiredVaccinations as FirestoreMap | undefined) || {}) as FirestoreMap;
+
+        Object.entries(requiredVaccinationMap).forEach(([rawKey, rawValue]) => {
+            if (rawValue !== true) return;
+            const key = policyKeyToEnum(rawKey);
+            if (key) requiredVaccines.add(key);
+        });
+
+        if (requiredVaccines.size === 0) {
+            return [];
+        }
+
+        const petSnapshot = await getDocs(collection(db, 'users', userId, 'pets'));
+        if (petSnapshot.empty) {
+            return [];
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        return petSnapshot.docs.reduce<PetVaccineIssue[]>((acc, petDoc) => {
+            const petData = (petDoc.data() || {}) as PetDocFS;
+            const petName = typeof petData.petName === 'string' && petData.petName.trim() !== ''
+                ? petData.petName.trim()
+                : t('requirements_guard_pet_fallback');
+
+            const records = petData.vaccinationRecords ?? {};
+            const normalized: Partial<Record<VaccineKey, PetVaccineRecord>> = {};
+
+            Object.entries(records).forEach(([rawKey, record]) => {
+                const key = policyKeyToEnum(rawKey);
+                if (!key || !record || typeof record !== 'object') return;
+
+                const expiresAt =
+                    record.date instanceof Timestamp ? record.date.toDate()
+                    : record.expirationDate instanceof Timestamp ? record.expirationDate.toDate()
+                    : null;
+
+                normalized[key] = {
+                    expiresAt,
+                    isVaccinated: !!record.isVaccinated,
+                };
+            });
+
+            const issues: string[] = [];
+            requiredVaccines.forEach((vaccine) => {
+                const record = normalized[vaccine];
+                if (!record?.isVaccinated || !record.expiresAt) {
+                    issues.push(`${vaccine}: ${t('requirements_guard_missing_expiration')}`);
+                    return;
+                }
+
+                const expiration = new Date(record.expiresAt);
+                expiration.setHours(0, 0, 0, 0);
+                if (expiration.getTime() < today.getTime()) {
+                    issues.push(`${vaccine}: ${t('requirements_guard_expired')}`);
+                }
+            });
+
+            if (issues.length > 0) {
+                acc.push({
+                    petId: petDoc.id,
+                    petName,
+                    issues,
+                });
+            }
+
+            return acc;
+        }, []);
+    }, [t]);
+
+    const loadBusinessServices = useCallback(async (bizId: string, userId: string) => {
         try {
             const snap = await getDoc(doc(db, 'businesses', bizId));
             const data = snap.data();
@@ -61,6 +211,14 @@ export default function IndividualSelectServicePage() {
             if (data.offersTraining) offered.push('training');
 
             setRequiresAssessment(!!data.requiresAssessment);
+            const businessData = (data || {}) as FirestoreMap;
+            const [resolvedWaiverGate, resolvedVaccineIssues] = await Promise.all([
+                readWaiverGate(bizId, businessData, userId),
+                readVaccineIssues(userId, businessData),
+            ]);
+
+            setWaiverGate(resolvedWaiverGate);
+            setVaccineIssues(resolvedVaccineIssues);
 
             setServicesOffered(offered);
         } catch (err) {
@@ -69,7 +227,7 @@ export default function IndividualSelectServicePage() {
         } finally {
             setIsLoading(false);
         }
-    }, [t, router, locale]);
+    }, [t, router, locale, readWaiverGate, readVaccineIssues]);
 
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, (user) => {
@@ -80,7 +238,7 @@ export default function IndividualSelectServicePage() {
 
             if (businessId) {
                 console.log('📍 Loading select service view for businessId:', businessId);
-                loadBusinessServices(businessId);
+                loadBusinessServices(businessId, user.uid);
             } else {
                 console.warn('❌ Missing businessId in URL');
                 router.push(`/${locale}/individualdashboard`);
@@ -93,6 +251,14 @@ export default function IndividualSelectServicePage() {
     const handleServiceClick = (service: string) => {
         if (!businessId) {
             console.error('❌ Cannot route without businessId');
+            return;
+        }
+
+        const hasWaiverIssue = waiverGate.required && !waiverGate.signed;
+        const hasVaccineIssues = vaccineIssues.length > 0;
+        const requiresSignedWaiver = service === 'daycare' || service === 'boarding' || service === 'assessment';
+        if (requiresSignedWaiver && (hasWaiverIssue || hasVaccineIssues)) {
+            setShowRequirementsAlert(true);
             return;
         }
 
@@ -188,6 +354,78 @@ export default function IndividualSelectServicePage() {
                     </div>
                 )}
             </div>
+
+            {showRequirementsAlert && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+                    <div className="w-full max-w-lg rounded-xl bg-white p-6 text-gray-900 shadow-xl space-y-4">
+                        <h2 className="text-lg font-semibold text-[color:var(--color-accent)]">
+                            {t('requirements_guard_title')}
+                        </h2>
+
+                        <p className="text-sm text-gray-700">
+                            {t('requirements_guard_intro')}
+                        </p>
+
+                        <div className="space-y-3 text-left">
+                            {waiverGate.required && !waiverGate.signed && (
+                                <div className="rounded-md border border-amber-200 bg-amber-50 p-3">
+                                    <p className="text-sm font-medium text-amber-900">
+                                        {t('requirements_guard_waiver_issue')}
+                                    </p>
+                                </div>
+                            )}
+
+                            {vaccineIssues.length > 0 && (
+                                <div className="rounded-md border border-red-200 bg-red-50 p-3 space-y-3">
+                                    <p className="text-sm font-medium text-red-900">
+                                        {t('requirements_guard_vaccine_issue_intro')}
+                                    </p>
+
+                                    <ul className="space-y-2">
+                                        {vaccineIssues.map((petIssue) => (
+                                            <li key={petIssue.petId} className="rounded border border-red-200 bg-white p-3">
+                                                <p className="text-sm font-semibold text-gray-900">{petIssue.petName}</p>
+                                                <ul className="mt-2 list-disc list-inside space-y-1 text-sm text-gray-700">
+                                                    {petIssue.issues.map((issue) => (
+                                                        <li key={`${petIssue.petId}-${issue}`}>{issue}</li>
+                                                    ))}
+                                                </ul>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex flex-wrap justify-center gap-3">
+                            <button
+                                onClick={() => setShowRequirementsAlert(false)}
+                                className="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300"
+                            >
+                                {t('waiver_required_close_button')}
+                            </button>
+
+                            {vaccineIssues.length > 0 && (
+                                <button
+                                    onClick={() => router.push(`/${locale}/individualmypets`)}
+                                    className="rounded-md bg-green-900 px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+                                >
+                                    {t('requirements_guard_pets_cta')}
+                                </button>
+                            )}
+
+                            {waiverGate.required && !waiverGate.signed && (
+                                <button
+                                    onClick={() => router.push(`/${locale}/waiveragreement?businessId=${businessId}`)}
+                                    className="rounded-md bg-green-900 px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+                                >
+                                    {t('waiver_required_cta')}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

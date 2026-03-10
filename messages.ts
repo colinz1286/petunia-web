@@ -5,6 +5,7 @@ export default {
     boardingAndDaycareAddDogClientDogs: require('./messages/en/boardingAndDaycareAddDogClientDogs.json'),
     boardingAndDaycareAddDogClientList: require('./messages/en/boardingAndDaycareAddDogClientList.json'),
     boardingAndDaycareBusinessSettings: require('./messages/en/boardingAndDaycareBusinessSettings.json'),
+    boardingAndDaycareBusinessSettingsDiscounts: require('./messages/en/boardingAndDaycareBusinessSettingsDiscounts.json'),
     boardingAndDaycarePendingRequests: require('./messages/en/boardingAndDaycarePendingRequests.json'),
     boardingAndDaycareClientManagement: require('./messages/en/boardingAndDaycareClientManagement.json'),
     boardingAndDaycareEmployeeManagementDashboard: require('./messages/en/boardingAndDaycareEmployeeManagementDashboard.json'),
