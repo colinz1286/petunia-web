@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: likely limited backlinks; year-stamped title can weaken evergreen value; schema is only baseline BlogPosting
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 

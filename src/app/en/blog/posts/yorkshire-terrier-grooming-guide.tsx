@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; overlapping topic coverage with nearby site pages; likely limited backlinks; schema is only baseline BlogPosting
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 
@@ -130,7 +131,39 @@ export default function YorkshireTerrierGroomingGuide() {
                 </section>
 
                 {/* SOURCES */}
-                <section id="sources" className="mb-8">
+                
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">A professional maintenance plan for Yorkshire Terrier</h2>
+          <p className="mb-4">The biggest difference between a tidy Yorkshire Terrier and a genuinely well-managed one is routine. Grooming should not begin only when the coat looks messy. It should include a repeatable inspection of skin, ears, paws, odor, debris, shedding pattern, and tolerance for handling. That weekly pattern catches trouble earlier and keeps normal grooming from turning into a stressful event.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Set a weekly sequence:</strong> brush, inspect skin, clean ears if your veterinarian has recommended it, check nails, then record anything new.</li>
+            <li><strong>Adjust for season and activity:</strong> humidity, pollen, swimming, and indoor heating all change coat behavior and skin comfort.</li>
+            <li><strong>Track recovery after baths or products:</strong> if itching, redness, or odor reliably follows a shampoo or wipe, treat that as a pattern to review.</li>
+            <li><strong>Do not separate grooming from health:</strong> paw licking, recurrent ear debris, and patchy hair loss are often management clues, not cosmetic annoyances.</li>
+          </ul>
+          <p className="mb-0">Owners get better long-term results when they decide in advance what is routine coat maintenance, what requires a groomer, and what has crossed into veterinary territory.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">When grooming findings stop being cosmetic</h2>
+          <p className="mb-4">A useful rule is this: if the same problem keeps returning after normal bathing and brushing, it probably deserves a medical lens. Recurrent odor, asymmetrical shedding, thick ear discharge, scabs, hot spots, pain with brushing, or sudden coat texture change should move the conversation beyond technique alone.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Move faster if you see redness between the toes, repeated scratching at night, or dark ear buildup that returns quickly.</li>
+            <li>Bring photos from good and bad days so your veterinarian or groomer can compare pattern, distribution, and severity.</li>
+            <li>Ask which products are actually necessary; over-bathing and product stacking can make a mild issue harder to interpret.</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/grooming-tips-for-labrador-retrievers" className="underline hover:opacity-80">Grooming Tips for Labrador Retrievers: Real-World Shedding Control, Bathing, Tools, Costs, Nutrition for a Healthy Coat, and Owner Checklists</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/boston-terrier-shedding-guide-2025" className="underline hover:opacity-80">Boston Terrier Shedding Guide (2025): Year-Round Shedding, Grooming Tools, Diet Links &amp; When to See a Vet</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/do-german-shepherds-shed-a-lot" className="underline hover:opacity-80">Do German Shepherds Shed a Lot? Coat Science, Grooming Plans, and Real-World Home Strategies</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-8">
                     <h2 className="text-2xl font-semibold mb-2">Sources</h2>
                     <ul className="list-disc list-inside">
                         <li>American Kennel Club (AKC) &mdash; Yorkshire Terrier Grooming Overview</li>

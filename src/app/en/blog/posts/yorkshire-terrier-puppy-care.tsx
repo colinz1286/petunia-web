@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; overlapping topic coverage with nearby site pages; likely limited backlinks; schema is only baseline BlogPosting
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 
@@ -208,7 +209,39 @@ export default function YorkshireTerrierPuppyCare() {
                 </section>
 
                 {/* SOURCES */}
-                <section id="sources" className="mb-8">
+                
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">How to make progress stick with Yorkshire Terrier</h2>
+          <p className="mb-4">Owners often judge training by whether a dog can perform on a good day. Professionals judge it by whether the behavior holds when arousal, distraction, fatigue, novelty, or frustration show up. Yorkshire Terrier progress improves when sessions are short, predictable, and repeated in multiple environments instead of being saved for long, intense weekend efforts.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Work below threshold:</strong> if your dog is barking, lunging, spinning, or ignoring food, the training setup is already too hard.</li>
+            <li><strong>Train one variable at a time:</strong> duration, distance, and distraction should not all rise in the same session.</li>
+            <li><strong>Protect recovery:</strong> sleep debt, over-stimulation, and physical discomfort can erase what looks like a motivation problem.</li>
+            <li><strong>Measure trends, not moods:</strong> track trigger distance, recovery time, and success rate for the same exercise each week.</li>
+          </ul>
+          <p className="mb-0">That approach creates a dog that is not just obedient in familiar conditions, but more stable and easier to guide in real life.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">When a home plan needs more structure or more help</h2>
+          <p className="mb-4">Home practice is useful, but it is not the right ceiling for every case. Escalate earlier when the pattern includes fear, guarding, repeated failed exposures, or behavior that seems to worsen after punishment, flooding, or high-intensity exercise.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Get veterinary input if behavior changes suddenly, appears alongside pain, or comes with appetite, sleep, or mobility changes.</li>
+            <li>Use a qualified trainer or veterinary behavior professional when safety, bite risk, or severe panic enter the picture.</li>
+            <li>Keep the plan boring and consistent; dramatic corrections usually create more conflict than clarity.</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/bringing-home-a-boston-terrier-puppy-2025" className="underline hover:opacity-80">Bringing Home a Boston Terrier Puppy (2025): First Day Setup, Safety, Feeding &amp; the First 48 Hours</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/how-to-train-a-boston-terrier-puppy-2025" className="underline hover:opacity-80">How to Train a Boston Terrier Puppy (2025): First 30 Days, Basic Commands, Socialization &amp; Reward-Based Learning</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/boston-terrier-shedding-guide-2025" className="underline hover:opacity-80">Boston Terrier Shedding Guide (2025): Year-Round Shedding, Grooming Tools, Diet Links &amp; When to See a Vet</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-8">
                     <h2 className="text-2xl font-semibold mb-2">Sources</h2>
                     <ul className="list-disc list-inside">
                         <li>American Kennel Club (AKC) &mdash; Yorkshire Terrier Breed Overview</li>

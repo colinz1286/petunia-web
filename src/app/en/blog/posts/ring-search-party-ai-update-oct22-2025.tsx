@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: likely limited backlinks; time-bound topic can look temporary; weaker site topical authority in this subtopic
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -133,7 +134,28 @@ export default function RingSearchPartyAIUpdateOct22() {
           </p>
         </section>
 
-        <section id="references" className="mb-16">
+        
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">How to turn this topic into a workable plan</h2>
+          <p className="mb-4">Most articles become more useful when they move from explanation to execution. Start by deciding what you will monitor, what decision points matter, who needs the information, and what would change your timeline. That simple planning step prevents the common pattern where good advice gets read once and then disappears under day-to-day routine.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li>Write down the main goal, the most likely risk, and the next two actions you would take if conditions change.</li>
+            <li>Keep one place for dates, notes, photos, and questions so you are not rebuilding the context every time.</li>
+            <li>Review the plan after the first real-world test and tighten what was vague.</li>
+          </ul>
+          <p className="mb-0">A short, repeatable system usually improves outcomes more than adding more disconnected advice.</p>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/ring-search-party-ai-lost-dogs" className="underline hover:opacity-80">Ring’s New ‘Search Party’ Feature: AI That Helps Find Lost Dogs</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/ollies-law-kennel-safety-2025" className="underline hover:opacity-80">“Ollie’s Law” (2025): What It Is, How It Happened, Where It Applies, and What It Means for Dog Boarding &amp; Daycare — With Global Context and Operator Playbooks</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/addisons-disease-in-dogs" className="underline hover:opacity-80">Addison’s Disease in Dogs: What Owners Need to Know About Diagnosis and Daily Management</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="references" className="mb-16">
           <h2 className="text-2xl font-semibold mb-3">📚 References & Further Reading</h2>
           <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
             <li>

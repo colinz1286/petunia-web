@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: overlapping topic coverage with nearby site pages; crowded query with low perceived distinctiveness; likely limited backlinks
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -252,6 +253,38 @@ export default function BoardingDaycareChecklist2025() {
         </ul>
 
         {/* Back link */}
+
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Operational details that prevent preventable incidents</h2>
+          <p className="mb-4">The safest boarding and daycare operations are usually the least dramatic. They rely on predictable intake, clear dog notes, controlled transitions, enforced rest, and immediate documentation when something changes. If a system depends on one staff member remembering every special case, it will fail under pressure.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Intake should be specific:</strong> feeding, medications, triggers, escape risk, recovery needs, and owner communication preferences should be written, not verbal only.</li>
+            <li><strong>Group decisions should be reversible:</strong> dogs need the option to move to quieter space when arousal rises, not only after conflict appears.</li>
+            <li><strong>Handoffs matter:</strong> the next shift needs the same picture of the dog, not a shorter version built from memory.</li>
+            <li><strong>Follow-up closes the loop:</strong> a strong operation tells the owner what happened, what was observed, and what should change next visit.</li>
+          </ul>
+          <p className="mb-0">Those details are where trust is actually built and where minor issues stop becoming reputation-damaging events.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">A cleaner implementation checklist</h2>
+          <ol className="list-decimal pl-5 space-y-2 mb-0">
+            <li>Standardize what staff must document before the dog joins the day.</li>
+            <li>Make rest, enrichment, and medication instructions visible at the point of care.</li>
+            <li>Use one incident format for near-misses and actual events so patterns are easier to spot.</li>
+            <li>Review what owners are told after pickup and remove vague phrases that hide useful detail.</li>
+          </ol>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/buying-a-dog-daycare-checklist" className="underline hover:opacity-80">Buying a Dog Daycare Checklist: What to Evaluate Before Purchasing a Daycare or Boarding Facility in 2026</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/ollies-law-kennel-safety-2025" className="underline hover:opacity-80">“Ollie’s Law” (2025): What It Is, How It Happened, Where It Applies, and What It Means for Dog Boarding &amp; Daycare — With Global Context and Operator Playbooks</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/crocs-safety-dog-daycare" className="underline hover:opacity-80">Are Crocs Safe to Wear at Dog Boarding &amp; Daycare Facilities?</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
         <Link
           href={`/${locale}/blog`}
           className="underline text-[#2c4a30] font-medium hover:opacity-80"

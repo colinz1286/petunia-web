@@ -20,6 +20,7 @@ import {
   where,
 } from 'firebase/firestore';
 import BoardingAndDaycareClientDiscountAssignment from '@/components/boardinganddaycare/BoardingAndDaycareClientDiscountAssignment';
+import BoardingAndDaycareClientMemberships from '@/components/boardinganddaycare/BoardingAndDaycareClientMemberships';
 
 // ✅ Firebase initialization (matches your pattern)
 const firebaseConfig = {
@@ -237,6 +238,16 @@ export default function BoardingAndDaycareIndividualClientNotesPage() {
                 locale={locale}
                 title="Client Discounts"
                 subtitle="Link business discount rules to this client while you review or update your private notes."
+              />
+            ) : null}
+
+            {businessId ? (
+              <BoardingAndDaycareClientMemberships
+                businessId={businessId}
+                clientUserId={clientUserId}
+                locale={locale}
+                title="Client Memberships"
+                subtitle="Assign memberships to this client and track the balances that will be consumed as they book daycare or boarding."
               />
             ) : null}
 

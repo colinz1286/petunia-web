@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: likely limited backlinks; time-bound topic can look temporary
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 

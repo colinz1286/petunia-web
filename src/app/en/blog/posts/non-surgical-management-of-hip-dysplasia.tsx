@@ -1,3 +1,4 @@
+// SEO weakness notes: page is still new; overlapping topic coverage with nearby site pages; weak in-article internal linking; likely limited backlinks; schema is only baseline BlogPosting
 // File: src/app/[locale]/blog/posts/non-surgical-management-of-hip-dysplasia.tsx
 'use client';
 

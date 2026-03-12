@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; overlapping topic coverage with another strong site page; likely limited backlinks
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -128,7 +129,38 @@ export default function ArticlePage() {
         </ul>
       </section>
 
-      <section id="sources" className="mb-10">
+      
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">How professionals separate rule sets without getting trapped by summaries</h2>
+          <p className="mb-4">Travel and import issues become confusing when owners blend three different questions into one: what the government allows, what the carrier will handle operationally, and what the dog's health situation can realistically tolerate. Good planning keeps those categories separate all the way to departure day, because being compliant on one side does not guarantee clearance on the others.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Government rule:</strong> who can enter, what documents are required, and what timing windows matter.</li>
+            <li><strong>Carrier rule:</strong> booking limits, crate or carrier specifications, check-in timing, embargoes, and handling exceptions.</li>
+            <li><strong>Medical rule:</strong> whether your dog can safely complete the trip given age, stress tolerance, temperature, medication, and recovery needs.</li>
+          </ul>
+          <p className="mb-0">The owner who treats these as separate checklists usually avoids the most expensive mistakes.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">What to verify before you trust any rule summary</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Whether the summary matches your exact direction of travel, route, connection pattern, and date.</li>
+            <li>Whether exceptions apply to puppies, recent travel history, service animals, or health certificate timing.</li>
+            <li>Whether the rule changed recently enough that an older article or forum post is now misleading.</li>
+            <li>Whether your veterinarian has the exact wording and timing required for the documents you are relying on.</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/buying-a-dog-daycare-checklist" className="underline hover:opacity-80">Buying a Dog Daycare Checklist: What to Evaluate Before Purchasing a Daycare or Boarding Facility in 2026</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/dog-boarding-preparation-guide" className="underline hover:opacity-80">Dog Boarding Preparation Guide: How to Make Drop-Off Stress-Free for You and Your Pet</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/choose-dog-boarding-daycare" className="underline hover:opacity-80">How to Choose a Good Dog Boarding or Daycare Facility</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-10">
         <h2 className="text-2xl font-semibold mb-3">Sources To Verify Before Acting</h2>
         <ul className="list-disc pl-5 space-y-2 text-sm">
           <li>U.S. CDC import/re-entry guidance and any route-specific notices</li>

@@ -45,5 +45,13 @@
   "agree_button": "Agree",
   "yes": "Yes",
   "no": "No",
-  "selected_date_is_blackout": "This date is unavailable for daycare."
+  "selected_date_is_blackout": "This date is unavailable for daycare.",
+  "payment_processing_failed": "Payment could not be processed.",
+  "processing_payment": "Processing payment...",
+  "membership_purchase_requires_daycare_pay_at_booking": "This business must enable daycare pay-at-booking before clients can purchase a new membership during daycare booking.",
+  "membership_selected_purchase_unavailable": "The selected membership is no longer available. Please refresh and try again.",
+  "membership_balance_insufficient_daycare": "The selected membership no longer has enough daycare days remaining for this booking.",
+  "membership_selected_plan_unavailable": "The selected membership plan is no longer available for purchase.",
+  "membership_purchase_save_failed_after_submit": "Your reservations were submitted, but the new membership purchase could not be saved automatically.",
+  "membership_balance_update_failed_after_submit": "Your reservations were submitted, but the membership balance could not be updated automatically."
 }

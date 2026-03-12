@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: overlapping topic coverage with nearby site pages; likely limited backlinks; schema is only baseline BlogPosting
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 
@@ -158,7 +159,39 @@ export default function DogVaccines() {
           </p>
         </section>
 
-        <section id="sources" className="mb-8">
+        
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">What to monitor after starting or changing a medication</h2>
+          <p className="mb-4">Owners make the best use of a medication article when they monitor the whole patient, not just the symptom the drug was meant to address. Appetite, thirst, stool, vomiting, activity, restlessness, coordination, sleep, and the exact timing of each dose can all help separate a normal adjustment period from a problem that needs a new plan.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Track timing carefully:</strong> note when the dose was given, when symptoms improved, and whether new signs appeared afterward.</li>
+            <li><strong>Watch for pattern, not panic:</strong> one mild off-meal can be noise; recurring vomiting, worsening lethargy, or neurologic change is not.</li>
+            <li><strong>Protect hydration and intake:</strong> if the dog will not eat, drink, or keep medication down, the plan may fail even if the drug choice was reasonable.</li>
+            <li><strong>Write down all concurrent products:</strong> diet changes, supplements, preventives, and stressors matter when symptoms are reviewed.</li>
+          </ul>
+          <p className="mb-0">That record helps your veterinarian adjust the next step from evidence rather than guesswork.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Red flags that should change your timeline</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Repeated vomiting, severe diarrhea, collapse, marked weakness, tremors, or obvious pain.</li>
+            <li>Progressive dullness, disorientation, or inability to stand or walk normally.</li>
+            <li>No meaningful improvement within the expected window your veterinarian gave you, especially if symptoms are getting worse.</li>
+            <li>Any reaction that makes it hard to medicate, feed, or hydrate the dog safely at home.</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/pet-care-waivers-why-they-matter-and-what-to-include" className="underline hover:opacity-80">Pet Care Waivers: Why They Matter and What to Include</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/dog-travel-rules-monitoring-guide-2026" className="underline hover:opacity-80">2026 Dog Travel Rules Monitoring Guide: How to Track Policy Changes Before They Affect Your Trip</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/airline-pet-carrier-checkin-rejections-prevention" className="underline hover:opacity-80">Airline Pet Carrier Failures: The Most Common Check-In Rejections and How to Prevent Them</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-8">
           <h2 className="text-2xl font-semibold mb-2">Sources</h2>
           <ul className="list-disc list-inside">
             <li>American Veterinary Medical Association (AVMA) – Canine Vaccination Guidelines</li>

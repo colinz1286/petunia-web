@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; overlapping topic coverage with another strong site page; likely limited backlinks
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -128,7 +129,39 @@ export default function ArticlePage() {
         </ul>
       </section>
 
-      <section id="sources" className="mb-10">
+      
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">The document control system that prevents same-day failures</h2>
+          <p className="mb-4">Travel problems rarely come from one giant missing item. They usually come from small mismatches across names, chip numbers, signature fields, date windows, route assumptions, and who was supposed to verify what. The fix is a simple document-control system: one master packet, one backup packet, and a line-by-line audit against the exact route and date.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Separate the rule sources:</strong> government entry rules, airline handling rules, and your dog's medical needs should be checked as three different systems.</li>
+            <li><strong>Match identifiers everywhere:</strong> owner name, dog name, chip number, travel date, and destination must read the same across every core record.</li>
+            <li><strong>Keep proof in more than one format:</strong> phone screenshots are not enough if batteries die, files do not load, or staff ask for a printed copy.</li>
+            <li><strong>Log the last verification time:</strong> if nobody can say when a rule was last checked, assume it needs to be checked again.</li>
+          </ul>
+          <p className="mb-0">That system is boring on purpose, and boring is exactly what you want when check-in staff or border officials are under time pressure.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">The 48-hour and day-of audit</h2>
+          <ol className="list-decimal pl-5 space-y-2 mb-0">
+            <li>Re-open every official page tied to the trip instead of relying on memory or saved screenshots.</li>
+            <li>Read the reservation, health certificate timing, and handling instructions as if you were checking someone else's packet for mistakes.</li>
+            <li>Confirm backup plans for weather, missed connections, check-in rejection, medication timing, and overnight delays.</li>
+            <li>On the day itself, do one last identifier match before leaving home.</li>
+          </ol>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/dog-import-canada-2026-checklist-us-owners" className="underline hover:opacity-80">Dog Import to Canada in 2026: Checklist for U.S. Owners (Airline, CFIA, Border, and Return-to-U.S. Rules)</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/cdc-dog-import-rules-us-2025-2026" className="underline hover:opacity-80">CDC Dog Import Rules Explained (2025–2026): Returning to the U.S. With Your Dog — What Changed, What Airlines Don’t Tell You, and How to Avoid Denial at the Airport</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/cdc-dog-reentry-checklist-2026-us-owners" className="underline hover:opacity-80">CDC Dog Re-Entry Checklist (2026): Step-by-Step for U.S. Owners Returning from Abroad</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-10">
         <h2 className="text-2xl font-semibold mb-3">Sources To Verify Before Acting</h2>
         <ul className="list-disc pl-5 space-y-2 text-sm">
           <li>U.S. CDC import/re-entry guidance and any route-specific notices</li>

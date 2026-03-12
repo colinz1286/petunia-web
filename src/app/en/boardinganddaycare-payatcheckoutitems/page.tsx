@@ -1,8 +1,7 @@
 'use client';
 
-// NOTE: This web page is intended to mirror the iOS view at
-// .local-only/ios-real-reference/BoardingAndDaycarePayAtCheckoutItemsView.swift.
-// Keep module labels and routing to daycare/grooming pricing screens aligned across both files.
+// NOTE: This web page is the daycare-focused pay-at-checkout module hub.
+// Keep module labels and routing aligned with the surrounding business settings flows.
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -35,13 +34,6 @@ export default function BoardingAndDaycarePayAtCheckoutItemsPage() {
                         <span className="text-gray-400">›</span>
                     </div>
                 </button>
-            </div>
-
-            <div className="border rounded-lg p-4 mb-6 bg-white">
-                <h2 className="text-xl font-semibold mb-2">{t('boardingTitle')}</h2>
-                <p className="text-sm text-gray-600">
-                    {t('boardingDescription')}
-                </p>
             </div>
 
             <div className="border rounded-lg p-4 bg-white">

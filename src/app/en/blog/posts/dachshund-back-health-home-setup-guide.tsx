@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; overlapping topic coverage with another strong site page; likely limited backlinks
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -128,7 +129,40 @@ export default function ArticlePage() {
         </ul>
       </section>
 
-      <section id="sources" className="mb-10">
+      
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">What a strong Dachshund monitoring plan looks like</h2>
+          <p className="mb-4">Owners make better decisions when they stop waiting for obvious crises and start tracking baseline health. For Dachshund, that usually means knowing normal appetite, stool quality, weight trend, exercise recovery, breathing effort, sleep quality, coat condition, and behavior at home. Once you know the baseline, small but meaningful changes stop blending into daily life.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Check the basics monthly:</strong> body condition, weight, gum color, nail length, ear odor, and any new lumps or skin changes.</li>
+            <li><strong>Record recovery, not just activity:</strong> how quickly your dog settles after play, stairs, heat, or excitement tells you a lot.</li>
+            <li><strong>Track repeat patterns:</strong> intermittent stomach upset, paw licking, coughing, stiffness, or reluctance to jump are more useful than one-off anecdotes.</li>
+            <li><strong>Keep preventive care visible:</strong> recheck dates, dental work, parasite prevention, and screening recommendations should live in one easy-to-review place.</li>
+          </ul>
+          <p className="mb-0">That kind of monitoring is what makes veterinary appointments more productive and helps owners intervene before a mild issue becomes an expensive one.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Questions that sharpen the next veterinary conversation</h2>
+          <p className="mb-4">A short list of better questions usually improves the appointment more than bringing in ten vague worries. Ask what matters most for your dog's age, body condition, lifestyle, and family history.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Which changes in stamina, weight, or behavior would you treat as early warning signs rather than normal variation?</li>
+            <li>Are there screening tests, imaging decisions, or referral thresholds that make sense for this breed and age bracket?</li>
+            <li>What would make you want photos, videos, or a symptom log before the next visit?</li>
+            <li>Which problems are appropriate to monitor at home, and which ones should change my timeline to same-day care?</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/gdv-bloat-emergency-plan-large-dogs" className="underline hover:opacity-80">GDV (Bloat) Emergency Plan for Large Dogs: What to Do in the First 10 Minutes, What the ER Will Do, and How to Reduce Risk</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/crocs-safety-dog-daycare" className="underline hover:opacity-80">Are Crocs Safe to Wear at Dog Boarding &amp; Daycare Facilities?</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/are-german-shepherds-aggressive-or-dangerous" className="underline hover:opacity-80">Are German Shepherds Aggressive or Dangerous? A Data-Informed Owner’s Guide to Temperament, Risk, and Real-World Management</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-10">
         <h2 className="text-2xl font-semibold mb-3">Sources To Verify Before Acting</h2>
         <ul className="list-disc pl-5 space-y-2 text-sm">
           <li>Primary veterinary guidance and current consensus statements</li>

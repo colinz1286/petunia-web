@@ -49,6 +49,16 @@ import {
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
+import BoardingAndDaycareBookingMembershipSelector from '@/components/boardinganddaycare/BoardingAndDaycareBookingMembershipSelector';
+import {
+  consumeMembershipPurchaseForClient,
+  createMembershipPurchaseForClient,
+  loadClientMembershipPurchases,
+  loadMembershipPlans,
+  membershipPurchaseCanCover,
+  type MembershipPlan,
+  type MembershipPurchase,
+} from '@/lib/boardingAndDaycareMemberships';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -137,6 +147,11 @@ type RTDBUpcomingWriteRow = {
   spayedNeutered?: string;
   paymentTotalCents?: number;
   itemizedLineItems?: PaymentLineItem[];
+  membershipPurchaseId?: string;
+  membershipPlanId?: string;
+  membershipPlanName?: string;
+  membershipUnitsApplied?: number;
+  membershipPurchasedDuringBooking?: boolean;
 };
 
 type VaccineKey = 'Rabies' | 'Bordetella' | 'Canine Influenza' | 'Distemper';
@@ -159,6 +174,11 @@ type DaycareReservationWrite = {
   paymentIntentId?: string;
   paymentTotalCents?: number;
   itemizedLineItems?: PaymentLineItem[];
+  membershipPurchaseId?: string;
+  membershipPlanId?: string;
+  membershipPlanName?: string;
+  membershipUnitsApplied?: number;
+  membershipPurchasedDuringBooking?: boolean;
 };
 
 type DraftBooking = {
@@ -335,6 +355,11 @@ export default function IndividualBookDaycarePage() {
   const [paymentBreakdown, setPaymentBreakdown] = useState<PaymentBreakdown>({ lines: [], subtotalCents: 0 });
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
 
+  const [membershipPlans, setMembershipPlans] = useState<MembershipPlan[]>([]);
+  const [membershipPurchases, setMembershipPurchases] = useState<MembershipPurchase[]>([]);
+  const [selectedMembershipPurchaseId, setSelectedMembershipPurchaseId] = useState('');
+  const [selectedMembershipPlanId, setSelectedMembershipPlanId] = useState('');
+
   // Vaccine alerts (read-only)
   const [requiredVaccines, setRequiredVaccines] = useState<Set<VaccineKey>>(new Set());
   const [petVaccineData, setPetVaccineData] = useState<PetVaccineMap>({});
@@ -342,6 +367,14 @@ export default function IndividualBookDaycarePage() {
   const [isLoadingAlerts, setIsLoadingAlerts] = useState(false);
 
   const bizTZ = businessTimeZoneId || Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const membershipUnitsRequired = draftBookings.reduce((sum, booking) => sum + booking.petIds.length, 0);
+  const hasGroomingSelectionsInDrafts = draftBookings.some(
+    (booking) => !!booking.groomingAddOns && Object.keys(booking.groomingAddOns).length > 0
+  );
+  const daycareOnlinePaymentsEnabled = paymentsEnabled && payAtBookingEnabled;
+  const membershipPurchaseDisabledReason = daycareOnlinePaymentsEnabled
+    ? null
+    : t('membership_purchase_requires_daycare_pay_at_booking');
 
   const normalizeText = useCallback((value: string) => value.trim().toLowerCase(), []);
 
@@ -499,6 +532,27 @@ export default function IndividualBookDaycarePage() {
       console.error('❌ Failed to load pets:', e);
     }
   }, [loadVaccineData]);
+
+  const loadMembershipData = useCallback(async (bizId: string, uid: string) => {
+    if (!bizId || !uid) {
+      setMembershipPlans([]);
+      setMembershipPurchases([]);
+      return;
+    }
+
+    try {
+      const [nextPlans, nextPurchases] = await Promise.all([
+        loadMembershipPlans(db, bizId),
+        loadClientMembershipPurchases(db, bizId, uid),
+      ]);
+      setMembershipPlans(nextPlans.filter((plan) => plan.active));
+      setMembershipPurchases(nextPurchases);
+    } catch (error) {
+      console.error('❌ Failed to load memberships:', error);
+      setMembershipPlans([]);
+      setMembershipPurchases([]);
+    }
+  }, []);
 
   const fetchBusinessSettings = useCallback(async (bizId: string) => {
     if (!bizId) return;
@@ -658,6 +712,11 @@ export default function IndividualBookDaycarePage() {
     return () => unsub();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessId, locale, router]);
+
+  useEffect(() => {
+    if (!businessId || !userId) return;
+    void loadMembershipData(businessId, userId);
+  }, [businessId, loadMembershipData, userId]);
 
   useEffect(() => {
     const hydrateBathSizes = async () => {
@@ -906,6 +965,8 @@ export default function IndividualBookDaycarePage() {
 
   const buildPaymentBreakdown = useCallback((bookings: DraftBooking[]): PaymentBreakdown => {
     const lineMap = new Map<string, PaymentLineItem>();
+    const selectedPlan = membershipPlans.find((plan) => plan.id === selectedMembershipPlanId) || null;
+    const membershipCoversDaycareBase = !!selectedMembershipPurchaseId || !!selectedPlan;
 
     const addLine = (key: string, label: string, quantity: number, unitCents: number) => {
       if (quantity <= 0 || unitCents <= 0) return;
@@ -929,15 +990,17 @@ export default function IndividualBookDaycarePage() {
     };
 
     bookings.forEach((booking) => {
-      const tier = booking.petIds.length;
-      const baseCents = daycarePriceCentsByTier[tier];
-      if (typeof baseCents === 'number' && baseCents > 0) {
-        addLine(
-          `daycare-tier-${tier}`,
-          `Daycare (${tier} ${tier === 1 ? 'dog' : 'dogs'})`,
-          1,
-          baseCents
-        );
+      if (!membershipCoversDaycareBase) {
+        const tier = booking.petIds.length;
+        const baseCents = daycarePriceCentsByTier[tier];
+        if (typeof baseCents === 'number' && baseCents > 0) {
+          addLine(
+            `daycare-tier-${tier}`,
+            `Daycare (${tier} ${tier === 1 ? 'dog' : 'dogs'})`,
+            1,
+            baseCents
+          );
+        }
       }
 
       const addOns = booking.groomingAddOns || {};
@@ -956,12 +1019,27 @@ export default function IndividualBookDaycarePage() {
       });
     });
 
+    if (selectedPlan && selectedPlan.priceCents > 0) {
+      addLine(
+        `membership-plan-${selectedPlan.id}`,
+        `Membership: ${selectedPlan.name}`,
+        1,
+        selectedPlan.priceCents
+      );
+    }
+
     const lines = Array.from(lineMap.values());
     return {
       lines,
       subtotalCents: lines.reduce((sum, line) => sum + line.totalCents, 0),
     };
-  }, [daycarePriceCentsByTier, groomingServicePriceCentsByName]);
+  }, [
+    daycarePriceCentsByTier,
+    groomingServicePriceCentsByName,
+    membershipPlans,
+    selectedMembershipPlanId,
+    selectedMembershipPurchaseId,
+  ]);
 
   // 🔵 Stripe Payment Flow (matches iOS architecture)
   const startStripePaymentFlow = useCallback(async () => {
@@ -984,6 +1062,8 @@ export default function IndividualBookDaycarePage() {
       const payload = {
         businessId,
         userId,
+        selectedMembershipPurchaseId: selectedMembershipPurchaseId || null,
+        selectedMembershipPlanId: selectedMembershipPlanId || null,
         draftBookings: draftBookings.map((b) => ({
           reservationId: b.reservationId,   // 🔥 CRITICAL — match iOS
           date: b.date.getTime() / 1000,
@@ -1028,7 +1108,7 @@ export default function IndividualBookDaycarePage() {
 
     } catch (error) {
       console.error("❌ Stripe payment flow failed:", error);
-      alert("Payment could not be processed.");
+      alert(t('payment_processing_failed'));
     } finally {
       setIsProcessingPayment(false);
     }
@@ -1037,7 +1117,10 @@ export default function IndividualBookDaycarePage() {
     userId,
     draftBookings,
     businessId,
-    buildPaymentBreakdown
+    buildPaymentBreakdown,
+    selectedMembershipPlanId,
+    selectedMembershipPurchaseId,
+    t,
   ]);
 
   /* =========================
@@ -1054,6 +1137,36 @@ export default function IndividualBookDaycarePage() {
     }
 
     if (!userId || draftBookings.length === 0 || !businessId || !isValidFirebaseKey(businessId)) return;
+
+    const selectedPurchaseForUsage = membershipPurchases.find(
+      (purchase) => purchase.id === selectedMembershipPurchaseId
+    ) || null;
+    const selectedPlanForPurchase = membershipPlans.find(
+      (plan) => plan.id === selectedMembershipPlanId
+    ) || null;
+    const newMembershipPurchaseId = selectedPlanForPurchase ? crypto.randomUUID() : null;
+    const membershipReservationAnchorId = draftBookings[0]?.reservationId || null;
+    const membershipCreatedBy = auth.currentUser?.email || auth.currentUser?.uid || userId;
+
+    if (selectedMembershipPurchaseId && !selectedPurchaseForUsage) {
+      alert(t('membership_selected_purchase_unavailable'));
+      return;
+    }
+
+    if (selectedPurchaseForUsage && !membershipPurchaseCanCover(selectedPurchaseForUsage, 'daycare', membershipUnitsRequired)) {
+      alert(t('membership_balance_insufficient_daycare'));
+      return;
+    }
+
+    if (selectedMembershipPlanId && !selectedPlanForPurchase) {
+      alert(t('membership_selected_plan_unavailable'));
+      return;
+    }
+
+    if (selectedPlanForPurchase && !daycareOnlinePaymentsEnabled) {
+      alert(t('membership_purchase_requires_daycare_pay_at_booking'));
+      return;
+    }
 
     try {
       // refresh owner name best-effort
@@ -1105,6 +1218,13 @@ export default function IndividualBookDaycarePage() {
         if (paymentIntentId) payload.paymentIntentId = paymentIntentId;
         if (paymentAmount && paymentAmount > 0) payload.paymentTotalCents = paymentAmount;
         if (paymentBreakdown.lines.length > 0) payload.itemizedLineItems = paymentBreakdown.lines;
+        if (selectedPurchaseForUsage?.id || newMembershipPurchaseId) {
+          payload.membershipPurchaseId = selectedPurchaseForUsage?.id || newMembershipPurchaseId || undefined;
+          payload.membershipPlanId = selectedPurchaseForUsage?.planId || selectedPlanForPurchase?.id;
+          payload.membershipPlanName = selectedPurchaseForUsage?.planName || selectedPlanForPurchase?.name;
+          payload.membershipUnitsApplied = booking.petIds.length;
+          payload.membershipPurchasedDuringBooking = !!selectedPlanForPurchase;
+        }
 
         // Firestore
         await setDoc(doc(db, 'daycareReservations', reservationId), payload);
@@ -1140,9 +1260,61 @@ export default function IndividualBookDaycarePage() {
             if (pet?.spayedNeutered) base.spayedNeutered = pet.spayedNeutered;
             if (paymentAmount && paymentAmount > 0) base.paymentTotalCents = paymentAmount;
             if (paymentBreakdown.lines.length > 0) base.itemizedLineItems = paymentBreakdown.lines;
+            if (selectedPurchaseForUsage?.id || newMembershipPurchaseId) {
+              base.membershipPurchaseId = selectedPurchaseForUsage?.id || newMembershipPurchaseId || undefined;
+              base.membershipPlanId = selectedPurchaseForUsage?.planId || selectedPlanForPurchase?.id;
+              base.membershipPlanName = selectedPurchaseForUsage?.planName || selectedPlanForPurchase?.name;
+              base.membershipUnitsApplied = booking.petIds.length;
+              base.membershipPurchasedDuringBooking = !!selectedPlanForPurchase;
+            }
 
             await rtdbSet(rtdbRef(rtdb, `upcomingReservations/${businessId}/${rtdbKey}`), base);
           }));
+        }
+      }
+
+      let membershipUpdateError = false;
+      let membershipUpdateMessage = '';
+      let purchaseIdToConsume = selectedPurchaseForUsage?.id || null;
+
+      if (selectedPlanForPurchase && newMembershipPurchaseId) {
+        try {
+          await createMembershipPurchaseForClient({
+            db,
+            businessId,
+            clientUserId: userId,
+            plan: selectedPlanForPurchase,
+            source: 'daycareBooking',
+            createdBy: membershipCreatedBy,
+            purchaseIdOverride: newMembershipPurchaseId,
+            linkedReservationId: membershipReservationAnchorId,
+            note: `Purchased during daycare booking for ${draftBookings.length} reservation(s).`,
+          });
+          purchaseIdToConsume = newMembershipPurchaseId;
+        } catch (error) {
+          console.error('❌ Membership purchase creation failed after daycare submit:', error);
+          membershipUpdateError = true;
+          membershipUpdateMessage = t('membership_purchase_save_failed_after_submit');
+        }
+      }
+
+      if (!membershipUpdateError && purchaseIdToConsume) {
+        try {
+          await consumeMembershipPurchaseForClient({
+            db,
+            businessId,
+            clientUserId: userId,
+            purchaseId: purchaseIdToConsume,
+            service: 'daycare',
+            quantity: membershipUnitsRequired,
+            createdBy: membershipCreatedBy,
+            reservationId: membershipReservationAnchorId,
+            note: `Applied to ${draftBookings.length} daycare reservation(s).`,
+          });
+        } catch (error) {
+          console.error('❌ Membership consumption failed after daycare submit:', error);
+          membershipUpdateError = true;
+          membershipUpdateMessage = t('membership_balance_update_failed_after_submit');
         }
       }
 
@@ -1151,13 +1323,39 @@ export default function IndividualBookDaycarePage() {
       setPaymentBreakdown({ lines: [], subtotalCents: 0 });
       setPaymentAmount(null);
       setPaymentIntentId(null);
-      alert(t('submission_success'));
+      setSelectedMembershipPurchaseId('');
+      setSelectedMembershipPlanId('');
+      if (membershipUpdateError) {
+        alert(membershipUpdateMessage);
+      } else {
+        alert(t('submission_success'));
+      }
       router.push(`/${locale}/individualupcomingappointments`);
     } catch (e) {
       console.error('❌ submitAllReservations failed:', e);
       alert(t('submission_error') || 'There was an error submitting your bookings.');
     }
-  }, [userId, draftBookings, businessId, bizTZ, pets, ownerName, router, locale, t, blackoutDates, paymentAmount, paymentBreakdown.lines, paymentIntentId]);
+  }, [
+    userId,
+    draftBookings,
+    businessId,
+    bizTZ,
+    pets,
+    ownerName,
+    router,
+    locale,
+    t,
+    blackoutDates,
+    paymentAmount,
+    paymentBreakdown.lines,
+    paymentIntentId,
+    membershipPlans,
+    membershipPurchases,
+    selectedMembershipPlanId,
+    selectedMembershipPurchaseId,
+    membershipUnitsRequired,
+    daycareOnlinePaymentsEnabled,
+  ]);
 
   /* =========================
      UI
@@ -1503,9 +1701,31 @@ export default function IndividualBookDaycarePage() {
             </div>
           )}
 
+          {membershipUnitsRequired > 0 && (
+            <div className="w-full max-w-sm sm:max-w-md mx-auto space-y-3">
+              <BoardingAndDaycareBookingMembershipSelector
+                service="daycare"
+                requiredUnits={membershipUnitsRequired}
+                purchases={membershipPurchases}
+                plans={membershipPlans}
+                selectedPurchaseId={selectedMembershipPurchaseId}
+                selectedPlanId={selectedMembershipPlanId}
+                onSelectPurchase={(purchaseId) => {
+                  setSelectedMembershipPurchaseId(purchaseId);
+                  if (purchaseId) setSelectedMembershipPlanId('');
+                }}
+                onSelectPlan={(planId) => {
+                  setSelectedMembershipPlanId(planId);
+                  if (planId) setSelectedMembershipPurchaseId('');
+                }}
+                buyDisabledReason={membershipPurchaseDisabledReason}
+              />
+            </div>
+          )}
+
           {isProcessingPayment && !clientSecret && (
             <div className="w-full max-w-xs text-center text-sm text-gray-600">
-              Processing payment...
+              {t('processing_payment')}
             </div>
           )}
 
@@ -1538,8 +1758,21 @@ export default function IndividualBookDaycarePage() {
           {/* Submit */}
           <button
             onClick={() => {
+              if (selectedMembershipPlanId && !daycareOnlinePaymentsEnabled) {
+                alert(t('membership_purchase_requires_daycare_pay_at_booking'));
+                return;
+              }
+
+              const needsStripePayment =
+                daycareOnlinePaymentsEnabled &&
+                (
+                  !!selectedMembershipPlanId ||
+                  !selectedMembershipPurchaseId ||
+                  hasGroomingSelectionsInDrafts
+                );
+
               // 🔵 Stripe Pay-At-Booking Gate (matches iOS logic)
-              if (paymentsEnabled && payAtBookingEnabled) {
+              if (needsStripePayment) {
                 startStripePaymentFlow(); // we will implement this next
               } else {
                 submitAllReservations();

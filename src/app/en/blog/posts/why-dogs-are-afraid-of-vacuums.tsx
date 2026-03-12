@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; crowded query with low perceived distinctiveness; likely limited backlinks
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -201,6 +202,37 @@ export default function WhyDogsAreAfraidOfVacuums() {
         </section>
 
         {/* BACK */}
+
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">A practical behavior plan that changes outcomes</h2>
+          <p className="mb-4">Behavior improves faster when owners stop treating each incident as random and start asking what reliably comes before it. Triggers, sleep debt, pain, routine disruption, noise, novelty, and reinforcement history all shape what the dog does next. A workable plan lowers the trigger load, teaches the replacement behavior in easy settings, and expands difficulty only when the dog is consistently successful.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Manage first:</strong> reduce rehearsal of the unwanted behavior while you teach the alternative.</li>
+            <li><strong>Keep sessions short:</strong> frequency beats intensity for most home training problems.</li>
+            <li><strong>Track the threshold:</strong> distance, duration, and recovery time matter more than whether the dog was good once.</li>
+            <li><strong>Review wellness:</strong> pain, GI upset, and poor sleep can make a training issue look like stubbornness.</li>
+          </ul>
+          <p className="mb-0">That kind of plan creates behavior you can reproduce, not just moments you hope will happen again.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">What owners misread most often</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Over-arousal is often mislabeled as confidence or friendliness until the dog stops coping well.</li>
+            <li>A tired or uncomfortable dog can look defiant when the real issue is threshold or pain.</li>
+            <li>Correction-heavy training may suppress a display without improving the underlying emotional pattern.</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/temperament-testing-dogs-boarding-daycare" className="underline hover:opacity-80">How to Temperament Test Dogs for Boarding &amp; Daycare: A Step-By-Step Professional Evaluation Guide</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/occupational-noise-exposure-dog-daycare-hearing-protection" className="underline hover:opacity-80">Occupational Noise Exposure in Dog Boarding &amp; Daycare: Why Hearing Protection Is Being Ignored (and How to Fix It)</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/how-to-transition-your-dog-to-a-raw-food-diet" className="underline hover:opacity-80">Step-by-Step: How to Transition Your Dog to a Raw Food Diet</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
         <Link
           href={`/${locale}/blog`}
           className="underline text-[#2c4a30] font-medium hover:opacity-80"

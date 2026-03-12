@@ -1,3 +1,4 @@
+// SEO weakness notes: weak in-article internal linking; likely limited backlinks; schema is only baseline BlogPosting
 // File: src/app/blog/posts/board-or-hire-pet-sitter.tsx
 'use client';
 

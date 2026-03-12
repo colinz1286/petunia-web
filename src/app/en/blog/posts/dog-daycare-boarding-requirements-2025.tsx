@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; overlapping topic coverage with another strong site page; likely limited backlinks
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -236,7 +237,40 @@ export default function DogDaycareBoardingRequirements2025() {
           </section>
 
           {/* Sources */}
-          <section id="sources" className="mb-16">
+          
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">What serious facilities document, not just promise</h2>
+          <p className="mb-4">A polished tour is not the same thing as a controlled operation. When licensing, inspection, and approval are part of the topic, the real signal is whether the facility can show written systems for sanitation, grouping, incident response, medication handling, emergency escalation, and owner communication. Strong operators do not rely on memory when conditions get busy.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Written SOPs:</strong> cleaning logs, isolation workflow, bite or injury response, and late pickup or overnight contingencies.</li>
+            <li><strong>Training proof:</strong> who trains staff, how refreshers are logged, and what skills are required before someone works alone.</li>
+            <li><strong>Records that match the policy:</strong> vaccination review, temperament notes, feeding or medication instructions, and corrective actions after incidents.</li>
+            <li><strong>Maintenance discipline:</strong> surfaces, drains, fencing, ventilation, and noise control should show operational care, not last-minute cleanup.</li>
+          </ul>
+          <p className="mb-0">The more a facility can show you on paper, the less you have to guess about what happens when the day gets complicated.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">A fast audit checklist for owners and operators</h2>
+          <ol className="list-decimal pl-5 space-y-2 mb-0">
+            <li>Confirm the exact license or permit name, expiration date, and the agency that issued it.</li>
+            <li>Ask what would happen if your dog became ill, injured, or behaviorally unsafe at the busiest hour of the day.</li>
+            <li>Review whether the written policy matches the physical space you can actually see.</li>
+            <li>Look for proof of follow-through: logs, posted procedures, staff communication tools, and recent inspection results.</li>
+            <li>Walk away if answers are vague, defensive, or dependent on a single person always being present.</li>
+          </ol>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/dog-boarding-vaccination-requirements-2025" className="underline hover:opacity-80">Vaccination &amp; Health Requirements for Dog Daycare &amp; Boarding (2025): Rabies, Distemper, Bordetella, Records &amp; State Rules</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/colorado-dog-boarding-daycare-laws-2025" className="underline hover:opacity-80">Dog Boarding Laws in Colorado (2025): Permits, Inspections, Facility Requirements &amp; Owner Rights</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/kennel-cough-cirdc-global-guide-owners-boarding-daycare-2025" className="underline hover:opacity-80">Kennel Cough (CIRDC): The 2025 Global Guide for Owners and Boarding &amp; Daycare Facilities (U.S., Canada, U.K., Ireland, Australia &amp; New Zealand)</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-16">
             <h2 className="text-2xl font-semibold mb-3">Sources &amp; References</h2>
             <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
               <li>State agriculture and public health departments</li>

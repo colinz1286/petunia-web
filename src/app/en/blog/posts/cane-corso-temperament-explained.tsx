@@ -1,3 +1,4 @@
+// SEO weakness notes: page is still new; overlapping topic coverage with another strong site page; weak in-article internal linking; likely limited backlinks; schema is only baseline BlogPosting
 // File: src/app/[locale]/blog/posts/cane-corso-temperament-explained.tsx
 'use client';
 

@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; likely limited backlinks; schema is only baseline BlogPosting
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -266,6 +267,27 @@ export default function ChristmasTreeHolidayDecorDogs() {
           </p>
         </section>
 
+
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">How to turn this topic into a workable plan</h2>
+          <p className="mb-4">Most articles become more useful when they move from explanation to execution. Start by deciding what you will monitor, what decision points matter, who needs the information, and what would change your timeline. That simple planning step prevents the common pattern where good advice gets read once and then disappears under day-to-day routine.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li>Write down the main goal, the most likely risk, and the next two actions you would take if conditions change.</li>
+            <li>Keep one place for dates, notes, photos, and questions so you are not rebuilding the context every time.</li>
+            <li>Review the plan after the first real-world test and tighten what was vague.</li>
+          </ul>
+          <p className="mb-0">A short, repeatable system usually improves outcomes more than adding more disconnected advice.</p>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/christmas-foods-dogs-should-not-eat" className="underline hover:opacity-80">Christmas Foods Dogs Should Not Eat: Holiday Hazards, Symptoms, and What to Do</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/holiday-ingestion-risks-dogs-christmas" className="underline hover:opacity-80">Holiday Ingestion Risks for Dogs: Christmas Foods, Wrappers, Toys, Symptoms, and When to Go to the ER</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/what-dogs-can-eat-on-christmas" className="underline hover:opacity-80">What Can Dogs Eat on Christmas? Safe Holiday Foods, Portion Sizes, and What to Avoid</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
         <Link
           href={`/${locale}/blog`}
           className="underline text-[#2c4a30] font-medium hover:opacity-80"

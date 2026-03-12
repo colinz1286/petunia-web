@@ -12,6 +12,38 @@ import {
 import { getDatabase, ref, set as rtdbSet } from 'firebase/database';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { initializeApp, getApps } from 'firebase/app';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { loadStripe } from '@stripe/stripe-js';
+import {
+    Elements,
+    PaymentElement,
+    useElements,
+    useStripe,
+} from '@stripe/react-stripe-js';
+import BoardingAndDaycareBookingMembershipSelector from '@/components/boardinganddaycare/BoardingAndDaycareBookingMembershipSelector';
+import {
+    consumeMembershipPurchaseForClient,
+    createMembershipPurchaseForClient,
+    loadClientMembershipPurchases,
+    loadMembershipPlans,
+    membershipPurchaseCanCover,
+    type MembershipPlan,
+    type MembershipPurchase,
+} from '@/lib/boardingAndDaycareMemberships';
+import {
+    computeBoardingQuote,
+    invoiceItemsById,
+    matchCheckoutChargeWindow,
+    normalizeBoardingClientDiscountSettings,
+    normalizeBoardingPricingDoc,
+    normalizeInvoiceLibraryItemsDoc,
+    priceCentsForPerPetSelections,
+    priceCentsForSelectedServices,
+    type BoardingClientDiscountSettings,
+    type BoardingPricingSettings,
+    type BoardingQuote,
+    type InvoiceLibraryItem,
+} from '@/lib/boardingPricing';
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -31,6 +63,15 @@ if (!getApps().length) initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
 const rtdb = getDatabase();
+const functions = getFunctions();
+
+if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+    throw new Error('Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable');
+}
+
+const stripePromise = loadStripe(
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+);
 
 /** =========================
  *  Types
@@ -57,6 +98,14 @@ type BusinessSettingsDoc = {
     timeZoneId?: string;
     features?: BusinessFeatures;
     capacityBoardingTotal?: number | null;
+    paymentSettings?: {
+        enabled?: boolean;
+        boarding?: {
+            payAtBooking?: boolean;
+            invoiceAfterAttendance?: boolean;
+            payAtPickup?: boolean;
+        };
+    };
 
     // Preferred flags
     checkInTimeRequiredBoarding?: boolean;
@@ -83,6 +132,7 @@ type BusinessSettingsDoc = {
     groomingServices?: string[];
 
     depositRequired?: boolean;
+    depositAmount?: string;
 
     // Waiver (root-level fallback date)
     waiverRequired?: boolean;
@@ -94,6 +144,12 @@ type BusinessSettingsDoc = {
     // ✅ NEW: After-hours pick-up
     afterHoursPickUpTimeRequired?: boolean;
     afterHoursPickUpTimes?: WeekdayMap;
+    beforeHoursPickUpTimeRequired?: boolean;
+    beforeHoursPickUpTimes?: WeekdayMap;
+    earlyDropOffTimeRequired?: boolean;
+    earlyDropOffTimes?: WeekdayMap;
+    afterHoursDropOffTimeRequired?: boolean;
+    afterHoursDropOffTimes?: WeekdayMap;
 };
 
 type BoardingReservationWrite = {
@@ -111,6 +167,42 @@ type BoardingReservationWrite = {
     checkInWindow?: string;
     checkOutWindow?: string;
     groomingAddOns?: GroomingSelections;
+    boardingAddOns?: string[];
+    membershipPurchaseId?: string;
+    membershipPlanId?: string;
+    membershipPlanName?: string;
+    membershipUnitsApplied?: number;
+    membershipPurchasedDuringBooking?: boolean;
+    paymentIntentId?: string;
+    paymentTotalCents?: number;
+    estimatedTotalCents?: number;
+    depositDueTodayCents?: number;
+    remainingBalanceCents?: number;
+    itemizedLineItems?: PaymentLineItem[];
+};
+
+type PaymentLineItem = {
+    key: string;
+    label: string;
+    quantity: number;
+    unitCents: number;
+    totalCents: number;
+};
+
+type PaymentBreakdown = {
+    lines: PaymentLineItem[];
+    subtotalCents: number;
+};
+
+type CreateBoardingPaymentIntentResponse = {
+    clientSecret?: string;
+    paymentIntentId?: string;
+    amountCents?: number;
+    estimatedTotalCents?: number;
+    depositDueTodayCents?: number;
+    remainingBalanceCents?: number;
+    membershipPurchaseTotalCents?: number;
+    itemizedLineItems?: unknown;
 };
 
 /** =========================
@@ -141,6 +233,23 @@ const parseTimeToMinutes = (label: string) => {
 
 const sortTimeStrings = (arr: string[]) =>
     [...arr].map(s => s.trim()).filter(Boolean).sort((a, b) => parseTimeToMinutes(a) - parseTimeToMinutes(b));
+
+const parseServerItemizedLineItems = (raw: unknown): PaymentLineItem[] => {
+    if (!Array.isArray(raw)) return [];
+    return raw
+        .map((item): PaymentLineItem | null => {
+            if (!item || typeof item !== 'object') return null;
+            const row = item as Record<string, unknown>;
+            const key = typeof row.key === 'string' ? row.key : '';
+            const label = typeof row.label === 'string' ? row.label : '';
+            const quantity = typeof row.quantity === 'number' ? row.quantity : 0;
+            const unitCents = typeof row.unitCents === 'number' ? row.unitCents : 0;
+            const totalCents = typeof row.totalCents === 'number' ? row.totalCents : (quantity * unitCents);
+            if (!key || !label || quantity <= 0 || unitCents <= 0 || totalCents <= 0) return null;
+            return { key, label, quantity, unitCents, totalCents };
+        })
+        .filter((row): row is PaymentLineItem => row !== null);
+};
 
 const nowMinutesInTZ = (tz: string) => {
     const label = new Intl.DateTimeFormat('en-US', {
@@ -216,6 +325,7 @@ export default function IndividualBookBoardingPage() {
     const [checkOutTimesByWeekday, setCheckOutTimesByWeekday] = useState<WeekdayMap>({});
 
     const [checkInOptions, setCheckInOptions] = useState<string[]>([]);
+    const [checkInDisplayOptions, setCheckInDisplayOptions] = useState<string[]>([]);
     const [checkOutOptions, setCheckOutOptions] = useState<string[]>([]);
     const [checkOutDisplayOptions, setCheckOutDisplayOptions] = useState<string[]>([]); // ✅ labels with suffix
 
@@ -228,6 +338,8 @@ export default function IndividualBookBoardingPage() {
     const [businessTimeZoneId, setBusinessTimeZoneId] = useState<string | null>(null);
     const [includePendingInCapacity, setIncludePendingInCapacity] = useState(false);
     const [clientWritesRTDB, setClientWritesRTDB] = useState(true);
+    const [paymentsEnabled, setPaymentsEnabled] = useState(false);
+    const [boardingPayAtBookingEnabled, setBoardingPayAtBookingEnabled] = useState(false);
 
     // Capacity
     const [capacityBoardingTotal, setCapacityBoardingTotal] = useState<number | null>(null);
@@ -242,11 +354,47 @@ export default function IndividualBookBoardingPage() {
     const [groomingServices, setGroomingServices] = useState<string[]>([]);
     const [groomingSelections, setGroomingSelections] = useState<GroomingSelections>({});
     const [showGroomingModal, setShowGroomingModal] = useState(false);
+    const [groomingServicePriceCentsByName, setGroomingServicePriceCentsByName] = useState<Record<string, number>>({});
+    const [boardingAddOnServices, setBoardingAddOnServices] = useState<string[]>([]);
+    const [boardingAddOnPriceCentsByName, setBoardingAddOnPriceCentsByName] = useState<Record<string, number>>({});
+    const [selectedBoardingAddOns, setSelectedBoardingAddOns] = useState<string[]>([]);
+    const [showBoardingAddOnModal, setShowBoardingAddOnModal] = useState(false);
+    const [boardingPricingSettings, setBoardingPricingSettings] = useState<BoardingPricingSettings | null>(null);
+    const [invoiceLibraryItems, setInvoiceLibraryItems] = useState<InvoiceLibraryItem[]>([]);
+    const [clientDiscountSettings, setClientDiscountSettings] = useState<BoardingClientDiscountSettings | null>(null);
+    const [assignedClientDiscountRuleIds, setAssignedClientDiscountRuleIds] = useState<string[]>([]);
+    const [boardingQuote, setBoardingQuote] = useState<BoardingQuote | null>(null);
+    const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+    const [clientSecret, setClientSecret] = useState<string | null>(null);
+    const [paymentAmount, setPaymentAmount] = useState<number | null>(null);
+    const [paymentBreakdown, setPaymentBreakdown] = useState<PaymentBreakdown>({ lines: [], subtotalCents: 0 });
+    const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
+    const [paymentEstimateSummary, setPaymentEstimateSummary] = useState<{
+        estimatedTotalCents: number;
+        depositDueTodayCents: number;
+        remainingBalanceCents: number;
+        membershipPurchaseTotalCents: number;
+    } | null>(null);
+    const [pendingReservationId, setPendingReservationId] = useState<string | null>(null);
+
+    const [membershipPlans, setMembershipPlans] = useState<MembershipPlan[]>([]);
+    const [membershipPurchases, setMembershipPurchases] = useState<MembershipPurchase[]>([]);
+    const [selectedMembershipPurchaseId, setSelectedMembershipPurchaseId] = useState('');
+    const [selectedMembershipPlanId, setSelectedMembershipPlanId] = useState('');
 
     // 🔷 Deposit gate
     const [depositRequired, setDepositRequired] = useState<boolean>(false);
+    const [depositAmount, setDepositAmount] = useState<string>('');
     const [depositAcknowledged, setDepositAcknowledged] = useState<boolean>(false);
     const gatingActive = depositRequired && !depositAcknowledged;
+    const [afterHoursPickUpTimeRequired, setAfterHoursPickUpTimeRequired] = useState<boolean>(false);
+    const [afterHoursPickUpTimesByWeekday, setAfterHoursPickUpTimesByWeekday] = useState<WeekdayMap>({});
+    const [beforeHoursPickUpTimeRequired, setBeforeHoursPickUpTimeRequired] = useState<boolean>(false);
+    const [beforeHoursPickUpTimesByWeekday, setBeforeHoursPickUpTimesByWeekday] = useState<WeekdayMap>({});
+    const [earlyDropOffTimeRequired, setEarlyDropOffTimeRequired] = useState<boolean>(false);
+    const [earlyDropOffTimesByWeekday, setEarlyDropOffTimesByWeekday] = useState<WeekdayMap>({});
+    const [afterHoursDropOffTimeRequired, setAfterHoursDropOffTimeRequired] = useState<boolean>(false);
+    const [afterHoursDropOffTimesByWeekday, setAfterHoursDropOffTimesByWeekday] = useState<WeekdayMap>({});
 
     const blackoutAlertShownRef = React.useRef(false);
 
@@ -256,6 +404,166 @@ export default function IndividualBookBoardingPage() {
     const [suppressValidations, setSuppressValidations] = useState(false);
 
     const bizTZ = businessTimeZoneId || Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const membershipUnitsRequired = useMemo(() => {
+        if (!checkInDate || !checkOutDate || checkInDate >= checkOutDate) return 0;
+        const nights = nightsBetweenKeys(checkInDate, checkOutDate, bizTZ).length;
+        return nights * selectedPetIds.size;
+    }, [bizTZ, checkInDate, checkOutDate, selectedPetIds]);
+    const boardingOnlinePaymentsEnabled = paymentsEnabled && boardingPayAtBookingEnabled;
+    const membershipPurchaseDisabledReason =
+        boardingOnlinePaymentsEnabled
+            ? null
+            : t('membership_purchase_requires_boarding_pay_at_booking');
+    const invoiceItemMap = useMemo(() => invoiceItemsById(invoiceLibraryItems), [invoiceLibraryItems]);
+    const selectedMembershipPurchase = useMemo(() => (
+        membershipPurchases.find((purchase) => purchase.id === selectedMembershipPurchaseId) || null
+    ), [membershipPurchases, selectedMembershipPurchaseId]);
+    const selectedMembershipPlanForPurchase = useMemo(() => (
+        membershipPlans.find((plan) => plan.id === selectedMembershipPlanId) || null
+    ), [membershipPlans, selectedMembershipPlanId]);
+    const membershipUnitsCovered = useMemo(() => {
+        if (selectedMembershipPurchase) {
+            if (selectedMembershipPurchase.status !== 'active' || !selectedMembershipPurchase.appliesToServices.boarding) {
+                return 0;
+            }
+            if (selectedMembershipPurchase.remainingUnits === null) return membershipUnitsRequired;
+            return Math.min(selectedMembershipPurchase.remainingUnits, membershipUnitsRequired);
+        }
+        if (selectedMembershipPlanForPurchase) {
+            if (!selectedMembershipPlanForPurchase.active || !selectedMembershipPlanForPurchase.appliesToServices.boarding) {
+                return 0;
+            }
+            if (selectedMembershipPlanForPurchase.includedUnits === null) return membershipUnitsRequired;
+            return Math.min(selectedMembershipPlanForPurchase.includedUnits, membershipUnitsRequired);
+        }
+        return 0;
+    }, [membershipUnitsRequired, selectedMembershipPlanForPurchase, selectedMembershipPurchase]);
+    const groomingSubtotalCents = useMemo(
+        () => priceCentsForPerPetSelections(groomingSelections, groomingServicePriceCentsByName),
+        [groomingSelections, groomingServicePriceCentsByName]
+    );
+    const boardingAddOnSubtotalCents = useMemo(
+        () => priceCentsForSelectedServices(selectedBoardingAddOns, boardingAddOnPriceCentsByName),
+        [selectedBoardingAddOns, boardingAddOnPriceCentsByName]
+    );
+    const matchedOddHourKinds = useMemo(() => {
+        const next: Array<'earlyDropOff' | 'afterHoursDropOff' | 'beforeHoursPickUp' | 'afterHoursPickUp'> = [];
+        const checkInDay = checkInDate ? weekdayName(checkInDate, bizTZ) : null;
+        const checkOutDay = checkOutDate ? weekdayName(checkOutDate, bizTZ) : null;
+
+        if (
+            checkInDay
+            && checkInWindow
+            && earlyDropOffTimeRequired
+            && (earlyDropOffTimesByWeekday[checkInDay] || []).includes(checkInWindow)
+        ) {
+            next.push('earlyDropOff');
+        }
+        if (
+            checkInDay
+            && checkInWindow
+            && afterHoursDropOffTimeRequired
+            && (afterHoursDropOffTimesByWeekday[checkInDay] || []).includes(checkInWindow)
+        ) {
+            next.push('afterHoursDropOff');
+        }
+        if (
+            checkOutDay
+            && checkOutWindow
+            && beforeHoursPickUpTimeRequired
+            && (beforeHoursPickUpTimesByWeekday[checkOutDay] || []).includes(checkOutWindow)
+        ) {
+            next.push('beforeHoursPickUp');
+        }
+        if (
+            checkOutDay
+            && checkOutWindow
+            && afterHoursPickUpTimeRequired
+            && (afterHoursPickUpTimesByWeekday[checkOutDay] || []).includes(checkOutWindow)
+        ) {
+            next.push('afterHoursPickUp');
+        }
+
+        return next;
+    }, [
+        afterHoursDropOffTimeRequired,
+        afterHoursDropOffTimesByWeekday,
+        afterHoursPickUpTimeRequired,
+        afterHoursPickUpTimesByWeekday,
+        beforeHoursPickUpTimeRequired,
+        beforeHoursPickUpTimesByWeekday,
+        bizTZ,
+        checkInDate,
+        checkInWindow,
+        checkOutDate,
+        checkOutWindow,
+        earlyDropOffTimeRequired,
+        earlyDropOffTimesByWeekday
+    ]);
+    const matchedCheckoutWindow = useMemo(() => {
+        if (!boardingPricingSettings || !checkOutWindow) return null;
+        return matchCheckoutChargeWindow(checkOutWindow, boardingPricingSettings);
+    }, [boardingPricingSettings, checkOutWindow]);
+    const translatedQuoteNotes = useMemo(() => {
+        if (!boardingQuote) return [];
+        const next: string[] = [];
+
+        if (boardingQuote.coveredMembershipUnits > 0) {
+            next.push(
+                boardingQuote.coveredMembershipUnits >= boardingQuote.totalPetNights
+                    ? t('pricing_note_membership_full')
+                    : t('pricing_note_membership_partial')
+            );
+        }
+
+        if (boardingQuote.automaticDiscountsSuppressed) {
+            next.push(t('pricing_note_manual_discount_review'));
+        }
+
+        if (boardingQuote.matchedDepositRule) {
+            next.push(t('pricing_note_deposit_rule'));
+        }
+
+        if (selectedMembershipPlanForPurchase && selectedMembershipPlanForPurchase.priceCents > 0) {
+            next.push(t('pricing_note_membership_purchase_today'));
+        }
+
+        return next;
+    }, [boardingQuote, selectedMembershipPlanForPurchase, t]);
+
+    const membershipPurchaseTotalCents = selectedMembershipPlanForPurchase?.priceCents || 0;
+    const amountDueTodayCents = (boardingQuote?.depositDueTodayCents || 0) + membershipPurchaseTotalCents;
+
+    const buildPaymentBreakdown = useCallback((): PaymentBreakdown => {
+        const lines: PaymentLineItem[] = [];
+
+        if (selectedMembershipPlanForPurchase && selectedMembershipPlanForPurchase.priceCents > 0) {
+            lines.push({
+                key: `membership-plan-${selectedMembershipPlanForPurchase.id}`,
+                label: t('payment_line_membership_purchase', {
+                    name: selectedMembershipPlanForPurchase.name,
+                }),
+                quantity: 1,
+                unitCents: selectedMembershipPlanForPurchase.priceCents,
+                totalCents: selectedMembershipPlanForPurchase.priceCents,
+            });
+        }
+
+        if ((boardingQuote?.depositDueTodayCents || 0) > 0) {
+            lines.push({
+                key: 'boarding-amount-due-today',
+                label: t('payment_line_due_today'),
+                quantity: 1,
+                unitCents: boardingQuote?.depositDueTodayCents || 0,
+                totalCents: boardingQuote?.depositDueTodayCents || 0,
+            });
+        }
+
+        return {
+            lines,
+            subtotalCents: lines.reduce((sum, line) => sum + line.totalCents, 0),
+        };
+    }, [boardingQuote, selectedMembershipPlanForPurchase, t]);
 
     /** Derived submit disabled — waiver removed */
     const isSubmitDisabled = useMemo(() => {
@@ -279,25 +587,60 @@ export default function IndividualBookBoardingPage() {
  *  Time option builders (defined early so they can be deps)
  *  ========================= */
     /** Build check-in options and preserve the current selection if still valid */
-    const refreshCheckInOptions = useCallback((map?: WeekdayMap) => {
+    const refreshCheckInOptions = useCallback((
+        baseMapOpt?: WeekdayMap,
+        earlyMapOpt?: WeekdayMap,
+        afterMapOpt?: WeekdayMap,
+        earlyReqOpt?: boolean,
+        afterReqOpt?: boolean
+    ) => {
         if (!checkInTimeRequired || !checkInDate) {
             setCheckInOptions([]);
+            setCheckInDisplayOptions([]);
             setCheckInWindow('');
             return;
         }
 
         const weekday = weekdayName(checkInDate, bizTZ);
-        const raw = (map ?? checkInTimesByWeekday)[weekday] ?? [];
-        const sorted = sortTimeStrings(raw);
+        const baseMap = baseMapOpt ?? checkInTimesByWeekday;
+        const earlyMap = earlyMapOpt ?? earlyDropOffTimesByWeekday;
+        const afterMap = afterMapOpt ?? afterHoursDropOffTimesByWeekday;
+        const earlyRequired = earlyReqOpt ?? earlyDropOffTimeRequired;
+        const afterRequired = afterReqOpt ?? afterHoursDropOffTimeRequired;
+
+        const base = baseMap[weekday] || [];
+        const early = earlyRequired ? (earlyMap[weekday] || []) : [];
+        const after = afterRequired ? (afterMap[weekday] || []) : [];
+        const merged = Array.from(new Set([...base, ...early, ...after]));
+        const sorted = sortTimeStrings(merged);
         const filtered = filterCheckInTimesForSameDay(sorted, checkInDate, bizTZ, sameDayCheckInCutoff);
+        const earlySet = new Set(early);
+        const afterSet = new Set(after);
+        const labels = filtered.map((timeValue) => {
+            if (earlySet.has(timeValue)) return `${timeValue} ${t('early_dropoff_fee_may_apply_suffix')}`;
+            if (afterSet.has(timeValue)) return `${timeValue} ${t('after_hours_dropoff_fee_may_apply_suffix')}`;
+            return timeValue;
+        });
 
         setCheckInOptions(filtered);
+        setCheckInDisplayOptions(labels);
 
         // 🔑 Preserve current selection if still valid; otherwise fall back to first available
         setCheckInWindow(prev =>
             prev && filtered.includes(prev) ? prev : (filtered[0] ?? '')
         );
-    }, [checkInDate, checkInTimeRequired, checkInTimesByWeekday, bizTZ, sameDayCheckInCutoff]);
+    }, [
+        checkInDate,
+        checkInTimeRequired,
+        checkInTimesByWeekday,
+        earlyDropOffTimeRequired,
+        earlyDropOffTimesByWeekday,
+        afterHoursDropOffTimeRequired,
+        afterHoursDropOffTimesByWeekday,
+        bizTZ,
+        sameDayCheckInCutoff,
+        t
+    ]);
 
     // Find the next check-in date that has at least one available time (post-filter)
     const findNextCheckInDate = useCallback(
@@ -305,7 +648,12 @@ export default function IndividualBookBoardingPage() {
             for (let i = 1; i <= 30; i++) {
                 const candidate = normalizeDate(new Date(startDate.getTime() + i * 24 * 60 * 60 * 1000));
                 const day = weekdayName(candidate, bizTZ);
-                const raw = sortTimeStrings((checkInTimesByWeekday[day] || []).map((s) => s || ''));
+                const rawMerged = [
+                    ...(checkInTimesByWeekday[day] || []),
+                    ...(earlyDropOffTimeRequired ? (earlyDropOffTimesByWeekday[day] || []) : []),
+                    ...(afterHoursDropOffTimeRequired ? (afterHoursDropOffTimesByWeekday[day] || []) : []),
+                ];
+                const raw = sortTimeStrings(rawMerged.map((s) => s || ''));
                 if (raw.length === 0) continue; // no times configured on this weekday
 
                 // For non-today, filterCheckInTimesForSameDay returns everything (no past-time cut)
@@ -316,16 +664,22 @@ export default function IndividualBookBoardingPage() {
             }
             return null;
         },
-        [bizTZ, checkInTimesByWeekday, sameDayCheckInCutoff]
+        [
+            bizTZ,
+            checkInTimesByWeekday,
+            sameDayCheckInCutoff,
+            earlyDropOffTimeRequired,
+            earlyDropOffTimesByWeekday,
+            afterHoursDropOffTimeRequired,
+            afterHoursDropOffTimesByWeekday
+        ]
     );
-
-    // ✅ NEW: merge normal + after-hours for checkout, attach suffix in labels (display only)
-    const [afterHoursPickUpTimeRequired, setAfterHoursPickUpTimeRequired] = useState<boolean>(false);
-    const [afterHoursPickUpTimesByWeekday, setAfterHoursPickUpTimesByWeekday] = useState<WeekdayMap>({});
 
     const refreshCheckOutOptions = useCallback((
         baseMapOpt?: WeekdayMap,
+        beforeMapOpt?: WeekdayMap,
         afterMapOpt?: WeekdayMap,
+        beforeReqOpt?: boolean,
         afterReqOpt?: boolean
     ) => {
         if (!checkOutTimeRequired || !checkOutDate) {
@@ -335,23 +689,35 @@ export default function IndividualBookBoardingPage() {
         const weekday = weekdayName(checkOutDate, bizTZ);
 
         const baseMap = baseMapOpt || checkOutTimesByWeekday;
+        const beforeMap = beforeMapOpt || beforeHoursPickUpTimesByWeekday;
         const afterMap = afterMapOpt || afterHoursPickUpTimesByWeekday;
+        const beforeRequired = beforeReqOpt ?? beforeHoursPickUpTimeRequired;
         const afterRequired = afterReqOpt ?? afterHoursPickUpTimeRequired;
 
         const base = baseMap[weekday] || [];
+        const before = beforeRequired ? (beforeMap[weekday] || []) : [];
         const after = afterRequired ? (afterMap[weekday] || []) : [];
 
         // unique + sorted
-        const combined = Array.from(new Set([...base, ...after]));
+        const combined = Array.from(new Set([...before, ...base, ...after]));
         const combinedSorted = sortTimeStrings(combined);
 
         // raw values we store
         setCheckOutOptions(combinedSorted);
 
         // display labels with suffix for after-hours only
-        const suffix = ` ${t('after_hours_fee_may_apply_suffix')}`;
+        const beforeSuffix = ` ${t('before_hours_pickup_fee_may_apply_suffix')}`;
+        const afterSuffix = ` ${t('after_hours_fee_may_apply_suffix')}`;
+        const beforeSet = new Set(before);
         const afterSet = new Set(after);
-        const labels = combinedSorted.map(tStr => afterSet.has(tStr) ? `${tStr}${suffix}` : tStr);
+        const labels = combinedSorted.map(tStr => {
+            if (beforeSet.has(tStr)) return `${tStr}${beforeSuffix}`;
+            if (afterSet.has(tStr)) return `${tStr}${afterSuffix}`;
+            if (boardingPricingSettings && matchCheckoutChargeWindow(tStr, boardingPricingSettings)) {
+                return `${tStr} ${t('checkout_fee_may_apply_suffix')}`;
+            }
+            return tStr;
+        });
         setCheckOutDisplayOptions(labels);
 
         // keep or choose default
@@ -359,75 +725,187 @@ export default function IndividualBookBoardingPage() {
             setCheckOutWindow(combinedSorted[0] || '');
         }
     }, [
-        checkOutDate, checkOutTimeRequired, checkOutTimesByWeekday, afterHoursPickUpTimesByWeekday,
-        afterHoursPickUpTimeRequired, bizTZ, checkOutWindow, t
+        checkOutDate,
+        checkOutTimeRequired,
+        checkOutTimesByWeekday,
+        beforeHoursPickUpTimesByWeekday,
+        afterHoursPickUpTimesByWeekday,
+        beforeHoursPickUpTimeRequired,
+        afterHoursPickUpTimeRequired,
+        boardingPricingSettings,
+        bizTZ,
+        checkOutWindow,
+        t
     ]);
 
-    /** =========================
- *  Load auth, pets, business settings (dup-guarded) — waiver removed
- *  ========================= */
+    const loadMembershipData = useCallback(async (bizId: string, uid: string) => {
+        if (!bizId || !uid) {
+            setMembershipPlans([]);
+            setMembershipPurchases([]);
+            return;
+        }
+
+        try {
+            const [nextPlans, nextPurchases] = await Promise.all([
+                loadMembershipPlans(db, bizId),
+                loadClientMembershipPurchases(db, bizId, uid),
+            ]);
+            setMembershipPlans(nextPlans.filter((plan) => plan.active));
+            setMembershipPurchases(nextPurchases);
+        } catch (error) {
+            console.error('❌ Failed to load memberships:', error);
+            setMembershipPlans([]);
+            setMembershipPurchases([]);
+        }
+    }, []);
+
     useEffect(() => {
-        let handled = false; // prevents double fire in StrictMode / reconnects
+        if (!businessId || !userId) return;
+        void loadMembershipData(businessId, userId);
+    }, [businessId, loadMembershipData, userId]);
 
-        const unsub = onAuthStateChanged(auth, async (user) => {
-            if (handled) return;
-            handled = true;
+    const startStripePaymentFlow = useCallback(async () => {
+        if (isProcessingPayment) return;
+        if (!userId || !businessId || !checkInDate || !checkOutDate || !boardingQuote || selectedPetIds.size === 0) {
+            return;
+        }
 
-            if (!user) {
-                router.push(`/${locale}/loginsignup`);
-                return;
+        if (selectedMembershipPurchase && !membershipPurchaseCanCover(selectedMembershipPurchase, 'boarding', membershipUnitsRequired)) {
+            alert(t('membership_balance_insufficient_boarding'));
+            return;
+        }
+
+        if (selectedMembershipPlanId && !selectedMembershipPlanForPurchase) {
+            alert(t('membership_selected_plan_unavailable'));
+            return;
+        }
+
+        if (selectedMembershipPlanForPurchase && !boardingOnlinePaymentsEnabled) {
+            alert(t('membership_purchase_requires_boarding_pay_at_booking'));
+            return;
+        }
+
+        const localBreakdown = buildPaymentBreakdown();
+        const localSummary = {
+            estimatedTotalCents: boardingQuote.estimatedTotalCents,
+            depositDueTodayCents: boardingQuote.depositDueTodayCents,
+            remainingBalanceCents: boardingQuote.remainingBalanceCents,
+            membershipPurchaseTotalCents,
+        };
+        const nextReservationId = pendingReservationId || crypto.randomUUID();
+
+        setPendingReservationId(nextReservationId);
+        setPaymentBreakdown(localBreakdown);
+        setPaymentEstimateSummary(localSummary);
+        setIsProcessingPayment(true);
+
+        try {
+            const syncCallable = httpsCallable(functions, 'syncStripeAccountStatus');
+            await syncCallable({ businessId });
+
+            const createCallable = httpsCallable(functions, 'createBoardingPaymentIntent');
+            const payload = {
+                businessId,
+                userId,
+                reservationId: nextReservationId,
+                checkInDateMs: checkInDate.getTime(),
+                checkOutDateMs: checkOutDate.getTime(),
+                petIds: [...selectedPetIds],
+                checkInWindow: checkInWindow || null,
+                checkOutWindow: checkOutWindow || null,
+                groomingAddOns: groomingSelections,
+                boardingAddOns: selectedBoardingAddOns,
+                selectedMembershipPurchaseId: selectedMembershipPurchaseId || null,
+                selectedMembershipPlanId: selectedMembershipPlanId || null,
+            };
+
+            const result = await createCallable(payload) as { data?: CreateBoardingPaymentIntentResponse };
+            const response = result?.data || {};
+
+            const nextClientSecret = response.clientSecret;
+            const amountCents = response.amountCents;
+            const nextPaymentIntentId = response.paymentIntentId;
+
+            if (!nextClientSecret || typeof amountCents !== 'number' || amountCents <= 0) {
+                throw new Error('Invalid PaymentIntent response');
             }
 
-            const uid = user.uid;
-            setUserId(uid);
-
-            // Load user name for RTDB ownerName (best-effort)
-            try {
-                const uref = doc(db, 'users', uid);
-                const usnap = await getDoc(uref).catch(() => null);
-                const fn = (usnap?.data()?.firstName as string) || '';
-                const ln = (usnap?.data()?.lastName as string) || '';
-                const on = `${fn} ${ln}`.trim();
-                setOwnerName(on || 'Client');
-            } catch {
-                setOwnerName('Client');
-            }
-
-            // Load pets
-            try {
-                const pcol = collection(db, 'users', uid, 'pets');
-                const psnap = await getDocs(pcol);
-                const list: Pet[] = psnap.docs.map(d => {
-                    const data = d.data() || {};
-                    return {
-                        id: d.id,
-                        name: (data.petName as string) || 'Unnamed',
-                        species: (data.petType as string) || '',
-                        medications: (data.medications as string) || undefined,
-                        medicationDetails: (data.medicationDetails as string) || undefined,
-                        spayedNeutered: (data.spayedNeutered as string) || undefined,
-                    };
+            const serverLines = parseServerItemizedLineItems(response.itemizedLineItems);
+            if (serverLines.length > 0) {
+                setPaymentBreakdown({
+                    lines: serverLines,
+                    subtotalCents: serverLines.reduce((sum, line) => sum + line.totalCents, 0),
                 });
-                setPets(list);
-                setSelectedPetIds(new Set(list.map(p => p.id))); // select all by default
-            } catch (e) {
-                console.error('❌ Failed to load pets:', e);
+            } else {
+                setPaymentBreakdown(localBreakdown);
             }
 
-            // Business settings (no waiver)
-            await fetchBusinessSettings(businessId);
-        });
+            setPaymentEstimateSummary({
+                estimatedTotalCents: typeof response.estimatedTotalCents === 'number'
+                    ? response.estimatedTotalCents
+                    : localSummary.estimatedTotalCents,
+                depositDueTodayCents: typeof response.depositDueTodayCents === 'number'
+                    ? response.depositDueTodayCents
+                    : localSummary.depositDueTodayCents,
+                remainingBalanceCents: typeof response.remainingBalanceCents === 'number'
+                    ? response.remainingBalanceCents
+                    : localSummary.remainingBalanceCents,
+                membershipPurchaseTotalCents: typeof response.membershipPurchaseTotalCents === 'number'
+                    ? response.membershipPurchaseTotalCents
+                    : localSummary.membershipPurchaseTotalCents,
+            });
 
-        return () => unsub();
-        // Keep deps minimal to avoid re-subscribing
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [router, locale, businessId]);
+            setPaymentAmount(amountCents);
+            setPaymentIntentId(nextPaymentIntentId || null);
+            setClientSecret(nextClientSecret);
+        } catch (error) {
+            console.error('❌ Boarding Stripe payment flow failed:', error);
+            setPendingReservationId(null);
+            setPaymentAmount(null);
+            setPaymentIntentId(null);
+            setPaymentEstimateSummary(null);
+            setPaymentBreakdown({ lines: [], subtotalCents: 0 });
+            alert(t('payment_processing_failed'));
+        } finally {
+            setIsProcessingPayment(false);
+        }
+    }, [
+        boardingOnlinePaymentsEnabled,
+        boardingQuote,
+        buildPaymentBreakdown,
+        businessId,
+        checkInDate,
+        checkInWindow,
+        checkOutDate,
+        checkOutWindow,
+        groomingSelections,
+        isProcessingPayment,
+        membershipPurchaseTotalCents,
+        membershipUnitsRequired,
+        pendingReservationId,
+        selectedBoardingAddOns,
+        selectedMembershipPlanForPurchase,
+        selectedMembershipPlanId,
+        selectedMembershipPurchase,
+        selectedMembershipPurchaseId,
+        selectedPetIds,
+        t,
+        userId,
+    ]);
 
     /** Fetch Business settings (parity with iOS; includes after-hours) — waiver removed */
-    const fetchBusinessSettings = useCallback(async (bizId: string) => {
+    const fetchBusinessSettings = useCallback(async (bizId: string, uidOverride?: string) => {
         try {
-            const bref = doc(db, 'businesses', bizId);
-            const bsnap = await getDoc(bref);
+            const activeUserId = uidOverride || '';
+            const [bsnap, pricingSnap, addOnSnap, invoiceSnap, groomingSnap, discountSnap, clientSnap] = await Promise.all([
+                getDoc(doc(db, 'businesses', bizId)),
+                getDoc(doc(db, 'businesses', bizId, 'settings', 'boardingPricing')),
+                getDoc(doc(db, 'businesses', bizId, 'settings', 'boardingAddOnPricing')),
+                getDoc(doc(db, 'businesses', bizId, 'settings', 'invoiceItemLibrary')),
+                getDoc(doc(db, 'businesses', bizId, 'settings', 'groomingPricing')),
+                getDoc(doc(db, 'businesses', bizId, 'settings', 'discountRules')),
+                activeUserId ? getDoc(doc(db, 'userApprovedBusinesses', bizId, 'clients', activeUserId)) : Promise.resolve(null),
+            ]);
             const data = (bsnap.data() || {}) as BusinessSettingsDoc;
 
             // TZ & features (no enforceWaiverVersion)
@@ -435,6 +913,10 @@ export default function IndividualBookBoardingPage() {
             const f = data.features || {};
             setIncludePendingInCapacity(!!f.countPendingInCapacity);
             setClientWritesRTDB(f.clientWritesRTDB !== false); // default true
+            const paymentSettings = data.paymentSettings || {};
+            setPaymentsEnabled(!!paymentSettings.enabled);
+            const boardingPayments = paymentSettings.boarding || {};
+            setBoardingPayAtBookingEnabled(!!boardingPayments.payAtBooking);
 
             // Capacity
             setCapacityBoardingTotal(
@@ -464,6 +946,77 @@ export default function IndividualBookBoardingPage() {
             // Grooming
             setGroomingAvailableAsAddOn(!!data.groomingAvailableAsAddOnToBoarding);
             setGroomingServices((data.groomingServices || []).map(s => (s || '').trim()).filter(Boolean));
+            if (groomingSnap.exists()) {
+                const groomingData = groomingSnap.data() as {
+                    grooming?: { services?: Record<string, { priceCents?: number }> };
+                };
+                const servicesMap = groomingData.grooming?.services || {};
+                const nextServiceNames = Object.keys(servicesMap)
+                    .map((value) => value.trim())
+                    .filter(Boolean)
+                    .sort((a, b) => a.localeCompare(b));
+                const nextPrices: Record<string, number> = {};
+                for (const [serviceName, value] of Object.entries(servicesMap)) {
+                    if (typeof value?.priceCents === 'number' && value.priceCents > 0) {
+                        nextPrices[serviceName] = value.priceCents;
+                    }
+                }
+                setGroomingServicePriceCentsByName(nextPrices);
+                if (nextServiceNames.length > 0) {
+                    setGroomingServices(nextServiceNames);
+                }
+            } else {
+                setGroomingServicePriceCentsByName({});
+            }
+
+            if (addOnSnap.exists()) {
+                const addOnData = addOnSnap.data() as {
+                    services?: Record<string, { priceCents?: number }>;
+                };
+                const servicesMap = addOnData.services || {};
+                const nextBoardingAddOnNames = Object.keys(servicesMap)
+                    .map((value) => value.trim())
+                    .filter(Boolean)
+                    .sort((a, b) => a.localeCompare(b));
+                const nextPrices: Record<string, number> = {};
+                for (const [serviceName, value] of Object.entries(servicesMap)) {
+                    if (typeof value?.priceCents === 'number' && value.priceCents > 0) {
+                        nextPrices[serviceName] = value.priceCents;
+                    }
+                }
+                setBoardingAddOnServices(nextBoardingAddOnNames);
+                setBoardingAddOnPriceCentsByName(nextPrices);
+            } else {
+                setBoardingAddOnServices([]);
+                setBoardingAddOnPriceCentsByName({});
+            }
+
+            if (pricingSnap.exists()) {
+                setBoardingPricingSettings(normalizeBoardingPricingDoc(pricingSnap.data()));
+            } else {
+                setBoardingPricingSettings(normalizeBoardingPricingDoc(null));
+            }
+
+            if (invoiceSnap.exists()) {
+                setInvoiceLibraryItems(normalizeInvoiceLibraryItemsDoc(invoiceSnap.data()));
+            } else {
+                setInvoiceLibraryItems([]);
+            }
+
+            if (discountSnap.exists()) {
+                setClientDiscountSettings(normalizeBoardingClientDiscountSettings(discountSnap.data()));
+            } else {
+                setClientDiscountSettings(null);
+            }
+
+            const assignedRuleIds = clientSnap?.exists()
+                ? (clientSnap.data()?.assignedDiscountRuleIds as string[] | undefined)
+                : undefined;
+            setAssignedClientDiscountRuleIds(
+                Array.isArray(assignedRuleIds)
+                    ? assignedRuleIds.filter((value): value is string => typeof value === 'string')
+                    : []
+            );
 
             // --- Blackout Dates (match iOS behavior)
             if (Array.isArray(data.blackoutDates)) {
@@ -486,18 +1039,86 @@ export default function IndividualBookBoardingPage() {
             const ahMap = data.afterHoursPickUpTimes || {};
             setAfterHoursPickUpTimeRequired(ahReq);
             setAfterHoursPickUpTimesByWeekday(ahMap);
+            const bhReq = !!data.beforeHoursPickUpTimeRequired;
+            const bhMap = data.beforeHoursPickUpTimes || {};
+            setBeforeHoursPickUpTimeRequired(bhReq);
+            setBeforeHoursPickUpTimesByWeekday(bhMap);
+            const earlyReq = !!data.earlyDropOffTimeRequired;
+            const earlyMap = data.earlyDropOffTimes || {};
+            setEarlyDropOffTimeRequired(earlyReq);
+            setEarlyDropOffTimesByWeekday(earlyMap);
+            const afterDropReq = !!data.afterHoursDropOffTimeRequired;
+            const afterDropMap = data.afterHoursDropOffTimes || {};
+            setAfterHoursDropOffTimeRequired(afterDropReq);
+            setAfterHoursDropOffTimesByWeekday(afterDropMap);
 
             // 🔷 Deposit requirement (boarding)
             setDepositRequired(Boolean(data.depositRequired));
+            setDepositAmount((data.depositAmount as string) || '');
             setDepositAcknowledged(false); // reset every time settings load
 
             // Refresh options if dates already chosen
-            refreshCheckInOptions(ciMap);
-            refreshCheckOutOptions(coMap, ahMap, ahReq);
+            refreshCheckInOptions(ciMap, earlyMap, afterDropMap, earlyReq, afterDropReq);
+            refreshCheckOutOptions(coMap, bhMap, ahMap, bhReq, ahReq);
         } catch (e) {
             console.error('❌ Failed to fetch business settings:', e);
         }
-    }, [refreshCheckInOptions, refreshCheckOutOptions]);
+    }, [refreshCheckInOptions, refreshCheckOutOptions, bizTZ]);
+
+    /** =========================
+ *  Load auth, pets, business settings (dup-guarded) — waiver removed
+ *  ========================= */
+    useEffect(() => {
+        let handled = false; // prevents double fire in StrictMode / reconnects
+
+        const unsub = onAuthStateChanged(auth, async (user) => {
+            if (handled) return;
+            handled = true;
+
+            if (!user) {
+                router.push(`/${locale}/loginsignup`);
+                return;
+            }
+
+            const uid = user.uid;
+            setUserId(uid);
+
+            try {
+                const uref = doc(db, 'users', uid);
+                const usnap = await getDoc(uref).catch(() => null);
+                const fn = (usnap?.data()?.firstName as string) || '';
+                const ln = (usnap?.data()?.lastName as string) || '';
+                const on = `${fn} ${ln}`.trim();
+                setOwnerName(on || 'Client');
+            } catch {
+                setOwnerName('Client');
+            }
+
+            try {
+                const pcol = collection(db, 'users', uid, 'pets');
+                const psnap = await getDocs(pcol);
+                const list: Pet[] = psnap.docs.map(d => {
+                    const data = d.data() || {};
+                    return {
+                        id: d.id,
+                        name: (data.petName as string) || 'Unnamed',
+                        species: (data.petType as string) || '',
+                        medications: (data.medications as string) || undefined,
+                        medicationDetails: (data.medicationDetails as string) || undefined,
+                        spayedNeutered: (data.spayedNeutered as string) || undefined,
+                    };
+                });
+                setPets(list);
+                setSelectedPetIds(new Set(list.map(p => p.id)));
+            } catch (e) {
+                console.error('❌ Failed to load pets:', e);
+            }
+
+            await fetchBusinessSettings(businessId, uid);
+        });
+
+        return () => unsub();
+    }, [businessId, fetchBusinessSettings, locale, router]);
 
 
     function checkBlackoutOverlapIfProhibited(): boolean {
@@ -666,7 +1287,11 @@ export default function IndividualBookBoardingPage() {
             }
 
             const weekday = weekdayName(checkInDate, bizTZ);
-            const raw = sortTimeStrings((checkInTimesByWeekday[weekday] || []).map((s) => s || ''));
+            const raw = sortTimeStrings([
+                ...(checkInTimesByWeekday[weekday] || []),
+                ...(earlyDropOffTimeRequired ? (earlyDropOffTimesByWeekday[weekday] || []) : []),
+                ...(afterHoursDropOffTimeRequired ? (afterHoursDropOffTimesByWeekday[weekday] || []) : []),
+            ].map((s) => s || ''));
             const filtered = filterCheckInTimesForSameDay(raw, checkInDate, bizTZ, sameDayCheckInCutoff);
 
             // If this day has configured times but none are valid now (e.g., it's late),
@@ -685,16 +1310,28 @@ export default function IndividualBookBoardingPage() {
 
             // Otherwise, use today's filtered times (already excludes past times & cutoff)
             setCheckInOptions(filtered);
+            const earlySet = new Set(earlyDropOffTimeRequired ? (earlyDropOffTimesByWeekday[weekday] || []) : []);
+            const afterSet = new Set(afterHoursDropOffTimeRequired ? (afterHoursDropOffTimesByWeekday[weekday] || []) : []);
+            setCheckInDisplayOptions(filtered.map((timeValue) => {
+                if (earlySet.has(timeValue)) return `${timeValue} ${t('early_dropoff_fee_may_apply_suffix')}`;
+                if (afterSet.has(timeValue)) return `${timeValue} ${t('after_hours_dropoff_fee_may_apply_suffix')}`;
+                return timeValue;
+            }));
             setCheckInWindow(prev => (prev && filtered.includes(prev) ? prev : (filtered[0] ?? '')));
         })();
     }, [
         checkInDate,
         checkInTimeRequired,
         checkInTimesByWeekday,
+        earlyDropOffTimeRequired,
+        earlyDropOffTimesByWeekday,
+        afterHoursDropOffTimeRequired,
+        afterHoursDropOffTimesByWeekday,
         bizTZ,
         sameDayCheckInCutoff,
         refreshCheckInOptions, // safe; it's stable
-        findNextCheckInDate
+        findNextCheckInDate,
+        t
     ]);
 
     // Re-run validations separately (won't reset the user's time selection)
@@ -713,6 +1350,42 @@ export default function IndividualBookBoardingPage() {
         setSuppressValidations(false);
         revalidateAll();
     }, [selectedPetIds, revalidateAll]);
+
+    useEffect(() => {
+        if (!boardingPricingSettings || !checkInDate || !checkOutDate || checkInDate >= checkOutDate || selectedPetIds.size === 0) {
+            setBoardingQuote(null);
+            return;
+        }
+
+        const nights = nightsBetweenKeys(checkInDate, checkOutDate, bizTZ).length;
+        setBoardingQuote(computeBoardingQuote({
+            pricing: boardingPricingSettings,
+            petCount: selectedPetIds.size,
+            nightsBooked: nights,
+            membershipCoveredUnits: membershipUnitsCovered,
+            groomingSubtotalCents,
+            boardingAddOnSubtotalCents,
+            matchedCheckoutChargeWindow: matchedCheckoutWindow,
+            matchedOddHourKinds,
+            invoiceItemsById: invoiceItemMap,
+            clientDiscountSettings,
+            assignedClientDiscountRuleIds,
+        }));
+    }, [
+        assignedClientDiscountRuleIds,
+        boardingAddOnSubtotalCents,
+        boardingPricingSettings,
+        bizTZ,
+        checkInDate,
+        checkOutDate,
+        clientDiscountSettings,
+        groomingSubtotalCents,
+        invoiceItemMap,
+        matchedCheckoutWindow,
+        matchedOddHourKinds,
+        membershipUnitsCovered,
+        selectedPetIds
+    ]);
 
     /** =========================
      *  UI
@@ -739,6 +1412,17 @@ export default function IndividualBookBoardingPage() {
                             <p className="text-sm text-gray-800 mb-3">
                                 {t('deposit_required_notice_body')}
                             </p>
+                            {(boardingQuote?.depositDueTodayCents || 0) > 0 ? (
+                                <p className="text-sm font-semibold text-gray-900 mb-3">
+                                    {t('deposit_required_amount_line', {
+                                        amount: `$${((boardingQuote?.depositDueTodayCents || 0) / 100).toFixed(2)}`
+                                    })}
+                                </p>
+                            ) : depositAmount.trim() !== '' ? (
+                                <p className="text-sm font-semibold text-gray-900 mb-3">
+                                    {t('deposit_required_amount_line', { amount: depositAmount })}
+                                </p>
+                            ) : null}
                             <label className="inline-flex items-center gap-2 text-sm font-semibold">
                                 <span>{t('deposit_required_confirm_yes')}</span>
                                 <input
@@ -793,8 +1477,8 @@ export default function IndividualBookBoardingPage() {
                                 value={checkInWindow}
                                 onChange={(e) => setCheckInWindow(e.target.value)}
                             >
-                                {checkInOptions.map((opt) => (
-                                    <option key={opt} value={opt}>{opt}</option>
+                                {checkInOptions.map((opt, index) => (
+                                    <option key={opt} value={opt}>{checkInDisplayOptions[index] || opt}</option>
                                 ))}
                             </select>
                         </div>
@@ -882,11 +1566,155 @@ export default function IndividualBookBoardingPage() {
                         </button>
                     )}
 
+                    {boardingAddOnServices.length > 0 && (
+                        <button
+                            onClick={() => setShowBoardingAddOnModal(true)}
+                            className="w-full max-w-xs py-3 rounded-lg text-white text-base font-semibold
+                            bg-[#2c4a30] hover:bg-[#244026] shadow-md ring-1 ring-black/10
+                            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-600"
+                        >
+                            {t('select_boarding_addons')}
+                        </button>
+                    )}
+
+                    {membershipUnitsRequired > 0 && (
+                        <BoardingAndDaycareBookingMembershipSelector
+                            service="boarding"
+                            requiredUnits={membershipUnitsRequired}
+                            purchases={membershipPurchases}
+                            plans={membershipPlans}
+                            selectedPurchaseId={selectedMembershipPurchaseId}
+                            selectedPlanId={selectedMembershipPlanId}
+                            onSelectPurchase={(purchaseId) => {
+                                setSelectedMembershipPurchaseId(purchaseId);
+                                if (purchaseId) setSelectedMembershipPlanId('');
+                            }}
+                            onSelectPlan={(planId) => {
+                                setSelectedMembershipPlanId(planId);
+                                if (planId) setSelectedMembershipPurchaseId('');
+                            }}
+                            buyDisabledReason={membershipPurchaseDisabledReason}
+                        />
+                    )}
+
+                    {isProcessingPayment && !clientSecret && (
+                        <div className="w-full max-w-xs text-center text-sm text-gray-600">
+                            {t('processing_payment')}
+                        </div>
+                    )}
+
+                    {boardingQuote && (
+                        <div className="w-full max-w-xl border rounded-2xl bg-white shadow-sm p-4 space-y-3">
+                            <div>
+                                <h2 className="text-lg font-semibold text-[color:var(--color-accent)]">
+                                    {t('pricing_summary_title')}
+                                </h2>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    {t('pricing_summary_body')}
+                                </p>
+                            </div>
+
+                            <div className="space-y-2">
+                                {boardingQuote.lines.map((line) => (
+                                    <div key={line.key} className="flex items-center justify-between gap-4 text-sm">
+                                        <span className={line.tone === 'discount' ? 'text-green-700' : ''}>
+                                            {line.label}
+                                        </span>
+                                        <span className={`font-semibold ${
+                                            line.tone === 'discount'
+                                                ? 'text-green-700'
+                                                : line.tone === 'deposit'
+                                                    ? 'text-[color:var(--color-accent)]'
+                                                    : 'text-gray-900'
+                                        }`}>
+                                            {line.amountCents < 0 ? '-' : ''}${(Math.abs(line.amountCents) / 100).toFixed(2)}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="border-t pt-3 space-y-2">
+                                <div className="flex items-center justify-between text-sm font-semibold">
+                                    <span>{t('estimated_total_label')}</span>
+                                    <span>${(boardingQuote.estimatedTotalCents / 100).toFixed(2)}</span>
+                                </div>
+                                {membershipPurchaseTotalCents > 0 && (
+                                    <div className="flex items-center justify-between text-sm font-semibold">
+                                        <span>{t('membership_purchase_due_today_label')}</span>
+                                        <span>${(membershipPurchaseTotalCents / 100).toFixed(2)}</span>
+                                    </div>
+                                )}
+                                <div className="flex items-center justify-between text-sm font-semibold">
+                                    <span>{membershipPurchaseTotalCents > 0 ? t('amount_due_today_label') : t('deposit_due_today_label')}</span>
+                                    <span>${(amountDueTodayCents / 100).toFixed(2)}</span>
+                                </div>
+                                <div className="flex items-center justify-between text-sm font-semibold">
+                                    <span>{t('remaining_balance_label')}</span>
+                                    <span>${(boardingQuote.remainingBalanceCents / 100).toFixed(2)}</span>
+                                </div>
+                            </div>
+
+                            {translatedQuoteNotes.length > 0 && (
+                                <div className="space-y-2">
+                                    {translatedQuoteNotes.map((note) => (
+                                        <p key={note} className="text-xs text-gray-600">
+                                            {note}
+                                        </p>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {clientSecret && paymentEstimateSummary && (
+                        <Elements
+                            key={clientSecret}
+                            stripe={stripePromise}
+                            options={{
+                                clientSecret,
+                                appearance: { theme: 'stripe' },
+                            }}
+                        >
+                            <BoardingStripeCheckoutForm
+                                amountCents={paymentAmount}
+                                breakdown={paymentBreakdown}
+                                estimateSummary={paymentEstimateSummary}
+                                onSuccess={async () => {
+                                    setClientSecret(null);
+                                    await handleSubmit();
+                                }}
+                                onCancel={() => {
+                                    setClientSecret(null);
+                                    setPaymentAmount(null);
+                                    setPaymentIntentId(null);
+                                    setPaymentEstimateSummary(null);
+                                    setPaymentBreakdown({ lines: [], subtotalCents: 0 });
+                                    setPendingReservationId(null);
+                                }}
+                            />
+                        </Elements>
+                    )}
+
                     {/* Submit */}
                     <button
-                        onClick={async () => { await handleSubmit(); }}
-                        disabled={isSubmitDisabled}
-                        className={`w-full max-w-xs text-white py-3 rounded transition text-sm ${isSubmitDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-800 hover:bg-green-700'}`}
+                        onClick={async () => {
+                            if (selectedMembershipPlanId && !boardingOnlinePaymentsEnabled) {
+                                alert(t('membership_purchase_requires_boarding_pay_at_booking'));
+                                return;
+                            }
+
+                            const needsStripePayment =
+                                boardingOnlinePaymentsEnabled
+                                && (!!selectedMembershipPlanId || (amountDueTodayCents > 0));
+
+                            if (needsStripePayment) {
+                                await startStripePaymentFlow();
+                            } else {
+                                await handleSubmit();
+                            }
+                        }}
+                        disabled={isSubmitDisabled || isProcessingPayment}
+                        className={`w-full max-w-xs text-white py-3 rounded transition text-sm ${(isSubmitDisabled || isProcessingPayment) ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-800 hover:bg-green-700'}`}
                     >
                         {isSubmitting ? t('saving') : t('submit_boarding_reservation')}
                     </button>
@@ -904,6 +1732,20 @@ export default function IndividualBookBoardingPage() {
                     t={t}
                 />
             )}
+
+            {showBoardingAddOnModal && (
+                <BoardingAddOnModal
+                    services={boardingAddOnServices}
+                    pricesByName={boardingAddOnPriceCentsByName}
+                    selectedServices={selectedBoardingAddOns}
+                    onClose={() => setShowBoardingAddOnModal(false)}
+                    onSave={(services) => {
+                        setSelectedBoardingAddOns(services);
+                        setShowBoardingAddOnModal(false);
+                    }}
+                    t={t}
+                />
+            )}
         </div>
     );
 
@@ -913,6 +1755,9 @@ export default function IndividualBookBoardingPage() {
     async function handleSubmit() {
         if (gatingActive) return;
         if (!userId || !businessId || !checkInDate || !checkOutDate) return;
+
+        const selectedPurchaseForUsage = selectedMembershipPurchase;
+        const selectedPlanForPurchase = selectedMembershipPlanForPurchase;
 
         // Block check-in on blackout date
         if (blackoutDates.has(ymdKey(checkInDate, bizTZ))) {
@@ -933,11 +1778,40 @@ export default function IndividualBookBoardingPage() {
         if (overlapDetected) return;
         if (capacityBlockingNights.length) return;
 
+        if (selectedMembershipPurchaseId && !selectedPurchaseForUsage) {
+            alert(t('membership_selected_purchase_unavailable'));
+            return;
+        }
+
+        if (selectedPurchaseForUsage && membershipUnitsCovered <= 0) {
+            alert(t('membership_balance_insufficient_boarding'));
+            return;
+        }
+
+        if (selectedPurchaseForUsage && !membershipPurchaseCanCover(selectedPurchaseForUsage, 'boarding', membershipUnitsRequired)) {
+            alert(t('membership_balance_insufficient_boarding'));
+            return;
+        }
+
+        if (selectedMembershipPlanId && !selectedPlanForPurchase) {
+            alert(t('membership_selected_plan_unavailable'));
+            return;
+        }
+
+        if (selectedMembershipPlanId && !paymentIntentId) {
+            alert(
+                boardingOnlinePaymentsEnabled
+                    ? t('membership_purchase_complete_payment_first')
+                    : t('membership_purchase_requires_boarding_pay_at_booking')
+            );
+            return;
+        }
+
         setIsSubmitting(true);
         setSuppressValidations(true);
 
         try {
-            const reservationId = crypto.randomUUID();
+            const reservationId = pendingReservationId || crypto.randomUUID();
 
             const cinKey = ymdKey(checkInDate, bizTZ);
             const coutKey = ymdKey(checkOutDate, bizTZ);
@@ -965,6 +1839,22 @@ export default function IndividualBookBoardingPage() {
             if (checkInTimeRequired) payload.checkInWindow = checkInWindow;
             if (checkOutTimeRequired) payload.checkOutWindow = checkOutWindow; // raw time stored
             if (Object.keys(groomingSelections).length) payload.groomingAddOns = groomingSelections;
+            if (selectedBoardingAddOns.length) payload.boardingAddOns = selectedBoardingAddOns;
+            if (paymentIntentId) payload.paymentIntentId = paymentIntentId;
+            if (paymentAmount && paymentAmount > 0) payload.paymentTotalCents = paymentAmount;
+            if (typeof boardingQuote?.estimatedTotalCents === 'number') {
+                payload.estimatedTotalCents = paymentEstimateSummary?.estimatedTotalCents ?? boardingQuote.estimatedTotalCents;
+                payload.depositDueTodayCents = paymentEstimateSummary?.depositDueTodayCents ?? boardingQuote.depositDueTodayCents;
+                payload.remainingBalanceCents = paymentEstimateSummary?.remainingBalanceCents ?? boardingQuote.remainingBalanceCents;
+            }
+            if (paymentBreakdown.lines.length > 0) payload.itemizedLineItems = paymentBreakdown.lines;
+            if (selectedPurchaseForUsage?.id || (selectedPlanForPurchase && pendingReservationId)) {
+                payload.membershipPurchaseId = selectedPurchaseForUsage?.id || pendingReservationId || undefined;
+                payload.membershipPlanId = selectedPurchaseForUsage?.planId || selectedPlanForPurchase?.id;
+                payload.membershipPlanName = selectedPurchaseForUsage?.planName || selectedPlanForPurchase?.name;
+                payload.membershipUnitsApplied = membershipUnitsCovered;
+                payload.membershipPurchasedDuringBooking = !!selectedPlanForPurchase;
+            }
 
             // 1) Firestore write
             await setDoc(doc(db, 'boardingReservations', reservationId), payload);
@@ -992,19 +1882,93 @@ export default function IndividualBookBoardingPage() {
 
                     const perPet = groomingSelections[petId] || [];
                     if (perPet.length) base.groomingAddOns = perPet;
+                    if (selectedBoardingAddOns.length) base.boardingAddOns = selectedBoardingAddOns;
 
                     if (pet.medications) base.medications = pet.medications;
                     if (pet.medicationDetails) base.medicationDetails = pet.medicationDetails;
                     if (pet.spayedNeutered) base.spayedNeutered = pet.spayedNeutered;
+                    if (paymentIntentId) base.paymentIntentId = paymentIntentId;
+                    if (paymentAmount && paymentAmount > 0) base.paymentTotalCents = paymentAmount;
+                    if (typeof boardingQuote?.estimatedTotalCents === 'number') {
+                        base.estimatedTotalCents = paymentEstimateSummary?.estimatedTotalCents ?? boardingQuote.estimatedTotalCents;
+                        base.depositDueTodayCents = paymentEstimateSummary?.depositDueTodayCents ?? boardingQuote.depositDueTodayCents;
+                        base.remainingBalanceCents = paymentEstimateSummary?.remainingBalanceCents ?? boardingQuote.remainingBalanceCents;
+                    }
+                    if (paymentBreakdown.lines.length > 0) base.itemizedLineItems = paymentBreakdown.lines;
+                    if (selectedPurchaseForUsage?.id || (selectedPlanForPurchase && pendingReservationId)) {
+                        base.membershipPurchaseId = selectedPurchaseForUsage?.id || pendingReservationId || undefined;
+                        base.membershipPlanId = selectedPurchaseForUsage?.planId || selectedPlanForPurchase?.id;
+                        base.membershipPlanName = selectedPurchaseForUsage?.planName || selectedPlanForPurchase?.name;
+                        base.membershipUnitsApplied = membershipUnitsCovered;
+                        base.membershipPurchasedDuringBooking = !!selectedPlanForPurchase;
+                    }
 
                     await rtdbSet(ref(rtdb, `upcomingReservations/${businessId}/${rtdbKey}`), base);
                 });
                 await Promise.all(writes);
             }
 
+            let membershipUpdateError = false;
+            let membershipUpdateMessage = '';
+            let purchaseIdToConsume = selectedPurchaseForUsage?.id || null;
+
+            if (selectedPlanForPurchase && pendingReservationId) {
+                try {
+                    await createMembershipPurchaseForClient({
+                        db,
+                        businessId,
+                        clientUserId: userId,
+                        plan: selectedPlanForPurchase,
+                        source: 'boardingBooking',
+                        createdBy: auth.currentUser?.email || auth.currentUser?.uid || userId,
+                        purchaseIdOverride: pendingReservationId,
+                        linkedReservationId: reservationId,
+                        note: `Purchased during boarding booking for reservation ${reservationId}.`,
+                    });
+                    purchaseIdToConsume = pendingReservationId;
+                } catch (error) {
+                    console.error('❌ Membership purchase creation failed after boarding submit:', error);
+                    membershipUpdateError = true;
+                    membershipUpdateMessage = t('membership_purchase_save_failed_after_submit');
+                }
+            }
+
+            if (!membershipUpdateError && purchaseIdToConsume && membershipUnitsCovered > 0) {
+                try {
+                    await consumeMembershipPurchaseForClient({
+                        db,
+                        businessId,
+                        clientUserId: userId,
+                        purchaseId: purchaseIdToConsume,
+                        service: 'boarding',
+                        quantity: membershipUnitsCovered,
+                        createdBy: auth.currentUser?.email || auth.currentUser?.uid || userId,
+                        reservationId,
+                        note: `Applied to boarding reservation ${reservationId}.`,
+                    });
+                } catch (error) {
+                    console.error('❌ Membership consumption failed after boarding submit:', error);
+                    membershipUpdateError = true;
+                    membershipUpdateMessage = t('membership_balance_update_failed_after_submit');
+                }
+            }
+
             setIsSubmitting(false);
+            setPendingReservationId(null);
             setGroomingSelections({});
-            alert(t('reservation_submitted'));
+            setSelectedBoardingAddOns([]);
+            setSelectedMembershipPurchaseId('');
+            setSelectedMembershipPlanId('');
+            setPaymentAmount(null);
+            setPaymentIntentId(null);
+            setPaymentEstimateSummary(null);
+            setPaymentBreakdown({ lines: [], subtotalCents: 0 });
+            if (membershipUpdateError) {
+                alert(membershipUpdateMessage);
+            } else {
+                alert(t('reservation_submitted'));
+            }
+            router.push(`/${locale}/individualupcomingappointments`);
         } catch (e) {
             console.error('❌ Submit failed:', e);
             setIsSubmitting(false);
@@ -1094,6 +2058,183 @@ function GroomingModal(props: {
                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-600"
                     >
                         {t('done_button')}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function BoardingAddOnModal(props: {
+    services: string[];
+    pricesByName: Record<string, number>;
+    selectedServices: string[];
+    onSave: (services: string[]) => void;
+    onClose: () => void;
+    t: ReturnType<typeof useTranslations>;
+}) {
+    const { services, pricesByName, selectedServices, onSave, onClose, t } = props;
+    const [localSelected, setLocalSelected] = useState<string[]>(selectedServices);
+
+    const toggle = (service: string, checked: boolean) => {
+        setLocalSelected((prev) => {
+            if (checked) return Array.from(new Set([...prev, service]));
+            return prev.filter((value) => value !== service);
+        });
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+            <div className="bg-white w-full max-w-lg rounded-xl shadow-md p-0 flex flex-col max-h-[85vh]">
+                <div className="flex items-center justify-between px-4 py-3 border-b">
+                    <h3 className="text-lg font-semibold text-[color:var(--color-accent)]">
+                        {t('boarding_addons_title')}
+                    </h3>
+                    <button
+                        onClick={onClose}
+                        className="text-sm px-3 py-1 rounded bg-gray-100 hover:bg-gray-200"
+                    >
+                        {t('cancel_button')}
+                    </button>
+                </div>
+
+                <div className="flex-1 overflow-auto p-4 space-y-3">
+                    {services.length === 0 ? (
+                        <div className="text-sm text-gray-500">{t('no_boarding_addons_available')}</div>
+                    ) : (
+                        services.map((service) => {
+                            const checked = localSelected.includes(service);
+                            const priceCents = pricesByName[service];
+                            return (
+                                <label key={service} className="flex items-center justify-between gap-3 border rounded p-3 text-sm">
+                                    <span className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={checked}
+                                            onChange={(e) => toggle(service, e.target.checked)}
+                                        />
+                                        <span>{service}</span>
+                                    </span>
+                                    <span className="font-semibold text-gray-700">
+                                        {typeof priceCents === 'number' ? `$${(priceCents / 100).toFixed(2)}` : ''}
+                                    </span>
+                                </label>
+                            );
+                        })
+                    )}
+                </div>
+
+                <div className="sticky bottom-0 bg-white/95 backdrop-blur px-4 py-3 border-t">
+                    <button
+                        onClick={() => onSave(localSelected)}
+                        className="w-full py-3 rounded-lg text-white text-base font-semibold
+                   bg-green-800 hover:bg-green-700 shadow-md
+                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-600"
+                    >
+                        {t('done_button')}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function BoardingStripeCheckoutForm({
+    amountCents,
+    breakdown,
+    estimateSummary,
+    onSuccess,
+    onCancel,
+}: {
+    amountCents: number | null;
+    breakdown: PaymentBreakdown;
+    estimateSummary: {
+        estimatedTotalCents: number;
+        depositDueTodayCents: number;
+        remainingBalanceCents: number;
+        membershipPurchaseTotalCents: number;
+    };
+    onSuccess: () => void;
+    onCancel: () => void;
+}) {
+    const t = useTranslations('individualBookBoarding');
+    const stripe = useStripe();
+    const elements = useElements();
+    const [processing, setProcessing] = useState(false);
+
+    const handleSubmit = async () => {
+        if (!stripe || !elements) return;
+
+        setProcessing(true);
+
+        const { error, paymentIntent } = await stripe.confirmPayment({
+            elements,
+            redirect: 'if_required',
+        });
+
+        if (error) {
+            alert(error.message);
+            setProcessing(false);
+            return;
+        }
+
+        if (paymentIntent?.status === 'succeeded') {
+            onSuccess();
+        }
+
+        setProcessing(false);
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md space-y-4">
+                <h3 className="text-lg font-semibold">{t('complete_payment_title')}</h3>
+
+                <div className="space-y-1 text-sm text-gray-700">
+                    <div className="flex items-center justify-between gap-3 font-semibold">
+                        <span>{t('payment_modal_stay_total')}</span>
+                        <span>${(estimateSummary.estimatedTotalCents / 100).toFixed(2)}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 font-semibold">
+                        <span>{t('payment_modal_due_today')}</span>
+                        <span>${(((amountCents ?? 0)) / 100).toFixed(2)}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 font-semibold">
+                        <span>{t('payment_modal_remaining_balance')}</span>
+                        <span>${(estimateSummary.remainingBalanceCents / 100).toFixed(2)}</span>
+                    </div>
+                </div>
+
+                {breakdown.lines.length > 0 && (
+                    <div className="border rounded p-3 bg-gray-50 text-sm">
+                        <div className="font-semibold mb-2">{t('invoice_summary_title')}</div>
+                        <div className="space-y-1">
+                            {breakdown.lines.map((line) => (
+                                <div key={line.key} className="flex items-center justify-between gap-2">
+                                    <span>{line.label} x{line.quantity}</span>
+                                    <span>${(line.totalCents / 100).toFixed(2)}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                <PaymentElement />
+
+                <div className="flex justify-end gap-2 pt-2">
+                    <button
+                        onClick={onCancel}
+                        className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+                        disabled={processing}
+                    >
+                        {t('cancel_button')}
+                    </button>
+                    <button
+                        onClick={handleSubmit}
+                        className="px-4 py-2 rounded bg-green-800 text-white hover:bg-green-700 disabled:opacity-50"
+                        disabled={!stripe || processing}
+                    >
+                        {processing ? t('processing_payment') : t('pay_now_button')}
                     </button>
                 </div>
             </div>

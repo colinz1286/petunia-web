@@ -1,0 +1,16 @@
+{
+  "title": "Memberships & Passes",
+  "required_units": "This booking needs {count} {unitLabel}.",
+  "use_existing_membership_title": "Use Existing Membership",
+  "clear_button": "Clear",
+  "no_existing_memberships": "No active client memberships can cover this {service} booking yet.",
+  "expires_on": "Expires {date}",
+  "buy_with_booking_title": "Buy A Membership With This Booking",
+  "no_purchasable_memberships": "No membership plans for {service} are enabled for booking purchase.",
+  "service_daycare": "daycare",
+  "service_boarding": "boarding",
+  "summary_unlimited_monthly_pass": "Unlimited monthly pass for {months} month{plural}.",
+  "summary_monthly_pass_with_units": "{units} {unitLabel} for {months} month{plural}.",
+  "summary_package_with_duration": "{units} {unitLabel} valid for {days} day{plural}.",
+  "summary_package": "{units} {unitLabel}."
+}

@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; overlapping topic coverage with another strong site page; likely limited backlinks
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -128,7 +129,39 @@ export default function ArticlePage() {
         </ul>
       </section>
 
-      <section id="sources" className="mb-10">
+      
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">How to match the service to the actual dog</h2>
+          <p className="mb-4">Owners get into trouble when they shop for boarding or daycare as if every dog needs the same kind of stimulation. The better question is how your dog handles novelty, recovery, confinement, transitions, noise, and group play. Service fit should follow temperament, health, and routine, not whatever package is easiest to book online.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Energy is not the only variable:</strong> some active dogs still need quiet decompression and controlled group exposure.</li>
+            <li><strong>Watch recovery time:</strong> a dog that is excited at drop-off but wrecked for two days afterward may be over threshold.</li>
+            <li><strong>Look at staff handling style:</strong> calm transitions, appropriate rest, and clean handoffs matter more than constant activity.</li>
+            <li><strong>Test the fit before the big need:</strong> short daycare or trial stays reveal much more than a polished sales call.</li>
+          </ul>
+          <p className="mb-0">Good decisions come from watching how the dog functions during and after care, not from assuming more social time is always better.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Red flags that are worth walking away from</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>No clear answer on how dogs are separated for rest, medical needs, or overstimulation.</li>
+            <li>Facility staff cannot explain incident reporting, medication handling, or emergency veterinary access.</li>
+            <li>Evaluation relies on a quick meet-and-greet rather than structured observation over time.</li>
+            <li>Communication after a trial stay is vague and focuses only on whether the dog was "fine."</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/temperament-testing-dogs-boarding-daycare" className="underline hover:opacity-80">How to Temperament Test Dogs for Boarding &amp; Daycare: A Step-By-Step Professional Evaluation Guide</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/buying-a-dog-daycare-checklist" className="underline hover:opacity-80">Buying a Dog Daycare Checklist: What to Evaluate Before Purchasing a Daycare or Boarding Facility in 2026</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/how-much-does-a-cane-corso-cost-to-own" className="underline hover:opacity-80">How Much Does a Cane Corso Cost to Own? Purchase vs Adoption, Food by Life Stage, Healthcare, Insurance Math, Boarding/Daycare, Gear, and Lifetime Total</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-10">
         <h2 className="text-2xl font-semibold mb-3">Sources To Verify Before Acting</h2>
         <ul className="list-disc pl-5 space-y-2 text-sm">
           <li>State and municipal licensing/regulatory pages for animal facilities</li>

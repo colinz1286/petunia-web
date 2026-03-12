@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; crowded query with low perceived distinctiveness; likely limited backlinks; year-stamped title can weaken evergreen value
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -242,7 +243,39 @@ export default function AreBostonTerriersProneToSeizures2025() {
         </section>
 
         {/* REFERENCES */}
-        <section id="references" className="mb-16">
+        
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Evaluate software by failure cost, not just monthly price</h2>
+          <p className="mb-4">A platform is cheap only if it reduces operational friction without creating new billing errors, vaccine misses, staff workarounds, and owner confusion. The better comparison is not subscription price alone. It is the cost of preventable mistakes, unpaid invoices, time spent chasing records, and how difficult it is to onboard new staff into the system you chose.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Measure time saved:</strong> booking, check-in, medication notes, customer reminders, and incident follow-up should all be easier to execute.</li>
+            <li><strong>Look at error prevention:</strong> vaccine enforcement, waiver version control, and payment reconciliation matter more than nice dashboard language.</li>
+            <li><strong>Check the export story:</strong> if you cannot leave cleanly with your client and dog records, your price is not the real price.</li>
+            <li><strong>Review support under stress:</strong> response quality during busy periods matters more than sales responsiveness during demos.</li>
+          </ul>
+          <p className="mb-0">That operating view is what separates a low-cost tool from a low-value one.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Vendor questions that prevent painful migrations later</h2>
+          <ol className="list-decimal pl-5 space-y-2 mb-0">
+            <li>How are records exported, in what format, and with what limits?</li>
+            <li>What core workflows are included at base price versus upsold later?</li>
+            <li>How are failed payments, vaccine expirations, and incident notes surfaced to staff?</li>
+            <li>What happens when we grow, add locations, or need to change pricing structures?</li>
+          </ol>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/hip-dysplasia-in-dogs" className="underline hover:opacity-80">Hip Dysplasia in Dogs: Causes, Early Signs, Diagnosis, Treatment Options, Costs, and Long-Term Management</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/boston-terrier-eye-problems-2025" className="underline hover:opacity-80">Boston Terrier Eye Problems (2025): Cherry Eye, Ulcers, Cataracts, Red Flags &amp; Long-Term Care</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/boston-terrier-reactivity-around-dogs-2025" className="underline hover:opacity-80">Boston Terrier Reactivity Around Dogs (2025): Causes, Triggers, Safe Training Protocols &amp; When to Seek Help</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="references" className="mb-16">
           <h2 className="text-2xl font-semibold mb-3">📚 References</h2>
           <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
             <li>Veterinary neurology & epilepsy research</li>

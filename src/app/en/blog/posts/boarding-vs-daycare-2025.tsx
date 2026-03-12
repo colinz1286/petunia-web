@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: canonical/redirect points to another URL; overlapping topic coverage with nearby site pages; weak in-article internal linking; likely limited backlinks
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 

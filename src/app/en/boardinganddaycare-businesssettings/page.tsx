@@ -3,7 +3,7 @@
 // NOTE: This web page is intended to mirror the iOS view at
 // .local-only/ios-real-reference/BoardingAndDaycareBusinessSettingsView.swift.
 // Keep settings fields, validation behavior, and Firestore key usage aligned across both files.
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, type Dispatch, type SetStateAction } from 'react';
 
 import { getAuth } from 'firebase/auth';
 import {
@@ -62,11 +62,14 @@ export default function BusinessSettingsPage() {
     const [requiresAssessment, setRequiresAssessment] = useState(false);
     const [temperamentTestRequired, setTemperamentTestRequired] = useState(false);
 
-    // --- Daycare Payment Settings (matches iOS) ---
+    // --- Service-specific payment settings ---
     const [paymentsEnabled, setPaymentsEnabled] = useState(false);
     const [daycarePayAtBookingEnabled, setDaycarePayAtBookingEnabled] = useState(false);
     const [daycareInvoiceAfterAttendanceEnabled, setDaycareInvoiceAfterAttendanceEnabled] = useState(false);
     const [daycarePayAtPickupEnabled, setDaycarePayAtPickupEnabled] = useState(false);
+    const [boardingPayAtBookingEnabled, setBoardingPayAtBookingEnabled] = useState(false);
+    const [boardingInvoiceAfterAttendanceEnabled, setBoardingInvoiceAfterAttendanceEnabled] = useState(false);
+    const [boardingPayAtPickupEnabled, setBoardingPayAtPickupEnabled] = useState(false);
 
     // 🔵 Stripe Status
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -86,6 +89,10 @@ export default function BusinessSettingsPage() {
 
     const [requireDaycareReservationApproval, setRequireDaycareReservationApproval] = useState(false);
     const [requireBoardingReservationApproval, setRequireBoardingReservationApproval] = useState(false);
+    const [depositRequired, setDepositRequired] = useState(false);
+    const [depositAmount, setDepositAmount] = useState('');
+    const [cancellationPolicy, setCancellationPolicy] = useState('No Refund');
+    const cancellationOptions = ['No Refund', 'Partial Refund', 'Full Refund'];
 
     const [maxAppointmentsPerSlot, setMaxAppointmentsPerSlot] = useState(3);
     const [loading, setLoading] = useState(true);
@@ -108,6 +115,15 @@ export default function BusinessSettingsPage() {
     const [afterHoursPickUpTimeRequired, setAfterHoursPickUpTimeRequired] = useState(false);
     const [afterHoursPickUpTimes, setAfterHoursPickUpTimes] = useState<Record<string, string[]>>({});
     const [noAfterHoursDays, setNoAfterHoursDays] = useState<Set<string>>(new Set());
+    const [beforeHoursPickUpTimeRequired, setBeforeHoursPickUpTimeRequired] = useState(false);
+    const [beforeHoursPickUpTimes, setBeforeHoursPickUpTimes] = useState<Record<string, string[]>>({});
+    const [noBeforeHoursPickUpDays, setNoBeforeHoursPickUpDays] = useState<Set<string>>(new Set());
+    const [earlyDropOffTimeRequired, setEarlyDropOffTimeRequired] = useState(false);
+    const [earlyDropOffTimes, setEarlyDropOffTimes] = useState<Record<string, string[]>>({});
+    const [noEarlyDropOffDays, setNoEarlyDropOffDays] = useState<Set<string>>(new Set());
+    const [afterHoursDropOffTimeRequired, setAfterHoursDropOffTimeRequired] = useState(false);
+    const [afterHoursDropOffTimes, setAfterHoursDropOffTimes] = useState<Record<string, string[]>>({});
+    const [noAfterHoursDropOffDays, setNoAfterHoursDropOffDays] = useState<Set<string>>(new Set());
 
     const [dropOffTimesDaycare, setDropOffTimesDaycare] = useState<Record<string, string[]>>({});
     const [pickUpTimesDaycare, setPickUpTimesDaycare] = useState<Record<string, string[]>>({});
@@ -132,7 +148,16 @@ export default function BusinessSettingsPage() {
     // include afterhours section in collapse map
     const [collapsedDays, setCollapsedDays] = useState<Record<string, boolean>>(() => {
         const initial: Record<string, boolean> = {};
-        const sections = ['daycare-drop', 'daycare-pickup', 'boarding-drop', 'boarding-pickup', 'afterhours-pickup'];
+        const sections = [
+            'daycare-drop',
+            'daycare-pickup',
+            'boarding-drop',
+            'boarding-pickup',
+            'beforehours-pickup',
+            'afterhours-pickup',
+            'early-dropoff',
+            'afterhours-dropoff'
+        ];
         for (const day of ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']) {
             for (const section of sections) initial[`${day}-${section}`] = true;
         }
@@ -259,7 +284,7 @@ export default function BusinessSettingsPage() {
 
                 setRequiresAssessment(data.requiresAssessment || false);
 
-                // --- Load Daycare Payment Settings (matches iOS) ---
+                // --- Load service-specific payment settings ---
                 const paymentSettings = data.paymentSettings || {};
                 setPaymentsEnabled(!!paymentSettings.enabled);
 
@@ -267,6 +292,11 @@ export default function BusinessSettingsPage() {
                 setDaycarePayAtBookingEnabled(!!daycarePayments.payAtBooking);
                 setDaycareInvoiceAfterAttendanceEnabled(!!daycarePayments.invoiceAfterAttendance);
                 setDaycarePayAtPickupEnabled(!!daycarePayments.payAtPickup);
+
+                const boardingPayments = paymentSettings.boarding || {};
+                setBoardingPayAtBookingEnabled(!!boardingPayments.payAtBooking);
+                setBoardingInvoiceAfterAttendanceEnabled(!!boardingPayments.invoiceAfterAttendance);
+                setBoardingPayAtPickupEnabled(!!boardingPayments.payAtPickup);
 
                 // 🔵 Stripe Status Fields (correct nested mapping)
                 const stripeData = data.stripe || {};
@@ -302,6 +332,9 @@ export default function BusinessSettingsPage() {
                 setRequireBoardingReservationApproval(
                     data.requireBoardingReservationApproval || false
                 );
+                setDepositRequired(Boolean(data.depositRequired));
+                setDepositAmount((data.depositAmount as string) ?? '');
+                setCancellationPolicy((data.cancellationPolicy as string) || 'No Refund');
 
                 setRequiredVaccinations(data.requiredVaccinations || {
                     Rabies: false,
@@ -322,6 +355,15 @@ export default function BusinessSettingsPage() {
                 setAfterHoursPickUpTimeRequired(data.afterHoursPickUpTimeRequired || false);
                 setAfterHoursPickUpTimes(data.afterHoursPickUpTimes || {});
                 setNoAfterHoursDays(new Set<string>(data.noAfterHoursDays || []));
+                setBeforeHoursPickUpTimeRequired(data.beforeHoursPickUpTimeRequired || false);
+                setBeforeHoursPickUpTimes(data.beforeHoursPickUpTimes || {});
+                setNoBeforeHoursPickUpDays(new Set<string>(data.noBeforeHoursPickUpDays || []));
+                setEarlyDropOffTimeRequired(data.earlyDropOffTimeRequired || false);
+                setEarlyDropOffTimes(data.earlyDropOffTimes || {});
+                setNoEarlyDropOffDays(new Set<string>(data.noEarlyDropOffDays || []));
+                setAfterHoursDropOffTimeRequired(data.afterHoursDropOffTimeRequired || false);
+                setAfterHoursDropOffTimes(data.afterHoursDropOffTimes || {});
+                setNoAfterHoursDropOffDays(new Set<string>(data.noAfterHoursDropOffDays || []));
 
                 const limits = data.bookingLimits || {};
                 setMaxAppointmentsPerSlot(limits.maxPerTimeSlot || 3);
@@ -387,11 +429,11 @@ export default function BusinessSettingsPage() {
             if (url) {
                 window.location.href = url;
             } else {
-                alert('Stripe onboarding failed.');
+                alert(t('stripe_onboarding_failed'));
             }
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Unknown error';
-            alert('Stripe setup error: ' + message);
+            alert(t('stripe_setup_error', { message }));
         }
 
         setStripeLoading(false);
@@ -422,7 +464,7 @@ export default function BusinessSettingsPage() {
         // 🔒 SERVER-SIDE SAFETY VALIDATION
         if (paymentsEnabled) {
             if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
-                alert('Stripe is not fully active. Payments cannot be saved.');
+                alert(t('payments_save_requires_active_stripe_alert'));
                 setSaving(false);
                 return;
             }
@@ -444,10 +486,18 @@ export default function BusinessSettingsPage() {
                     invoiceAfterAttendance: paymentsEnabled ? daycareInvoiceAfterAttendanceEnabled : false,
                     payAtPickup: paymentsEnabled ? daycarePayAtPickupEnabled : false,
                 },
+                boarding: {
+                    payAtBooking: paymentsEnabled ? boardingPayAtBookingEnabled : false,
+                    invoiceAfterAttendance: paymentsEnabled ? boardingInvoiceAfterAttendanceEnabled : false,
+                    payAtPickup: paymentsEnabled ? boardingPayAtPickupEnabled : false,
+                },
             },
 
             requireDaycareReservationApproval,
             requireBoardingReservationApproval,
+            depositRequired,
+            depositAmount,
+            cancellationPolicy,
 
             groomingServices: groomingServices.filter((s) => s.trim() !== ''),
 
@@ -478,6 +528,15 @@ export default function BusinessSettingsPage() {
             afterHoursPickUpTimeRequired,
             afterHoursPickUpTimes,
             noAfterHoursDays: Array.from(noAfterHoursDays),
+            beforeHoursPickUpTimeRequired,
+            beforeHoursPickUpTimes,
+            noBeforeHoursPickUpDays: Array.from(noBeforeHoursPickUpDays),
+            earlyDropOffTimeRequired,
+            earlyDropOffTimes,
+            noEarlyDropOffDays: Array.from(noEarlyDropOffDays),
+            afterHoursDropOffTimeRequired,
+            afterHoursDropOffTimes,
+            noAfterHoursDropOffDays: Array.from(noAfterHoursDropOffDays),
 
             dropOffTimesDaycare,
             pickUpTimesDaycare,
@@ -560,6 +619,17 @@ export default function BusinessSettingsPage() {
         const current = afterHoursPickUpTimes[day] || [];
         const updated = current.includes(time) ? current.filter((t) => t !== time) : [...current, time];
         setAfterHoursPickUpTimes({ ...afterHoursPickUpTimes, [day]: updated });
+    };
+
+    const toggleSpecialWindowTime = (
+        currentMap: Record<string, string[]>,
+        setter: Dispatch<SetStateAction<Record<string, string[]>>>,
+        day: string,
+        time: string
+    ) => {
+        const current = currentMap[day] || [];
+        const updated = current.includes(time) ? current.filter((t) => t !== time) : [...current, time];
+        setter({ ...currentMap, [day]: updated });
     };
 
     return (
@@ -817,51 +887,72 @@ export default function BusinessSettingsPage() {
                             {t('pricing_discounts_header')}
                         </h2>
 
-                        <div className="border rounded p-4 bg-gray-50">
-                            <p className="text-sm text-gray-600 mb-4 text-center">
-                                {t('pricing_discounts_subtitle')}
-                            </p>
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <div className="border rounded p-4 bg-gray-50">
+                                <p className="text-sm text-gray-600 mb-4 text-center">
+                                    {t('pricing_discounts_subtitle')}
+                                </p>
 
-                            <button
-                                type="button"
-                                onClick={() => router.push(`/${_locale}/boardinganddaycare-businesssettingsdiscounts`)}
-                                className="w-full bg-[#1F4D2E] hover:bg-[#163A22] text-white font-semibold px-4 py-2 rounded-md"
-                            >
-                                {t('manage_discounts_button')}
-                            </button>
+                                <button
+                                    type="button"
+                                    onClick={() => router.push(`/${_locale}/boardinganddaycare-businesssettingsdiscounts`)}
+                                    className="w-full bg-[#1F4D2E] hover:bg-[#163A22] text-white font-semibold px-4 py-2 rounded-md"
+                                >
+                                    {t('manage_discounts_button')}
+                                </button>
+                            </div>
+
+                            <div className="border rounded p-4 bg-gray-50">
+                                <p className="text-sm text-gray-600 mb-4 text-center">
+                                    {t('memberships_subtitle')}
+                                </p>
+
+                                <button
+                                    type="button"
+                                    onClick={() => router.push(`/${_locale}/boardinganddaycare-businesssettingsmemberships`)}
+                                    className="w-full bg-[#1F4D2E] hover:bg-[#163A22] text-white font-semibold px-4 py-2 rounded-md"
+                                >
+                                    {t('manage_memberships_button')}
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    {offersDaycare && (
+                    {(offersDaycare || offersBoarding) && (
                         <div className="mt-10 space-y-6">
 
                             <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
-                                Payments
+                                {t('payments_header')}
                             </h2>
 
                             {/* 🔵 Stripe Account Section */}
                             <div className="border rounded p-4 space-y-3 bg-gray-50">
 
                                 <h3 className="text-lg font-semibold text-center">
-                                    Stripe Account
+                                    {t('stripe_account_title')}
                                 </h3>
 
                                 {stripeOnboardingComplete && stripeChargesEnabled && stripePayoutsEnabled ? (
                                     <div className="text-center text-green-700 text-sm">
-                                        ✅ Stripe Fully Active
+                                        {t('stripe_fully_active')}
                                         <div className="text-xs text-gray-600 mt-1">
-                                            Charges: Enabled | Payouts: Enabled
+                                            {t('stripe_status_summary', {
+                                                charges: t('status_enabled'),
+                                                payouts: t('status_enabled'),
+                                            })}
                                         </div>
                                     </div>
                                 ) : (
                                     <div className="text-center text-red-600 text-sm space-y-1">
-                                        <div>Stripe Not Fully Active</div>
+                                        <div>{t('stripe_not_fully_active')}</div>
                                         <div className="text-xs text-gray-600">
-                                            Charges: {stripeChargesEnabled ? 'Enabled' : 'Disabled'} |
-                                            Payouts: {stripePayoutsEnabled ? 'Enabled' : 'Disabled'}
+                                            {t('stripe_status_summary', {
+                                                charges: stripeChargesEnabled ? t('status_enabled') : t('status_disabled'),
+                                                payouts: stripePayoutsEnabled ? t('status_enabled') : t('status_disabled'),
+                                            })}
                                         </div>
                                         <div className="text-xs text-red-500">
-                                            Payments cannot be enabled until Stripe is fully activated.
+                                            {t('stripe_required_for_payments')}
                                         </div>
                                     </div>
                                 )}
@@ -871,19 +962,19 @@ export default function BusinessSettingsPage() {
                                     disabled={stripeLoading}
                                     className="w-full bg-[#2c4a30] text-white px-4 py-2 rounded text-sm"
                                 >
-                                    {stripeLoading ? 'Connecting...' : 'Complete Stripe Setup'}
+                                    {stripeLoading ? t('stripe_connecting_button') : t('stripe_setup_button')}
                                 </button>
                             </div>
 
                             <Toggle
-                                label="Accept payments with Petunia (Stripe)"
+                                label={t('payments_accept_toggle')}
                                 checked={paymentsEnabled}
                                 onChange={(val) => {
 
                                     // 🔒 HARD GATE — Stripe must be fully active
                                     if (val) {
                                         if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
-                                            alert('Stripe must be fully connected and payouts enabled before accepting payments.');
+                                            alert(t('payments_require_active_stripe_alert'));
                                             return;
                                         }
                                     }
@@ -894,28 +985,31 @@ export default function BusinessSettingsPage() {
                                         setDaycarePayAtBookingEnabled(false);
                                         setDaycareInvoiceAfterAttendanceEnabled(false);
                                         setDaycarePayAtPickupEnabled(false);
+                                        setBoardingPayAtBookingEnabled(false);
+                                        setBoardingInvoiceAfterAttendanceEnabled(false);
+                                        setBoardingPayAtPickupEnabled(false);
                                     }
                                 }}
                             />
 
                             <p className="text-xs text-gray-500 text-center">
-                                Payments are optional. You may accept payment at booking, after attendance, or at pickup.
+                                {t('payments_optional_helper')}
                             </p>
 
-                            {paymentsEnabled && (
+                            {paymentsEnabled && offersDaycare && (
                                 <div className="mt-4 space-y-2">
                                     <h3 className="text-sm font-semibold text-[color:var(--color-accent)] text-center">
-                                        Daycare Payment Settings
+                                        {t('daycare_payment_settings_title')}
                                     </h3>
 
                                     <Toggle
-                                        label="Pay at booking (online card)"
+                                        label={t('pay_at_booking_label')}
                                         checked={daycarePayAtBookingEnabled}
                                         onChange={(val) => {
 
                                             if (val) {
                                                 if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
-                                                    alert('Stripe must be fully active before enabling this payment method.');
+                                                    alert(t('payment_method_requires_active_stripe_alert'));
                                                     return;
                                                 }
                                             }
@@ -927,7 +1021,7 @@ export default function BusinessSettingsPage() {
                                     {daycarePayAtBookingEnabled && (
                                         <>
                                             <p className="text-xs text-gray-500 ml-8">
-                                                Clients pay in full when booking daycare. Deposits are not supported.
+                                                {t('daycare_pay_at_booking_helper')}
                                             </p>
 
                                             <div className="mt-3 ml-8 border rounded p-3 bg-gray-50">
@@ -954,13 +1048,13 @@ export default function BusinessSettingsPage() {
                                     )}
 
                                     <Toggle
-                                        label="Invoice after attendance"
+                                        label={t('invoice_after_attendance_label')}
                                         checked={daycareInvoiceAfterAttendanceEnabled}
                                         onChange={(val) => {
 
                                             if (val) {
                                                 if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
-                                                    alert('Stripe must be fully active before enabling this payment method.');
+                                                    alert(t('payment_method_requires_active_stripe_alert'));
                                                     return;
                                                 }
                                             }
@@ -972,7 +1066,7 @@ export default function BusinessSettingsPage() {
                                     {daycareInvoiceAfterAttendanceEnabled && (
                                         <>
                                             <p className="text-xs text-gray-500 ml-8">
-                                                Invoices are generated after daycare attendance and sent to the client.
+                                                {t('invoice_after_attendance_helper')}
                                             </p>
 
                                             <div className="mt-3 ml-8 border rounded p-3 bg-gray-50">
@@ -984,10 +1078,10 @@ export default function BusinessSettingsPage() {
                                                     <div className="flex items-center justify-between gap-3">
                                                         <div>
                                                             <p className="font-semibold text-sm text-[color:var(--color-accent)]">
-                                                                Manage Invoice Item Library
+                                                                {t('invoice_library_title')}
                                                             </p>
                                                             <p className="text-xs text-gray-500 mt-1">
-                                                                Create invoiceable items (daycare, boarding, grooming, training, add-ons).
+                                                                {t('invoice_library_subtitle')}
                                                             </p>
                                                         </div>
 
@@ -999,13 +1093,13 @@ export default function BusinessSettingsPage() {
                                     )}
 
                                     <Toggle
-                                        label="Pay at pickup / deferred payment"
+                                        label={t('pay_at_pickup_label')}
                                         checked={daycarePayAtPickupEnabled}
                                         onChange={(val) => {
 
                                             if (val) {
                                                 if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
-                                                    alert('Stripe must be fully active before enabling this payment method.');
+                                                    alert(t('payment_method_requires_active_stripe_alert'));
                                                     return;
                                                 }
                                             }
@@ -1016,7 +1110,7 @@ export default function BusinessSettingsPage() {
 
                                     {daycarePayAtPickupEnabled && (
                                         <p className="text-xs text-gray-500 ml-8">
-                                            Payment is collected after daycare, either through Petunia or externally.
+                                            {t('pay_at_pickup_helper')}
                                         </p>
                                     )}
 
@@ -1024,7 +1118,132 @@ export default function BusinessSettingsPage() {
                                         !daycareInvoiceAfterAttendanceEnabled &&
                                         !daycarePayAtPickupEnabled && (
                                             <p className="text-xs text-red-600 text-center mt-2">
-                                                At least one payment method must be enabled to accept payments.
+                                                {t('service_payment_method_warning')}
+                                            </p>
+                                        )}
+                                </div>
+                            )}
+
+                            {paymentsEnabled && offersBoarding && (
+                                <div className="mt-4 space-y-2">
+                                    <h3 className="text-sm font-semibold text-[color:var(--color-accent)] text-center">
+                                        {t('boarding_payment_settings_title')}
+                                    </h3>
+
+                                    <Toggle
+                                        label={t('pay_at_booking_label')}
+                                        checked={boardingPayAtBookingEnabled}
+                                        onChange={(val) => {
+                                            if (val) {
+                                                if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
+                                                    alert(t('payment_method_requires_active_stripe_alert'));
+                                                    return;
+                                                }
+                                            }
+
+                                            setBoardingPayAtBookingEnabled(val);
+                                        }}
+                                    />
+
+                                    {boardingPayAtBookingEnabled && (
+                                        <>
+                                            <p className="text-xs text-gray-500 ml-8">
+                                                {t('boarding_pay_at_booking_helper')}
+                                            </p>
+
+                                            <div className="mt-3 ml-8 border rounded p-3 bg-gray-50">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => router.push(`/${_locale}/boardinganddaycare-payatcheckoutboardingitems`)}
+                                                    className="w-full text-left"
+                                                >
+                                                    <div className="flex items-center justify-between gap-3">
+                                                        <div>
+                                                            <p className="font-semibold text-sm text-[color:var(--color-accent)]">
+                                                                {t('manage_pay_at_boarding_checkout_items_title')}
+                                                            </p>
+                                                            <p className="text-xs text-gray-500 mt-1">
+                                                                {t('manage_pay_at_boarding_checkout_items_subtitle')}
+                                                            </p>
+                                                        </div>
+
+                                                        <span className="text-gray-400 text-lg">›</span>
+                                                    </div>
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    <Toggle
+                                        label={t('invoice_after_attendance_label')}
+                                        checked={boardingInvoiceAfterAttendanceEnabled}
+                                        onChange={(val) => {
+                                            if (val) {
+                                                if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
+                                                    alert(t('payment_method_requires_active_stripe_alert'));
+                                                    return;
+                                                }
+                                            }
+
+                                            setBoardingInvoiceAfterAttendanceEnabled(val);
+                                        }}
+                                    />
+
+                                    {boardingInvoiceAfterAttendanceEnabled && (
+                                        <>
+                                            <p className="text-xs text-gray-500 ml-8">
+                                                {t('invoice_after_attendance_helper')}
+                                            </p>
+
+                                            <div className="mt-3 ml-8 border rounded p-3 bg-gray-50">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => router.push(`/${_locale}/boardinganddaycare-invoicelibrary`)}
+                                                    className="w-full text-left"
+                                                >
+                                                    <div className="flex items-center justify-between gap-3">
+                                                        <div>
+                                                            <p className="font-semibold text-sm text-[color:var(--color-accent)]">
+                                                                {t('invoice_library_title')}
+                                                            </p>
+                                                            <p className="text-xs text-gray-500 mt-1">
+                                                                {t('invoice_library_subtitle')}
+                                                            </p>
+                                                        </div>
+
+                                                        <span className="text-gray-400 text-lg">›</span>
+                                                    </div>
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    <Toggle
+                                        label={t('pay_at_pickup_label')}
+                                        checked={boardingPayAtPickupEnabled}
+                                        onChange={(val) => {
+                                            if (val) {
+                                                if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
+                                                    alert(t('payment_method_requires_active_stripe_alert'));
+                                                    return;
+                                                }
+                                            }
+
+                                            setBoardingPayAtPickupEnabled(val);
+                                        }}
+                                    />
+
+                                    {boardingPayAtPickupEnabled && (
+                                        <p className="text-xs text-gray-500 ml-8">
+                                            {t('pay_at_pickup_helper')}
+                                        </p>
+                                    )}
+
+                                    {!boardingPayAtBookingEnabled &&
+                                        !boardingInvoiceAfterAttendanceEnabled &&
+                                        !boardingPayAtPickupEnabled && (
+                                            <p className="text-xs text-red-600 text-center mt-2">
+                                                {t('service_payment_method_warning')}
                                             </p>
                                         )}
                                 </div>
@@ -1250,6 +1469,75 @@ export default function BusinessSettingsPage() {
                                 checked={requireBoardingReservationApproval}
                                 onChange={setRequireBoardingReservationApproval}
                             />
+
+                            {offersBoarding && (
+                                <>
+                                    <Toggle
+                                        label={t('deposit_required_toggle')}
+                                        checked={depositRequired}
+                                        onChange={setDepositRequired}
+                                    />
+
+                                    <p className="text-xs text-gray-500 ml-8">
+                                        {t('deposit_required_helper')}
+                                    </p>
+
+                                    {depositRequired && (
+                                        <div className="ml-8">
+                                            <label className="block font-semibold mb-1 text-sm">
+                                                {t('deposit_amount_label')}
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={depositAmount}
+                                                onChange={(e) => setDepositAmount(e.target.value)}
+                                                placeholder={t('deposit_amount_placeholder')}
+                                                className="w-full border px-3 py-2 rounded text-sm"
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                {t('deposit_amount_helper')}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    <div className="ml-8">
+                                        <label className="block font-semibold mb-1 text-sm">
+                                            {t('cancellation_policy_picker')}
+                                        </label>
+                                        <select
+                                            value={cancellationPolicy}
+                                            onChange={(e) => setCancellationPolicy(e.target.value)}
+                                            className="w-full border px-3 py-2 rounded text-sm"
+                                        >
+                                            {cancellationOptions.map((option) => (
+                                                <option key={option} value={option}>
+                                                    {option === 'No Refund'
+                                                        ? t('cancellation_no_refund')
+                                                        : option === 'Partial Refund'
+                                                            ? t('cancellation_partial_refund')
+                                                            : t('cancellation_full_refund')}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="ml-8 border rounded p-3 bg-gray-50">
+                                        <p className="font-semibold text-sm text-[color:var(--color-accent)]">
+                                            {t('boarding_pricing_rules_card_title')}
+                                        </p>
+                                        <p className="text-xs text-gray-500 mt-1 mb-3">
+                                            {t('boarding_pricing_rules_card_body')}
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={() => router.push(`/${_locale}/boardinganddaycare-payatcheckoutboardingitems`)}
+                                            className="text-sm text-blue-600 underline"
+                                        >
+                                            {t('boarding_pricing_rules_card_button')}
+                                        </button>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         {/* Booking limits */}
@@ -1314,6 +1602,41 @@ export default function BusinessSettingsPage() {
                                     checked={afterHoursPickUpTimeRequired}
                                     onChange={setAfterHoursPickUpTimeRequired}
                                 />
+                            )}
+
+                            {offersBoarding && (
+                                <>
+                                    <p className="text-xs text-gray-500 ml-8">
+                                        {t('boarding_regular_hours_helper')}
+                                    </p>
+
+                                    <Toggle
+                                        label={t('require_before_hours_pickup')}
+                                        checked={beforeHoursPickUpTimeRequired}
+                                        onChange={setBeforeHoursPickUpTimeRequired}
+                                    />
+                                    <p className="text-xs text-gray-500 ml-8">
+                                        {t('before_hours_pickup_helper')}
+                                    </p>
+
+                                    <Toggle
+                                        label={t('require_early_dropoff')}
+                                        checked={earlyDropOffTimeRequired}
+                                        onChange={setEarlyDropOffTimeRequired}
+                                    />
+                                    <p className="text-xs text-gray-500 ml-8">
+                                        {t('early_dropoff_helper')}
+                                    </p>
+
+                                    <Toggle
+                                        label={t('require_after_hours_dropoff')}
+                                        checked={afterHoursDropOffTimeRequired}
+                                        onChange={setAfterHoursDropOffTimeRequired}
+                                    />
+                                    <p className="text-xs text-gray-500 ml-8">
+                                        {t('after_hours_dropoff_helper')}
+                                    </p>
+                                </>
                             )}
 
                             {/* Daycare time maps */}
@@ -1475,6 +1798,9 @@ export default function BusinessSettingsPage() {
                                 <div className="mt-10">
                                     <h3 className="text-lg font-semibold mb-2 text-center">{t('after_hours_time_settings_title')}</h3>
                                     <p className="text-sm text-center mb-2">{t('after_hours_pickup_times')}</p>
+                                    <p className="text-xs text-gray-500 text-center mb-4">
+                                        {t('after_hours_pickup_times_helper')}
+                                    </p>
 
                                     {daysOfWeek.map((day) => (
                                         <div key={`ah-${day}`} className="mb-6">
@@ -1511,6 +1837,159 @@ export default function BusinessSettingsPage() {
                                                                 label={time}
                                                                 checked={(afterHoursPickUpTimes[day] || []).includes(time)}
                                                                 onChange={() => toggleAfterHoursTime(day, time)}
+                                                            />
+                                                        ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {offersBoarding && beforeHoursPickUpTimeRequired && (
+                                <div className="mt-10">
+                                    <h3 className="text-lg font-semibold mb-2 text-center">{t('before_hours_pickup_times_title')}</h3>
+                                    <p className="text-sm text-center mb-2">{t('before_hours_pickup_times')}</p>
+                                    <p className="text-xs text-gray-500 text-center mb-4">
+                                        {t('before_hours_pickup_times_helper')}
+                                    </p>
+
+                                    {daysOfWeek.map((day) => (
+                                        <div key={`bhp-${day}`} className="mb-6">
+                                            <Toggle
+                                                label={`${t('no_before_hours_pickup_day')} ${day}`}
+                                                checked={noBeforeHoursPickUpDays.has(day)}
+                                                onChange={(val) => {
+                                                    const updated = new Set(noBeforeHoursPickUpDays);
+                                                    if (val) {
+                                                        updated.add(day);
+                                                    } else {
+                                                        updated.delete(day);
+                                                    }
+                                                    setNoBeforeHoursPickUpDays(updated);
+                                                }}
+                                            />
+
+                                            {!noBeforeHoursPickUpDays.has(day) && (
+                                                <div className="mt-2 space-y-1">
+                                                    <p className="font-semibold text-sm text-[color:var(--color-foreground)] mb-1">{day}</p>
+                                                    <button
+                                                        className="text-sm text-blue-600 underline"
+                                                        onClick={() =>
+                                                            setCollapsedDays((prev) => ({ ...prev, [`${day}-beforehours-pickup`]: !prev[`${day}-beforehours-pickup`] }))
+                                                        }
+                                                    >
+                                                        {collapsedDays[`${day}-beforehours-pickup`] ? t('expand') : t('collapse')}
+                                                    </button>
+                                                    {!collapsedDays[`${day}-beforehours-pickup`] &&
+                                                        timeOptions.map((time, i) => (
+                                                            <Toggle
+                                                                key={`bhp-${day}-${time}-${i}`}
+                                                                label={time}
+                                                                checked={(beforeHoursPickUpTimes[day] || []).includes(time)}
+                                                                onChange={() => toggleSpecialWindowTime(beforeHoursPickUpTimes, setBeforeHoursPickUpTimes, day, time)}
+                                                            />
+                                                        ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {offersBoarding && earlyDropOffTimeRequired && (
+                                <div className="mt-10">
+                                    <h3 className="text-lg font-semibold mb-2 text-center">{t('early_dropoff_times_title')}</h3>
+                                    <p className="text-sm text-center mb-2">{t('early_dropoff_times')}</p>
+                                    <p className="text-xs text-gray-500 text-center mb-4">
+                                        {t('early_dropoff_times_helper')}
+                                    </p>
+
+                                    {daysOfWeek.map((day) => (
+                                        <div key={`edo-${day}`} className="mb-6">
+                                            <Toggle
+                                                label={`${t('no_early_dropoff_day')} ${day}`}
+                                                checked={noEarlyDropOffDays.has(day)}
+                                                onChange={(val) => {
+                                                    const updated = new Set(noEarlyDropOffDays);
+                                                    if (val) {
+                                                        updated.add(day);
+                                                    } else {
+                                                        updated.delete(day);
+                                                    }
+                                                    setNoEarlyDropOffDays(updated);
+                                                }}
+                                            />
+
+                                            {!noEarlyDropOffDays.has(day) && (
+                                                <div className="mt-2 space-y-1">
+                                                    <p className="font-semibold text-sm text-[color:var(--color-foreground)] mb-1">{day}</p>
+                                                    <button
+                                                        className="text-sm text-blue-600 underline"
+                                                        onClick={() =>
+                                                            setCollapsedDays((prev) => ({ ...prev, [`${day}-early-dropoff`]: !prev[`${day}-early-dropoff`] }))
+                                                        }
+                                                    >
+                                                        {collapsedDays[`${day}-early-dropoff`] ? t('expand') : t('collapse')}
+                                                    </button>
+                                                    {!collapsedDays[`${day}-early-dropoff`] &&
+                                                        timeOptions.map((time, i) => (
+                                                            <Toggle
+                                                                key={`edo-${day}-${time}-${i}`}
+                                                                label={time}
+                                                                checked={(earlyDropOffTimes[day] || []).includes(time)}
+                                                                onChange={() => toggleSpecialWindowTime(earlyDropOffTimes, setEarlyDropOffTimes, day, time)}
+                                                            />
+                                                        ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {offersBoarding && afterHoursDropOffTimeRequired && (
+                                <div className="mt-10">
+                                    <h3 className="text-lg font-semibold mb-2 text-center">{t('after_hours_dropoff_times_title')}</h3>
+                                    <p className="text-sm text-center mb-2">{t('after_hours_dropoff_times')}</p>
+                                    <p className="text-xs text-gray-500 text-center mb-4">
+                                        {t('after_hours_dropoff_times_helper')}
+                                    </p>
+
+                                    {daysOfWeek.map((day) => (
+                                        <div key={`ahd-${day}`} className="mb-6">
+                                            <Toggle
+                                                label={`${t('no_after_hours_dropoff_day')} ${day}`}
+                                                checked={noAfterHoursDropOffDays.has(day)}
+                                                onChange={(val) => {
+                                                    const updated = new Set(noAfterHoursDropOffDays);
+                                                    if (val) {
+                                                        updated.add(day);
+                                                    } else {
+                                                        updated.delete(day);
+                                                    }
+                                                    setNoAfterHoursDropOffDays(updated);
+                                                }}
+                                            />
+
+                                            {!noAfterHoursDropOffDays.has(day) && (
+                                                <div className="mt-2 space-y-1">
+                                                    <p className="font-semibold text-sm text-[color:var(--color-foreground)] mb-1">{day}</p>
+                                                    <button
+                                                        className="text-sm text-blue-600 underline"
+                                                        onClick={() =>
+                                                            setCollapsedDays((prev) => ({ ...prev, [`${day}-afterhours-dropoff`]: !prev[`${day}-afterhours-dropoff`] }))
+                                                        }
+                                                    >
+                                                        {collapsedDays[`${day}-afterhours-dropoff`] ? t('expand') : t('collapse')}
+                                                    </button>
+                                                    {!collapsedDays[`${day}-afterhours-dropoff`] &&
+                                                        timeOptions.map((time, i) => (
+                                                            <Toggle
+                                                                key={`ahd-${day}-${time}-${i}`}
+                                                                label={time}
+                                                                checked={(afterHoursDropOffTimes[day] || []).includes(time)}
+                                                                onChange={() => toggleSpecialWindowTime(afterHoursDropOffTimes, setAfterHoursDropOffTimes, day, time)}
                                                             />
                                                         ))}
                                                 </div>

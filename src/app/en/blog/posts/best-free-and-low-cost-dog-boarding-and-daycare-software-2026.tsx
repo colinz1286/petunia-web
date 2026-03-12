@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; overlapping topic coverage with another strong site page; weak in-article internal linking; crowded query with low perceived distinctiveness; likely limited backlinks
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 

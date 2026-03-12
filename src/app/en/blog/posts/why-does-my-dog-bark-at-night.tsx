@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: crowded query with low perceived distinctiveness; likely limited backlinks
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -184,6 +185,37 @@ export default function WhyDoesMyDogBarkAtNight() {
         </ul>
 
         {/* Back link */}
+
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">A practical behavior plan that changes outcomes</h2>
+          <p className="mb-4">Behavior improves faster when owners stop treating each incident as random and start asking what reliably comes before it. Triggers, sleep debt, pain, routine disruption, noise, novelty, and reinforcement history all shape what the dog does next. A workable plan lowers the trigger load, teaches the replacement behavior in easy settings, and expands difficulty only when the dog is consistently successful.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Manage first:</strong> reduce rehearsal of the unwanted behavior while you teach the alternative.</li>
+            <li><strong>Keep sessions short:</strong> frequency beats intensity for most home training problems.</li>
+            <li><strong>Track the threshold:</strong> distance, duration, and recovery time matter more than whether the dog was good once.</li>
+            <li><strong>Review wellness:</strong> pain, GI upset, and poor sleep can make a training issue look like stubbornness.</li>
+          </ul>
+          <p className="mb-0">That kind of plan creates behavior you can reproduce, not just moments you hope will happen again.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">What owners misread most often</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Over-arousal is often mislabeled as confidence or friendliness until the dog stops coping well.</li>
+            <li>A tired or uncomfortable dog can look defiant when the real issue is threshold or pain.</li>
+            <li>Correction-heavy training may suppress a display without improving the underlying emotional pattern.</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/common-gi-problems-in-dogs" className="underline hover:opacity-80">Common Gastrointestinal (GI) Problems in Dogs: Symptoms, Causes, and When to Worry</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/lethargy-metronidazole-dogs" className="underline hover:opacity-80">Lethargy in Dogs on Metronidazole: Causes, Risks, and When to Worry</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/why-is-my-boston-terrier-so-hyper-2025" className="underline hover:opacity-80">Why Is My Boston Terrier So Hyper? Understanding Normal Energy, Overstimulation &amp; When to Worry (2025 Guide)</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
         <Link
           href={`/${locale}/blog`}
           className="underline text-[#2c4a30] font-medium hover:opacity-80"

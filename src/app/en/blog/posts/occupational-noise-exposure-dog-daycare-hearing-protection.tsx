@@ -1,3 +1,4 @@
+// SEO weakness notes: page is still new; weak in-article internal linking; likely limited backlinks; schema is only baseline BlogPosting
 // File: src/app/[locale]/blog/posts/occupational-noise-exposure-dog-daycare-hearing-protection.tsx
 'use client';
 

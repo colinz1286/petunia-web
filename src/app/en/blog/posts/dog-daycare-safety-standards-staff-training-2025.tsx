@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; overlapping topic coverage with nearby site pages; likely limited backlinks; schema is only baseline BlogPosting
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 

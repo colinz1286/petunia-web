@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: likely limited backlinks; year-stamped title can weaken evergreen value; schema is only baseline BlogPosting
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 
@@ -149,7 +150,38 @@ export default function EthicsOfDogBreeding2025() {
           </p>
         </section>
 
-        <section id="sources" className="mb-8">
+        
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">What responsible preparation looks like before a problem starts</h2>
+          <p className="mb-4">Breeding topics get safer when the plan is built before emotions and time pressure take over. That means written records, a named veterinary contact, expected due dates or testing windows, supply readiness, and clear criteria for when observation ends and intervention begins. Responsible preparation is not pessimistic. It is what keeps minor problems from becoming chaotic ones.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Keep one record set:</strong> breeding dates, progesterone timing, diagnostics, expected milestones, and emergency numbers should all be together.</li>
+            <li><strong>Pre-decide the escalation route:</strong> which clinic, which emergency hospital, and who is driving if the situation changes quickly.</li>
+            <li><strong>Document normal versus not normal:</strong> discharge, temperature, appetite, interval timing, behavior, and puppy counts should not be vague.</li>
+            <li><strong>Reduce avoidable variables:</strong> environment, supplies, staffing, and post-delivery monitoring should be predictable and quiet.</li>
+          </ul>
+          <p className="mb-0">That framework makes decision-making clearer for both first-time and experienced breeders.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Escalation thresholds that should never be vague</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Have a written rule for when delay becomes dangerous instead of debating it in the moment.</li>
+            <li>Treat worsening weakness, abnormal discharge, prolonged straining, or non-progressive labor as a reason to call earlier, not later.</li>
+            <li>Re-check the dam after the obvious crisis passes; retained problems and post-event decline are easy to underestimate.</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/average-age-of-labrador" className="underline hover:opacity-80">Average Age of a Labrador: Evidence-Based Lifespan, What Shortens or Extends Life, and How to Add Healthy Years in 2026</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/cost-of-hip-dysplasia-treatment-in-dogs" className="underline hover:opacity-80">Cost of Hip Dysplasia Treatment in Dogs: Non-Surgical Care, Rehab, Injections, and Surgical Ranges</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/living-with-hip-dysplasia-in-dogs" className="underline hover:opacity-80">Living With Hip Dysplasia in Dogs: Daily Routines, Home Setup, Exercise, Flare Plans, and Long-Term Quality of Life</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-8">
           <h2 className="text-2xl font-semibold mb-2">Sources</h2>
           <ul className="list-disc list-inside">
             <li>American Veterinary Medical Association (2024). <em>Responsible Breeding and Animal Welfare Guidelines.</em></li>

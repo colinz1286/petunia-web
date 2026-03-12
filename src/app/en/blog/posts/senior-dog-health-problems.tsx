@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: overlapping topic coverage with nearby site pages; likely limited backlinks; schema is only baseline BlogPosting
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 
@@ -224,7 +225,39 @@ export default function SeniorDogHealthProblems() {
           </p>
         </section>
 
-        <section id="sources" className="mb-8">
+        
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">How to judge a longevity claim like a clinician, not a marketer</h2>
+          <p className="mb-4">Longevity content gets stronger when it separates mechanism, plausibility, and real-world outcome data. A promising pathway, biomarker shift, or mouse result is not the same thing as meaningful healthspan improvement in pet dogs living normal lives. Before taking any claim seriously, ask what population was studied, what endpoint actually improved, how long the effect lasted, and what tradeoffs appeared alongside it.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Best-case evidence:</strong> controlled canine data tied to function, quality of life, or delayed disease, not just theory.</li>
+            <li><strong>Useful supporting evidence:</strong> consistent veterinary reasoning, safety monitoring, and transparent limits.</li>
+            <li><strong>Weak evidence:</strong> one mechanism-heavy narrative without dosing clarity, patient selection, or follow-up outcomes.</li>
+            <li><strong>Essential question:</strong> what would success look like for a real dog over months or years, not just in a headline?</li>
+          </ul>
+          <p className="mb-0">That framework protects owners from confusing novelty with value and helps them prioritize the interventions that already have better practical support.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">The weekly habits that still matter more than any single longevity product</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Keep body condition lean and stable rather than accepting gradual weight drift.</li>
+            <li>Protect mobility with regular low-impact exercise, traction, and earlier response to stiffness.</li>
+            <li>Support sleep, dental care, parasite control, and screening bloodwork on schedule.</li>
+            <li>Use enrichment and routine to reduce stress load, especially in older dogs.</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/senior-dog-health-checklist-2025" className="underline hover:opacity-80">Senior Dog Health Checklist: Signs of Aging and When to See the Vet</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/does-my-dog-need-teeth-cleaning" className="underline hover:opacity-80">Does My Dog Need Teeth Cleaning? A Complete Owner’s Guide to Dental Health, Costs, Insurance, Chews, and Senior Anesthesia Decisions</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/great-dane-health-lifespan" className="underline hover:opacity-80">Great Dane Health and Lifespan: How to Support a Giant Breed</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-8">
           <h2 className="text-2xl font-semibold mb-2">Sources</h2>
           <ul className="list-disc list-inside">
             <li>American Veterinary Medical Association (AVMA) – Senior Pet Care Guidelines</li>

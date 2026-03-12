@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: likely limited backlinks; time-bound topic can look temporary; schema is only baseline BlogPosting
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -194,7 +195,28 @@ export default function DogTiterTestingExplained() {
         </section>
 
         {/* Sources */}
-        <section id="sources" className="mb-10">
+        
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">How to turn this topic into a workable plan</h2>
+          <p className="mb-4">Most articles become more useful when they move from explanation to execution. Start by deciding what you will monitor, what decision points matter, who needs the information, and what would change your timeline. That simple planning step prevents the common pattern where good advice gets read once and then disappears under day-to-day routine.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li>Write down the main goal, the most likely risk, and the next two actions you would take if conditions change.</li>
+            <li>Keep one place for dates, notes, photos, and questions so you are not rebuilding the context every time.</li>
+            <li>Review the plan after the first real-world test and tighten what was vague.</li>
+          </ul>
+          <p className="mb-0">A short, repeatable system usually improves outcomes more than adding more disconnected advice.</p>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/airline-pet-travel-2025-italy-in-cabin-large-dogs-what-it-means-us" className="underline hover:opacity-80">Airline Pet Travel Is Shifting (Italy Allows Big Dogs In-Cabin): What U.S. Flyers Should Know Now</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/cdc-dog-import-rules-us-2025-2026" className="underline hover:opacity-80">CDC Dog Import Rules Explained (2025–2026): Returning to the U.S. With Your Dog — What Changed, What Airlines Don’t Tell You, and How to Avoid Denial at the Airport</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/daycare-for-intact-dogs-policies-heat-cycles-safety-us-uk-au" className="underline hover:opacity-80">Daycare for Intact Dogs: Policies, Heat Cycles &amp; Safety (U.S. + UK/AU)</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-10">
           <h2 className="mb-3 text-2xl font-semibold">Sources &amp; Notes</h2>
           <ul className="list-inside list-disc space-y-2">
             <li>American Veterinary Medical Association (AVMA) vaccine guidelines.</li>

@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; likely limited backlinks; year-stamped title can weaken evergreen value
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -137,7 +138,28 @@ export default function MostPopularPetNames2025() {
         </section>
 
         {/* Sources */}
-        <section id="sources" className="mb-16">
+        
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">How to turn this topic into a workable plan</h2>
+          <p className="mb-4">Most articles become more useful when they move from explanation to execution. Start by deciding what you will monitor, what decision points matter, who needs the information, and what would change your timeline. That simple planning step prevents the common pattern where good advice gets read once and then disappears under day-to-day routine.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li>Write down the main goal, the most likely risk, and the next two actions you would take if conditions change.</li>
+            <li>Keep one place for dates, notes, photos, and questions so you are not rebuilding the context every time.</li>
+            <li>Review the plan after the first real-world test and tighten what was vague.</li>
+          </ul>
+          <p className="mb-0">A short, repeatable system usually improves outcomes more than adding more disconnected advice.</p>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/how-many-variants-of-doodles-exist" className="underline hover:opacity-80">How Many Variants of Doodles Exist? Popular Types, Temperaments, and What Owners Should Know</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/pet-insurance-2025-costs-claims-coverage-guide-dogs" className="underline hover:opacity-80">Pet Insurance in 2025: Costs, Value, and How Claims Really Pay Out (Premium Trends, Deductible Math, and Break-Even Scenarios)</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/should-you-offer-dog-pickup-and-drop-off-services-the-risk-vs-reward-of-transport-vans-in-pet-care" className="underline hover:opacity-80">Should You Offer Dog Pickup and Drop-Off Services? The Risk vs. Reward of Transport Vans in Pet Care</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-16">
           <h2 className="text-2xl font-semibold mb-3">📚 Sources &amp; Official References</h2>
           <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
             <li>

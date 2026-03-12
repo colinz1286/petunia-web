@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: likely limited backlinks
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 

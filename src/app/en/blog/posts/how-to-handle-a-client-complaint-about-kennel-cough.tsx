@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: article is not registered in blogposts.ts/sitemap; overlapping topic coverage with nearby site pages; weak in-article internal linking; schema is only baseline BlogPosting
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 

@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: article is not registered in blogposts.ts/sitemap; duplicate/highly similar content risk (see /en/blog/whelping-complications-every-breeder-should-know); crowded query with low perceived distinctiveness
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 
@@ -198,6 +199,38 @@ export default function WhelpingComplicationsEveryBreederShouldKnow() {
           </p>
         </section>
 
+
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">How to match the service to the actual dog</h2>
+          <p className="mb-4">Owners get into trouble when they shop for boarding or daycare as if every dog needs the same kind of stimulation. The better question is how your dog handles novelty, recovery, confinement, transitions, noise, and group play. Service fit should follow temperament, health, and routine, not whatever package is easiest to book online.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Energy is not the only variable:</strong> some active dogs still need quiet decompression and controlled group exposure.</li>
+            <li><strong>Watch recovery time:</strong> a dog that is excited at drop-off but wrecked for two days afterward may be over threshold.</li>
+            <li><strong>Look at staff handling style:</strong> calm transitions, appropriate rest, and clean handoffs matter more than constant activity.</li>
+            <li><strong>Test the fit before the big need:</strong> short daycare or trial stays reveal much more than a polished sales call.</li>
+          </ul>
+          <p className="mb-0">Good decisions come from watching how the dog functions during and after care, not from assuming more social time is always better.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Red flags that are worth walking away from</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>No clear answer on how dogs are separated for rest, medical needs, or overstimulation.</li>
+            <li>Facility staff cannot explain incident reporting, medication handling, or emergency veterinary access.</li>
+            <li>Evaluation relies on a quick meet-and-greet rather than structured observation over time.</li>
+            <li>Communication after a trial stay is vague and focuses only on whether the dog was "fine."</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/dog-boarding-vs-daycare" className="underline hover:opacity-80">Dog Boarding vs Daycare: How to Choose the Right Option for Your Dog</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/choose-dog-boarding-daycare" className="underline hover:opacity-80">How to Choose a Good Dog Boarding or Daycare Facility</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/how-to-know-if-my-dog-is-sick" className="underline hover:opacity-80">How to Know If My Dog Is Sick: Subtle Signs, Red Flags, Home Checks, Vet Care, Costs, and a Practical 72-Hour Plan</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
         <div className="mt-8">
           <Link href={`/${locale}/blog`} className="text-blue-600 hover:underline">
             &larr;&nbsp;Back to Blog

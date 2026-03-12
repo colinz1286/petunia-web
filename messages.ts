@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export, @typescript-eslint/no-require-imports */
 export default {
   en: () => ({
     adoptionApplicationForm: require('./messages/en/adoptionApplicationForm.json'),
@@ -6,6 +7,8 @@ export default {
     boardingAndDaycareAddDogClientList: require('./messages/en/boardingAndDaycareAddDogClientList.json'),
     boardingAndDaycareBusinessSettings: require('./messages/en/boardingAndDaycareBusinessSettings.json'),
     boardingAndDaycareBusinessSettingsDiscounts: require('./messages/en/boardingAndDaycareBusinessSettingsDiscounts.json'),
+    boardingAndDaycareBusinessSettingsMemberships: require('./messages/en/boardingAndDaycareBusinessSettingsMemberships.json'),
+    boardingAndDaycareBookingMembershipSelector: require('./messages/en/boardingAndDaycareBookingMembershipSelector.json'),
     boardingAndDaycarePendingRequests: require('./messages/en/boardingAndDaycarePendingRequests.json'),
     boardingAndDaycareClientManagement: require('./messages/en/boardingAndDaycareClientManagement.json'),
     boardingAndDaycareEmployeeManagementDashboard: require('./messages/en/boardingAndDaycareEmployeeManagementDashboard.json'),
@@ -24,6 +27,7 @@ export default {
     boardingAndDaycareDogsOnProperty: require('./messages/en/boardingAndDaycareDogsOnProperty.json'),
     boardingAndDaycareManualInvoices: require('./messages/en/boardingAndDaycareManualInvoices.json'),
     boardingAndDaycarePayAtCheckoutItems: require('./messages/en/boardingAndDaycarePayAtCheckoutItems.json'),
+    boardingAndDaycarePayAtCheckoutBoardingItems: require('./messages/en/boardingAndDaycarePayAtCheckoutBoardingItems.json'),
     boardingAndDaycarePayAtCheckoutDaycareItems: require('./messages/en/boardingAndDaycarePayAtCheckoutDaycareItems.json'),
     boardingAndDaycarePayAtCheckoutGroomingItems: require('./messages/en/boardingAndDaycarePayAtCheckoutGroomingItems.json'),
     boardingAndDaycareManageIndividualEmployee: require('./messages/en/boardingAndDaycareManageIndividualEmployee.json'),

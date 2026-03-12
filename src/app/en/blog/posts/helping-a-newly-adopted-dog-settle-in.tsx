@@ -1,3 +1,4 @@
+// SEO weakness notes: overlapping topic coverage with nearby site pages; weak in-article internal linking; likely limited backlinks; schema is only baseline BlogPosting
 // File: src/app/blog/posts/helping-a-newly-adopted-dog-settle-in.tsx
 'use client';
 

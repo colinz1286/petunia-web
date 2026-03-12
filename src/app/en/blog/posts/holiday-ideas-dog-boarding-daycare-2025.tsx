@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; weak in-article internal linking; likely limited backlinks; year-stamped title can weaken evergreen value
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 

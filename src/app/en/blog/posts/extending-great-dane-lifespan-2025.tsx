@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: overlapping topic coverage with nearby site pages; likely limited backlinks; year-stamped title can weaken evergreen value
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -203,7 +204,40 @@ export default function ExtendingGreatDaneLifespan2025() {
         </section>
 
         {/* References */}
-        <section id="references" className="mb-16">
+        
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">What a strong Great Dane monitoring plan looks like</h2>
+          <p className="mb-4">Owners make better decisions when they stop waiting for obvious crises and start tracking baseline health. For Great Dane, that usually means knowing normal appetite, stool quality, weight trend, exercise recovery, breathing effort, sleep quality, coat condition, and behavior at home. Once you know the baseline, small but meaningful changes stop blending into daily life.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Check the basics monthly:</strong> body condition, weight, gum color, nail length, ear odor, and any new lumps or skin changes.</li>
+            <li><strong>Record recovery, not just activity:</strong> how quickly your dog settles after play, stairs, heat, or excitement tells you a lot.</li>
+            <li><strong>Track repeat patterns:</strong> intermittent stomach upset, paw licking, coughing, stiffness, or reluctance to jump are more useful than one-off anecdotes.</li>
+            <li><strong>Keep preventive care visible:</strong> recheck dates, dental work, parasite prevention, and screening recommendations should live in one easy-to-review place.</li>
+          </ul>
+          <p className="mb-0">That kind of monitoring is what makes veterinary appointments more productive and helps owners intervene before a mild issue becomes an expensive one.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Questions that sharpen the next veterinary conversation</h2>
+          <p className="mb-4">A short list of better questions usually improves the appointment more than bringing in ten vague worries. Ask what matters most for your dog's age, body condition, lifestyle, and family history.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Which changes in stamina, weight, or behavior would you treat as early warning signs rather than normal variation?</li>
+            <li>Are there screening tests, imaging decisions, or referral thresholds that make sense for this breed and age bracket?</li>
+            <li>What would make you want photos, videos, or a symptom log before the next visit?</li>
+            <li>Which problems are appropriate to monitor at home, and which ones should change my timeline to same-day care?</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/great-dane-health-lifespan" className="underline hover:opacity-80">Great Dane Health and Lifespan: How to Support a Giant Breed</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/average-age-of-labrador" className="underline hover:opacity-80">Average Age of a Labrador: Evidence-Based Lifespan, What Shortens or Extends Life, and How to Add Healthy Years in 2026</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/ethics-of-extending-dog-lifespan" className="underline hover:opacity-80">The Ethics of Extending Canine Lifespan: Owner Expectations, Quality of Life, and the Future of Ageing Science</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="references" className="mb-16">
           <h2 className="text-2xl font-semibold mb-3">📚 References</h2>
           <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
             <li>

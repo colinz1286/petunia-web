@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; crowded query with low perceived distinctiveness; likely limited backlinks
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -185,6 +186,38 @@ export default function HelpDogEatWhileOnMetronidazole() {
           <li>American Veterinary Medical Association</li>
         </ul>
 
+
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">What to monitor after starting or changing a medication</h2>
+          <p className="mb-4">Owners make the best use of a medication article when they monitor the whole patient, not just the symptom the drug was meant to address. Appetite, thirst, stool, vomiting, activity, restlessness, coordination, sleep, and the exact timing of each dose can all help separate a normal adjustment period from a problem that needs a new plan.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Track timing carefully:</strong> note when the dose was given, when symptoms improved, and whether new signs appeared afterward.</li>
+            <li><strong>Watch for pattern, not panic:</strong> one mild off-meal can be noise; recurring vomiting, worsening lethargy, or neurologic change is not.</li>
+            <li><strong>Protect hydration and intake:</strong> if the dog will not eat, drink, or keep medication down, the plan may fail even if the drug choice was reasonable.</li>
+            <li><strong>Write down all concurrent products:</strong> diet changes, supplements, preventives, and stressors matter when symptoms are reviewed.</li>
+          </ul>
+          <p className="mb-0">That record helps your veterinarian adjust the next step from evidence rather than guesswork.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Red flags that should change your timeline</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Repeated vomiting, severe diarrhea, collapse, marked weakness, tremors, or obvious pain.</li>
+            <li>Progressive dullness, disorientation, or inability to stand or walk normally.</li>
+            <li>No meaningful improvement within the expected window your veterinarian gave you, especially if symptoms are getting worse.</li>
+            <li>Any reaction that makes it hard to medicate, feed, or hydrate the dog safely at home.</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/nausea-vomiting-metronidazole-dogs" className="underline hover:opacity-80">What to Do If Your Dog Has Nausea or Vomiting While on Metronidazole</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/are-german-shepherds-aggressive-or-dangerous" className="underline hover:opacity-80">Are German Shepherds Aggressive or Dangerous? A Data-Informed Owner’s Guide to Temperament, Risk, and Real-World Management</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/average-age-of-labrador" className="underline hover:opacity-80">Average Age of a Labrador: Evidence-Based Lifespan, What Shortens or Extends Life, and How to Add Healthy Years in 2026</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
         <Link
           href={`/${locale}/blog`}
           className="underline text-[#2c4a30] font-medium hover:opacity-80"

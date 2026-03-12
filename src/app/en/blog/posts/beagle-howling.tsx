@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; overlapping topic coverage with nearby site pages; crowded query with low perceived distinctiveness
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 
@@ -177,7 +178,39 @@ export default function BeagleHowling() {
         </section>
 
         {/* Sources */}
-        <section id="sources" className="mb-8">
+        
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">How to make progress stick with Beagle</h2>
+          <p className="mb-4">Owners often judge training by whether a dog can perform on a good day. Professionals judge it by whether the behavior holds when arousal, distraction, fatigue, novelty, or frustration show up. Beagle progress improves when sessions are short, predictable, and repeated in multiple environments instead of being saved for long, intense weekend efforts.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Work below threshold:</strong> if your dog is barking, lunging, spinning, or ignoring food, the training setup is already too hard.</li>
+            <li><strong>Train one variable at a time:</strong> duration, distance, and distraction should not all rise in the same session.</li>
+            <li><strong>Protect recovery:</strong> sleep debt, over-stimulation, and physical discomfort can erase what looks like a motivation problem.</li>
+            <li><strong>Measure trends, not moods:</strong> track trigger distance, recovery time, and success rate for the same exercise each week.</li>
+          </ul>
+          <p className="mb-0">That approach creates a dog that is not just obedient in familiar conditions, but more stable and easier to guide in real life.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">When a home plan needs more structure or more help</h2>
+          <p className="mb-4">Home practice is useful, but it is not the right ceiling for every case. Escalate earlier when the pattern includes fear, guarding, repeated failed exposures, or behavior that seems to worsen after punishment, flooding, or high-intensity exercise.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Get veterinary input if behavior changes suddenly, appears alongside pain, or comes with appetite, sleep, or mobility changes.</li>
+            <li>Use a qualified trainer or veterinary behavior professional when safety, bite risk, or severe panic enter the picture.</li>
+            <li>Keep the plan boring and consistent; dramatic corrections usually create more conflict than clarity.</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/ollies-law-kennel-safety-2025" className="underline hover:opacity-80">“Ollie’s Law” (2025): What It Is, How It Happened, Where It Applies, and What It Means for Dog Boarding &amp; Daycare — With Global Context and Operator Playbooks</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/airline-pet-travel-2025-italy-in-cabin-large-dogs-what-it-means-us" className="underline hover:opacity-80">Airline Pet Travel Is Shifting (Italy Allows Big Dogs In-Cabin): What U.S. Flyers Should Know Now</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/beagle-shedding" className="underline hover:opacity-80">Do Beagles Shed? Grooming, Allergy Considerations, and Household Tips</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-8">
           <h2 className="text-2xl font-semibold mb-2">Sources</h2>
           <ul className="list-disc list-inside">
             <li>American Kennel Club (AKC) – Beagle Breed Information</li>

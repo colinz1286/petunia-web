@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: overlapping topic coverage with nearby site pages; weak in-article internal linking; crowded query with low perceived distinctiveness; likely limited backlinks; year-stamped title can weaken evergreen value
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 

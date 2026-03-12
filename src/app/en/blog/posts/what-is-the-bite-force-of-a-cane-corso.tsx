@@ -1,3 +1,4 @@
+// SEO weakness notes: likely limited backlinks; schema is only baseline BlogPosting
 // File: src/app/[locale]/blog/posts/what-is-the-bite-force-of-a-cane-corso.tsx
 'use client';
 

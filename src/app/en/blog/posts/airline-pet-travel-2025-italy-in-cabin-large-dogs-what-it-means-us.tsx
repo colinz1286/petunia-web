@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: overlapping topic coverage with nearby site pages; weak in-article internal linking; likely limited backlinks; dated/news-driven framing can age quickly
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 

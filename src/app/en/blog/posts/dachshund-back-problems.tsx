@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: likely limited backlinks; schema is only baseline BlogPosting
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 
@@ -140,7 +141,40 @@ export default function DachshundBackProblems() {
           </p>
         </section>
 
-        <section id="sources" className="mb-8">
+        
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">What a strong Dachshund monitoring plan looks like</h2>
+          <p className="mb-4">Owners make better decisions when they stop waiting for obvious crises and start tracking baseline health. For Dachshund, that usually means knowing normal appetite, stool quality, weight trend, exercise recovery, breathing effort, sleep quality, coat condition, and behavior at home. Once you know the baseline, small but meaningful changes stop blending into daily life.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Check the basics monthly:</strong> body condition, weight, gum color, nail length, ear odor, and any new lumps or skin changes.</li>
+            <li><strong>Record recovery, not just activity:</strong> how quickly your dog settles after play, stairs, heat, or excitement tells you a lot.</li>
+            <li><strong>Track repeat patterns:</strong> intermittent stomach upset, paw licking, coughing, stiffness, or reluctance to jump are more useful than one-off anecdotes.</li>
+            <li><strong>Keep preventive care visible:</strong> recheck dates, dental work, parasite prevention, and screening recommendations should live in one easy-to-review place.</li>
+          </ul>
+          <p className="mb-0">That kind of monitoring is what makes veterinary appointments more productive and helps owners intervene before a mild issue becomes an expensive one.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Questions that sharpen the next veterinary conversation</h2>
+          <p className="mb-4">A short list of better questions usually improves the appointment more than bringing in ten vague worries. Ask what matters most for your dog's age, body condition, lifestyle, and family history.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Which changes in stamina, weight, or behavior would you treat as early warning signs rather than normal variation?</li>
+            <li>Are there screening tests, imaging decisions, or referral thresholds that make sense for this breed and age bracket?</li>
+            <li>What would make you want photos, videos, or a symptom log before the next visit?</li>
+            <li>Which problems are appropriate to monitor at home, and which ones should change my timeline to same-day care?</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/common-health-problems-in-french-bulldogs" className="underline hover:opacity-80">Common Health Problems in French Bulldogs: Early Signs, Prevention, and Operator-Grade Care Systems</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/dachshund-back-health-home-setup-guide" className="underline hover:opacity-80">Dachshund Back Health at Home: Daily Setup to Reduce Disc Injury Risk</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/what-health-problems-are-common-in-german-shepherds" className="underline hover:opacity-80">What Health Problems Are Common in German Shepherds? A Practical, Evidence-Informed Owner’s Guide (Screens, Prevention &amp; When to See the Vet)</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-8">
           <h2 className="text-2xl font-semibold mb-2">Sources</h2>
           <ul className="list-disc list-inside">
             <li>American Kennel Club (AKC) – Dachshund Breed Information</li>

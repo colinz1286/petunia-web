@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: likely limited backlinks; time-bound topic can look temporary; schema is only baseline BlogPosting
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -189,7 +190,39 @@ export default function CanineNutritionResearchRoundupSeptOct2025() {
           </ul>
         </section>
 
-        <section id="references" className="mb-16">
+        
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">How professionals evaluate a feeding plan before calling it good or bad</h2>
+          <p className="mb-4">The most useful nutrition lens is not hype or tribe loyalty. It is whether the plan is complete, practical, tolerated by the dog in front of you, and monitored closely enough to catch trouble early. Good feeding decisions hold up across body condition, stool quality, appetite, energy, skin, long-term compliance, and risk profile for that dog's age and medical history.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Start with adequacy:</strong> can the plan reliably meet protein, mineral, fatty acid, and calorie needs?</li>
+            <li><strong>Then look at tolerance:</strong> stools, appetite, vomiting, itching, and weight trend are part of the evaluation.</li>
+            <li><strong>Do not ignore logistics:</strong> safe storage, household consistency, cost, and who is actually preparing the food all matter.</li>
+            <li><strong>Match the plan to the patient:</strong> puppies, seniors, pancreatitis-prone dogs, and medically complex dogs have less margin for experimentation.</li>
+          </ul>
+          <p className="mb-0">A practical plan that your dog does well on is more valuable than a perfect-sounding one that the household cannot execute safely.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">A transition and monitoring framework that reduces guesswork</h2>
+          <ol className="list-decimal pl-5 space-y-2 mb-0">
+            <li>Change one major feeding variable at a time so you can interpret the result.</li>
+            <li>Track stool, appetite, energy, skin, and weight for at least two weeks after a meaningful change.</li>
+            <li>Move faster to veterinary input if vomiting, lethargy, pain, dehydration, or recurrent diarrhea enters the picture.</li>
+            <li>Reassess the plan if the dog is thriving only when the household is compensating with constant add-ons or workaround feeding.</li>
+          </ol>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/dog-nutrition-updates-2025" className="underline hover:opacity-80">2025 Dog Nutrition Updates: How Prescription Weight-Control Diets Are Changing Vet Care</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/boston-terrier-diet-guide-2025" className="underline hover:opacity-80">Boston Terrier Diet Guide (2025): Nutrition, Feeding Schedules, Allergies &amp; Sensitive Stomach Tips</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/boston-terrier-weight-chart-and-puppy-growth-2025" className="underline hover:opacity-80">Boston Terrier Weight Chart &amp; Puppy Growth (2025): Normal Ranges, Warning Signs &amp; Nutrition Tips</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="references" className="mb-16">
           <h2 className="text-2xl font-semibold mb-3">📚 References</h2>
           <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
             <li>

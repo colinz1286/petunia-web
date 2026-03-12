@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; overlapping topic coverage with nearby site pages; crowded query with low perceived distinctiveness
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -211,7 +212,39 @@ export default function DogWeightAndLifespanDataAnalysis() {
                 </section>
 
                 {/* Sources */}
-                <section id="sources" className="mb-16">
+                
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">How to judge a longevity claim like a clinician, not a marketer</h2>
+          <p className="mb-4">Longevity content gets stronger when it separates mechanism, plausibility, and real-world outcome data. A promising pathway, biomarker shift, or mouse result is not the same thing as meaningful healthspan improvement in pet dogs living normal lives. Before taking any claim seriously, ask what population was studied, what endpoint actually improved, how long the effect lasted, and what tradeoffs appeared alongside it.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Best-case evidence:</strong> controlled canine data tied to function, quality of life, or delayed disease, not just theory.</li>
+            <li><strong>Useful supporting evidence:</strong> consistent veterinary reasoning, safety monitoring, and transparent limits.</li>
+            <li><strong>Weak evidence:</strong> one mechanism-heavy narrative without dosing clarity, patient selection, or follow-up outcomes.</li>
+            <li><strong>Essential question:</strong> what would success look like for a real dog over months or years, not just in a headline?</li>
+          </ul>
+          <p className="mb-0">That framework protects owners from confusing novelty with value and helps them prioritize the interventions that already have better practical support.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">The weekly habits that still matter more than any single longevity product</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Keep body condition lean and stable rather than accepting gradual weight drift.</li>
+            <li>Protect mobility with regular low-impact exercise, traction, and earlier response to stiffness.</li>
+            <li>Support sleep, dental care, parasite control, and screening bloodwork on schedule.</li>
+            <li>Use enrichment and routine to reduce stress load, especially in older dogs.</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/cavalier-king-charles-spaniel-lifespan" className="underline hover:opacity-80">Cavalier King Charles Spaniel Lifespan: How to Help Your Dog Live Longer</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/average-age-of-labrador" className="underline hover:opacity-80">Average Age of a Labrador: Evidence-Based Lifespan, What Shortens or Extends Life, and How to Add Healthy Years in 2026</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/dog-exercise-for-longevity-daily-routines" className="underline hover:opacity-80">Exercise and Longevity: The Exact Daily Routines That Help Dogs Live Longer, According to Research</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-16">
                     <h2 className="text-2xl font-semibold mb-4">📚 Sources (Selected)</h2>
                     <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
                         <li>Kealy RD et al. (2002). Effects of diet restriction on life span in dogs. J Am Vet Med Assoc.</li>

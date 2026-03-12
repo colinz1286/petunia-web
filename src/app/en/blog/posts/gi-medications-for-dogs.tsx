@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: page is still new; crowded query with low perceived distinctiveness; likely limited backlinks
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -181,6 +182,38 @@ export default function GIMedicationsForDogs() {
           <li>American Veterinary Medical Association</li>
         </ul>
 
+
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Home monitoring that makes the next veterinary conversation better</h2>
+          <p className="mb-4">Condition-based articles are most useful when they help owners collect better evidence. Instead of relying on memory alone, track appetite, water intake, stool, sleep, exercise tolerance, visible discomfort, and what changed first. That turns a vague story into a usable clinical timeline and makes it easier to decide whether the pattern looks mild, progressive, recurrent, or urgent.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Use the same measures each day:</strong> when symptoms start, how long they last, and what preceded them.</li>
+            <li><strong>Record context:</strong> food changes, stress, heat, exercise, grooming, medications, and environment can all matter.</li>
+            <li><strong>Take photos or short videos when safe:</strong> visible swelling, gait change, discharge, breathing effort, or episodes are easier to evaluate with proof.</li>
+            <li><strong>Compare with baseline:</strong> the key question is not just what looks abnormal, but how far the dog has moved from normal function.</li>
+          </ul>
+          <p className="mb-0">That level of tracking usually improves both diagnosis and the quality of the advice you get back.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">When supportive care stops being enough</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Escalate faster when symptoms recur, intensify, or start interfering with eating, hydration, mobility, breathing, or normal sleep.</li>
+            <li>Move to same-day care when pain, collapse, bleeding, significant weakness, or neurologic change enters the picture.</li>
+            <li>Ask for a clearer workup plan if you keep getting temporary symptom control without a convincing explanation for the pattern.</li>
+            <li>Do not let a condition stay in the watch-and-wait category indefinitely if the baseline is drifting in the wrong direction.</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/common-gi-problems-in-dogs" className="underline hover:opacity-80">Common Gastrointestinal (GI) Problems in Dogs: Symptoms, Causes, and When to Worry</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/help-dog-eat-while-on-metronidazole" className="underline hover:opacity-80">How to Help a Dog Eat While on Metronidazole or Other GI Medications</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/airline-pet-carrier-checkin-rejections-prevention" className="underline hover:opacity-80">Airline Pet Carrier Failures: The Most Common Check-In Rejections and How to Prevent Them</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
         <Link
           href={`/${locale}/blog`}
           className="underline text-[#2c4a30] font-medium hover:opacity-80"

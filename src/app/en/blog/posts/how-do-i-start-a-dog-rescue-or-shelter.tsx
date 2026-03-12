@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: weak in-article internal linking; likely limited backlinks; dated/news-driven framing can age quickly; weaker site topical authority in this subtopic; schema is only baseline BlogPosting
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 

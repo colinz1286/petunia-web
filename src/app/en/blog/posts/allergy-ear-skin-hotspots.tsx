@@ -1,5 +1,6 @@
 'use client';
 
+// SEO weakness notes: overlapping topic coverage with another strong site page; likely limited backlinks; schema is only baseline BlogPosting
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 
@@ -205,7 +206,39 @@ export default function AllergySkinIssues() {
           </p>
         </section>
 
-        <section id="sources" className="mb-8">
+        
+        {/* Expanded depth content start */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Home monitoring that makes the next veterinary conversation better</h2>
+          <p className="mb-4">Condition-based articles are most useful when they help owners collect better evidence. Instead of relying on memory alone, track appetite, water intake, stool, sleep, exercise tolerance, visible discomfort, and what changed first. That turns a vague story into a usable clinical timeline and makes it easier to decide whether the pattern looks mild, progressive, recurrent, or urgent.</p>
+          <ul className="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Use the same measures each day:</strong> when symptoms start, how long they last, and what preceded them.</li>
+            <li><strong>Record context:</strong> food changes, stress, heat, exercise, grooming, medications, and environment can all matter.</li>
+            <li><strong>Take photos or short videos when safe:</strong> visible swelling, gait change, discharge, breathing effort, or episodes are easier to evaluate with proof.</li>
+            <li><strong>Compare with baseline:</strong> the key question is not just what looks abnormal, but how far the dog has moved from normal function.</li>
+          </ul>
+          <p className="mb-0">That level of tracking usually improves both diagnosis and the quality of the advice you get back.</p>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">When supportive care stops being enough</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li>Escalate faster when symptoms recur, intensify, or start interfering with eating, hydration, mobility, breathing, or normal sleep.</li>
+            <li>Move to same-day care when pain, collapse, bleeding, significant weakness, or neurologic change enters the picture.</li>
+            <li>Ask for a clearer workup plan if you keep getting temporary symptom control without a convincing explanation for the pattern.</li>
+            <li>Do not let a condition stay in the watch-and-wait category indefinitely if the baseline is drifting in the wrong direction.</li>
+          </ul>
+        </section>
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
+          <ul className="list-disc pl-5 space-y-2 mb-0">
+            <li><a href="https://www.petuniapets.com/en/blog/boxer-skin-problems-diagnostic-flowchart" className="underline hover:opacity-80">Boxer Skin Problems: Diagnostic Flowchart for Allergies, Infections, and Mast Cell Concerns</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/dog-ear-infections-causes-symptoms-and-treatment-options" className="underline hover:opacity-80">Dog Ear Infections: Causes, Symptoms, and Treatment Options</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/westie-allergy-management-12-week-plan" className="underline hover:opacity-80">Westie Allergy Management Plan: 12-Week Protocol for Itch, Ears, and Skin Flare Reduction</a></li>
+          </ul>
+        </section>
+        {/* Expanded depth content end */}
+<section id="sources" className="mb-8">
           <h2 className="text-2xl font-semibold mb-2">Sources</h2>
           <ul className="list-disc list-inside">
             <li>American Veterinary Medical Association (AVMA) – Canine Allergy Resources</li>
