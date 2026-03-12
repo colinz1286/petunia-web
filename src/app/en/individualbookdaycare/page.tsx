@@ -6,6 +6,7 @@
 import React, {
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -49,7 +50,6 @@ import {
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
-import BoardingAndDaycareBookingMembershipSelector from '@/components/boardinganddaycare/BoardingAndDaycareBookingMembershipSelector';
 import {
   consumeMembershipPurchaseForClient,
   createMembershipPurchaseForClient,
@@ -372,9 +372,18 @@ export default function IndividualBookDaycarePage() {
     (booking) => !!booking.groomingAddOns && Object.keys(booking.groomingAddOns).length > 0
   );
   const daycareOnlinePaymentsEnabled = paymentsEnabled && payAtBookingEnabled;
-  const membershipPurchaseDisabledReason = daycareOnlinePaymentsEnabled
-    ? null
-    : t('membership_purchase_requires_daycare_pay_at_booking');
+  const daycareUsableMembershipPurchases = useMemo(() => (
+    membershipPurchases.filter((purchase) => membershipPurchaseCanCover(purchase, 'daycare', 0))
+  ), [membershipPurchases]);
+  const daycarePurchasableMembershipPlans = useMemo(() => (
+    membershipPlans.filter((plan) => (
+      plan.active
+      && plan.appliesToServices.daycare
+      && plan.purchaseAtBooking
+    ))
+  ), [membershipPlans]);
+  const showDaycareMembershipFeature = daycareUsableMembershipPurchases.length > 0
+    || (daycareOnlinePaymentsEnabled && daycarePurchasableMembershipPlans.length > 0);
 
   const normalizeText = useCallback((value: string) => value.trim().toLowerCase(), []);
 
@@ -717,6 +726,31 @@ export default function IndividualBookDaycarePage() {
     if (!businessId || !userId) return;
     void loadMembershipData(businessId, userId);
   }, [businessId, loadMembershipData, userId]);
+
+  useEffect(() => {
+    if (
+      selectedMembershipPurchaseId
+      && !daycareUsableMembershipPurchases.some((purchase) => purchase.id === selectedMembershipPurchaseId)
+    ) {
+      setSelectedMembershipPurchaseId('');
+    }
+
+    if (
+      selectedMembershipPlanId
+      && !(
+        daycareOnlinePaymentsEnabled
+        && daycarePurchasableMembershipPlans.some((plan) => plan.id === selectedMembershipPlanId)
+      )
+    ) {
+      setSelectedMembershipPlanId('');
+    }
+  }, [
+    daycareOnlinePaymentsEnabled,
+    daycarePurchasableMembershipPlans,
+    daycareUsableMembershipPurchases,
+    selectedMembershipPlanId,
+    selectedMembershipPurchaseId,
+  ]);
 
   useEffect(() => {
     const hydrateBathSizes = async () => {
@@ -1701,25 +1735,33 @@ export default function IndividualBookDaycarePage() {
             </div>
           )}
 
-          {membershipUnitsRequired > 0 && (
-            <div className="w-full max-w-sm sm:max-w-md mx-auto space-y-3">
-              <BoardingAndDaycareBookingMembershipSelector
-                service="daycare"
-                requiredUnits={membershipUnitsRequired}
-                purchases={membershipPurchases}
-                plans={membershipPlans}
-                selectedPurchaseId={selectedMembershipPurchaseId}
-                selectedPlanId={selectedMembershipPlanId}
-                onSelectPurchase={(purchaseId) => {
-                  setSelectedMembershipPurchaseId(purchaseId);
-                  if (purchaseId) setSelectedMembershipPlanId('');
-                }}
-                onSelectPlan={(planId) => {
-                  setSelectedMembershipPlanId(planId);
-                  if (planId) setSelectedMembershipPurchaseId('');
-                }}
-                buyDisabledReason={membershipPurchaseDisabledReason}
-              />
+          {showDaycareMembershipFeature && (
+            <div className="w-full max-w-sm sm:max-w-md mx-auto">
+              <div className="rounded-xl border border-amber-200 bg-white p-4 text-black shadow-sm">
+                <div className="space-y-2">
+                  <h2 className="text-lg font-semibold text-[color:var(--color-accent)]">
+                    {t('membership_coming_soon_title')}
+                  </h2>
+                  <p className="text-sm text-gray-700">
+                    {daycareUsableMembershipPurchases.length > 0
+                      ? t('membership_coming_soon_existing_balance_body')
+                      : t('membership_coming_soon_plans_body')}
+                  </p>
+                  {daycareUsableMembershipPurchases.length > 0 ? (
+                    <p className="text-xs text-gray-500">
+                      {t('membership_coming_soon_existing_balance_count', {
+                        count: daycareUsableMembershipPurchases.length,
+                        plural: daycareUsableMembershipPurchases.length === 1 ? '' : 's',
+                      })}
+                    </p>
+                  ) : null}
+                  {daycareOnlinePaymentsEnabled && daycarePurchasableMembershipPlans.length > 0 ? (
+                    <p className="text-xs font-medium text-gray-600">
+                      {t('membership_coming_soon_booking_enabled')}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
             </div>
           )}
 

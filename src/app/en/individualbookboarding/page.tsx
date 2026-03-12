@@ -98,6 +98,7 @@ type BusinessSettingsDoc = {
     timeZoneId?: string;
     features?: BusinessFeatures;
     capacityBoardingTotal?: number | null;
+    requireBoardingReservationApproval?: boolean;
     paymentSettings?: {
         enabled?: boolean;
         boarding?: {
@@ -338,6 +339,7 @@ export default function IndividualBookBoardingPage() {
     const [businessTimeZoneId, setBusinessTimeZoneId] = useState<string | null>(null);
     const [includePendingInCapacity, setIncludePendingInCapacity] = useState(false);
     const [clientWritesRTDB, setClientWritesRTDB] = useState(true);
+    const [requireBoardingReservationApproval, setRequireBoardingReservationApproval] = useState(false);
     const [paymentsEnabled, setPaymentsEnabled] = useState(false);
     const [boardingPayAtBookingEnabled, setBoardingPayAtBookingEnabled] = useState(false);
 
@@ -410,6 +412,24 @@ export default function IndividualBookBoardingPage() {
         return nights * selectedPetIds.size;
     }, [bizTZ, checkInDate, checkOutDate, selectedPetIds]);
     const boardingOnlinePaymentsEnabled = paymentsEnabled && boardingPayAtBookingEnabled;
+    const boardingUsableMembershipPurchases = useMemo(() => (
+        membershipPurchases.filter((purchase) => membershipPurchaseCanCover(purchase, 'boarding', 0))
+    ), [membershipPurchases]);
+    const boardingPurchasableMembershipPlans = useMemo(() => (
+        membershipPlans.filter((plan) => (
+            plan.active
+            && plan.appliesToServices.boarding
+            && plan.purchaseAtBooking
+        ))
+    ), [membershipPlans]);
+    const showBoardingMembershipSelector = membershipUnitsRequired > 0 && (
+        boardingUsableMembershipPurchases.length > 0
+        || (boardingOnlinePaymentsEnabled && boardingPurchasableMembershipPlans.length > 0)
+    );
+    const hasBoardingPricingConfigured = useMemo(
+        () => Object.keys(boardingPricingSettings?.nightlyRates || {}).length > 0,
+        [boardingPricingSettings]
+    );
     const membershipPurchaseDisabledReason =
         boardingOnlinePaymentsEnabled
             ? null
@@ -533,6 +553,16 @@ export default function IndividualBookBoardingPage() {
 
     const membershipPurchaseTotalCents = selectedMembershipPlanForPurchase?.priceCents || 0;
     const amountDueTodayCents = (boardingQuote?.depositDueTodayCents || 0) + membershipPurchaseTotalCents;
+    const formInteractionBlocked = gatingActive || (isProcessingPayment && !clientSecret);
+
+    const invalidatePaymentState = useCallback(() => {
+        setClientSecret(null);
+        setPaymentAmount(null);
+        setPaymentIntentId(null);
+        setPaymentEstimateSummary(null);
+        setPaymentBreakdown({ lines: [], subtotalCents: 0 });
+        setPendingReservationId(null);
+    }, []);
 
     const buildPaymentBreakdown = useCallback((): PaymentBreakdown => {
         const lines: PaymentLineItem[] = [];
@@ -860,11 +890,7 @@ export default function IndividualBookBoardingPage() {
             setClientSecret(nextClientSecret);
         } catch (error) {
             console.error('❌ Boarding Stripe payment flow failed:', error);
-            setPendingReservationId(null);
-            setPaymentAmount(null);
-            setPaymentIntentId(null);
-            setPaymentEstimateSummary(null);
-            setPaymentBreakdown({ lines: [], subtotalCents: 0 });
+            invalidatePaymentState();
             alert(t('payment_processing_failed'));
         } finally {
             setIsProcessingPayment(false);
@@ -891,6 +917,7 @@ export default function IndividualBookBoardingPage() {
         selectedPetIds,
         t,
         userId,
+        invalidatePaymentState,
     ]);
 
     /** Fetch Business settings (parity with iOS; includes after-hours) — waiver removed */
@@ -907,12 +934,15 @@ export default function IndividualBookBoardingPage() {
                 activeUserId ? getDoc(doc(db, 'userApprovedBusinesses', bizId, 'clients', activeUserId)) : Promise.resolve(null),
             ]);
             const data = (bsnap.data() || {}) as BusinessSettingsDoc;
+            const nextBusinessTimeZoneId = data.timeZoneId || null;
+            const nextBizTZ = nextBusinessTimeZoneId || Intl.DateTimeFormat().resolvedOptions().timeZone;
 
             // TZ & features (no enforceWaiverVersion)
-            setBusinessTimeZoneId(data.timeZoneId || null);
+            setBusinessTimeZoneId(nextBusinessTimeZoneId);
             const f = data.features || {};
             setIncludePendingInCapacity(!!f.countPendingInCapacity);
             setClientWritesRTDB(f.clientWritesRTDB !== false); // default true
+            setRequireBoardingReservationApproval(!!data.requireBoardingReservationApproval);
             const paymentSettings = data.paymentSettings || {};
             setPaymentsEnabled(!!paymentSettings.enabled);
             const boardingPayments = paymentSettings.boarding || {};
@@ -1022,7 +1052,7 @@ export default function IndividualBookBoardingPage() {
             if (Array.isArray(data.blackoutDates)) {
                 const formatted = data.blackoutDates.map((ts: Timestamp) => {
                     const d = ts.toDate();
-                    return ymdKey(d, bizTZ);
+                    return ymdKey(d, nextBizTZ);
                 });
                 setBlackoutDates(new Set(formatted));
             } else {
@@ -1056,14 +1086,10 @@ export default function IndividualBookBoardingPage() {
             setDepositRequired(Boolean(data.depositRequired));
             setDepositAmount((data.depositAmount as string) || '');
             setDepositAcknowledged(false); // reset every time settings load
-
-            // Refresh options if dates already chosen
-            refreshCheckInOptions(ciMap, earlyMap, afterDropMap, earlyReq, afterDropReq);
-            refreshCheckOutOptions(coMap, bhMap, ahMap, bhReq, ahReq);
         } catch (e) {
             console.error('❌ Failed to fetch business settings:', e);
         }
-    }, [refreshCheckInOptions, refreshCheckOutOptions, bizTZ]);
+    }, []);
 
     /** =========================
  *  Load auth, pets, business settings (dup-guarded) — waiver removed
@@ -1352,7 +1378,54 @@ export default function IndividualBookBoardingPage() {
     }, [selectedPetIds, revalidateAll]);
 
     useEffect(() => {
-        if (!boardingPricingSettings || !checkInDate || !checkOutDate || checkInDate >= checkOutDate || selectedPetIds.size === 0) {
+        if (
+            selectedMembershipPurchaseId
+            && !boardingUsableMembershipPurchases.some((purchase) => purchase.id === selectedMembershipPurchaseId)
+        ) {
+            setSelectedMembershipPurchaseId('');
+        }
+
+        if (
+            selectedMembershipPlanId
+            && !(
+                boardingOnlinePaymentsEnabled
+                && boardingPurchasableMembershipPlans.some((plan) => plan.id === selectedMembershipPlanId)
+            )
+        ) {
+            setSelectedMembershipPlanId('');
+        }
+    }, [
+        boardingOnlinePaymentsEnabled,
+        boardingPurchasableMembershipPlans,
+        boardingUsableMembershipPurchases,
+        selectedMembershipPlanId,
+        selectedMembershipPurchaseId,
+    ]);
+
+    useEffect(() => {
+        invalidatePaymentState();
+    }, [
+        checkInDate,
+        checkOutDate,
+        checkInWindow,
+        checkOutWindow,
+        groomingSelections,
+        invalidatePaymentState,
+        selectedBoardingAddOns,
+        selectedMembershipPlanId,
+        selectedMembershipPurchaseId,
+        selectedPetIds
+    ]);
+
+    useEffect(() => {
+        if (
+            !boardingPricingSettings
+            || !hasBoardingPricingConfigured
+            || !checkInDate
+            || !checkOutDate
+            || checkInDate >= checkOutDate
+            || selectedPetIds.size === 0
+        ) {
             setBoardingQuote(null);
             return;
         }
@@ -1374,6 +1447,7 @@ export default function IndividualBookBoardingPage() {
     }, [
         assignedClientDiscountRuleIds,
         boardingAddOnSubtotalCents,
+        hasBoardingPricingConfigured,
         boardingPricingSettings,
         bizTZ,
         checkInDate,
@@ -1423,13 +1497,13 @@ export default function IndividualBookBoardingPage() {
                                     {t('deposit_required_amount_line', { amount: depositAmount })}
                                 </p>
                             ) : null}
-                            <label className="inline-flex items-center gap-2 text-sm font-semibold">
+                            <label className="flex w-full items-center justify-between gap-3 rounded-xl border border-gray-300 bg-white px-3 py-3 text-sm font-semibold cursor-pointer">
                                 <span>{t('deposit_required_confirm_yes')}</span>
                                 <input
                                     type="checkbox"
                                     checked={depositAcknowledged}
                                     onChange={(e) => setDepositAcknowledged(e.target.checked)}
-                                    className="h-4 w-4"
+                                    className="h-5 w-5 cursor-pointer accent-[color:var(--color-accent)]"
                                     aria-label={t('deposit_required_confirm_yes')}
                                 />
                             </label>
@@ -1445,7 +1519,7 @@ export default function IndividualBookBoardingPage() {
 
                 {/* Form */}
                 {/* Form (gated) */}
-                <div className={`flex flex-col items-center space-y-6 ${gatingActive ? 'opacity-50 pointer-events-none select-none' : ''}`}>
+                <div className={`flex flex-col items-center space-y-6 ${formInteractionBlocked ? 'opacity-50 pointer-events-none select-none' : ''}`}>
                     {/* Check-In Date */}
                     <div className="flex flex-col items-center space-y-1 w-full">
                         <label className="font-semibold text-center text-sm">{t('select_checkin_date')}</label>
@@ -1577,7 +1651,7 @@ export default function IndividualBookBoardingPage() {
                         </button>
                     )}
 
-                    {membershipUnitsRequired > 0 && (
+                    {showBoardingMembershipSelector && (
                         <BoardingAndDaycareBookingMembershipSelector
                             service="boarding"
                             requiredUnits={membershipUnitsRequired}
@@ -1684,12 +1758,7 @@ export default function IndividualBookBoardingPage() {
                                     await handleSubmit();
                                 }}
                                 onCancel={() => {
-                                    setClientSecret(null);
-                                    setPaymentAmount(null);
-                                    setPaymentIntentId(null);
-                                    setPaymentEstimateSummary(null);
-                                    setPaymentBreakdown({ lines: [], subtotalCents: 0 });
-                                    setPendingReservationId(null);
+                                    invalidatePaymentState();
                                 }}
                             />
                         </Elements>
@@ -1818,8 +1887,10 @@ export default function IndividualBookBoardingPage() {
             const nightKeys = nightsBetweenKeys(checkInDate, checkOutDate, bizTZ);
             const nights = nightKeys.length;
 
+            const statusToWrite: BoardingReservationWrite['status'] =
+                requireBoardingReservationApproval ? 'pending' : 'approved';
             const petStatuses = [...selectedPetIds].reduce<Record<string, string>>((acc, pid) => {
-                acc[pid] = 'pending';
+                acc[pid] = statusToWrite;
                 return acc;
             }, {});
 
@@ -1828,7 +1899,7 @@ export default function IndividualBookBoardingPage() {
                 businessId,
                 petIds: [...selectedPetIds],
                 petStatuses,
-                status: 'approved',
+                status: statusToWrite,
                 realtimeKey: reservationId,
                 checkInDate: Timestamp.fromDate(checkInDate),
                 checkOutDate: Timestamp.fromDate(checkOutDate),
@@ -1873,7 +1944,7 @@ export default function IndividualBookBoardingPage() {
                         checkInDate: cinKey,
                         checkOutDate: coutKey,
                         nights,
-                        status: 'approved',
+                        status: statusToWrite,
                         userId,
                         realtimeKey: reservationId
                     };
@@ -1959,10 +2030,7 @@ export default function IndividualBookBoardingPage() {
             setSelectedBoardingAddOns([]);
             setSelectedMembershipPurchaseId('');
             setSelectedMembershipPlanId('');
-            setPaymentAmount(null);
-            setPaymentIntentId(null);
-            setPaymentEstimateSummary(null);
-            setPaymentBreakdown({ lines: [], subtotalCents: 0 });
+            invalidatePaymentState();
             if (membershipUpdateError) {
                 alert(membershipUpdateMessage);
             } else {
