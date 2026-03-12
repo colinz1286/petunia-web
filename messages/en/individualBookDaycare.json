@@ -14,6 +14,9 @@
   "select_pickup_time": "Select a Pick-Up Time",
   "no_specific_time": "No specific time",
   "select_pets": "Select Pets",
+  "pet_kennel_type_label": "Kennel type: {name}",
+  "pet_kennel_type_unassigned": "Kennel type not assigned yet",
+  "kennel_capacity_reached_message": "This daycare booking would exceed the business's kennel availability for that date.",
 
   "assessment_toggle_label": "is This an Assessment Day?",
   "assessment_badge": "Assessment",

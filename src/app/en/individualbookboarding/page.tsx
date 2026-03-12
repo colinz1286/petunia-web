@@ -44,6 +44,16 @@ import {
     type BoardingQuote,
     type InvoiceLibraryItem,
 } from '@/lib/boardingPricing';
+import {
+    buildDefaultKennelAssignments,
+    countOccupiedKennels,
+    getDogKennelPreferenceFromData,
+    normalizeKennelAssignments,
+    normalizeKennelTypeOption,
+    sumKennelCapacity,
+    type DogKennelPreference,
+    type KennelAssignment,
+} from '@/lib/boardingKennels';
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -180,6 +190,7 @@ type BoardingReservationWrite = {
     depositDueTodayCents?: number;
     remainingBalanceCents?: number;
     itemizedLineItems?: PaymentLineItem[];
+    kennelAssignments?: KennelAssignment[];
 };
 
 type PaymentLineItem = {
@@ -314,6 +325,7 @@ export default function IndividualBookBoardingPage() {
     // Pets
     const [pets, setPets] = useState<Pet[]>([]);
     const [selectedPetIds, setSelectedPetIds] = useState<Set<string>>(new Set());
+    const [petKennelPreferences, setPetKennelPreferences] = useState<Record<string, DogKennelPreference>>({});
 
     // Dates & times (Boarding)
     const [checkInDate, setCheckInDate] = useState<Date | null>(new Date());
@@ -924,7 +936,7 @@ export default function IndividualBookBoardingPage() {
     const fetchBusinessSettings = useCallback(async (bizId: string, uidOverride?: string) => {
         try {
             const activeUserId = uidOverride || '';
-            const [bsnap, pricingSnap, addOnSnap, invoiceSnap, groomingSnap, discountSnap, clientSnap] = await Promise.all([
+            const [bsnap, pricingSnap, addOnSnap, invoiceSnap, groomingSnap, discountSnap, clientSnap, kennelSnap] = await Promise.all([
                 getDoc(doc(db, 'businesses', bizId)),
                 getDoc(doc(db, 'businesses', bizId, 'settings', 'boardingPricing')),
                 getDoc(doc(db, 'businesses', bizId, 'settings', 'boardingAddOnPricing')),
@@ -932,6 +944,7 @@ export default function IndividualBookBoardingPage() {
                 getDoc(doc(db, 'businesses', bizId, 'settings', 'groomingPricing')),
                 getDoc(doc(db, 'businesses', bizId, 'settings', 'discountRules')),
                 activeUserId ? getDoc(doc(db, 'userApprovedBusinesses', bizId, 'clients', activeUserId)) : Promise.resolve(null),
+                getDocs(collection(db, 'businesses', bizId, 'kennelTypes')),
             ]);
             const data = (bsnap.data() || {}) as BusinessSettingsDoc;
             const nextBusinessTimeZoneId = data.timeZoneId || null;
@@ -949,9 +962,18 @@ export default function IndividualBookBoardingPage() {
             setBoardingPayAtBookingEnabled(!!boardingPayments.payAtBooking);
 
             // Capacity
+            const loadedKennelTypes = kennelSnap.docs
+                .map((kennelDoc) => normalizeKennelTypeOption(
+                    kennelDoc.id,
+                    kennelDoc.data() as Record<string, unknown>
+                ))
+                .filter((kennelType): kennelType is NonNullable<ReturnType<typeof normalizeKennelTypeOption>> => kennelType !== null);
+            const derivedKennelCapacity = sumKennelCapacity(loadedKennelTypes);
             setCapacityBoardingTotal(
-                typeof data.capacityBoardingTotal === 'number' && data.capacityBoardingTotal > 0
-                    ? data.capacityBoardingTotal
+                derivedKennelCapacity > 0
+                    ? derivedKennelCapacity
+                    : typeof data.capacityBoardingTotal === 'number' && data.capacityBoardingTotal > 0
+                        ? data.capacityBoardingTotal
                     : null
             );
 
@@ -1146,6 +1168,46 @@ export default function IndividualBookBoardingPage() {
         return () => unsub();
     }, [businessId, fetchBusinessSettings, locale, router]);
 
+    useEffect(() => {
+        let cancelled = false;
+
+        if (!businessId || pets.length === 0) {
+            setPetKennelPreferences({});
+            return () => {
+                cancelled = true;
+            };
+        }
+
+        (async () => {
+            try {
+                const loadedEntries = await Promise.all(pets.map(async (pet) => {
+                    const assessmentSnap = await getDoc(doc(db, 'dogAssessments', pet.id, 'businesses', businessId));
+                    if (!assessmentSnap.exists()) return null;
+
+                    const preference = getDogKennelPreferenceFromData(
+                        assessmentSnap.data() as Record<string, unknown>
+                    );
+                    return preference ? [pet.id, preference] as const : null;
+                }));
+
+                if (cancelled) return;
+
+                setPetKennelPreferences(
+                    Object.fromEntries(
+                        loadedEntries.filter((entry): entry is readonly [string, DogKennelPreference] => entry !== null)
+                    )
+                );
+            } catch (e) {
+                console.error('❌ Failed to load pet kennel preferences:', e);
+                if (!cancelled) setPetKennelPreferences({});
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [businessId, pets]);
+
 
     function checkBlackoutOverlapIfProhibited(): boolean {
         if (!prohibitBoardingOverlapWithBlackoutDates) return false;
@@ -1251,10 +1313,22 @@ export default function IndividualBookBoardingPage() {
                 const exIn = tsIn.toDate();
                 const exOut = tsOut.toDate();
                 const nights = nightsBetweenKeys(exIn, exOut, bizTZ);
-                for (const k of nights) counts[k] = (counts[k] ?? 0) + Math.max(1, petIds.length);
+                const kennelAssignments = normalizeKennelAssignments(data.kennelAssignments, {
+                    allowedPetIds: petIds,
+                });
+                const occupiedKennels = kennelAssignments.length > 0
+                    ? countOccupiedKennels(kennelAssignments, new Set(petIds))
+                    : Math.max(1, petIds.length);
+                for (const k of nights) counts[k] = (counts[k] ?? 0) + occupiedKennels;
             }
 
-            const add = Math.max(1, selectedPetIds.size);
+            const proposedAssignments = buildDefaultKennelAssignments(
+                [...selectedPetIds],
+                petKennelPreferences
+            );
+            const add = proposedAssignments.length > 0
+                ? countOccupiedKennels(proposedAssignments)
+                : Math.max(1, selectedPetIds.size);
             const target = nightsBetweenKeys(checkInDate, checkOutDate, bizTZ);
             const blocked: string[] = [];
             for (const k of target) {
@@ -1267,7 +1341,16 @@ export default function IndividualBookBoardingPage() {
         } catch (e) {
             console.error('❌ Capacity query failed:', e);
         }
-    }, [checkInDate, checkOutDate, capacityBoardingTotal, includePendingInCapacity, businessId, selectedPetIds, bizTZ]);
+    }, [
+        bizTZ,
+        businessId,
+        capacityBoardingTotal,
+        checkInDate,
+        checkOutDate,
+        includePendingInCapacity,
+        petKennelPreferences,
+        selectedPetIds,
+    ]);
 
     const checkCheckInWindowCapacityIfNeeded = useCallback(async () => {
         if (!(maxPerTimeSlot > 0) || !checkInTimeRequired || !checkInDate || !checkInWindow) return;
@@ -1606,8 +1689,9 @@ export default function IndividualBookBoardingPage() {
                             <div className="flex flex-col space-y-2 w-full">
                                 {pets.map((pet) => {
                                     const checked = selectedPetIds.has(pet.id);
+                                    const kennelPreference = petKennelPreferences[pet.id];
                                     return (
-                                        <label key={pet.id} className="flex items-center gap-2 text-sm">
+                                        <label key={pet.id} className="flex items-start gap-2 text-sm">
                                             <input
                                                 type="checkbox"
                                                 checked={checked}
@@ -1620,7 +1704,14 @@ export default function IndividualBookBoardingPage() {
                                                     });
                                                 }}
                                             />
-                                            <span>{pet.name}</span>
+                                            <div className="flex flex-col">
+                                                <span>{pet.name}</span>
+                                                <span className="text-xs text-gray-500">
+                                                    {kennelPreference?.defaultKennelTypeName
+                                                        ? t('pet_kennel_type_label', { name: kennelPreference.defaultKennelTypeName })
+                                                        : t('pet_kennel_type_unassigned')}
+                                                </span>
+                                            </div>
                                         </label>
                                     );
                                 })}
@@ -1886,10 +1977,15 @@ export default function IndividualBookBoardingPage() {
             const coutKey = ymdKey(checkOutDate, bizTZ);
             const nightKeys = nightsBetweenKeys(checkInDate, checkOutDate, bizTZ);
             const nights = nightKeys.length;
+            const selectedPetIdList = [...selectedPetIds];
+            const kennelAssignments = buildDefaultKennelAssignments(
+                selectedPetIdList,
+                petKennelPreferences
+            );
 
             const statusToWrite: BoardingReservationWrite['status'] =
                 requireBoardingReservationApproval ? 'pending' : 'approved';
-            const petStatuses = [...selectedPetIds].reduce<Record<string, string>>((acc, pid) => {
+            const petStatuses = selectedPetIdList.reduce<Record<string, string>>((acc, pid) => {
                 acc[pid] = statusToWrite;
                 return acc;
             }, {});
@@ -1897,7 +1993,7 @@ export default function IndividualBookBoardingPage() {
             const payload: BoardingReservationWrite = {
                 userId,
                 businessId,
-                petIds: [...selectedPetIds],
+                petIds: selectedPetIdList,
                 petStatuses,
                 status: statusToWrite,
                 realtimeKey: reservationId,
@@ -1905,7 +2001,8 @@ export default function IndividualBookBoardingPage() {
                 checkOutDate: Timestamp.fromDate(checkOutDate),
                 checkInDateBusinessTZ: cinKey,
                 checkOutDateBusinessTZ: coutKey,
-                nights
+                nights,
+                kennelAssignments,
             };
             if (checkInTimeRequired) payload.checkInWindow = checkInWindow;
             if (checkOutTimeRequired) payload.checkOutWindow = checkOutWindow; // raw time stored

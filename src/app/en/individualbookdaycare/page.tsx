@@ -59,6 +59,18 @@ import {
   type MembershipPlan,
   type MembershipPurchase,
 } from '@/lib/boardingAndDaycareMemberships';
+import {
+  buildDefaultKennelAssignments,
+  countOccupiedKennels,
+  daycareUsesKennels,
+  getDogKennelPreferenceFromData,
+  normalizeKennelAssignments,
+  normalizeKennelTypeOption,
+  sumKennelCapacity,
+  type DaycareKennelMode,
+  type DogKennelPreference,
+  type KennelAssignment,
+} from '@/lib/boardingKennels';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -99,6 +111,7 @@ type WeekdayMap = Record<string, string[]>;
 
 type BusinessSettings = {
   timeZoneId?: string;
+  daycareKennelMode?: DaycareKennelMode;
   features?: {
     countPendingInCapacity?: boolean;
     clientWritesRTDB?: boolean;
@@ -179,6 +192,7 @@ type DaycareReservationWrite = {
   membershipPlanName?: string;
   membershipUnitsApplied?: number;
   membershipPurchasedDuringBooking?: boolean;
+  kennelAssignments?: KennelAssignment[];
 };
 
 type DraftBooking = {
@@ -318,6 +332,9 @@ export default function IndividualBookDaycarePage() {
   const [pickUpTimesByWeekday, setPickUpTimesByWeekday] = useState<WeekdayMap>({});
   const [pickUpTimeOptions, setPickUpTimeOptions] = useState<string[]>([]);
   const [selectedPickUpTime, setSelectedPickUpTime] = useState('');
+  const [daycareKennelMode, setDaycareKennelMode] = useState<DaycareKennelMode | ''>('');
+  const [kennelCapacityTotal, setKennelCapacityTotal] = useState<number | null>(null);
+  const [petKennelPreferences, setPetKennelPreferences] = useState<Record<string, DogKennelPreference>>({});
 
   const [maxPerTimeSlot, setMaxPerTimeSlot] = useState<number>(3);
   const [includePendingInCapacity, setIncludePendingInCapacity] = useState(false);
@@ -566,11 +583,28 @@ export default function IndividualBookDaycarePage() {
   const fetchBusinessSettings = useCallback(async (bizId: string) => {
     if (!bizId) return;
     try {
-      const bsnap = await getDoc(doc(db, 'businesses', bizId));
+      const [bsnap, kennelSnap] = await Promise.all([
+        getDoc(doc(db, 'businesses', bizId)),
+        getDocs(collection(db, 'businesses', bizId, 'kennelTypes')),
+      ]);
       const data = (bsnap.data() || {}) as BusinessSettings;
+      const loadedKennelTypes = kennelSnap.docs
+        .map((kennelDoc) => normalizeKennelTypeOption(
+          kennelDoc.id,
+          kennelDoc.data() as Record<string, unknown>
+        ))
+        .filter((kennelType): kennelType is NonNullable<ReturnType<typeof normalizeKennelTypeOption>> => kennelType !== null);
 
       // TZ & features
       setBusinessTimeZoneId(data.timeZoneId || null);
+      setDaycareKennelMode(
+        data.daycareKennelMode === 'kennelBased'
+          ? 'kennelBased'
+          : data.daycareKennelMode === 'openRoam'
+            ? 'openRoam'
+            : ''
+      );
+      setKennelCapacityTotal(sumKennelCapacity(loadedKennelTypes) || null);
       setIncludePendingInCapacity(!!data.features?.countPendingInCapacity);
       setClientWritesRTDB(data.features?.clientWritesRTDB !== false);
 
@@ -756,6 +790,7 @@ export default function IndividualBookDaycarePage() {
     const hydrateBathSizes = async () => {
       if (!businessId || pets.length === 0) {
         setPetBathSizeById({});
+        setPetKennelPreferences({});
         return;
       }
 
@@ -764,20 +799,27 @@ export default function IndividualBookDaycarePage() {
           try {
             const ref = doc(db, 'dogAssessments', pet.id, 'businesses', businessId);
             const snap = await getDoc(ref);
-            if (!snap.exists()) return [pet.id, ''] as const;
-            const parsed = extractBathSizeFromAssessment(snap.data() as DogAssessmentDoc) || '';
-            return [pet.id, parsed] as const;
+            if (!snap.exists()) {
+              return [pet.id, { bathSize: '', kennelPreference: null }] as const;
+            }
+            const data = snap.data() as Record<string, unknown>;
+            const parsed = extractBathSizeFromAssessment(data as DogAssessmentDoc) || '';
+            const kennelPreference = getDogKennelPreferenceFromData(data);
+            return [pet.id, { bathSize: parsed, kennelPreference }] as const;
           } catch {
-            return [pet.id, ''] as const;
+            return [pet.id, { bathSize: '', kennelPreference: null }] as const;
           }
         })
       );
 
-      const next: Record<string, string> = {};
-      for (const [petId, bathSize] of rows) {
-        if (bathSize) next[petId] = bathSize;
+      const nextBathSizes: Record<string, string> = {};
+      const nextKennelPreferences: Record<string, DogKennelPreference> = {};
+      for (const [petId, row] of rows) {
+        if (row.bathSize) nextBathSizes[petId] = row.bathSize;
+        if (row.kennelPreference) nextKennelPreferences[petId] = row.kennelPreference;
       }
-      setPetBathSizeById(next);
+      setPetBathSizeById(nextBathSizes);
+      setPetKennelPreferences(nextKennelPreferences);
     };
 
     void hydrateBathSizes();
@@ -935,6 +977,95 @@ export default function IndividualBookDaycarePage() {
     [bizTZ, businessId]
   );
 
+  const checkKennelCapacityForDate = useCallback(async (
+    date: Date,
+    petIds: string[],
+    draftsToInclude: DraftBooking[] = draftBookings
+  ) => {
+    if (!daycareUsesKennels(daycareKennelMode)) return true;
+    if (!businessId) return true;
+    if (!kennelCapacityTotal || kennelCapacityTotal <= 0) return false;
+
+    try {
+      const statuses = includePendingInCapacity ? ['pending', 'approved'] : ['approved'];
+      const [boardingSnap, daycareSnap] = await Promise.all([
+        getDocs(query(
+          collection(db, 'boardingReservations'),
+          where('businessId', '==', businessId),
+          where('status', 'in', statuses)
+        )),
+        getDocs(query(
+          collection(db, 'daycareReservations'),
+          where('businessId', '==', businessId),
+          where('status', 'in', statuses)
+        )),
+      ]);
+
+      const targetDateKey = ymdKey(date, bizTZ);
+      let occupiedKennels = 0;
+
+      for (const docSnap of boardingSnap.docs) {
+        const data = docSnap.data();
+        const tsIn = data.checkInDate as Timestamp | undefined;
+        const tsOut = data.checkOutDate as Timestamp | undefined;
+        const reservationPetIds = (data.petIds as string[]) || [];
+        if (!tsIn || !tsOut) continue;
+
+        const checkInKey = ymdKey(tsIn.toDate(), bizTZ);
+        const checkOutKey = ymdKey(tsOut.toDate(), bizTZ);
+        if (!(checkInKey <= targetDateKey && targetDateKey < checkOutKey)) continue;
+
+        const kennelAssignments = normalizeKennelAssignments(data.kennelAssignments, {
+          allowedPetIds: reservationPetIds,
+        });
+        occupiedKennels += kennelAssignments.length > 0
+          ? countOccupiedKennels(kennelAssignments, new Set(reservationPetIds))
+          : Math.max(1, reservationPetIds.length);
+      }
+
+      for (const docSnap of daycareSnap.docs) {
+        const data = docSnap.data();
+        const reservationPetIds = (data.petIds as string[]) || [];
+        const dateKey = (data.dateBusinessTZ as string | undefined)
+          || ((data.date as Timestamp | undefined) ? ymdKey((data.date as Timestamp).toDate(), bizTZ) : '');
+        if (dateKey !== targetDateKey) continue;
+
+        const kennelAssignments = normalizeKennelAssignments(data.kennelAssignments, {
+          allowedPetIds: reservationPetIds,
+        });
+        occupiedKennels += kennelAssignments.length > 0
+          ? countOccupiedKennels(kennelAssignments, new Set(reservationPetIds))
+          : Math.max(1, reservationPetIds.length);
+      }
+
+      for (const booking of draftsToInclude) {
+        if (ymdKey(booking.date, bizTZ) !== targetDateKey) continue;
+        const draftAssignments = buildDefaultKennelAssignments(booking.petIds, petKennelPreferences);
+        occupiedKennels += draftAssignments.length > 0
+          ? countOccupiedKennels(draftAssignments)
+          : Math.max(1, booking.petIds.length);
+      }
+
+      const proposedAssignments = buildDefaultKennelAssignments(petIds, petKennelPreferences);
+      const proposedOccupiedKennels = proposedAssignments.length > 0
+        ? countOccupiedKennels(proposedAssignments)
+        : Math.max(1, petIds.length);
+
+      return occupiedKennels + proposedOccupiedKennels <= kennelCapacityTotal;
+    } catch (e) {
+      console.error('❌ Daycare kennel capacity check failed:', e);
+      return true;
+    }
+  }, [
+    bizTZ,
+    businessId,
+    daycareKennelMode,
+    draftBookings,
+    includePendingInCapacity,
+    kennelCapacityTotal,
+    petKennelPreferences,
+  ]);
+
   /* =========================
      Add draft + Grooming prompt/modal
      ========================= */
@@ -945,7 +1076,7 @@ export default function IndividualBookDaycarePage() {
     setPickUpTimeOptions((prev) => [...prev]);
   }, [pets]);
 
-  const addBookingDraft = useCallback(() => {
+  const addBookingDraft = useCallback(async () => {
     // 🚫 BLACKOUT CHECK (add-to-list)
     if (selectedDate) {
       const key = ymdKey(selectedDate, bizTZ);
@@ -963,6 +1094,12 @@ export default function IndividualBookDaycarePage() {
     ) return;
 
     if (hasExistingReservation) { alert(t('duplicate_daycare_message')); return; }
+
+    const underKennelCapacity = await checkKennelCapacityForDate(selectedDate, selectedPetIds);
+    if (!underKennelCapacity) {
+      alert(t('kennel_capacity_reached_message'));
+      return;
+    }
 
     const draft: DraftBooking = {
       reservationId: crypto.randomUUID(),
@@ -994,7 +1131,8 @@ export default function IndividualBookDaycarePage() {
     pickUpTimeRequired,
     selectedPickUpTime,
     blackoutDates,
-    bizTZ
+    bizTZ,
+    checkKennelCapacityForDate,
   ]);
 
   const buildPaymentBreakdown = useCallback((bookings: DraftBooking[]): PaymentBreakdown => {
@@ -1212,13 +1350,21 @@ export default function IndividualBookDaycarePage() {
         if (on) setOwnerName(on);
       } catch { /* ignore */ }
 
+      const submittedDrafts: DraftBooking[] = [];
+
       for (const booking of draftBookings) {
+        const underKennelCapacity = await checkKennelCapacityForDate(
+          booking.date,
+          booking.petIds,
+          submittedDrafts
+        );
+        if (!underKennelCapacity) {
+          alert(t('kennel_capacity_reached_message'));
+          return;
+        }
+
         const reservationId = booking.reservationId;   // 🔥 use canonical ID
         const realtimeKey = reservationId;
-
-        const petStatuses = booking.petIds.reduce<Record<string, string>>((acc, pid) => {
-          acc[pid] = 'pending'; return acc;
-        }, {});
 
         const dateBizKey = ymdKey(booking.date, bizTZ);
 
@@ -1229,6 +1375,10 @@ export default function IndividualBookDaycarePage() {
         // Use submit-time truth (never stale)
         const requireApprovalNow = !!bdata.requireDaycareReservationApproval;
         const statusToWrite: 'pending' | 'approved' = requireApprovalNow ? 'pending' : 'approved';
+        const petStatuses = booking.petIds.reduce<Record<string, string>>((acc, pid) => {
+          acc[pid] = statusToWrite;
+          return acc;
+        }, {});
 
         const clientWritesRTDBNow = bdata.features?.clientWritesRTDB !== false;
 
@@ -1244,6 +1394,13 @@ export default function IndividualBookDaycarePage() {
           status: statusToWrite,
           realtimeKey,
         };
+
+        if (daycareUsesKennels(daycareKennelMode)) {
+          payload.kennelAssignments = buildDefaultKennelAssignments(
+            booking.petIds,
+            petKennelPreferences
+          );
+        }
 
         if (booking.isAssessment) payload.isAssessment = true;
         if (booking.groomingAddOns && Object.keys(booking.groomingAddOns).length) {
@@ -1305,6 +1462,8 @@ export default function IndividualBookDaycarePage() {
             await rtdbSet(rtdbRef(rtdb, `upcomingReservations/${businessId}/${rtdbKey}`), base);
           }));
         }
+
+        submittedDrafts.push(booking);
       }
 
       let membershipUpdateError = false;
@@ -1389,6 +1548,9 @@ export default function IndividualBookDaycarePage() {
     selectedMembershipPurchaseId,
     membershipUnitsRequired,
     daycareOnlinePaymentsEnabled,
+    daycareKennelMode,
+    petKennelPreferences,
+    checkKennelCapacityForDate,
   ]);
 
   /* =========================
@@ -1515,8 +1677,9 @@ export default function IndividualBookDaycarePage() {
               <div className="flex flex-col space-y-2 w-full">
                 {pets.map((pet) => {
                   const checked = selectedPetIds.includes(pet.id);
+                  const kennelPreference = petKennelPreferences[pet.id];
                   return (
-                    <label key={pet.id} className="flex items-center gap-2 text-sm">
+                    <label key={pet.id} className="flex items-start gap-2 text-sm">
                       <input
                         type="checkbox"
                         checked={checked}
@@ -1529,7 +1692,14 @@ export default function IndividualBookDaycarePage() {
                           });
                         }}
                       />
-                      <span>{pet.name}</span>
+                      <div className="flex flex-col">
+                        <span>{pet.name}</span>
+                        <span className="text-xs text-gray-500">
+                          {kennelPreference?.defaultKennelTypeName
+                            ? t('pet_kennel_type_label', { name: kennelPreference.defaultKennelTypeName })
+                            : t('pet_kennel_type_unassigned')}
+                        </span>
+                      </div>
                     </label>
                   );
                 })}

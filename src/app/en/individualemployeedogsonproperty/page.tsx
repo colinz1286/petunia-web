@@ -29,6 +29,11 @@ import {
     DataSnapshot,
 } from 'firebase/database';
 import { initializeApp, getApps } from 'firebase/app';
+import {
+    getDogKennelPreferenceFromData,
+    normalizeKennelTypeOption,
+    type KennelTypeOption,
+} from '@/lib/boardingKennels';
 
 // Ensure a default Firebase app exists on this route (fixes "app/no-app")
 const firebaseConfig = {
@@ -64,7 +69,40 @@ type CheckedInDog = {
 
 type CheckedInDogLive = CheckedInDog & { dateKey: string };
 
+type DogAssessmentStatus = {
+    bathSize: string;
+    kennelTypeId: string;
+    kennelTypeName: string;
+    loaded: boolean;
+};
+
 const DEFAULT_TZ = 'America/New_York';
+
+const normalizeBathSize = (raw: string | null | undefined): string => {
+    const v = (raw || '').trim().toLowerCase();
+    if (v === 'small') return 'Small';
+    if (v === 'medium') return 'Medium';
+    if (v === 'large') return 'Large';
+    if (v === 'xl') return 'XL';
+    if (v === 'xxl') return 'XXL';
+    return '';
+};
+
+const buildDogAssessmentStatus = (
+    data: Record<string, unknown> | null | undefined,
+    parseBathSizeFromNotesText: (notes: string) => string
+): DogAssessmentStatus => {
+    const directBathSize = normalizeBathSize((data?.bathSize as string) || '');
+    const notesBathSize = normalizeBathSize(parseBathSizeFromNotesText((data?.notes as string) || ''));
+    const kennelPreference = data ? getDogKennelPreferenceFromData(data) : null;
+
+    return {
+        bathSize: directBathSize || notesBathSize,
+        kennelTypeId: kennelPreference?.defaultKennelTypeId || '',
+        kennelTypeName: kennelPreference?.defaultKennelTypeName || '',
+        loaded: true,
+    };
+};
 
 export default function IndividualEmployeeDogsOnPropertyPage() {
     const t = useTranslations('individualEmployeeDogsOnProperty');
@@ -95,9 +133,12 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
     const [assessmentDog, setAssessmentDog] = useState<CheckedInDogLive | null>(null);
     const [assessmentNotes, setAssessmentNotes] = useState('');
     const [assessmentBathSize, setAssessmentBathSize] = useState('');
+    const [assessmentKennelTypeId, setAssessmentKennelTypeId] = useState('');
     const [assessmentLoading, setAssessmentLoading] = useState(false);
     const [assessmentError, setAssessmentError] = useState<string | null>(null);
     const [assessmentSaveMsg, setAssessmentSaveMsg] = useState<string | null>(null);
+    const [availableKennelTypes, setAvailableKennelTypes] = useState<KennelTypeOption[]>([]);
+    const [assessmentStatusByDogId, setAssessmentStatusByDogId] = useState<Record<string, DogAssessmentStatus>>({});
 
     // -------- Client Notes modal state (employee) --------
     const [showClientNotesModal, setShowClientNotesModal] = useState(false);
@@ -356,6 +397,17 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
             }
             setBusinessTimeZone(tz);
 
+            try {
+                const kennelTypesSnap = await getDocs(collection(fs, 'businesses', bId, 'kennelTypes'));
+                const kennelTypes = kennelTypesSnap.docs
+                    .map((kennelTypeDoc) => normalizeKennelTypeOption(kennelTypeDoc.id, kennelTypeDoc.data()))
+                    .filter((kennelType): kennelType is KennelTypeOption => Boolean(kennelType));
+                setAvailableKennelTypes(kennelTypes);
+            } catch (kennelError) {
+                console.error('❌ Failed to load kennel types:', kennelError);
+                setAvailableKennelTypes([]);
+            }
+
             // 3) Sanitize for RTDB
             const sanitized = sanitizeForRealtimeDB(bId);
             setSanitizedBusinessId(sanitized);
@@ -451,6 +503,54 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
         };
     }, []);
 
+    useEffect(() => {
+        if (!businessIdRaw || dogsLive.length === 0) {
+            setAssessmentStatusByDogId({});
+            return;
+        }
+
+        let cancelled = false;
+
+        const loadAssessmentStatuses = async () => {
+            try {
+                const fs = getFirestore();
+                const entries = await Promise.all(dogsLive.map(async (dog) => {
+                    const canonicalDogId = (dog.dogId || dog.id || '').trim();
+                    const legacyDogId = (dog.id || '').trim();
+
+                    if (!canonicalDogId) {
+                        return [dog.id, buildDogAssessmentStatus(null, parseBathSizeFromNotes)] as const;
+                    }
+
+                    let snap = await getDoc(doc(fs, 'dogAssessments', canonicalDogId, 'businesses', businessIdRaw));
+                    if (!snap.exists() && legacyDogId && legacyDogId !== canonicalDogId) {
+                        snap = await getDoc(doc(fs, 'dogAssessments', legacyDogId, 'businesses', businessIdRaw));
+                    }
+
+                    return [
+                        dog.id,
+                        buildDogAssessmentStatus(
+                            snap.exists() ? (snap.data() as Record<string, unknown>) : null,
+                            parseBathSizeFromNotes
+                        ),
+                    ] as const;
+                }));
+
+                if (!cancelled) {
+                    setAssessmentStatusByDogId(Object.fromEntries(entries));
+                }
+            } catch (statusError) {
+                console.error('❌ Failed to load dog assessment statuses:', statusError);
+            }
+        };
+
+        void loadAssessmentStatuses();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [businessIdRaw, dogsLive, parseBathSizeFromNotes]);
+
     // ---------------------------------------------------------------------------
     // Derived data
     // ---------------------------------------------------------------------------
@@ -495,6 +595,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
         setAssessmentDog(dog);
         setAssessmentNotes('');
         setAssessmentBathSize('');
+        setAssessmentKennelTypeId('');
         setAssessmentError(null);
         setAssessmentSaveMsg(null);
         setAssessmentLoading(true);
@@ -518,9 +619,12 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                 setAssessmentNotes((data?.notes as string) ?? '');
                 const directBathSize = (data?.bathSize as string) || '';
                 setAssessmentBathSize(directBathSize || parseBathSizeFromNotes((data?.notes as string) || ''));
+                const kennelPreference = getDogKennelPreferenceFromData(data as Record<string, unknown>);
+                setAssessmentKennelTypeId(kennelPreference?.defaultKennelTypeId || '');
             } else {
                 setAssessmentNotes('');
                 setAssessmentBathSize('');
+                setAssessmentKennelTypeId('');
             }
         } catch (e) {
             console.error('❌ load assessment failed:', e);
@@ -535,6 +639,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
         setAssessmentDog(null);
         setAssessmentNotes('');
         setAssessmentBathSize('');
+        setAssessmentKennelTypeId('');
         setAssessmentError(null);
         setAssessmentSaveMsg(null);
     }, []);
@@ -546,15 +651,29 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
             const trimmed = assessmentNotes.slice(0, 2000);
             const canonicalDogId = (assessmentDog.dogId || assessmentDog.id || '').trim();
             const ref = doc(fs, 'dogAssessments', canonicalDogId, 'businesses', businessIdRaw);
+            const selectedKennelType = availableKennelTypes.find(
+                (kennelType) => kennelType.id === assessmentKennelTypeId
+            );
             const payload: Record<string, unknown> = {
                 dogId: canonicalDogId,
                 notes: trimmed,
                 bathSize: assessmentBathSize.trim(),
+                defaultKennelTypeId: selectedKennelType?.id || '',
+                defaultKennelTypeName: selectedKennelType?.name || '',
                 lastUpdated: serverTimestamp(),
             };
             const auth = getAuth();
             if (auth.currentUser?.email) payload.updatedBy = auth.currentUser.email;
             await setDoc(ref, payload, { merge: true });
+            setAssessmentStatusByDogId((prev) => ({
+                ...prev,
+                [assessmentDog.id]: {
+                    bathSize: normalizeBathSize(assessmentBathSize),
+                    kennelTypeId: selectedKennelType?.id || '',
+                    kennelTypeName: selectedKennelType?.name || '',
+                    loaded: true,
+                },
+            }));
             setAssessmentSaveMsg('✅ Saved.');
             setAssessmentError(null);
         } catch (e) {
@@ -562,7 +681,14 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
             setAssessmentError('Failed to save.');
             setAssessmentSaveMsg(null);
         }
-    }, [assessmentDog, assessmentNotes, assessmentBathSize, businessIdRaw]);
+    }, [
+        assessmentDog,
+        assessmentNotes,
+        assessmentBathSize,
+        assessmentKennelTypeId,
+        availableKennelTypes,
+        businessIdRaw,
+    ]);
 
     // ---------------------------------------------------------------------------
     // UI Bits
@@ -610,6 +736,9 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
         const grooming = hasGrooming(dog);
         const intact = isIntact(dog);
         const showAssessmentBadge = isAssessmentDaycare(dog);
+        const assessmentStatus = assessmentStatusByDogId[dog.id];
+        const showBathMissingIndicator = !!assessmentStatus?.loaded && !assessmentStatus.bathSize;
+        const showKennelMissingIndicator = !!assessmentStatus?.loaded && !assessmentStatus.kennelTypeId;
 
         return (
             <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden dark:bg-white dark:border-gray-200">
@@ -626,6 +755,22 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                             {allergies ? <span aria-label="allergies">⚠️</span> : null}
                             {grooming ? <span aria-label="grooming">✂️</span> : null}
                             {intact ? <span className="ml-1 text-xs font-bold text-red-600">INTACT</span> : null}
+                            {showBathMissingIndicator ? (
+                                <span
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-amber-200 bg-amber-100 text-amber-800 text-[10px] font-semibold"
+                                    title={t('bath_size_missing_label')}
+                                >
+                                    ! {t('bath_size_missing_indicator')}
+                                </span>
+                            ) : null}
+                            {showKennelMissingIndicator ? (
+                                <span
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-amber-200 bg-amber-100 text-amber-800 text-[10px] font-semibold"
+                                    title={t('kennel_type_missing_label')}
+                                >
+                                    ! {t('kennel_type_missing_indicator')}
+                                </span>
+                            ) : null}
                             {showAssessmentBadge ? (
                                 <span className="ml-1 text-[10px] font-bold px-2 py-1 rounded-md bg-orange-200/60 text-orange-700">
                                     Assessment
@@ -672,6 +817,16 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                         <div className="mt-1">
                             Checked in:&nbsp;{formatDateTimeMediumShort(dog.checkInTime, businessTimeZone)}
                         </div>
+                        {showBathMissingIndicator ? (
+                            <div className="mt-2 text-xs font-medium text-amber-700">
+                                ! {t('bath_size_missing_label')}
+                            </div>
+                        ) : null}
+                        {showKennelMissingIndicator ? (
+                            <div className="mt-1 text-xs font-medium text-amber-700">
+                                ! {t('kennel_type_missing_label')}
+                            </div>
+                        ) : null}
 
                         {/* ✅ Always-visible View Assessment button */}
                         <div className="mt-2 flex flex-wrap gap-2">
@@ -843,7 +998,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
 
                                     <div className="mb-3">
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                                            Bath Size
+                                            {t('bath_size_label')}
                                         </label>
                                         <select
                                             value={assessmentBathSize}
@@ -857,6 +1012,30 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                                                 </option>
                                             ))}
                                         </select>
+                                    </div>
+
+                                    <div className="mb-3">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                                            {t('kennel_type_label')}
+                                        </label>
+                                        <select
+                                            value={assessmentKennelTypeId}
+                                            onChange={(e) => setAssessmentKennelTypeId(e.target.value)}
+                                            className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 p-2 text-sm outline-none focus:ring-2 focus:ring-blue-200 dark:bg-neutral-900"
+                                            disabled={availableKennelTypes.length === 0}
+                                        >
+                                            <option value="">{t('kennel_type_not_set')}</option>
+                                            {availableKennelTypes.map((kennelType) => (
+                                                <option key={kennelType.id} value={kennelType.id}>
+                                                    {kennelType.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {availableKennelTypes.length === 0 ? (
+                                            <p className="mt-1 text-xs text-amber-700">
+                                                {t('kennel_type_no_options')}
+                                            </p>
+                                        ) : null}
                                     </div>
 
                                     <textarea
@@ -886,8 +1065,8 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
                             </button>
                             <button
                                 onClick={() => void saveAssessment()}
-                                disabled={assessmentLoading || assessmentNotes.trim().length === 0}
-                                className={`px-3 py-2 rounded text-sm text-white ${assessmentLoading || assessmentNotes.trim().length === 0 ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'}`}
+                                disabled={assessmentLoading || !assessmentDog}
+                                className={`px-3 py-2 rounded text-sm text-white ${assessmentLoading || !assessmentDog ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'}`}
                             >
                                 Save
                             </button>

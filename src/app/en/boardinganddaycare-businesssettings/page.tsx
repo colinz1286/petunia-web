@@ -10,6 +10,7 @@ import {
     getFirestore,
     collection,
     doc,
+    deleteDoc,
     getDocs,
     query,
     where,
@@ -23,6 +24,26 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 import { initializeApp } from 'firebase/app';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
+
+import {
+    BlackoutDatesSection,
+    BookingPoliciesSection,
+    GeneralInformationSection,
+    HealthRequirementsSection,
+    KennelCapacitySection,
+    OperatingHoursSection,
+    OptionalFeaturesSection,
+    PaymentsSection,
+    PricingProgramsSection,
+    ReviewSaveSection,
+    ServiceOfferingsSection,
+    TimeSettingsSection,
+    WaiverSection,
+    WhatToBringSection,
+} from './components/BusinessSettingsSections';
+import { BusinessSettingsNavigation } from './components/BusinessSettingsNavigation';
+import type { BusinessSettingsNavItem, KennelTypeForm } from './components/types';
+import { type DaycareKennelMode } from '@/lib/boardingKennels';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -40,7 +61,7 @@ const functions = getFunctions(app);
 
 export default function BusinessSettingsPage() {
     const t = useTranslations('boardingAndDaycareBusinessSettings');
-    const _locale = useLocale();
+    const locale = useLocale();
     const router = useRouter();
 
     const [businessId, setBusinessId] = useState('');
@@ -48,11 +69,7 @@ export default function BusinessSettingsPage() {
     const [businessPhone, setBusinessPhone] = useState('');
     const [businessAddress, setBusinessAddress] = useState('');
 
-    // --- Operating Hours (matches iOS) ---
-    const [operatingHours, setOperatingHours] = useState<Record<
-        string,
-        { open: string; close: string }
-    >>({});
+    const [operatingHours, setOperatingHours] = useState<Record<string, { open: string; close: string }>>({});
 
     const [offersBoarding, setOffersBoarding] = useState(false);
     const [offersDaycare, setOffersDaycare] = useState(false);
@@ -62,7 +79,6 @@ export default function BusinessSettingsPage() {
     const [requiresAssessment, setRequiresAssessment] = useState(false);
     const [temperamentTestRequired, setTemperamentTestRequired] = useState(false);
 
-    // --- Service-specific payment settings ---
     const [paymentsEnabled, setPaymentsEnabled] = useState(false);
     const [daycarePayAtBookingEnabled, setDaycarePayAtBookingEnabled] = useState(false);
     const [daycareInvoiceAfterAttendanceEnabled, setDaycareInvoiceAfterAttendanceEnabled] = useState(false);
@@ -71,18 +87,20 @@ export default function BusinessSettingsPage() {
     const [boardingInvoiceAfterAttendanceEnabled, setBoardingInvoiceAfterAttendanceEnabled] = useState(false);
     const [boardingPayAtPickupEnabled, setBoardingPayAtPickupEnabled] = useState(false);
 
-    // 🔵 Stripe Status
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [stripeAccountId, setStripeAccountId] = useState<string | null>(null);
-
     const [stripeChargesEnabled, setStripeChargesEnabled] = useState(false);
     const [stripePayoutsEnabled, setStripePayoutsEnabled] = useState(false);
     const [stripeOnboardingComplete, setStripeOnboardingComplete] = useState(false);
     const [stripeLoading, setStripeLoading] = useState(false);
 
-    // NEW — Boarding “What To Bring” lists (matches iOS)
     const [boardingRequiredItems, setBoardingRequiredItems] = useState<string[]>(['']);
     const [boardingProhibitedItems, setBoardingProhibitedItems] = useState<string[]>(['']);
+    const [kennelTypes, setKennelTypes] = useState<KennelTypeForm[]>([]);
+    const [daycareKennelMode, setDaycareKennelMode] = useState<DaycareKennelMode | ''>('');
+    const [loadedKennelIds, setLoadedKennelIds] = useState<string[]>([]);
+    const [newKennelName, setNewKennelName] = useState('');
+    const [newKennelCount, setNewKennelCount] = useState('');
 
     const [waiverRequired, setWaiverRequired] = useState(false);
     const [waiverText, setWaiverText] = useState('');
@@ -111,7 +129,6 @@ export default function BusinessSettingsPage() {
     const [assessmentPickUpTimes, setAssessmentPickUpTimes] = useState<Record<string, string[]>>({});
     const [noAssessmentDays, setNoAssessmentDays] = useState<Set<string>>(new Set());
 
-    // ✅ NEW: After-hours pick-up settings
     const [afterHoursPickUpTimeRequired, setAfterHoursPickUpTimeRequired] = useState(false);
     const [afterHoursPickUpTimes, setAfterHoursPickUpTimes] = useState<Record<string, string[]>>({});
     const [noAfterHoursDays, setNoAfterHoursDays] = useState<Set<string>>(new Set());
@@ -133,19 +150,16 @@ export default function BusinessSettingsPage() {
     const [noDaycareDays, setNoDaycareDays] = useState<Set<string>>(new Set());
     const [noBoardingDays, setNoBoardingDays] = useState<Set<string>>(new Set());
 
-    // Blackout Dates (matches iOS)
     const [blackoutDates, setBlackoutDates] = useState<Date[]>([]);
     const [selectedBlackoutDate, setSelectedBlackoutDate] = useState<string>(
         (() => {
-            const d = new Date();
-            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-            return d.toISOString().split('T')[0];
+            const date = new Date();
+            date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+            return date.toISOString().split('T')[0];
         })()
     );
-    // Match iOS: prohibit overlapping boarding reservations with blackout dates
     const [prohibitBoardingOverlapWithBlackoutDates, setProhibitBoardingOverlapWithBlackoutDates] = useState(false);
 
-    // include afterhours section in collapse map
     const [collapsedDays, setCollapsedDays] = useState<Record<string, boolean>>(() => {
         const initial: Record<string, boolean> = {};
         const sections = [
@@ -156,7 +170,9 @@ export default function BusinessSettingsPage() {
             'beforehours-pickup',
             'afterhours-pickup',
             'early-dropoff',
-            'afterhours-dropoff'
+            'afterhours-dropoff',
+            'assessment-drop',
+            'assessment-pickup',
         ];
         for (const day of ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']) {
             for (const section of sections) initial[`${day}-${section}`] = true;
@@ -170,7 +186,6 @@ export default function BusinessSettingsPage() {
         financialManagement: false,
     });
 
-    // --- Required Vaccinations (matches iOS) ---
     const [requiredVaccinations, setRequiredVaccinations] = useState<Record<string, boolean>>({
         Rabies: false,
         Distemper: false,
@@ -178,31 +193,24 @@ export default function BusinessSettingsPage() {
         'Canine Influenza': false,
     });
 
-    // --- Additional Required Tests (matches iOS) ---
     const [requiredTests, setRequiredTests] = useState<Record<string, boolean>>({
         'Negative Fecal': false,
     });
 
-    // --- Business Bio (matches iOS) ---
     const BIO_LIMIT = 500;
     const [businessBio, setBusinessBio] = useState('');
 
-    // Emoji detector: block anything with emoji/pictographs
-    const hasEmoji = (s: string) => {
-        // Fast path: if none of these code units exist, likely OK
-        // but still scan scalars for emoji presentation.
-        for (const ch of s) {
+    const hasEmoji = (value: string) => {
+        for (const ch of value) {
             const code = ch.codePointAt(0)!;
-            // Common emoji ranges (not exhaustive but practical)
             if (
-                (code >= 0x1F300 && code <= 0x1FAFF) || // Misc symbols & pictographs / Emoji
-                (code >= 0x2600 && code <= 0x27BF) ||  // Dingbats, misc symbols
-                (code >= 0x1F1E6 && code <= 0x1F1FF)   // Flags
+                (code >= 0x1F300 && code <= 0x1FAFF) ||
+                (code >= 0x2600 && code <= 0x27BF) ||
+                (code >= 0x1F1E6 && code <= 0x1F1FF)
             ) return true;
         }
-        // Fallback: rely on Unicode property via regex if supported
         try {
-            return /\p{Extended_Pictographic}/u.test(s);
+            return /\p{Extended_Pictographic}/u.test(value);
         } catch {
             return false;
         }
@@ -210,15 +218,29 @@ export default function BusinessSettingsPage() {
 
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-    // 5:00 AM → 24:00 in 15-min increments (matches iOS)
-    const timeOptions = Array.from({ length: (24 - 5) * 4 + 1 }, (_, i) => {
-        const minutes = i * 15 + 5 * 60;
+    const timeOptions = Array.from({ length: (24 - 5) * 4 + 1 }, (_, index) => {
+        const minutes = index * 15 + 5 * 60;
         const hour = Math.floor(minutes / 60);
         const minute = minutes % 60;
         const period = hour < 12 ? 'AM' : 'PM';
         const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
         return `${formattedHour}:${minute.toString().padStart(2, '0')} ${period}`;
     });
+
+    const parseKennelTotalCount = (value: unknown) => {
+        if (typeof value === 'number' && Number.isFinite(value)) {
+            return Math.max(0, Math.trunc(value));
+        }
+
+        if (typeof value === 'string') {
+            const parsed = Number.parseInt(value, 10);
+            return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
+        }
+
+        return 0;
+    };
+
+    const sanitizeKennelCount = (value: string) => value.replace(/\D/g, '').slice(0, 4);
 
     const syncStripeStatus = useCallback(async () => {
         if (!businessId) return;
@@ -249,20 +271,18 @@ export default function BusinessSettingsPage() {
                 stripePayoutsEnabled: !!data.payoutsEnabled,
                 stripeOnboardingComplete: !!data.onboardingComplete,
             });
-
         } catch (err) {
             console.error('Stripe sync failed:', err);
         }
     }, [businessId]);
 
-    // ───────── Load business (adds after-hours fields) ─────────
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (!user) return;
 
             const loadBusiness = async () => {
-                const q = query(collection(db, 'businesses'), where('ownerId', '==', user.uid));
-                const snapshot = await getDocs(q);
+                const businessQuery = query(collection(db, 'businesses'), where('ownerId', '==', user.uid));
+                const snapshot = await getDocs(businessQuery);
                 const docSnap = snapshot.docs[0];
                 if (!docSnap) return;
 
@@ -284,7 +304,6 @@ export default function BusinessSettingsPage() {
 
                 setRequiresAssessment(data.requiresAssessment || false);
 
-                // --- Load service-specific payment settings ---
                 const paymentSettings = data.paymentSettings || {};
                 setPaymentsEnabled(!!paymentSettings.enabled);
 
@@ -298,17 +317,21 @@ export default function BusinessSettingsPage() {
                 setBoardingInvoiceAfterAttendanceEnabled(!!boardingPayments.invoiceAfterAttendance);
                 setBoardingPayAtPickupEnabled(!!boardingPayments.payAtPickup);
 
-                // 🔵 Stripe Status Fields (correct nested mapping)
                 const stripeData = data.stripe || {};
-
                 setStripeAccountId(stripeData.connectedAccountId || null);
                 setStripeChargesEnabled(!!stripeData.chargesEnabled);
                 setStripePayoutsEnabled(!!stripeData.payoutsEnabled);
                 setStripeOnboardingComplete(!!stripeData.onboardingComplete);
 
-                // NEW — What To Bring (Boarding only)
                 setBoardingRequiredItems(data.boardingRequiredItems || ['']);
                 setBoardingProhibitedItems(data.boardingProhibitedItems || ['']);
+                setDaycareKennelMode(
+                    data.daycareKennelMode === 'kennelBased'
+                        ? 'kennelBased'
+                        : data.daycareKennelMode === 'openRoam'
+                            ? 'openRoam'
+                            : ''
+                );
 
                 setWaiverRequired(data.waiverRequired || false);
                 setWaiverText(data.waiverText || '');
@@ -325,13 +348,8 @@ export default function BusinessSettingsPage() {
                 setAssessmentPickUpTimes(data.assessmentPickUpTimes || {});
                 setNoAssessmentDays(new Set<string>(data.noAssessmentDays || []));
 
-                setRequireDaycareReservationApproval(
-                    data.requireDaycareReservationApproval || false
-                );
-
-                setRequireBoardingReservationApproval(
-                    data.requireBoardingReservationApproval || false
-                );
+                setRequireDaycareReservationApproval(data.requireDaycareReservationApproval || false);
+                setRequireBoardingReservationApproval(data.requireBoardingReservationApproval || false);
                 setDepositRequired(Boolean(data.depositRequired));
                 setDepositAmount((data.depositAmount as string) ?? '');
                 setCancellationPolicy((data.cancellationPolicy as string) || 'No Refund');
@@ -343,15 +361,9 @@ export default function BusinessSettingsPage() {
                     'Canine Influenza': false,
                 });
 
-                setRequiredTests(
-                    data.requiredTests || {
-                        'Negative Fecal': false,
-                    }
-                );
-
+                setRequiredTests(data.requiredTests || { 'Negative Fecal': false });
                 setTemperamentTestRequired(data.temperamentTestRequired || false);
 
-                // ✅ NEW: After-hours fields
                 setAfterHoursPickUpTimeRequired(data.afterHoursPickUpTimeRequired || false);
                 setAfterHoursPickUpTimes(data.afterHoursPickUpTimes || {});
                 setNoAfterHoursDays(new Set<string>(data.noAfterHoursDays || []));
@@ -375,7 +387,6 @@ export default function BusinessSettingsPage() {
                 setNoDaycareDays(new Set(data.noDaycareDays || []));
                 setNoBoardingDays(new Set(data.noBoardingDays || []));
 
-                // Blackout Dates
                 if (Array.isArray(data.blackoutDates)) {
                     const parsed = data.blackoutDates
                         .map((ts: Timestamp) => new Date(ts.seconds * 1000))
@@ -383,7 +394,6 @@ export default function BusinessSettingsPage() {
                     setBlackoutDates(parsed);
                 }
 
-                // NEW: Do NOT allow boarding reservations to overlap blackout dates
                 setProhibitBoardingOverlapWithBlackoutDates(
                     data.prohibitBoardingOverlapWithBlackoutDates || false
                 );
@@ -400,9 +410,20 @@ export default function BusinessSettingsPage() {
                     financialManagement: !!features.enableFinancialManagement,
                 });
 
-                // Sync Stripe status after business loads
-                await syncStripeStatus();
+                const kennelSnapshot = await getDocs(collection(db, 'businesses', docSnap.id, 'kennelTypes'));
+                const loadedKennels = kennelSnapshot.docs.map((kennelDoc) => {
+                    const kennelData = kennelDoc.data();
 
+                    return {
+                        id: kennelDoc.id,
+                        name: typeof kennelData.name === 'string' ? kennelData.name : '',
+                        totalCount: String(parseKennelTotalCount(kennelData.totalCount)),
+                    };
+                });
+                setKennelTypes(loadedKennels);
+                setLoadedKennelIds(loadedKennels.map((kennel) => kennel.id));
+
+                await syncStripeStatus();
                 setLoading(false);
             };
 
@@ -424,8 +445,8 @@ export default function BusinessSettingsPage() {
             await createAccount({ businessId });
 
             const result = await onboardingLink({ businessId }) as { data?: { url?: string } };
-
             const url = result?.data?.url;
+
             if (url) {
                 window.location.href = url;
             } else {
@@ -438,162 +459,227 @@ export default function BusinessSettingsPage() {
 
         setStripeLoading(false);
 
-        // After redirect return, sync Stripe status
         setTimeout(() => {
             syncStripeStatus();
         }, 1500);
     };
 
-    // ───────── Save (writes after-hours + fixes key to 'features') ─────────
     const updateSetting = async () => {
         if (!businessId) return;
         setSaving(true);
 
-        const trimmedBio = businessBio.trim();
-        if (trimmedBio.length > BIO_LIMIT) {
-            alert(t('business_bio_too_long'));
-            setSaving(false);
-            return;
-        }
-        if (hasEmoji(trimmedBio)) {
-            alert(t('business_bio_emoji_blocked'));
-            setSaving(false);
-            return;
-        }
-
-        // 🔒 SERVER-SIDE SAFETY VALIDATION
-        if (paymentsEnabled) {
-            if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
-                alert(t('payments_save_requires_active_stripe_alert'));
-                setSaving(false);
+        try {
+            const trimmedBio = businessBio.trim();
+            if (trimmedBio.length > BIO_LIMIT) {
+                alert(t('business_bio_too_long'));
                 return;
             }
-        }
+            if (hasEmoji(trimmedBio)) {
+                alert(t('business_bio_emoji_blocked'));
+                return;
+            }
 
-        await updateDoc(doc(db, 'businesses', businessId), {
-            offersBoarding,
-            offersDaycare,
-            offersGrooming,
-            offersTraining,
+            const normalizedKennelTypes = kennelTypes.map((kennel) => ({
+                id: kennel.id,
+                name: kennel.name.trim(),
+                totalCountText: kennel.totalCount.trim(),
+            }));
+            if (normalizedKennelTypes.some((kennel) => !kennel.name || kennel.totalCountText === '')) {
+                alert(t('kennel_validation_alert'));
+                return;
+            }
 
-            requiresAssessment,
-            temperamentTestRequired,
+            if (paymentsEnabled) {
+                if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
+                    alert(t('payments_save_requires_active_stripe_alert'));
+                    return;
+                }
+            }
 
-            paymentSettings: {
-                enabled: paymentsEnabled && stripeOnboardingComplete && stripeChargesEnabled && stripePayoutsEnabled,
-                daycare: {
-                    payAtBooking: paymentsEnabled ? daycarePayAtBookingEnabled : false,
-                    invoiceAfterAttendance: paymentsEnabled ? daycareInvoiceAfterAttendanceEnabled : false,
-                    payAtPickup: paymentsEnabled ? daycarePayAtPickupEnabled : false,
+            await updateDoc(doc(db, 'businesses', businessId), {
+                offersBoarding,
+                offersDaycare,
+                offersGrooming,
+                offersTraining,
+                requiresAssessment,
+                temperamentTestRequired,
+                paymentSettings: {
+                    enabled: paymentsEnabled && stripeOnboardingComplete && stripeChargesEnabled && stripePayoutsEnabled,
+                    daycare: {
+                        payAtBooking: paymentsEnabled ? daycarePayAtBookingEnabled : false,
+                        invoiceAfterAttendance: paymentsEnabled ? daycareInvoiceAfterAttendanceEnabled : false,
+                        payAtPickup: paymentsEnabled ? daycarePayAtPickupEnabled : false,
+                    },
+                    boarding: {
+                        payAtBooking: paymentsEnabled ? boardingPayAtBookingEnabled : false,
+                        invoiceAfterAttendance: paymentsEnabled ? boardingInvoiceAfterAttendanceEnabled : false,
+                        payAtPickup: paymentsEnabled ? boardingPayAtPickupEnabled : false,
+                    },
                 },
-                boarding: {
-                    payAtBooking: paymentsEnabled ? boardingPayAtBookingEnabled : false,
-                    invoiceAfterAttendance: paymentsEnabled ? boardingInvoiceAfterAttendanceEnabled : false,
-                    payAtPickup: paymentsEnabled ? boardingPayAtPickupEnabled : false,
-                },
-            },
-
-            requireDaycareReservationApproval,
-            requireBoardingReservationApproval,
-            depositRequired,
-            depositAmount,
-            cancellationPolicy,
-
-            groomingServices: groomingServices.filter((s) => s.trim() !== ''),
-
-            boardingRequiredItems: boardingRequiredItems.filter((s) => s.trim() !== ''),
-            boardingProhibitedItems: boardingProhibitedItems.filter((s) => s.trim() !== ''),
-
-            businessBio: trimmedBio,
-            waiverRequired,
-            waiverText,
-
-            requiredVaccinations,
-            requiredTests,
-
-            operatingHours,
-
-            dropOffTimeRequiredDaycare,
-            pickUpTimeRequiredDaycare,
-            dropOffTimeRequiredBoarding,
-            pickUpTimeRequiredBoarding,
-
-            dropOffTimeRequiredAssessment,
-            pickUpTimeRequiredAssessment,
-
-            assessmentDropOffTimes,
-            assessmentPickUpTimes,
-            noAssessmentDays: Array.from(noAssessmentDays),
-
-            afterHoursPickUpTimeRequired,
-            afterHoursPickUpTimes,
-            noAfterHoursDays: Array.from(noAfterHoursDays),
-            beforeHoursPickUpTimeRequired,
-            beforeHoursPickUpTimes,
-            noBeforeHoursPickUpDays: Array.from(noBeforeHoursPickUpDays),
-            earlyDropOffTimeRequired,
-            earlyDropOffTimes,
-            noEarlyDropOffDays: Array.from(noEarlyDropOffDays),
-            afterHoursDropOffTimeRequired,
-            afterHoursDropOffTimes,
-            noAfterHoursDropOffDays: Array.from(noAfterHoursDropOffDays),
-
-            dropOffTimesDaycare,
-            pickUpTimesDaycare,
-            dropOffTimesBoarding,
-            pickUpTimesBoarding,
-
-            noDaycareDays: Array.from(noDaycareDays),
-            noBoardingDays: Array.from(noBoardingDays),
-
-            blackoutDates: blackoutDates.map((d) =>
-                Timestamp.fromDate(new Date(d.getFullYear(), d.getMonth(), d.getDate()))
-            ),
-
-            prohibitBoardingOverlapWithBlackoutDates,
-
-            bookingLimits: { maxPerTimeSlot: maxAppointmentsPerSlot },
-
-            features: {
-                enableEmployeeManagement: optionalFeatures.employeeManagement,
-                enableStatePaperwork: optionalFeatures.statePaperworkLog,
-                enableFinancialManagement: optionalFeatures.financialManagement,
-            },
-        });
-
-        // keep waiver subdoc behavior simple/consistent
-        const waiverRef = doc(db, 'businesses', businessId, 'settings', 'clientWaiver');
-
-        await setDoc(
-            waiverRef,
-            {
+                requireDaycareReservationApproval,
+                requireBoardingReservationApproval,
+                depositRequired,
+                depositAmount,
+                cancellationPolicy,
+                groomingServices: groomingServices.filter((service) => service.trim() !== ''),
+                boardingRequiredItems: boardingRequiredItems.filter((item) => item.trim() !== ''),
+                boardingProhibitedItems: boardingProhibitedItems.filter((item) => item.trim() !== ''),
+                daycareKennelMode: daycareKennelMode || null,
+                businessBio: trimmedBio,
+                waiverRequired,
                 waiverText,
-                waiverVersion: 1,
-                lastUpdated: new Date(),
-            },
-            { merge: true }
-        );
+                requiredVaccinations,
+                requiredTests,
+                operatingHours,
+                dropOffTimeRequiredDaycare,
+                pickUpTimeRequiredDaycare,
+                dropOffTimeRequiredBoarding,
+                pickUpTimeRequiredBoarding,
+                dropOffTimeRequiredAssessment,
+                pickUpTimeRequiredAssessment,
+                assessmentDropOffTimes,
+                assessmentPickUpTimes,
+                noAssessmentDays: Array.from(noAssessmentDays),
+                afterHoursPickUpTimeRequired,
+                afterHoursPickUpTimes,
+                noAfterHoursDays: Array.from(noAfterHoursDays),
+                beforeHoursPickUpTimeRequired,
+                beforeHoursPickUpTimes,
+                noBeforeHoursPickUpDays: Array.from(noBeforeHoursPickUpDays),
+                earlyDropOffTimeRequired,
+                earlyDropOffTimes,
+                noEarlyDropOffDays: Array.from(noEarlyDropOffDays),
+                afterHoursDropOffTimeRequired,
+                afterHoursDropOffTimes,
+                noAfterHoursDropOffDays: Array.from(noAfterHoursDropOffDays),
+                dropOffTimesDaycare,
+                pickUpTimesDaycare,
+                dropOffTimesBoarding,
+                pickUpTimesBoarding,
+                noDaycareDays: Array.from(noDaycareDays),
+                noBoardingDays: Array.from(noBoardingDays),
+                blackoutDates: blackoutDates.map((date) =>
+                    Timestamp.fromDate(new Date(date.getFullYear(), date.getMonth(), date.getDate()))
+                ),
+                prohibitBoardingOverlapWithBlackoutDates,
+                bookingLimits: { maxPerTimeSlot: maxAppointmentsPerSlot },
+                features: {
+                    enableEmployeeManagement: optionalFeatures.employeeManagement,
+                    enableStatePaperwork: optionalFeatures.statePaperworkLog,
+                    enableFinancialManagement: optionalFeatures.financialManagement,
+                },
+            });
 
-        setSaving(false);
+            const waiverRef = doc(db, 'businesses', businessId, 'settings', 'clientWaiver');
+            await setDoc(
+                waiverRef,
+                {
+                    waiverText,
+                    waiverVersion: 1,
+                    lastUpdated: new Date(),
+                },
+                { merge: true }
+            );
 
-        // ⭐ NEW — show success banner for 3 seconds
-        setSaveSuccess(true);
-        setTimeout(() => {
-            setSaveSuccess(false);
-        }, 3000);
+            const currentKennelTypes = normalizedKennelTypes.map((kennel) => ({
+                id: kennel.id,
+                name: kennel.name,
+                totalCount: parseKennelTotalCount(kennel.totalCountText),
+            }));
+            const currentKennelIds = currentKennelTypes.map((kennel) => kennel.id);
+            const deletedKennelIds = loadedKennelIds.filter((kennelId) => !currentKennelIds.includes(kennelId));
+
+            await Promise.all([
+                ...currentKennelTypes.map((kennel) =>
+                    setDoc(
+                        doc(db, 'businesses', businessId, 'kennelTypes', kennel.id),
+                        {
+                            name: kennel.name,
+                            totalCount: kennel.totalCount,
+                        },
+                        { merge: true }
+                    )
+                ),
+                ...deletedKennelIds.map((kennelId) => deleteDoc(doc(db, 'businesses', businessId, 'kennelTypes', kennelId))),
+            ]);
+
+            setKennelTypes(
+                currentKennelTypes.map((kennel) => ({
+                    id: kennel.id,
+                    name: kennel.name,
+                    totalCount: String(kennel.totalCount),
+                }))
+            );
+            setLoadedKennelIds(currentKennelIds);
+
+            setSaveSuccess(true);
+            setTimeout(() => setSaveSuccess(false), 3000);
+        } catch (err) {
+            console.error('Failed to save business settings:', err);
+            alert(t('save_failed_alert'));
+        } finally {
+            setSaving(false);
+        }
     };
 
-    // ───────── Helpers ─────────
-    const handleGroomingChange = (pos: number, value: string) => {
+    const handleGroomingChange = (index: number, value: string) => {
         const updated = [...groomingServices];
-        updated[pos] = value.slice(0, 50);
+        updated[index] = value.slice(0, 50);
         setGroomingServices(updated);
     };
 
     const addGroomingService = () => {
         if (groomingServices.length < 10) setGroomingServices((prev) => [...prev, '']);
     };
-    const removeGroomingService = (pos: number) => setGroomingServices((prev) => prev.filter((_, i) => i !== pos));
+
+    const removeGroomingService = (index: number) => {
+        setGroomingServices((prev) => prev.filter((_, serviceIndex) => serviceIndex !== index));
+    };
+
+    const handleKennelNameChange = (kennelId: string, value: string) => {
+        setKennelTypes((prev) =>
+            prev.map((kennel) => (
+                kennel.id === kennelId
+                    ? { ...kennel, name: value.slice(0, 35) }
+                    : kennel
+            ))
+        );
+    };
+
+    const handleKennelCountChange = (kennelId: string, value: string) => {
+        const nextValue = sanitizeKennelCount(value);
+        setKennelTypes((prev) =>
+            prev.map((kennel) => (
+                kennel.id === kennelId
+                    ? { ...kennel, totalCount: nextValue }
+                    : kennel
+            ))
+        );
+    };
+
+    const addKennelType = () => {
+        if (!businessId) return;
+
+        const name = newKennelName.trim().slice(0, 35);
+        const totalCount = sanitizeKennelCount(newKennelCount);
+        if (!name || totalCount === '') return;
+
+        const kennelRef = doc(collection(db, 'businesses', businessId, 'kennelTypes'));
+        setKennelTypes((prev) => [
+            ...prev,
+            {
+                id: kennelRef.id,
+                name,
+                totalCount,
+            },
+        ]);
+        setNewKennelName('');
+        setNewKennelCount('');
+    };
+
+    const removeKennelType = (kennelId: string) => {
+        setKennelTypes((prev) => prev.filter((kennel) => kennel.id !== kennelId));
+    };
 
     const toggleDayTime = (
         type: 'dropOff' | 'pickUp',
@@ -603,21 +689,26 @@ export default function BusinessSettingsPage() {
     ) => {
         const map: Record<
             'daycare' | 'boarding',
-            Record<'dropOff' | 'pickUp', [Record<string, string[]>, React.Dispatch<React.SetStateAction<Record<string, string[]>>>]>
+            Record<'dropOff' | 'pickUp', [Record<string, string[]>, Dispatch<SetStateAction<Record<string, string[]>>>]>
         > = {
-            daycare: { dropOff: [dropOffTimesDaycare, setDropOffTimesDaycare], pickUp: [pickUpTimesDaycare, setPickUpTimesDaycare] },
-            boarding: { dropOff: [dropOffTimesBoarding, setDropOffTimesBoarding], pickUp: [pickUpTimesBoarding, setPickUpTimesBoarding] },
+            daycare: {
+                dropOff: [dropOffTimesDaycare, setDropOffTimesDaycare],
+                pickUp: [pickUpTimesDaycare, setPickUpTimesDaycare],
+            },
+            boarding: {
+                dropOff: [dropOffTimesBoarding, setDropOffTimesBoarding],
+                pickUp: [pickUpTimesBoarding, setPickUpTimesBoarding],
+            },
         };
         const [times, setTimes] = map[service][type];
         const current = times[day] || [];
-        const updated = current.includes(time) ? current.filter((t) => t !== time) : [...current, time];
+        const updated = current.includes(time) ? current.filter((item) => item !== time) : [...current, time];
         setTimes({ ...times, [day]: updated });
     };
 
-    // ✅ NEW: toggle for after-hours per-day time
     const toggleAfterHoursTime = (day: string, time: string) => {
         const current = afterHoursPickUpTimes[day] || [];
-        const updated = current.includes(time) ? current.filter((t) => t !== time) : [...current, time];
+        const updated = current.includes(time) ? current.filter((item) => item !== time) : [...current, time];
         setAfterHoursPickUpTimes({ ...afterHoursPickUpTimes, [day]: updated });
     };
 
@@ -628,1554 +719,347 @@ export default function BusinessSettingsPage() {
         time: string
     ) => {
         const current = currentMap[day] || [];
-        const updated = current.includes(time) ? current.filter((t) => t !== time) : [...current, time];
+        const updated = current.includes(time) ? current.filter((item) => item !== time) : [...current, time];
         setter({ ...currentMap, [day]: updated });
     };
 
+    const toggleBeforeHoursPickupTime = (day: string, time: string) => {
+        toggleSpecialWindowTime(beforeHoursPickUpTimes, setBeforeHoursPickUpTimes, day, time);
+    };
+
+    const toggleEarlyDropOffTime = (day: string, time: string) => {
+        toggleSpecialWindowTime(earlyDropOffTimes, setEarlyDropOffTimes, day, time);
+    };
+
+    const toggleAfterHoursDropOffTime = (day: string, time: string) => {
+        toggleSpecialWindowTime(afterHoursDropOffTimes, setAfterHoursDropOffTimes, day, time);
+    };
+
+    const openDiscounts = () => router.push(`/${locale}/boardinganddaycare-businesssettingsdiscounts`);
+    const openMemberships = () => router.push(`/${locale}/boardinganddaycare-businesssettingsmemberships`);
+    const openDaycareCheckoutItems = () => router.push(`/${locale}/boardinganddaycare-payatcheckoutitems`);
+    const openBoardingCheckoutItems = () => router.push(`/${locale}/boardinganddaycare-payatcheckoutboardingitems`);
+    const openInvoiceLibrary = () => router.push(`/${locale}/boardinganddaycare-invoicelibrary`);
+
+    const showPaymentsSection = offersDaycare || offersBoarding;
+    const showTimeSettingsSection = offersDaycare || offersBoarding || requiresAssessment;
+
+    const navigationItems: BusinessSettingsNavItem[] = [
+        { id: 'general', label: t('general_information_header') },
+        { id: 'hours', label: t('operating_hours_header') },
+        { id: 'blackoutDates', label: t('blackout_dates_header') },
+        { id: 'services', label: t('service_offerings_title') },
+        { id: 'pricing', label: t('pricing_discounts_header') },
+        ...(showPaymentsSection ? [{ id: 'payments' as const, label: t('payments_header') }] : []),
+        { id: 'boardingPolicies', label: t('booking_policy_header') },
+        { id: 'kennels', label: t('kennel_section_header') },
+        ...(showTimeSettingsSection ? [{ id: 'timeSettings' as const, label: t('drop_pick_time_header') }] : []),
+        ...(offersBoarding ? [{ id: 'whatToBring' as const, label: t('what_to_bring_header') }] : []),
+        { id: 'health', label: t('health_requirements_header') },
+        { id: 'waiver', label: t('waiver_settings_header') },
+        { id: 'optionalFeatures', label: t('optional_features_header') },
+        { id: 'reviewSave', label: t('review_save_header') },
+    ];
+
     return (
-        <div className="w-full max-w-md mx-auto px-2 sm:px-4 py-8 text-[color:var(--color-foreground)]">
-            {/* Back Button */}
-            <button onClick={() => router.push('/boardinganddaycaredashboard')} className="text-sm text-blue-600 underline mb-4">
+        <div className="w-full max-w-7xl mx-auto px-3 sm:px-5 lg:px-8 py-8 text-[color:var(--color-foreground)]">
+            <button
+                type="button"
+                onClick={() => router.push('/boardinganddaycaredashboard')}
+                className="mb-4 text-sm text-blue-600 underline"
+            >
                 ← {t('back_to_dashboard')}
             </button>
 
-            {/* Page Title */}
-            <h1 className="text-3xl font-bold text-[color:var(--color-accent)] mb-6 text-center">
-                {t('business_settings_title')}
-            </h1>
+            <div className="mb-8 max-w-3xl">
+                <h1 className="text-3xl font-bold text-[color:var(--color-accent)]">{t('business_settings_title')}</h1>
+            </div>
 
             {loading ? (
                 <p className="text-center text-sm">{t('loading')}</p>
             ) : (
-                <>
-                    {/* General (locked) fields */}
-                    <div className="space-y-3 mb-6">
-                        <div>
-                            <label className="font-semibold text-sm">{t('business_name_field')}</label>
-                            <input value={businessName} disabled className="w-full border px-3 py-2 rounded bg-gray-100 text-sm" />
-                        </div>
-                        <div>
-                            <label className="font-semibold text-sm">{t('business_phone_field')}</label>
-                            <input value={businessPhone} disabled className="w-full border px-3 py-2 rounded bg-gray-100 text-sm" />
-                        </div>
-                        <div>
-                            <label className="font-semibold text-sm">{t('business_address_field')}</label>
-                            <input value={businessAddress} disabled className="w-full border px-3 py-2 rounded bg-gray-100 text-sm" />
-                        </div>
-                        {/* --- Business Bio --- */}
-                        <div className="mt-4">
-                            <h3 className="font-semibold text-sm text-[color:var(--color-accent)]">{t('business_bio_header')}</h3>
-                            <p className="text-xs text-gray-500 mb-1">
-                                {t('business_bio_subtitle')}
-                            </p>
+                <div className="lg:grid lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[280px_minmax(0,1fr)]">
+                    <BusinessSettingsNavigation
+                        items={navigationItems}
+                        label={t('section_navigation_label')}
+                    />
 
-                            <div className="relative">
-                                {businessBio.trim() === '' && (
-                                    <span className="absolute top-2 left-3 text-gray-400 pointer-events-none text-sm">
-                                        {t('business_bio_placeholder')}
-                                    </span>
-                                )}
-                                <textarea
-                                    value={businessBio}
-                                    onChange={(e) => setBusinessBio(e.target.value)}
-                                    className="w-full h-32 border px-3 py-2 rounded resize-none text-sm"
-                                    aria-label={t('business_bio_header')}
-                                />
-                            </div>
-
-                            {/* Counter + validation */}
-                            <div className="mt-1 flex items-center justify-between">
-                                <span
-                                    className={`text-xs ${businessBio.length > BIO_LIMIT ? 'text-red-600' : 'text-gray-500'}`}
-                                >
-                                    {t('business_bio_counter', { used: businessBio.length, limit: BIO_LIMIT })}
-                                </span>
-                            </div>
-                            {hasEmoji(businessBio) && (
-                                <p className="text-xs text-red-600 mt-1">{t('business_bio_no_emoji')}</p>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Operating Hours */}
-                    <div className="mt-10">
-                        <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-4">
-                            {t('operating_hours_header')}
-                        </h2>
-
-                        {daysOfWeek.map((day) => {
-                            const open = operatingHours[day]?.open || '7:00 AM';
-                            const close = operatingHours[day]?.close || '6:00 PM';
-
-                            return (
-                                <div key={`operating-hours-${day}`} className="flex gap-4">
-                                    {/* Open */}
-                                    <div className="flex flex-col">
-                                        <label className="text-xs text-gray-500 mb-1">
-                                            {t('open_label')}
-                                        </label>
-                                        <select
-                                            value={open}
-                                            onChange={(e) =>
-                                                setOperatingHours((prev) => ({
-                                                    ...prev,
-                                                    [day]: {
-                                                        open: e.target.value,
-                                                        close,
-                                                    },
-                                                }))
-                                            }
-                                            className="border px-2 py-1 rounded text-sm"
-                                        >
-                                            {timeOptions.map((time, idx) => (
-                                                <option key={`${day}-open-${time}-${idx}`} value={time}>
-                                                    {time}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    {/* Close */}
-                                    <div className="flex flex-col">
-                                        <label className="text-xs text-gray-500 mb-1">
-                                            {t('close_label')}
-                                        </label>
-                                        <select
-                                            value={close}
-                                            onChange={(e) =>
-                                                setOperatingHours((prev) => ({
-                                                    ...prev,
-                                                    [day]: {
-                                                        open,
-                                                        close: e.target.value,
-                                                    },
-                                                }))
-                                            }
-                                            className="border px-2 py-1 rounded text-sm"
-                                        >
-                                            {timeOptions.map((time, idx) => (
-                                                <option key={`${day}-close-${time}-${idx}`} value={time}>
-                                                    {time}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                    {/* Blackout Dates */}
-                    <div className="mt-10 space-y-4">
-                        <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
-                            Blackout Dates
-                        </h2>
-
-                        {/* Date Picker */}
-                        <div>
-                            <label className="font-semibold text-sm block mb-1">Select a Date to Blackout</label>
-                            <input
-                                type="date"
-                                value={selectedBlackoutDate}
-                                onChange={(e) => setSelectedBlackoutDate(e.target.value)}
-                                className="w-full border px-3 py-2 rounded text-sm"
-                            />
-                        </div>
-
-                        {/* Add Button */}
-                        <button
-                            onClick={() => {
-                                const [year, month, day] = selectedBlackoutDate.split('-').map(Number);
-                                const startOfDay = new Date(year, month - 1, day);
-
-                                // Prevent duplicates
-                                if (!blackoutDates.some((d) => d.getTime() === startOfDay.getTime())) {
-                                    const updated = [...blackoutDates, startOfDay].sort(
-                                        (a, b) => a.getTime() - b.getTime()
-                                    );
-                                    setBlackoutDates(updated);
-                                }
-                            }}
-                            className="text-sm text-green-700 underline"
-                        >
-                            Add Blackout Date
-                        </button>
-
-                        {/* Blackout Dates List */}
-                        {blackoutDates.length === 0 ? (
-                            <p className="text-sm text-gray-500 text-center">No blackout dates set.</p>
-                        ) : (
-                            <ul className="space-y-2">
-                                {blackoutDates.map((d, idx) => (
-                                    <li
-                                        key={`blackout-${idx}`}
-                                        className="flex justify-between items-center border px-3 py-2 rounded text-sm"
-                                    >
-                                        <span>{d.toLocaleDateString()}</span>
-                                        <button
-                                            onClick={() => {
-                                                const updated = blackoutDates.filter((_, i) => i !== idx);
-                                                setBlackoutDates(updated);
-                                            }}
-                                            className="text-red-600 font-bold text-lg"
-                                        >
-                                            &times;
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-
-                        {/* Prevent overlapping boarding reservations with blackout dates */}
-                        <div className="mt-4">
-                            <Toggle
-                                label="Do NOT allow boarding reservations to overlap blackout dates"
-                                checked={prohibitBoardingOverlapWithBlackoutDates}
-                                onChange={setProhibitBoardingOverlapWithBlackoutDates}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Service offerings */}
-                    <div className="space-y-4 mb-6">
-                        <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
-                            {t('service_offerings_title')}
-                        </h2>
-
-                        <Toggle label={t('boarding_toggle')} checked={offersBoarding} onChange={setOffersBoarding} />
-                        <Toggle label={t('daycare_toggle')} checked={offersDaycare} onChange={setOffersDaycare} />
-                        <Toggle label={t('grooming_toggle')} checked={offersGrooming} onChange={setOffersGrooming} />
-                        <Toggle label={t('training_toggle')} checked={offersTraining} onChange={setOffersTraining} />
-                        <Toggle
-                            label={t('requires_assessment_toggle')}
-                            checked={requiresAssessment}
-                            onChange={setRequiresAssessment}
+                    <div className="space-y-6">
+                        <GeneralInformationSection
+                            businessName={businessName}
+                            businessPhone={businessPhone}
+                            businessAddress={businessAddress}
+                            businessBio={businessBio}
+                            setBusinessBio={setBusinessBio}
+                            bioLimit={BIO_LIMIT}
+                            hasEmoji={hasEmoji}
                         />
 
-                        {offersGrooming && (
-                            <div className="mt-4 space-y-2">
-                                <label className="font-semibold text-sm">{t('grooming_services_label')}</label>
-                                {groomingServices.map((service, i) => (
-                                    <div key={`svc-${i}`} className="flex gap-2">
-                                        <input
-                                            value={service}
-                                            onChange={(e) => handleGroomingChange(i, e.target.value)}
-                                            className="flex-1 border px-3 py-2 rounded text-sm"
-                                        />
-                                        {groomingServices.length > 1 && (
-                                            <button
-                                                onClick={() => removeGroomingService(i)}
-                                                className="text-red-600 font-bold text-lg"
-                                            >
-                                                &times;
-                                            </button>
-                                        )}
-                                    </div>
-                                ))}
+                        <OperatingHoursSection
+                            operatingHours={operatingHours}
+                            setOperatingHours={setOperatingHours}
+                            daysOfWeek={daysOfWeek}
+                            timeOptions={timeOptions}
+                        />
 
-                                {groomingServices.length < 10 && (
-                                    <button onClick={addGroomingService} className="text-sm text-green-700 underline mt-1">
-                                        {t('add_another_service_button')}
-                                    </button>
-                                )}
-                            </div>
-                        )}
-                    </div>
+                        <BlackoutDatesSection
+                            selectedBlackoutDate={selectedBlackoutDate}
+                            setSelectedBlackoutDate={setSelectedBlackoutDate}
+                            blackoutDates={blackoutDates}
+                            setBlackoutDates={setBlackoutDates}
+                            prohibitBoardingOverlapWithBlackoutDates={prohibitBoardingOverlapWithBlackoutDates}
+                            setProhibitBoardingOverlapWithBlackoutDates={setProhibitBoardingOverlapWithBlackoutDates}
+                        />
 
-                    <div className="mt-10 space-y-4">
-                        <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
-                            {t('pricing_discounts_header')}
-                        </h2>
+                        <ServiceOfferingsSection
+                            offersBoarding={offersBoarding}
+                            setOffersBoarding={setOffersBoarding}
+                            offersDaycare={offersDaycare}
+                            setOffersDaycare={setOffersDaycare}
+                            offersGrooming={offersGrooming}
+                            setOffersGrooming={setOffersGrooming}
+                            offersTraining={offersTraining}
+                            setOffersTraining={setOffersTraining}
+                            requiresAssessment={requiresAssessment}
+                            setRequiresAssessment={setRequiresAssessment}
+                            groomingServices={groomingServices}
+                            onGroomingChange={handleGroomingChange}
+                            onAddGroomingService={addGroomingService}
+                            onRemoveGroomingService={removeGroomingService}
+                        />
 
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <div className="border rounded p-4 bg-gray-50">
-                                <p className="text-sm text-gray-600 mb-4 text-center">
-                                    {t('pricing_discounts_subtitle')}
-                                </p>
+                        <PricingProgramsSection
+                            onOpenDiscounts={openDiscounts}
+                            onOpenMemberships={openMemberships}
+                        />
 
-                                <button
-                                    type="button"
-                                    onClick={() => router.push(`/${_locale}/boardinganddaycare-businesssettingsdiscounts`)}
-                                    className="w-full bg-[#1F4D2E] hover:bg-[#163A22] text-white font-semibold px-4 py-2 rounded-md"
-                                >
-                                    {t('manage_discounts_button')}
-                                </button>
-                            </div>
-
-                            <div className="border rounded p-4 bg-gray-50">
-                                <p className="text-sm text-gray-600 mb-4 text-center">
-                                    {t('memberships_subtitle')}
-                                </p>
-
-                                <button
-                                    type="button"
-                                    onClick={() => router.push(`/${_locale}/boardinganddaycare-businesssettingsmemberships`)}
-                                    className="w-full bg-[#1F4D2E] hover:bg-[#163A22] text-white font-semibold px-4 py-2 rounded-md"
-                                >
-                                    {t('manage_memberships_button')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {(offersDaycare || offersBoarding) && (
-                        <div className="mt-10 space-y-6">
-
-                            <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
-                                {t('payments_header')}
-                            </h2>
-
-                            {/* 🔵 Stripe Account Section */}
-                            <div className="border rounded p-4 space-y-3 bg-gray-50">
-
-                                <h3 className="text-lg font-semibold text-center">
-                                    {t('stripe_account_title')}
-                                </h3>
-
-                                {stripeOnboardingComplete && stripeChargesEnabled && stripePayoutsEnabled ? (
-                                    <div className="text-center text-green-700 text-sm">
-                                        {t('stripe_fully_active')}
-                                        <div className="text-xs text-gray-600 mt-1">
-                                            {t('stripe_status_summary', {
-                                                charges: t('status_enabled'),
-                                                payouts: t('status_enabled'),
-                                            })}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="text-center text-red-600 text-sm space-y-1">
-                                        <div>{t('stripe_not_fully_active')}</div>
-                                        <div className="text-xs text-gray-600">
-                                            {t('stripe_status_summary', {
-                                                charges: stripeChargesEnabled ? t('status_enabled') : t('status_disabled'),
-                                                payouts: stripePayoutsEnabled ? t('status_enabled') : t('status_disabled'),
-                                            })}
-                                        </div>
-                                        <div className="text-xs text-red-500">
-                                            {t('stripe_required_for_payments')}
-                                        </div>
-                                    </div>
-                                )}
-
-                                <button
-                                    onClick={handleStripeOnboarding}
-                                    disabled={stripeLoading}
-                                    className="w-full bg-[#2c4a30] text-white px-4 py-2 rounded text-sm"
-                                >
-                                    {stripeLoading ? t('stripe_connecting_button') : t('stripe_setup_button')}
-                                </button>
-                            </div>
-
-                            <Toggle
-                                label={t('payments_accept_toggle')}
-                                checked={paymentsEnabled}
-                                onChange={(val) => {
-
-                                    // 🔒 HARD GATE — Stripe must be fully active
-                                    if (val) {
-                                        if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
-                                            alert(t('payments_require_active_stripe_alert'));
-                                            return;
-                                        }
+                        <PaymentsSection
+                            visible={showPaymentsSection}
+                            stripeOnboardingComplete={stripeOnboardingComplete}
+                            stripeChargesEnabled={stripeChargesEnabled}
+                            stripePayoutsEnabled={stripePayoutsEnabled}
+                            stripeLoading={stripeLoading}
+                            onStripeOnboarding={handleStripeOnboarding}
+                            paymentsEnabled={paymentsEnabled}
+                            onPaymentsEnabledChange={(value) => {
+                                if (value) {
+                                    if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
+                                        alert(t('payments_require_active_stripe_alert'));
+                                        return;
                                     }
+                                }
 
-                                    setPaymentsEnabled(val);
+                                setPaymentsEnabled(value);
 
-                                    if (!val) {
-                                        setDaycarePayAtBookingEnabled(false);
-                                        setDaycareInvoiceAfterAttendanceEnabled(false);
-                                        setDaycarePayAtPickupEnabled(false);
-                                        setBoardingPayAtBookingEnabled(false);
-                                        setBoardingInvoiceAfterAttendanceEnabled(false);
-                                        setBoardingPayAtPickupEnabled(false);
+                                if (!value) {
+                                    setDaycarePayAtBookingEnabled(false);
+                                    setDaycareInvoiceAfterAttendanceEnabled(false);
+                                    setDaycarePayAtPickupEnabled(false);
+                                    setBoardingPayAtBookingEnabled(false);
+                                    setBoardingInvoiceAfterAttendanceEnabled(false);
+                                    setBoardingPayAtPickupEnabled(false);
+                                }
+                            }}
+                            offersDaycare={offersDaycare}
+                            offersBoarding={offersBoarding}
+                            daycarePayAtBookingEnabled={daycarePayAtBookingEnabled}
+                            onDaycarePayAtBookingChange={(value) => {
+                                if (value) {
+                                    if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
+                                        alert(t('payment_method_requires_active_stripe_alert'));
+                                        return;
                                     }
-                                }}
-                            />
-
-                            <p className="text-xs text-gray-500 text-center">
-                                {t('payments_optional_helper')}
-                            </p>
-
-                            {paymentsEnabled && offersDaycare && (
-                                <div className="mt-4 space-y-2">
-                                    <h3 className="text-sm font-semibold text-[color:var(--color-accent)] text-center">
-                                        {t('daycare_payment_settings_title')}
-                                    </h3>
-
-                                    <Toggle
-                                        label={t('pay_at_booking_label')}
-                                        checked={daycarePayAtBookingEnabled}
-                                        onChange={(val) => {
-
-                                            if (val) {
-                                                if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
-                                                    alert(t('payment_method_requires_active_stripe_alert'));
-                                                    return;
-                                                }
-                                            }
-
-                                            setDaycarePayAtBookingEnabled(val);
-                                        }}
-                                    />
-
-                                    {daycarePayAtBookingEnabled && (
-                                        <>
-                                            <p className="text-xs text-gray-500 ml-8">
-                                                {t('daycare_pay_at_booking_helper')}
-                                            </p>
-
-                                            <div className="mt-3 ml-8 border rounded p-3 bg-gray-50">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => router.push(`/${_locale}/boardinganddaycare-payatcheckoutitems`)}
-                                                    className="w-full text-left"
-                                                >
-                                                    <div className="flex items-center justify-between gap-3">
-                                                        <div>
-                                                            <p className="font-semibold text-sm text-[color:var(--color-accent)]">
-                                                                {t('manage_pay_at_checkout_items_title')}
-                                                            </p>
-                                                            <p className="text-xs text-gray-500 mt-1">
-                                                                {t('manage_pay_at_checkout_items_subtitle')}
-                                                            </p>
-                                                        </div>
-
-                                                        <span className="text-gray-400 text-lg">›</span>
-                                                    </div>
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
-
-                                    <Toggle
-                                        label={t('invoice_after_attendance_label')}
-                                        checked={daycareInvoiceAfterAttendanceEnabled}
-                                        onChange={(val) => {
-
-                                            if (val) {
-                                                if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
-                                                    alert(t('payment_method_requires_active_stripe_alert'));
-                                                    return;
-                                                }
-                                            }
-
-                                            setDaycareInvoiceAfterAttendanceEnabled(val);
-                                        }}
-                                    />
-
-                                    {daycareInvoiceAfterAttendanceEnabled && (
-                                        <>
-                                            <p className="text-xs text-gray-500 ml-8">
-                                                {t('invoice_after_attendance_helper')}
-                                            </p>
-
-                                            <div className="mt-3 ml-8 border rounded p-3 bg-gray-50">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => router.push(`/${_locale}/boardinganddaycare-invoicelibrary`)}
-                                                    className="w-full text-left"
-                                                >
-                                                    <div className="flex items-center justify-between gap-3">
-                                                        <div>
-                                                            <p className="font-semibold text-sm text-[color:var(--color-accent)]">
-                                                                {t('invoice_library_title')}
-                                                            </p>
-                                                            <p className="text-xs text-gray-500 mt-1">
-                                                                {t('invoice_library_subtitle')}
-                                                            </p>
-                                                        </div>
-
-                                                        <span className="text-gray-400 text-lg">›</span>
-                                                    </div>
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
-
-                                    <Toggle
-                                        label={t('pay_at_pickup_label')}
-                                        checked={daycarePayAtPickupEnabled}
-                                        onChange={(val) => {
-
-                                            if (val) {
-                                                if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
-                                                    alert(t('payment_method_requires_active_stripe_alert'));
-                                                    return;
-                                                }
-                                            }
-
-                                            setDaycarePayAtPickupEnabled(val);
-                                        }}
-                                    />
-
-                                    {daycarePayAtPickupEnabled && (
-                                        <p className="text-xs text-gray-500 ml-8">
-                                            {t('pay_at_pickup_helper')}
-                                        </p>
-                                    )}
-
-                                    {!daycarePayAtBookingEnabled &&
-                                        !daycareInvoiceAfterAttendanceEnabled &&
-                                        !daycarePayAtPickupEnabled && (
-                                            <p className="text-xs text-red-600 text-center mt-2">
-                                                {t('service_payment_method_warning')}
-                                            </p>
-                                        )}
-                                </div>
-                            )}
-
-                            {paymentsEnabled && offersBoarding && (
-                                <div className="mt-4 space-y-2">
-                                    <h3 className="text-sm font-semibold text-[color:var(--color-accent)] text-center">
-                                        {t('boarding_payment_settings_title')}
-                                    </h3>
-
-                                    <Toggle
-                                        label={t('pay_at_booking_label')}
-                                        checked={boardingPayAtBookingEnabled}
-                                        onChange={(val) => {
-                                            if (val) {
-                                                if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
-                                                    alert(t('payment_method_requires_active_stripe_alert'));
-                                                    return;
-                                                }
-                                            }
-
-                                            setBoardingPayAtBookingEnabled(val);
-                                        }}
-                                    />
-
-                                    {boardingPayAtBookingEnabled && (
-                                        <>
-                                            <p className="text-xs text-gray-500 ml-8">
-                                                {t('boarding_pay_at_booking_helper')}
-                                            </p>
-
-                                            <div className="mt-3 ml-8 border rounded p-3 bg-gray-50">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => router.push(`/${_locale}/boardinganddaycare-payatcheckoutboardingitems`)}
-                                                    className="w-full text-left"
-                                                >
-                                                    <div className="flex items-center justify-between gap-3">
-                                                        <div>
-                                                            <p className="font-semibold text-sm text-[color:var(--color-accent)]">
-                                                                {t('manage_pay_at_boarding_checkout_items_title')}
-                                                            </p>
-                                                            <p className="text-xs text-gray-500 mt-1">
-                                                                {t('manage_pay_at_boarding_checkout_items_subtitle')}
-                                                            </p>
-                                                        </div>
-
-                                                        <span className="text-gray-400 text-lg">›</span>
-                                                    </div>
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
-
-                                    <Toggle
-                                        label={t('invoice_after_attendance_label')}
-                                        checked={boardingInvoiceAfterAttendanceEnabled}
-                                        onChange={(val) => {
-                                            if (val) {
-                                                if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
-                                                    alert(t('payment_method_requires_active_stripe_alert'));
-                                                    return;
-                                                }
-                                            }
-
-                                            setBoardingInvoiceAfterAttendanceEnabled(val);
-                                        }}
-                                    />
-
-                                    {boardingInvoiceAfterAttendanceEnabled && (
-                                        <>
-                                            <p className="text-xs text-gray-500 ml-8">
-                                                {t('invoice_after_attendance_helper')}
-                                            </p>
-
-                                            <div className="mt-3 ml-8 border rounded p-3 bg-gray-50">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => router.push(`/${_locale}/boardinganddaycare-invoicelibrary`)}
-                                                    className="w-full text-left"
-                                                >
-                                                    <div className="flex items-center justify-between gap-3">
-                                                        <div>
-                                                            <p className="font-semibold text-sm text-[color:var(--color-accent)]">
-                                                                {t('invoice_library_title')}
-                                                            </p>
-                                                            <p className="text-xs text-gray-500 mt-1">
-                                                                {t('invoice_library_subtitle')}
-                                                            </p>
-                                                        </div>
-
-                                                        <span className="text-gray-400 text-lg">›</span>
-                                                    </div>
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
-
-                                    <Toggle
-                                        label={t('pay_at_pickup_label')}
-                                        checked={boardingPayAtPickupEnabled}
-                                        onChange={(val) => {
-                                            if (val) {
-                                                if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
-                                                    alert(t('payment_method_requires_active_stripe_alert'));
-                                                    return;
-                                                }
-                                            }
-
-                                            setBoardingPayAtPickupEnabled(val);
-                                        }}
-                                    />
-
-                                    {boardingPayAtPickupEnabled && (
-                                        <p className="text-xs text-gray-500 ml-8">
-                                            {t('pay_at_pickup_helper')}
-                                        </p>
-                                    )}
-
-                                    {!boardingPayAtBookingEnabled &&
-                                        !boardingInvoiceAfterAttendanceEnabled &&
-                                        !boardingPayAtPickupEnabled && (
-                                            <p className="text-xs text-red-600 text-center mt-2">
-                                                {t('service_payment_method_warning')}
-                                            </p>
-                                        )}
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {/* What To Bring With You (Boarding only) */}
-                    {offersBoarding && (
-                        <div className="mt-10">
-
-                            <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-4">
-                                {t('what_to_bring_header')}
-                            </h2>
-
-                            {/* Required Items */}
-                            <div className="mb-6">
-                                <label className="font-semibold text-sm block mb-1">
-                                    {t('boarding_required_items_label')}
-                                </label>
-
-                                {boardingRequiredItems.map((item, idx) => (
-                                    <div key={`req-${idx}`} className="mb-3">
-
-                                        <div className="relative">
-                                            {item.trim() === '' && (
-                                                <span className="absolute top-2 left-3 text-gray-400 pointer-events-none text-sm">
-                                                    {t('boarding_required_item_placeholder', { num: idx + 1 })}
-                                                </span>
-                                            )}
-
-                                            <textarea
-                                                value={item}
-                                                onChange={(e) => {
-                                                    const updated = [...boardingRequiredItems];
-                                                    updated[idx] = e.target.value.slice(0, 150);
-                                                    setBoardingRequiredItems(updated);
-                                                }}
-                                                className="w-full min-h-[80px] border px-3 py-2 rounded text-sm resize-none"
-                                            />
-                                        </div>
-
-                                        {/* Character Counter */}
-                                        <div className="flex justify-end text-xs mt-1">
-                                            <span className={`${item.length >= 150 ? 'text-red-600' : 'text-gray-500'}`}>
-                                                {item.length} / 150
-                                            </span>
-                                        </div>
-
-                                        {/* Delete button */}
-                                        {boardingRequiredItems.length > 1 && (
-                                            <button
-                                                onClick={() =>
-                                                    setBoardingRequiredItems(prev => prev.filter((_, i) => i !== idx))
-                                                }
-                                                className="text-red-600 font-bold text-lg mt-1"
-                                            >
-                                                &times;
-                                            </button>
-                                        )}
-                                    </div>
-                                ))}
-
-                                <button
-                                    onClick={() => setBoardingRequiredItems(prev => [...prev, ''])}
-                                    className="text-sm text-blue-600 underline mt-1"
-                                >
-                                    {t('add_boarding_required_item_button')}
-                                </button>
-                            </div>
-
-                            {/* Prohibited Items */}
-                            <div>
-                                <label className="font-semibold text-sm block mb-1">
-                                    {t('boarding_prohibited_items_label')}
-                                </label>
-
-                                {boardingProhibitedItems.map((item, idx) => (
-                                    <div key={`pro-${idx}`} className="mb-3">
-
-                                        <div className="relative">
-                                            {item.trim() === '' && (
-                                                <span className="absolute top-2 left-3 text-gray-400 pointer-events-none text-sm">
-                                                    {t('boarding_prohibited_item_placeholder', { num: idx + 1 })}
-                                                </span>
-                                            )}
-
-                                            <textarea
-                                                value={item}
-                                                onChange={(e) => {
-                                                    const updated = [...boardingProhibitedItems];
-                                                    updated[idx] = e.target.value.slice(0, 150);
-                                                    setBoardingProhibitedItems(updated);
-                                                }}
-                                                className="w-full min-h-[80px] border px-3 py-2 rounded text-sm resize-none"
-                                            />
-                                        </div>
-
-                                        {/* Character Counter */}
-                                        <div className="flex justify-end text-xs mt-1">
-                                            <span className={`${item.length >= 150 ? 'text-red-600' : 'text-gray-500'}`}>
-                                                {item.length} / 150
-                                            </span>
-                                        </div>
-
-                                        {/* Delete button */}
-                                        {boardingProhibitedItems.length > 1 && (
-                                            <button
-                                                onClick={() =>
-                                                    setBoardingProhibitedItems(prev => prev.filter((_, i) => i !== idx))
-                                                }
-                                                className="text-red-600 font-bold text-lg mt-1"
-                                            >
-                                                &times;
-                                            </button>
-                                        )}
-                                    </div>
-                                ))}
-
-                                <button
-                                    onClick={() => setBoardingProhibitedItems(prev => [...prev, ''])}
-                                    className="text-sm text-blue-600 underline mt-1"
-                                >
-                                    {t('add_boarding_prohibited_item_button')}
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Required Vaccinations */}
-                    <div className="mt-10">
-                        <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-4">
-                            {t('required_vaccinations_header')}
-                        </h2>
-
-                        {Object.keys(requiredVaccinations).sort().map((vaccine) => (
-                            <Toggle
-                                key={`vac-${vaccine}`}
-                                label={vaccine}
-                                checked={requiredVaccinations[vaccine]}
-                                onChange={(val) =>
-                                    setRequiredVaccinations((prev) => ({ ...prev, [vaccine]: val }))
                                 }
-                            />
-                        ))}
-                    </div>
-
-                    {/* Additional Required Tests */}
-                    <div className="mt-10">
-                        <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-4">
-                            {t('additional_required_tests_header')}
-                        </h2>
-
-                        {Object.keys(requiredTests).sort().map((test) => (
-                            <Toggle
-                                key={`test-${test}`}
-                                label={test}
-                                checked={requiredTests[test]}
-                                onChange={(val) =>
-                                    setRequiredTests((prev) => ({ ...prev, [test]: val }))
+                                setDaycarePayAtBookingEnabled(value);
+                            }}
+                            daycareInvoiceAfterAttendanceEnabled={daycareInvoiceAfterAttendanceEnabled}
+                            onDaycareInvoiceAfterAttendanceChange={(value) => {
+                                if (value) {
+                                    if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
+                                        alert(t('payment_method_requires_active_stripe_alert'));
+                                        return;
+                                    }
                                 }
-                            />
-                        ))}
+                                setDaycareInvoiceAfterAttendanceEnabled(value);
+                            }}
+                            daycarePayAtPickupEnabled={daycarePayAtPickupEnabled}
+                            onDaycarePayAtPickupChange={(value) => {
+                                if (value) {
+                                    if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
+                                        alert(t('payment_method_requires_active_stripe_alert'));
+                                        return;
+                                    }
+                                }
+                                setDaycarePayAtPickupEnabled(value);
+                            }}
+                            boardingPayAtBookingEnabled={boardingPayAtBookingEnabled}
+                            onBoardingPayAtBookingChange={(value) => {
+                                if (value) {
+                                    if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
+                                        alert(t('payment_method_requires_active_stripe_alert'));
+                                        return;
+                                    }
+                                }
+                                setBoardingPayAtBookingEnabled(value);
+                            }}
+                            boardingInvoiceAfterAttendanceEnabled={boardingInvoiceAfterAttendanceEnabled}
+                            onBoardingInvoiceAfterAttendanceChange={(value) => {
+                                if (value) {
+                                    if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
+                                        alert(t('payment_method_requires_active_stripe_alert'));
+                                        return;
+                                    }
+                                }
+                                setBoardingInvoiceAfterAttendanceEnabled(value);
+                            }}
+                            boardingPayAtPickupEnabled={boardingPayAtPickupEnabled}
+                            onBoardingPayAtPickupChange={(value) => {
+                                if (value) {
+                                    if (!stripeOnboardingComplete || !stripeChargesEnabled || !stripePayoutsEnabled) {
+                                        alert(t('payment_method_requires_active_stripe_alert'));
+                                        return;
+                                    }
+                                }
+                                setBoardingPayAtPickupEnabled(value);
+                            }}
+                            onOpenDaycareCheckoutItems={openDaycareCheckoutItems}
+                            onOpenBoardingCheckoutItems={openBoardingCheckoutItems}
+                            onOpenInvoiceLibrary={openInvoiceLibrary}
+                        />
+
+                        <BookingPoliciesSection
+                            maxAppointmentsPerSlot={maxAppointmentsPerSlot}
+                            setMaxAppointmentsPerSlot={setMaxAppointmentsPerSlot}
+                            requireDaycareReservationApproval={requireDaycareReservationApproval}
+                            setRequireDaycareReservationApproval={setRequireDaycareReservationApproval}
+                            requireBoardingReservationApproval={requireBoardingReservationApproval}
+                            setRequireBoardingReservationApproval={setRequireBoardingReservationApproval}
+                            offersBoarding={offersBoarding}
+                            depositRequired={depositRequired}
+                            setDepositRequired={setDepositRequired}
+                            depositAmount={depositAmount}
+                            setDepositAmount={setDepositAmount}
+                            cancellationPolicy={cancellationPolicy}
+                            setCancellationPolicy={setCancellationPolicy}
+                            cancellationOptions={cancellationOptions}
+                            onOpenBoardingPricingRules={openBoardingCheckoutItems}
+                        />
+
+                        <KennelCapacitySection
+                            daycareKennelMode={daycareKennelMode}
+                            setDaycareKennelMode={setDaycareKennelMode}
+                            kennelTypes={kennelTypes}
+                            onKennelNameChange={handleKennelNameChange}
+                            onKennelCountChange={handleKennelCountChange}
+                            onRemoveKennelType={removeKennelType}
+                            businessId={businessId}
+                            newKennelName={newKennelName}
+                            setNewKennelName={setNewKennelName}
+                            newKennelCount={newKennelCount}
+                            setNewKennelCount={setNewKennelCount}
+                            sanitizeKennelCount={sanitizeKennelCount}
+                            onAddKennelType={addKennelType}
+                        />
+
+                        <TimeSettingsSection
+                            showSection={showTimeSettingsSection}
+                            offersDaycare={offersDaycare}
+                            offersBoarding={offersBoarding}
+                            requiresAssessment={requiresAssessment}
+                            dropOffTimeRequiredDaycare={dropOffTimeRequiredDaycare}
+                            setDropOffTimeRequiredDaycare={setDropOffTimeRequiredDaycare}
+                            pickUpTimeRequiredDaycare={pickUpTimeRequiredDaycare}
+                            setPickUpTimeRequiredDaycare={setPickUpTimeRequiredDaycare}
+                            dropOffTimeRequiredBoarding={dropOffTimeRequiredBoarding}
+                            setDropOffTimeRequiredBoarding={setDropOffTimeRequiredBoarding}
+                            pickUpTimeRequiredBoarding={pickUpTimeRequiredBoarding}
+                            setPickUpTimeRequiredBoarding={setPickUpTimeRequiredBoarding}
+                            dropOffTimeRequiredAssessment={dropOffTimeRequiredAssessment}
+                            setDropOffTimeRequiredAssessment={setDropOffTimeRequiredAssessment}
+                            pickUpTimeRequiredAssessment={pickUpTimeRequiredAssessment}
+                            setPickUpTimeRequiredAssessment={setPickUpTimeRequiredAssessment}
+                            afterHoursPickUpTimeRequired={afterHoursPickUpTimeRequired}
+                            setAfterHoursPickUpTimeRequired={setAfterHoursPickUpTimeRequired}
+                            beforeHoursPickUpTimeRequired={beforeHoursPickUpTimeRequired}
+                            setBeforeHoursPickUpTimeRequired={setBeforeHoursPickUpTimeRequired}
+                            earlyDropOffTimeRequired={earlyDropOffTimeRequired}
+                            setEarlyDropOffTimeRequired={setEarlyDropOffTimeRequired}
+                            afterHoursDropOffTimeRequired={afterHoursDropOffTimeRequired}
+                            setAfterHoursDropOffTimeRequired={setAfterHoursDropOffTimeRequired}
+                            daysOfWeek={daysOfWeek}
+                            timeOptions={timeOptions}
+                            collapsedDays={collapsedDays}
+                            setCollapsedDays={setCollapsedDays}
+                            noDaycareDays={noDaycareDays}
+                            setNoDaycareDays={setNoDaycareDays}
+                            noBoardingDays={noBoardingDays}
+                            setNoBoardingDays={setNoBoardingDays}
+                            noAssessmentDays={noAssessmentDays}
+                            setNoAssessmentDays={setNoAssessmentDays}
+                            noAfterHoursDays={noAfterHoursDays}
+                            setNoAfterHoursDays={setNoAfterHoursDays}
+                            noBeforeHoursPickUpDays={noBeforeHoursPickUpDays}
+                            setNoBeforeHoursPickUpDays={setNoBeforeHoursPickUpDays}
+                            noEarlyDropOffDays={noEarlyDropOffDays}
+                            setNoEarlyDropOffDays={setNoEarlyDropOffDays}
+                            noAfterHoursDropOffDays={noAfterHoursDropOffDays}
+                            setNoAfterHoursDropOffDays={setNoAfterHoursDropOffDays}
+                            dropOffTimesDaycare={dropOffTimesDaycare}
+                            pickUpTimesDaycare={pickUpTimesDaycare}
+                            dropOffTimesBoarding={dropOffTimesBoarding}
+                            pickUpTimesBoarding={pickUpTimesBoarding}
+                            assessmentDropOffTimes={assessmentDropOffTimes}
+                            setAssessmentDropOffTimes={setAssessmentDropOffTimes}
+                            assessmentPickUpTimes={assessmentPickUpTimes}
+                            setAssessmentPickUpTimes={setAssessmentPickUpTimes}
+                            afterHoursPickUpTimes={afterHoursPickUpTimes}
+                            beforeHoursPickUpTimes={beforeHoursPickUpTimes}
+                            earlyDropOffTimes={earlyDropOffTimes}
+                            afterHoursDropOffTimes={afterHoursDropOffTimes}
+                            onToggleDayTime={toggleDayTime}
+                            onToggleAfterHoursTime={toggleAfterHoursTime}
+                            onToggleBeforeHoursPickupTime={toggleBeforeHoursPickupTime}
+                            onToggleEarlyDropOffTime={toggleEarlyDropOffTime}
+                            onToggleAfterHoursDropOffTime={toggleAfterHoursDropOffTime}
+                        />
+
+                        <WhatToBringSection
+                            visible={offersBoarding}
+                            boardingRequiredItems={boardingRequiredItems}
+                            setBoardingRequiredItems={setBoardingRequiredItems}
+                            boardingProhibitedItems={boardingProhibitedItems}
+                            setBoardingProhibitedItems={setBoardingProhibitedItems}
+                        />
+
+                        <HealthRequirementsSection
+                            requiredVaccinations={requiredVaccinations}
+                            setRequiredVaccinations={setRequiredVaccinations}
+                            requiredTests={requiredTests}
+                            setRequiredTests={setRequiredTests}
+                            temperamentTestRequired={temperamentTestRequired}
+                            setTemperamentTestRequired={setTemperamentTestRequired}
+                        />
+
+                        <WaiverSection
+                            waiverRequired={waiverRequired}
+                            setWaiverRequired={setWaiverRequired}
+                            waiverText={waiverText}
+                            setWaiverText={setWaiverText}
+                        />
+
+                        <OptionalFeaturesSection
+                            optionalFeatures={optionalFeatures}
+                            setOptionalFeatures={setOptionalFeatures}
+                        />
+
+                        <ReviewSaveSection
+                            saveSuccess={saveSuccess}
+                            saving={saving}
+                            onSave={updateSetting}
+                        />
                     </div>
-
-                    <div className="mt-10">
-                        <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-4">
-                            {t('pet_requirements_header')}
-                        </h2>
-
-                        <div className="space-y-1">
-                            <Toggle
-                                label={t('temperament_test_toggle')}
-                                checked={temperamentTestRequired}
-                                onChange={setTemperamentTestRequired}
-                            />
-
-                            {/* ✅ Helper text to clarify downstream behavior */}
-                            <p className="text-xs text-gray-500 ml-8">
-                                {t('temperament_test_helper_text')}
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Waiver */}
-                    <div className="mt-10 space-y-4">
-                        <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center">
-                            {t('waiver_settings_header')}
-                        </h2>
-
-                        <Toggle label={t('require_waiver_toggle')} checked={waiverRequired} onChange={setWaiverRequired} />
-
-                        <div>
-                            <label className="block font-semibold mb-1 text-sm">{t('waiver_text_label')}</label>
-                            <div className="relative">
-                                {waiverText.trim() === '' && (
-                                    <span className="absolute top-2 left-3 text-gray-400 pointer-events-none text-sm">
-                                        {t('waiver_text_placeholder')}
-                                    </span>
-                                )}
-                                <textarea
-                                    className="w-full h-64 border px-3 py-2 rounded resize-none text-sm"
-                                    value={waiverText}
-                                    onChange={(e) => setWaiverText(e.target.value)}
-                                />
-                            </div>
-                        </div>
-
-                        {/* Booking policies (reservation approval settings) */}
-                        <div className="mt-10 space-y-3">
-                            <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-2">
-                                {t('booking_policy_header')}
-                            </h2>
-
-                            <Toggle
-                                label={t('require_daycare_approval_toggle')}
-                                checked={requireDaycareReservationApproval}
-                                onChange={setRequireDaycareReservationApproval}
-                            />
-
-                            <Toggle
-                                label={t('require_boarding_approval_toggle')}
-                                checked={requireBoardingReservationApproval}
-                                onChange={setRequireBoardingReservationApproval}
-                            />
-
-                            {offersBoarding && (
-                                <>
-                                    <Toggle
-                                        label={t('deposit_required_toggle')}
-                                        checked={depositRequired}
-                                        onChange={setDepositRequired}
-                                    />
-
-                                    <p className="text-xs text-gray-500 ml-8">
-                                        {t('deposit_required_helper')}
-                                    </p>
-
-                                    {depositRequired && (
-                                        <div className="ml-8">
-                                            <label className="block font-semibold mb-1 text-sm">
-                                                {t('deposit_amount_label')}
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={depositAmount}
-                                                onChange={(e) => setDepositAmount(e.target.value)}
-                                                placeholder={t('deposit_amount_placeholder')}
-                                                className="w-full border px-3 py-2 rounded text-sm"
-                                            />
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                {t('deposit_amount_helper')}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    <div className="ml-8">
-                                        <label className="block font-semibold mb-1 text-sm">
-                                            {t('cancellation_policy_picker')}
-                                        </label>
-                                        <select
-                                            value={cancellationPolicy}
-                                            onChange={(e) => setCancellationPolicy(e.target.value)}
-                                            className="w-full border px-3 py-2 rounded text-sm"
-                                        >
-                                            {cancellationOptions.map((option) => (
-                                                <option key={option} value={option}>
-                                                    {option === 'No Refund'
-                                                        ? t('cancellation_no_refund')
-                                                        : option === 'Partial Refund'
-                                                            ? t('cancellation_partial_refund')
-                                                            : t('cancellation_full_refund')}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="ml-8 border rounded p-3 bg-gray-50">
-                                        <p className="font-semibold text-sm text-[color:var(--color-accent)]">
-                                            {t('boarding_pricing_rules_card_title')}
-                                        </p>
-                                        <p className="text-xs text-gray-500 mt-1 mb-3">
-                                            {t('boarding_pricing_rules_card_body')}
-                                        </p>
-                                        <button
-                                            type="button"
-                                            onClick={() => router.push(`/${_locale}/boardinganddaycare-payatcheckoutboardingitems`)}
-                                            className="text-sm text-blue-600 underline"
-                                        >
-                                            {t('boarding_pricing_rules_card_button')}
-                                        </button>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-
-                        {/* Booking limits */}
-                        <div className="mt-10">
-                            <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-4">
-                                {t('booking_slot_limits_title')}
-                            </h2>
-
-                            <label className="block font-semibold mb-2 text-sm">{t('max_appointments_picker_label')}</label>
-                            <select
-                                value={maxAppointmentsPerSlot}
-                                onChange={(e) => setMaxAppointmentsPerSlot(Number(e.target.value))}
-                                className="w-full border px-3 py-2 rounded text-sm"
-                            >
-                                {Array.from({ length: 10 }, (_, i) => i + 1).map((val) => (
-                                    <option key={`limit-${val}`} value={val}>
-                                        {val}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {/* Drop/Pick requirement toggles */}
-                        <div className="mt-10">
-                            <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-4">
-                                {t('drop_pick_time_header')}
-                            </h2>
-
-                            {offersDaycare && (
-                                <>
-                                    <Toggle label={t('require_drop_daycare')} checked={dropOffTimeRequiredDaycare} onChange={setDropOffTimeRequiredDaycare} />
-                                    <Toggle label={t('require_pick_daycare')} checked={pickUpTimeRequiredDaycare} onChange={setPickUpTimeRequiredDaycare} />
-                                </>
-                            )}
-
-                            {offersBoarding && (
-                                <>
-                                    <Toggle label={t('require_drop_boarding')} checked={dropOffTimeRequiredBoarding} onChange={setDropOffTimeRequiredBoarding} />
-                                    <Toggle label={t('require_pick_boarding')} checked={pickUpTimeRequiredBoarding} onChange={setPickUpTimeRequiredBoarding} />
-                                </>
-                            )}
-
-                            {requiresAssessment && (
-                                <>
-                                    <Toggle
-                                        label={t('require_drop_assessment')}
-                                        checked={dropOffTimeRequiredAssessment}
-                                        onChange={setDropOffTimeRequiredAssessment}
-                                    />
-                                    <Toggle
-                                        label={t('require_pick_assessment')}
-                                        checked={pickUpTimeRequiredAssessment}
-                                        onChange={setPickUpTimeRequiredAssessment}
-                                    />
-                                </>
-                            )}
-
-                            {/* After-hours requirement */}
-                            {(offersBoarding || offersDaycare) && (
-                                <Toggle
-                                    label={t('require_after_hours_pickup')}
-                                    checked={afterHoursPickUpTimeRequired}
-                                    onChange={setAfterHoursPickUpTimeRequired}
-                                />
-                            )}
-
-                            {offersBoarding && (
-                                <>
-                                    <p className="text-xs text-gray-500 ml-8">
-                                        {t('boarding_regular_hours_helper')}
-                                    </p>
-
-                                    <Toggle
-                                        label={t('require_before_hours_pickup')}
-                                        checked={beforeHoursPickUpTimeRequired}
-                                        onChange={setBeforeHoursPickUpTimeRequired}
-                                    />
-                                    <p className="text-xs text-gray-500 ml-8">
-                                        {t('before_hours_pickup_helper')}
-                                    </p>
-
-                                    <Toggle
-                                        label={t('require_early_dropoff')}
-                                        checked={earlyDropOffTimeRequired}
-                                        onChange={setEarlyDropOffTimeRequired}
-                                    />
-                                    <p className="text-xs text-gray-500 ml-8">
-                                        {t('early_dropoff_helper')}
-                                    </p>
-
-                                    <Toggle
-                                        label={t('require_after_hours_dropoff')}
-                                        checked={afterHoursDropOffTimeRequired}
-                                        onChange={setAfterHoursDropOffTimeRequired}
-                                    />
-                                    <p className="text-xs text-gray-500 ml-8">
-                                        {t('after_hours_dropoff_helper')}
-                                    </p>
-                                </>
-                            )}
-
-                            {/* Daycare time maps */}
-                            {offersDaycare && dropOffTimeRequiredDaycare && (
-                                <div className="mt-10">
-                                    <h3 className="text-lg font-semibold mb-2 text-center">{t('daycare_drop_times')}</h3>
-                                    {daysOfWeek.map((day) => (
-                                        <div key={`ddo-${day}`} className="mb-6">
-                                            <Toggle
-                                                label={`${t('no_daycare_day')} ${day}`}
-                                                checked={noDaycareDays.has(day)}
-                                                onChange={(val) => {
-                                                    const updated = new Set(noDaycareDays);
-                                                    if (val) {
-                                                        updated.add(day);
-                                                    } else {
-                                                        updated.delete(day);
-                                                    }
-                                                    setNoDaycareDays(updated);
-                                                }}
-                                            />
-                                            {!noDaycareDays.has(day) && (
-                                                <div className="mt-2 space-y-1">
-                                                    <button
-                                                        className="text-sm text-blue-600 underline"
-                                                        onClick={() =>
-                                                            setCollapsedDays((prev) => ({ ...prev, [`${day}-daycare-drop`]: !prev[`${day}-daycare-drop`] }))
-                                                        }
-                                                    >
-                                                        {collapsedDays[`${day}-daycare-drop`] ? t('expand') : t('collapse')}
-                                                    </button>
-                                                    {!collapsedDays[`${day}-daycare-drop`] &&
-                                                        timeOptions.map((time, i) => (
-                                                            <Toggle
-                                                                key={`ddo-${day}-${time}-${i}`}
-                                                                label={time}
-                                                                checked={(dropOffTimesDaycare[day] || []).includes(time)}
-                                                                onChange={() => toggleDayTime('dropOff', 'daycare', day, time)}
-                                                            />
-                                                        ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            {offersDaycare && pickUpTimeRequiredDaycare && (
-                                <div className="mt-10">
-                                    <h3 className="text-lg font-semibold mb-2 text-center">{t('daycare_pickup_times')}</h3>
-                                    {daysOfWeek.map((day) => (
-                                        <div key={`dpu-${day}`} className="mb-6">
-                                            {!noDaycareDays.has(day) && (
-                                                <div className="mt-2 space-y-1">
-                                                    <button
-                                                        className="text-sm text-blue-600 underline"
-                                                        onClick={() =>
-                                                            setCollapsedDays((prev) => ({ ...prev, [`${day}-daycare-pickup`]: !prev[`${day}-daycare-pickup`] }))
-                                                        }
-                                                    >
-                                                        {collapsedDays[`${day}-daycare-pickup`] ? t('expand') : t('collapse')}
-                                                    </button>
-                                                    {!collapsedDays[`${day}-daycare-pickup`] &&
-                                                        timeOptions.map((time, i) => (
-                                                            <Toggle
-                                                                key={`dpu-${day}-${time}-${i}`}
-                                                                label={time}
-                                                                checked={(pickUpTimesDaycare[day] || []).includes(time)}
-                                                                onChange={() => toggleDayTime('pickUp', 'daycare', day, time)}
-                                                            />
-                                                        ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            {/* Boarding time maps */}
-                            {offersBoarding && dropOffTimeRequiredBoarding && (
-                                <div className="mt-10">
-                                    <h3 className="text-lg font-semibold mb-2 text-center">{t('boarding_drop_times')}</h3>
-                                    {daysOfWeek.map((day) => (
-                                        <div key={`bdo-${day}`} className="mb-6">
-                                            <Toggle
-                                                label={`${t('no_boarding_day')} ${day}`}
-                                                checked={noBoardingDays.has(day)}
-                                                onChange={(val) => {
-                                                    const updated = new Set(noBoardingDays);
-                                                    if (val) {
-                                                        updated.add(day);
-                                                    } else {
-                                                        updated.delete(day);
-                                                    }
-                                                    setNoBoardingDays(updated);
-                                                }}
-                                            />
-                                            {!noBoardingDays.has(day) && (
-                                                <div className="mt-2 space-y-1">
-                                                    <p className="font-semibold text-sm text-[color:var(--color-foreground)] mb-1">{day}</p>
-                                                    <button
-                                                        className="text-sm text-blue-600 underline"
-                                                        onClick={() =>
-                                                            setCollapsedDays((prev) => ({ ...prev, [`${day}-boarding-drop`]: !prev[`${day}-boarding-drop`] }))
-                                                        }
-                                                    >
-                                                        {collapsedDays[`${day}-boarding-drop`] ? t('expand') : t('collapse')}
-                                                    </button>
-                                                    {!collapsedDays[`${day}-boarding-drop`] &&
-                                                        timeOptions.map((time, i) => (
-                                                            <Toggle
-                                                                key={`bdo-${day}-${time}-${i}`}
-                                                                label={time}
-                                                                checked={(dropOffTimesBoarding[day] || []).includes(time)}
-                                                                onChange={() => toggleDayTime('dropOff', 'boarding', day, time)}
-                                                            />
-                                                        ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            {offersBoarding && pickUpTimeRequiredBoarding && (
-                                <div className="mt-10">
-                                    <h3 className="text-lg font-semibold mb-2 text-center">{t('boarding_pickup_times')}</h3>
-                                    {daysOfWeek.map((day) => (
-                                        <div key={`bpu-${day}`} className="mb-6">
-                                            {!noBoardingDays.has(day) && (
-                                                <div className="mt-2 space-y-1">
-                                                    <p className="font-semibold text-sm text-[color:var(--color-foreground)] mb-1">{day}</p>
-                                                    <button
-                                                        className="text-sm text-blue-600 underline"
-                                                        onClick={() =>
-                                                            setCollapsedDays((prev) => ({ ...prev, [`${day}-boarding-pickup`]: !prev[`${day}-boarding-pickup`] }))
-                                                        }
-                                                    >
-                                                        {collapsedDays[`${day}-boarding-pickup`] ? t('expand') : t('collapse')}
-                                                    </button>
-                                                    {!collapsedDays[`${day}-boarding-pickup`] &&
-                                                        timeOptions.map((time, i) => (
-                                                            <Toggle
-                                                                key={`bpu-${day}-${time}-${i}`}
-                                                                label={time}
-                                                                checked={(pickUpTimesBoarding[day] || []).includes(time)}
-                                                                onChange={() => toggleDayTime('pickUp', 'boarding', day, time)}
-                                                            />
-                                                        ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            {/* After Hours Time Settings */}
-                            {afterHoursPickUpTimeRequired && (
-                                <div className="mt-10">
-                                    <h3 className="text-lg font-semibold mb-2 text-center">{t('after_hours_time_settings_title')}</h3>
-                                    <p className="text-sm text-center mb-2">{t('after_hours_pickup_times')}</p>
-                                    <p className="text-xs text-gray-500 text-center mb-4">
-                                        {t('after_hours_pickup_times_helper')}
-                                    </p>
-
-                                    {daysOfWeek.map((day) => (
-                                        <div key={`ah-${day}`} className="mb-6">
-                                            <Toggle
-                                                label={`${t('no_after_hours_day')} ${day}`}
-                                                checked={noAfterHoursDays.has(day)}
-                                                onChange={(val) => {
-                                                    const updated = new Set(noAfterHoursDays);
-                                                    if (val) {
-                                                        updated.add(day);
-                                                    } else {
-                                                        updated.delete(day);
-                                                    }
-                                                    setNoAfterHoursDays(updated);
-                                                }}
-                                            />
-
-                                            {!noAfterHoursDays.has(day) && (
-                                                <div className="mt-2 space-y-1">
-                                                    <p className="font-semibold text-sm text-[color:var(--color-foreground)] mb-1">{day}</p>
-                                                    <button
-                                                        className="text-sm text-blue-600 underline"
-                                                        onClick={() =>
-                                                            setCollapsedDays((prev) => ({ ...prev, [`${day}-afterhours-pickup`]: !prev[`${day}-afterhours-pickup`] }))
-                                                        }
-                                                    >
-                                                        {collapsedDays[`${day}-afterhours-pickup`] ? t('expand') : t('collapse')}
-                                                    </button>
-
-                                                    {!collapsedDays[`${day}-afterhours-pickup`] &&
-                                                        timeOptions.map((time, i) => (
-                                                            <Toggle
-                                                                key={`ah-${day}-${time}-${i}`}
-                                                                label={time}
-                                                                checked={(afterHoursPickUpTimes[day] || []).includes(time)}
-                                                                onChange={() => toggleAfterHoursTime(day, time)}
-                                                            />
-                                                        ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            {offersBoarding && beforeHoursPickUpTimeRequired && (
-                                <div className="mt-10">
-                                    <h3 className="text-lg font-semibold mb-2 text-center">{t('before_hours_pickup_times_title')}</h3>
-                                    <p className="text-sm text-center mb-2">{t('before_hours_pickup_times')}</p>
-                                    <p className="text-xs text-gray-500 text-center mb-4">
-                                        {t('before_hours_pickup_times_helper')}
-                                    </p>
-
-                                    {daysOfWeek.map((day) => (
-                                        <div key={`bhp-${day}`} className="mb-6">
-                                            <Toggle
-                                                label={`${t('no_before_hours_pickup_day')} ${day}`}
-                                                checked={noBeforeHoursPickUpDays.has(day)}
-                                                onChange={(val) => {
-                                                    const updated = new Set(noBeforeHoursPickUpDays);
-                                                    if (val) {
-                                                        updated.add(day);
-                                                    } else {
-                                                        updated.delete(day);
-                                                    }
-                                                    setNoBeforeHoursPickUpDays(updated);
-                                                }}
-                                            />
-
-                                            {!noBeforeHoursPickUpDays.has(day) && (
-                                                <div className="mt-2 space-y-1">
-                                                    <p className="font-semibold text-sm text-[color:var(--color-foreground)] mb-1">{day}</p>
-                                                    <button
-                                                        className="text-sm text-blue-600 underline"
-                                                        onClick={() =>
-                                                            setCollapsedDays((prev) => ({ ...prev, [`${day}-beforehours-pickup`]: !prev[`${day}-beforehours-pickup`] }))
-                                                        }
-                                                    >
-                                                        {collapsedDays[`${day}-beforehours-pickup`] ? t('expand') : t('collapse')}
-                                                    </button>
-                                                    {!collapsedDays[`${day}-beforehours-pickup`] &&
-                                                        timeOptions.map((time, i) => (
-                                                            <Toggle
-                                                                key={`bhp-${day}-${time}-${i}`}
-                                                                label={time}
-                                                                checked={(beforeHoursPickUpTimes[day] || []).includes(time)}
-                                                                onChange={() => toggleSpecialWindowTime(beforeHoursPickUpTimes, setBeforeHoursPickUpTimes, day, time)}
-                                                            />
-                                                        ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            {offersBoarding && earlyDropOffTimeRequired && (
-                                <div className="mt-10">
-                                    <h3 className="text-lg font-semibold mb-2 text-center">{t('early_dropoff_times_title')}</h3>
-                                    <p className="text-sm text-center mb-2">{t('early_dropoff_times')}</p>
-                                    <p className="text-xs text-gray-500 text-center mb-4">
-                                        {t('early_dropoff_times_helper')}
-                                    </p>
-
-                                    {daysOfWeek.map((day) => (
-                                        <div key={`edo-${day}`} className="mb-6">
-                                            <Toggle
-                                                label={`${t('no_early_dropoff_day')} ${day}`}
-                                                checked={noEarlyDropOffDays.has(day)}
-                                                onChange={(val) => {
-                                                    const updated = new Set(noEarlyDropOffDays);
-                                                    if (val) {
-                                                        updated.add(day);
-                                                    } else {
-                                                        updated.delete(day);
-                                                    }
-                                                    setNoEarlyDropOffDays(updated);
-                                                }}
-                                            />
-
-                                            {!noEarlyDropOffDays.has(day) && (
-                                                <div className="mt-2 space-y-1">
-                                                    <p className="font-semibold text-sm text-[color:var(--color-foreground)] mb-1">{day}</p>
-                                                    <button
-                                                        className="text-sm text-blue-600 underline"
-                                                        onClick={() =>
-                                                            setCollapsedDays((prev) => ({ ...prev, [`${day}-early-dropoff`]: !prev[`${day}-early-dropoff`] }))
-                                                        }
-                                                    >
-                                                        {collapsedDays[`${day}-early-dropoff`] ? t('expand') : t('collapse')}
-                                                    </button>
-                                                    {!collapsedDays[`${day}-early-dropoff`] &&
-                                                        timeOptions.map((time, i) => (
-                                                            <Toggle
-                                                                key={`edo-${day}-${time}-${i}`}
-                                                                label={time}
-                                                                checked={(earlyDropOffTimes[day] || []).includes(time)}
-                                                                onChange={() => toggleSpecialWindowTime(earlyDropOffTimes, setEarlyDropOffTimes, day, time)}
-                                                            />
-                                                        ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            {offersBoarding && afterHoursDropOffTimeRequired && (
-                                <div className="mt-10">
-                                    <h3 className="text-lg font-semibold mb-2 text-center">{t('after_hours_dropoff_times_title')}</h3>
-                                    <p className="text-sm text-center mb-2">{t('after_hours_dropoff_times')}</p>
-                                    <p className="text-xs text-gray-500 text-center mb-4">
-                                        {t('after_hours_dropoff_times_helper')}
-                                    </p>
-
-                                    {daysOfWeek.map((day) => (
-                                        <div key={`ahd-${day}`} className="mb-6">
-                                            <Toggle
-                                                label={`${t('no_after_hours_dropoff_day')} ${day}`}
-                                                checked={noAfterHoursDropOffDays.has(day)}
-                                                onChange={(val) => {
-                                                    const updated = new Set(noAfterHoursDropOffDays);
-                                                    if (val) {
-                                                        updated.add(day);
-                                                    } else {
-                                                        updated.delete(day);
-                                                    }
-                                                    setNoAfterHoursDropOffDays(updated);
-                                                }}
-                                            />
-
-                                            {!noAfterHoursDropOffDays.has(day) && (
-                                                <div className="mt-2 space-y-1">
-                                                    <p className="font-semibold text-sm text-[color:var(--color-foreground)] mb-1">{day}</p>
-                                                    <button
-                                                        className="text-sm text-blue-600 underline"
-                                                        onClick={() =>
-                                                            setCollapsedDays((prev) => ({ ...prev, [`${day}-afterhours-dropoff`]: !prev[`${day}-afterhours-dropoff`] }))
-                                                        }
-                                                    >
-                                                        {collapsedDays[`${day}-afterhours-dropoff`] ? t('expand') : t('collapse')}
-                                                    </button>
-                                                    {!collapsedDays[`${day}-afterhours-dropoff`] &&
-                                                        timeOptions.map((time, i) => (
-                                                            <Toggle
-                                                                key={`ahd-${day}-${time}-${i}`}
-                                                                label={time}
-                                                                checked={(afterHoursDropOffTimes[day] || []).includes(time)}
-                                                                onChange={() => toggleSpecialWindowTime(afterHoursDropOffTimes, setAfterHoursDropOffTimes, day, time)}
-                                                            />
-                                                        ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Assessment Time Settings */}
-                        {requiresAssessment && (dropOffTimeRequiredAssessment || pickUpTimeRequiredAssessment) && (
-                            <div className="mt-10">
-                                <h3 className="text-lg font-semibold mb-2 text-center">
-                                    {t('assessment_time_settings_title')}
-                                </h3>
-
-                                {/* Assessment Drop-Off Times */}
-                                {dropOffTimeRequiredAssessment && (
-                                    <div className="mt-6">
-                                        <h4 className="font-semibold text-center mb-2">
-                                            {t('assessment_drop_times')}
-                                        </h4>
-
-                                        {daysOfWeek.map((day) => (
-                                            <div key={`ado-${day}`} className="mb-6">
-                                                <Toggle
-                                                    label={`${t('no_assessment_day')} ${day}`}
-                                                    checked={noAssessmentDays.has(day)}
-                                                    onChange={(val) => {
-                                                        const updated = new Set(noAssessmentDays);
-                                                        if (val) {
-                                                            updated.add(day);
-                                                            setAssessmentDropOffTimes(prev => ({ ...prev, [day]: [] }));
-                                                        } else {
-                                                            updated.delete(day);
-                                                        }
-                                                        setNoAssessmentDays(updated);
-                                                    }}
-                                                />
-
-                                                {!noAssessmentDays.has(day) && (
-                                                    <div className="mt-2 space-y-1">
-                                                        <button
-                                                            className="text-sm text-blue-600 underline"
-                                                            onClick={() =>
-                                                                setCollapsedDays(prev => ({
-                                                                    ...prev,
-                                                                    [`${day}-assessment-drop`]: !prev[`${day}-assessment-drop`],
-                                                                }))
-                                                            }
-                                                        >
-                                                            {collapsedDays[`${day}-assessment-drop`] ? t('expand') : t('collapse')}
-                                                        </button>
-
-                                                        {!collapsedDays[`${day}-assessment-drop`] &&
-                                                            timeOptions.map((time, i) => (
-                                                                <Toggle
-                                                                    key={`ado-${day}-${time}-${i}`}
-                                                                    label={time}
-                                                                    checked={(assessmentDropOffTimes[day] || []).includes(time)}
-                                                                    onChange={() => {
-                                                                        const current = assessmentDropOffTimes[day] || [];
-                                                                        const updated = current.includes(time)
-                                                                            ? current.filter(t => t !== time)
-                                                                            : [...current, time];
-                                                                        setAssessmentDropOffTimes(prev => ({ ...prev, [day]: updated }));
-                                                                    }}
-                                                                />
-                                                            ))}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-
-                                {/* Assessment Pick-Up Times */}
-                                {pickUpTimeRequiredAssessment && (
-                                    <div className="mt-10">
-                                        <h4 className="font-semibold text-center mb-2">
-                                            {t('assessment_pickup_times')}
-                                        </h4>
-
-                                        {daysOfWeek.map((day) => (
-                                            <div key={`apu-${day}`} className="mb-6">
-                                                {!noAssessmentDays.has(day) && (
-                                                    <div className="mt-2 space-y-1">
-                                                        <button
-                                                            className="text-sm text-blue-600 underline"
-                                                            onClick={() =>
-                                                                setCollapsedDays(prev => ({
-                                                                    ...prev,
-                                                                    [`${day}-assessment-pickup`]: !prev[`${day}-assessment-pickup`],
-                                                                }))
-                                                            }
-                                                        >
-                                                            {collapsedDays[`${day}-assessment-pickup`] ? t('expand') : t('collapse')}
-                                                        </button>
-
-                                                        {!collapsedDays[`${day}-assessment-pickup`] &&
-                                                            timeOptions.map((time, i) => (
-                                                                <Toggle
-                                                                    key={`apu-${day}-${time}-${i}`}
-                                                                    label={time}
-                                                                    checked={(assessmentPickUpTimes[day] || []).includes(time)}
-                                                                    onChange={() => {
-                                                                        const current = assessmentPickUpTimes[day] || [];
-                                                                        const updated = current.includes(time)
-                                                                            ? current.filter(t => t !== time)
-                                                                            : [...current, time];
-                                                                        setAssessmentPickUpTimes(prev => ({ ...prev, [day]: updated }));
-                                                                    }}
-                                                                />
-                                                            ))}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {/* Optional feature toggles */}
-                        <div className="mt-10">
-                            <h2 className="text-xl font-semibold text-[color:var(--color-accent)] text-center mb-4">
-                                {t('optional_features_header')}
-                            </h2>
-                            <Toggle
-                                label={t('employee_management_toggle')}
-                                checked={optionalFeatures.employeeManagement}
-                                onChange={(val) => setOptionalFeatures((prev) => ({ ...prev, employeeManagement: val }))}
-                            />
-                            <Toggle
-                                label={t('state_paperwork_toggle')}
-                                checked={optionalFeatures.statePaperworkLog}
-                                onChange={(val) => setOptionalFeatures((prev) => ({ ...prev, statePaperworkLog: val }))}
-                            />
-                            <Toggle
-                                label={t('enable_financial_management')}
-                                checked={optionalFeatures.financialManagement}
-                                onChange={(val) => setOptionalFeatures((prev) => ({ ...prev, financialManagement: val }))}
-                            />
-                        </div>
-
-                        {/* Save */}
-                        {saveSuccess && (
-                            <div className="w-full bg-green-600 text-white text-center py-2 rounded mb-3 text-sm font-medium">
-                                Changes are saved
-                            </div>
-                        )}
-
-                        <button
-                            onClick={updateSetting}
-                            disabled={saving}
-                            className="block w-full bg-[#2c4a30] text-white px-4 py-3 rounded mt-6 text-sm hover:bg-[#1e3624] transition"
-                        >
-                            {saving ? t('saving') : t('save_changes_button')}
-                        </button>
-                    </div>
-                </>
+                </div>
             )}
         </div>
-    );
-}
-
-// ✓ Define Toggle OUTSIDE the component (and close it properly)
-function Toggle({
-    label,
-    checked,
-    onChange,
-}: {
-    label: string;
-    checked: boolean;
-    onChange: (val: boolean) => void;
-}) {
-    return (
-        <label className="flex items-center gap-3 text-sm">
-            <input
-                type="checkbox"
-                checked={checked}
-                onChange={(e) => onChange(e.target.checked)}
-                className="accent-[#2c4a30] w-5 h-5"
-            />
-            <span>{label}</span>
-        </label>
     );
 }

@@ -31,6 +31,11 @@ import {
   DataSnapshot,
 } from 'firebase/database';
 import { set } from 'firebase/database';
+import {
+  getDogKennelPreferenceFromData,
+  normalizeKennelTypeOption,
+  type KennelTypeOption,
+} from '@/lib/boardingKennels';
 
 /** =========================
  *  Firebase init (guarded)
@@ -70,6 +75,13 @@ type Dog = {
   isAssessment: boolean;
   currentFood?: string | null;
   feedingAmount?: string | null;
+};
+
+type DogAssessmentStatus = {
+  bathSize: string;
+  kennelTypeId: string;
+  kennelTypeName: string;
+  loaded: boolean;
 };
 
 type FilterType = 'Daycare' | 'Boarding' | 'Grooming';
@@ -126,6 +138,21 @@ const normalizeBathSize = (raw: string | null | undefined): string => {
   if (v === 'xl') return 'XL';
   if (v === 'xxl') return 'XXL';
   return '';
+};
+
+const buildDogAssessmentStatus = (
+  data: Record<string, unknown> | null | undefined
+): DogAssessmentStatus => {
+  const directBathSize = normalizeBathSize((data?.bathSize as string) || '');
+  const notesBathSize = normalizeBathSize(parseBathSizeFromNotesText((data?.notes as string) || ''));
+  const kennelPreference = data ? getDogKennelPreferenceFromData(data) : null;
+
+  return {
+    bathSize: directBathSize || notesBathSize,
+    kennelTypeId: kennelPreference?.defaultKennelTypeId || '',
+    kennelTypeName: kennelPreference?.defaultKennelTypeName || '',
+    loaded: true,
+  };
 };
 
 const isBathLikeService = (service: string): boolean => {
@@ -217,6 +244,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
   const [assessmentDog, setAssessmentDog] = useState<Dog | null>(null);
   const [assessmentNotes, setAssessmentNotes] = useState('');
   const [assessmentBathSize, setAssessmentBathSize] = useState('');
+  const [assessmentKennelTypeId, setAssessmentKennelTypeId] = useState('');
   const [assessmentLoading, setAssessmentLoading] = useState(false);
   const [assessmentError, setAssessmentError] = useState<string | null>(null);
   const [assessmentSaveMsg, setAssessmentSaveMsg] = useState<string | null>(null);
@@ -230,6 +258,28 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
 
   /** -------- Business Grooming Services (Dynamic From Firestore) -------- */
   const [availableGroomingServices, setAvailableGroomingServices] = useState<string[]>([]);
+  const [availableKennelTypes, setAvailableKennelTypes] = useState<KennelTypeOption[]>([]);
+  const [assessmentStatusByDogId, setAssessmentStatusByDogId] = useState<Record<string, DogAssessmentStatus>>({});
+
+  const dogAssessmentKeys = useMemo(
+    () => dogs.map((dog) => `${dog.id}:${dog.dogId || ''}`).sort().join('|'),
+    [dogs]
+  );
+  const dogAssessmentTargets = useMemo(
+    () => dogAssessmentKeys
+      .split('|')
+      .filter(Boolean)
+      .map((entry) => {
+        const [rowId, rawDogId = ''] = entry.split(':');
+        const canonicalDogId = (rawDogId || rowId || '').trim();
+        return {
+          rowId,
+          canonicalDogId,
+          legacyDogId: rowId.trim(),
+        };
+      }),
+    [dogAssessmentKeys]
+  );
 
   /** Auth + businessId resolution */
   useEffect(() => {
@@ -259,12 +309,22 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
         setBusinessIdSanitized(sanitized);
 
         // Load grooming services for this business (same behavior as iOS)
-        const groomingRef = doc(db, 'businesses', rawId);
-        const groomingSnap = await getDoc(groomingRef);
-        const data = groomingSnap.data();
+        const [businessSnap, kennelSnapshot] = await Promise.all([
+          getDoc(doc(db, 'businesses', rawId)),
+          getDocs(collection(db, 'businesses', rawId, 'kennelTypes')),
+        ]);
+        const data = businessSnap.data();
         const services = (data?.groomingServices as string[]) || [];
+        const kennelTypes = kennelSnapshot.docs
+          .map((kennelDoc) => normalizeKennelTypeOption(
+            kennelDoc.id,
+            kennelDoc.data() as Record<string, unknown>
+          ))
+          .filter((kennelType): kennelType is KennelTypeOption => kennelType !== null)
+          .sort((a, b) => a.name.localeCompare(b.name));
 
         setAvailableGroomingServices(services);
+        setAvailableKennelTypes(kennelTypes);
 
       } catch (e) {
         console.error('❌ Business lookup failed:', e);
@@ -386,6 +446,62 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
       }
     };
   }, [businessIdSanitized, businessIdRaw, t]);
+
+  /** Load lightweight assessment status for row indicators */
+  useEffect(() => {
+    if (!businessIdRaw) {
+      setAssessmentStatusByDogId({});
+      return;
+    }
+
+    if (!dogAssessmentTargets.length) {
+      setAssessmentStatusByDogId({});
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadAssessmentStatuses = async () => {
+      try {
+        const entries = await Promise.all(dogAssessmentTargets.map(async (dog) => {
+          const canonicalDogId = dog.canonicalDogId;
+          const legacyDogId = dog.legacyDogId;
+
+          if (!canonicalDogId) {
+            return [dog.rowId, buildDogAssessmentStatus(null)] as const;
+          }
+
+          const primaryRef = doc(db, 'dogAssessments', canonicalDogId, 'businesses', businessIdRaw);
+          const primarySnap = await getDoc(primaryRef);
+
+          let snap = primarySnap;
+          if (!snap.exists() && legacyDogId && legacyDogId !== canonicalDogId) {
+            const legacyRef = doc(db, 'dogAssessments', legacyDogId, 'businesses', businessIdRaw);
+            snap = await getDoc(legacyRef);
+          }
+
+          return [
+            dog.rowId,
+            buildDogAssessmentStatus(
+              snap.exists() ? (snap.data() as Record<string, unknown>) : null
+            ),
+          ] as const;
+        }));
+
+        if (!cancelled) {
+          setAssessmentStatusByDogId(Object.fromEntries(entries));
+        }
+      } catch (e) {
+        console.error('❌ load assessment statuses failed:', e);
+      }
+    };
+
+    void loadAssessmentStatuses();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [businessIdRaw, dogAssessmentTargets]);
 
   /** Filtering — now sorted alphabetically by dog name (A–Z) */
   const filteredDogs = useMemo(() => {
@@ -607,6 +723,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
       setAssessmentDog(dog);
       setAssessmentNotes('');
       setAssessmentBathSize('');
+      setAssessmentKennelTypeId('');
       setAssessmentError(null);
       setAssessmentSaveMsg(null);
       setAssessmentLoading(true);
@@ -629,9 +746,12 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
         setAssessmentNotes((data?.notes as string) || '');
         const directBathSize = (data?.bathSize as string) || '';
         setAssessmentBathSize(directBathSize || parseBathSizeFromNotesText((data?.notes as string) || ''));
+        const kennelPreference = getDogKennelPreferenceFromData(data as Record<string, unknown>);
+        setAssessmentKennelTypeId(kennelPreference?.defaultKennelTypeId || '');
       } else {
         setAssessmentNotes('');
         setAssessmentBathSize('');
+        setAssessmentKennelTypeId('');
       }
     } catch (e) {
       console.error('❌ load assessment failed:', e);
@@ -654,6 +774,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
     setAssessmentDog(null);
     setAssessmentNotes('');
     setAssessmentBathSize('');
+    setAssessmentKennelTypeId('');
     setAssessmentError(null);
     setAssessmentSaveMsg(null);
   }, []);
@@ -669,15 +790,29 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
       const trimmed = assessmentNotes.slice(0, 2000);
       const canonicalDogId = (assessmentDog.dogId || assessmentDog.id || '').trim();
       const ref = doc(db, 'dogAssessments', canonicalDogId, 'businesses', businessIdRaw);
+      const selectedKennelType = availableKennelTypes.find((kennelType) => (
+        kennelType.id === assessmentKennelTypeId
+      ));
       const payload: Record<string, unknown> = {
         dogId: canonicalDogId,
         notes: trimmed,
         bathSize: assessmentBathSize.trim(),
+        defaultKennelTypeId: selectedKennelType?.id || '',
+        defaultKennelTypeName: selectedKennelType?.name || '',
         lastUpdated: serverTimestamp(),
       };
       if (auth.currentUser.email) payload.updatedBy = auth.currentUser.email;
 
       await setDoc(ref, payload, { merge: true });
+      setAssessmentStatusByDogId((prev) => ({
+        ...prev,
+        [assessmentDog.id]: {
+          bathSize: normalizeBathSize(assessmentBathSize),
+          kennelTypeId: selectedKennelType?.id || '',
+          kennelTypeName: selectedKennelType?.name || '',
+          loaded: true,
+        },
+      }));
       setAssessmentSaveMsg('✅ Saved.');
       setAssessmentError(null);
     } catch (e) {
@@ -685,7 +820,14 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
       setAssessmentError('Failed to save.');
       setAssessmentSaveMsg(null);
     }
-  }, [assessmentDog, assessmentNotes, assessmentBathSize, businessIdRaw]);
+  }, [
+    assessmentBathSize,
+    assessmentDog,
+    assessmentKennelTypeId,
+    assessmentNotes,
+    availableKennelTypes,
+    businessIdRaw,
+  ]);
 
   /** UI */
   return (
@@ -781,6 +923,9 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
           <div className="space-y-3">
             {filteredDogs.map((dog, idx) => {
               const expandedRow = expanded.has(dog.id);
+              const assessmentStatus = assessmentStatusByDogId[dog.id];
+              const showBathMissingIndicator = !!assessmentStatus?.loaded && !assessmentStatus.bathSize;
+              const showKennelMissingIndicator = !!assessmentStatus?.loaded && !assessmentStatus.kennelTypeId;
               return (
                 <div key={`${dog.id}-${idx}`} className="rounded-xl border border-[color:var(--color-accent)] bg-white">
                   {/* Header row (tap to expand) */}
@@ -804,6 +949,24 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
                         )}
                         {hasAllergies(dog) && <span title={t('allergies_label')}>⚠️</span>}
                         {hasGrooming(dog) && <span title={t('grooming_services_label')}>✂️</span>}
+
+                        {showBathMissingIndicator && (
+                          <span
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-amber-200 bg-amber-100 text-amber-800 text-[10px] font-semibold"
+                            title={t('bath_size_missing_label')}
+                          >
+                            ! {t('bath_size_missing_indicator')}
+                          </span>
+                        )}
+
+                        {showKennelMissingIndicator && (
+                          <span
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-amber-200 bg-amber-100 text-amber-800 text-[10px] font-semibold"
+                            title={t('kennel_type_missing_label')}
+                          >
+                            ! {t('kennel_type_missing_indicator')}
+                          </span>
+                        )}
 
                         {dog.isAssessment && (
                           <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 text-[10px] font-bold">
@@ -893,6 +1056,21 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
                             {dog.groomingAddOns.join(', ')}
                           </div>
                         )}
+
+                        {(showBathMissingIndicator || showKennelMissingIndicator) && (
+                          <div className="pt-1 space-y-1">
+                            {showBathMissingIndicator && (
+                              <div className="text-[12px] font-medium text-amber-700">
+                                {t('bath_size_missing_label')}
+                              </div>
+                            )}
+                            {showKennelMissingIndicator && (
+                              <div className="text-[12px] font-medium text-amber-700">
+                                {t('kennel_type_missing_label')}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       <div className="mt-3 flex gap-2">
@@ -973,7 +1151,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
 
                   <div className="mb-3">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Bath Size
+                      {t('bath_size_label')}
                     </label>
                     <select
                       value={assessmentBathSize}
@@ -989,6 +1167,30 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
                     </select>
                   </div>
 
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {t('kennel_type_label')}
+                    </label>
+                    <select
+                      value={assessmentKennelTypeId}
+                      onChange={(e) => setAssessmentKennelTypeId(e.target.value)}
+                      className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:ring-2 focus:ring-blue-200"
+                      disabled={availableKennelTypes.length === 0}
+                    >
+                      <option value="">{t('kennel_type_not_set')}</option>
+                      {availableKennelTypes.map((kennelType) => (
+                        <option key={kennelType.id} value={kennelType.id}>
+                          {kennelType.name}
+                        </option>
+                      ))}
+                    </select>
+                    {availableKennelTypes.length === 0 && (
+                      <p className="mt-1 text-xs text-gray-500">
+                        {t('kennel_type_no_options')}
+                      </p>
+                    )}
+                  </div>
+
                   <textarea
                     value={assessmentNotes}
                     onChange={(e) => {
@@ -996,7 +1198,7 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
                       setAssessmentNotes(next);
                     }}
                     className="w-full min-h-[180px] rounded-lg border border-gray-300 p-3 text-sm outline-none focus:ring-2 focus:ring-blue-200"
-                    placeholder="Write assessment notes..."
+                    placeholder={t('assessment_notes_placeholder')}
                   />
 
                   <div className="mt-1 text-xs text-gray-500">{assessmentNotes.length} / 2000</div>
@@ -1017,10 +1219,10 @@ export default function BoardingAndDaycareDogsOnPropertyPage() {
               </button>
               <button
                 onClick={() => void saveAssessment()}
-                disabled={assessmentLoading || assessmentNotes.trim().length === 0}
-                className={`px-3 py-2 rounded text-sm text-white ${assessmentLoading || assessmentNotes.trim().length === 0 ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'}`}
+                disabled={assessmentLoading || !assessmentDog}
+                className={`px-3 py-2 rounded text-sm text-white ${assessmentLoading || !assessmentDog ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'}`}
               >
-                Save
+                {t('assessment_save_button')}
               </button>
             </div>
           </div>

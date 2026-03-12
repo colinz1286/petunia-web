@@ -22,6 +22,18 @@ import {
   Timestamp,
   serverTimestamp,
 } from 'firebase/firestore';
+import {
+  countOccupiedKennels,
+  daycareUsesKennels,
+  mergeMissingPetsIntoAssignments,
+  normalizeKennelAssignments,
+  normalizeKennelTypeOption,
+  sumKennelCapacity,
+  summarizeKennelAssignments,
+  type DaycareKennelMode,
+  type KennelAssignment,
+  type KennelTypeOption,
+} from '@/lib/boardingKennels';
 
 import {
   getDatabase,
@@ -100,6 +112,14 @@ type Reservation = {
 
 type PetStatuses = Record<string, string>;
 type ReservationFS = { petStatuses?: PetStatuses };
+type ReservationPetOption = {
+  petId: string;
+  dogName: string;
+};
+type KennelReservationContext = {
+  type: ServiceType;
+  petOptions: ReservationPetOption[];
+};
 
 /** =========================
  * Small helpers
@@ -271,9 +291,14 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
 
   // Core state
   const [businessId, setBusinessId] = useState<string>('');
+  const [businessIdRaw, setBusinessIdRaw] = useState<string>('');
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [kennelTypes, setKennelTypes] = useState<KennelTypeOption[]>([]);
+  const [kennelCapacityTotal, setKennelCapacityTotal] = useState<number>(0);
+  const [daycareKennelMode, setDaycareKennelMode] = useState<DaycareKennelMode>('openRoam');
+  const [reservationKennelAssignments, setReservationKennelAssignments] = useState<Record<string, KennelAssignment[]>>({});
 
   // NEW — Reservation approval requirements
   const [requireDaycareReservationApproval, setRequireDaycareReservationApproval] = useState(false);
@@ -297,6 +322,13 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
     checkOutTime: string;
     applyToAllPets: boolean;
     checkInLocked: boolean;
+  }>(null);
+  const [kennelModal, setKennelModal] = useState<null | {
+    reservation: Reservation;
+    petOptions: ReservationPetOption[];
+    assignments: KennelAssignment[];
+    error: string | null;
+    isSaving: boolean;
   }>(null);
 
   // RTDB listener handle
@@ -333,6 +365,59 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
     return map;
   }, [reservations]);
 
+  const kennelReservationContexts = useMemo(() => {
+    const map: Record<string, KennelReservationContext> = {};
+    const seen = new Set<string>();
+
+    for (const reservation of reservations) {
+      const baseKey = reservation.id.endsWith('-pickup')
+        ? reservation.id.slice(0, -7)
+        : reservation.id;
+      const petId = baseKey.split('-').pop() || '';
+      if (!petId) continue;
+
+      const dedupeKey = `${reservation.realtimeKey}:${petId}`;
+      if (seen.has(dedupeKey)) continue;
+      seen.add(dedupeKey);
+
+      if (!map[reservation.realtimeKey]) {
+        map[reservation.realtimeKey] = {
+          type: reservation.type,
+          petOptions: [],
+        };
+      }
+
+      map[reservation.realtimeKey].petOptions.push({
+        petId,
+        dogName: reservation.dogName,
+      });
+    }
+
+    for (const context of Object.values(map)) {
+      context.petOptions.sort((a, b) => a.dogName.localeCompare(b.dogName));
+    }
+
+    return map;
+  }, [reservations]);
+
+  const kennelAssignmentSummariesByReservation = useMemo(() => {
+    const next: Record<string, string[]> = {};
+
+    for (const [realtimeKey, context] of Object.entries(kennelReservationContexts)) {
+      const assignments = reservationKennelAssignments[realtimeKey] || [];
+      const petNamesById = Object.fromEntries(
+        context.petOptions.map((petOption) => [petOption.petId, petOption.dogName])
+      );
+      next[realtimeKey] = summarizeKennelAssignments(
+        assignments,
+        petNamesById,
+        t('kennel_unassigned')
+      );
+    }
+
+    return next;
+  }, [kennelReservationContexts, reservationKennelAssignments, t]);
+
   /** =========================
    * NEW: Per-day counts (matches iOS)
    * ========================= */
@@ -342,41 +427,81 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
     return items.filter((r) => r.type === 'Daycare').length;
   }, [grouped]);
 
-  // Dogs staying overnight on `dateKey` means:
-  // checkInDate <= dateKey < checkOutDate
-  // Dedup by base RTDB key so pickup clones don't double-count.
   const boardingOvernightCount = useCallback((dateKey: string): number => {
-    const unique: Record<string, Reservation> = {};
+    const activePetIdsByReservation: Record<string, Set<string>> = {};
+    const seenBaseKeys = new Set<string>();
 
-    for (const r of reservations) {
-      if (r.type !== 'Boarding') continue;
-      const baseKey = r.id.endsWith('-pickup') ? r.id.slice(0, -7) : r.id;
-      if (!unique[baseKey]) unique[baseKey] = r;
-    }
+    for (const reservation of reservations) {
+      if (reservation.type !== 'Boarding') continue;
 
-    let count = 0;
+      const baseKey = reservation.id.endsWith('-pickup')
+        ? reservation.id.slice(0, -7)
+        : reservation.id;
+      if (seenBaseKeys.has(baseKey)) continue;
+      seenBaseKeys.add(baseKey);
 
-    for (const baseKey of Object.keys(unique)) {
-      const r = unique[baseKey];
-      const statusLower = String(r.status || '').trim().toLowerCase();
-
-      // Exclude finalized statuses
+      const statusLower = String(reservation.status || '').trim().toLowerCase();
       if (statusLower === 'declined' || statusLower === 'noshow' || statusLower === 'checkedout') {
         continue;
       }
 
-      const cin = String(r.boardingCheckInDate || '').trim();
-      const cout = String(r.boardingCheckOutDate || '').trim();
+      const cin = String(reservation.boardingCheckInDate || '').trim();
+      const cout = String(reservation.boardingCheckOutDate || '').trim();
       if (!cin || !cout) continue;
+      if (!(cin <= dateKey && dateKey < cout)) continue;
 
-      // ISO yyyy-MM-dd string comparisons are valid lexicographically.
-      if (cin <= dateKey && dateKey < cout) {
-        count += 1;
+      const petId = baseKey.split('-').pop() || '';
+      if (!petId) continue;
+
+      if (!activePetIdsByReservation[reservation.realtimeKey]) {
+        activePetIdsByReservation[reservation.realtimeKey] = new Set<string>();
       }
+      activePetIdsByReservation[reservation.realtimeKey].add(petId);
     }
 
-    return count;
-  }, [reservations]);
+    return Object.entries(activePetIdsByReservation).reduce((sum, [realtimeKey, activePetIds]) => {
+      const assignments = reservationKennelAssignments[realtimeKey] || [];
+      if (assignments.length === 0) return sum + activePetIds.size;
+      return sum + countOccupiedKennels(assignments, activePetIds);
+    }, 0);
+  }, [reservationKennelAssignments, reservations]);
+
+  const daycareKennelCount = useCallback((dateKey: string): number => {
+    if (!daycareUsesKennels(daycareKennelMode)) return 0;
+
+    const activePetIdsByReservation: Record<string, Set<string>> = {};
+    const seenBaseKeys = new Set<string>();
+
+    for (const reservation of reservations) {
+      if (reservation.type !== 'Daycare') continue;
+
+      const baseKey = reservation.id;
+      if (seenBaseKeys.has(baseKey)) continue;
+      seenBaseKeys.add(baseKey);
+
+      const statusLower = String(reservation.status || '').trim().toLowerCase();
+      if (statusLower === 'declined' || statusLower === 'noshow' || statusLower === 'checkedout') {
+        continue;
+      }
+
+      const reservationDate = String(reservation.daycareDate || reservation.groupDateKey).trim();
+      if (reservationDate !== dateKey) continue;
+
+      const petId = baseKey.split('-').pop() || '';
+      if (!petId) continue;
+
+      if (!activePetIdsByReservation[reservation.realtimeKey]) {
+        activePetIdsByReservation[reservation.realtimeKey] = new Set<string>();
+      }
+      activePetIdsByReservation[reservation.realtimeKey].add(petId);
+    }
+
+    return Object.entries(activePetIdsByReservation).reduce((sum, [realtimeKey, activePetIds]) => {
+      const assignments = reservationKennelAssignments[realtimeKey] || [];
+      if (assignments.length === 0) return sum + activePetIds.size;
+      return sum + countOccupiedKennels(assignments, activePetIds);
+    }, 0);
+  }, [daycareKennelMode, reservationKennelAssignments, reservations]);
 
   /** =========================
    * Auth + business id resolution
@@ -398,8 +523,9 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
           setIsLoading(false);
           return;
         }
-        const bizId = sanitizeFirebaseKey(first.id);
-        if (!isValidFirebaseKey(bizId)) {
+        const rawBusinessId = first.id;
+        const sanitizedBusinessId = sanitizeFirebaseKey(rawBusinessId);
+        if (!isValidFirebaseKey(sanitizedBusinessId)) {
           setErrorMsg(t('error_invalid_business_key'));
           setIsLoading(false);
           return;
@@ -407,6 +533,7 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
 
         // NEW — Load approval toggles from Firestore
         const data = first.data();
+        setDaycareKennelMode(data.daycareKennelMode === 'kennelBased' ? 'kennelBased' : 'openRoam');
         setRequireDaycareReservationApproval(
           data.requireDaycareReservationApproval === true
         );
@@ -414,7 +541,8 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
           data.requireBoardingReservationApproval === true
         );
 
-        setBusinessId(bizId);
+        setBusinessIdRaw(rawBusinessId);
+        setBusinessId(sanitizedBusinessId);
 
       } catch (e) {
         console.error('❌ Business lookup failed:', e);
@@ -453,6 +581,93 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessId]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!businessIdRaw) {
+      setKennelTypes([]);
+      setKennelCapacityTotal(0);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    (async () => {
+      try {
+        const kennelSnap = await getDocs(collection(db, 'businesses', businessIdRaw, 'kennelTypes'));
+        const loadedKennelTypes = kennelSnap.docs
+          .map((kennelDoc) => normalizeKennelTypeOption(
+            kennelDoc.id,
+            kennelDoc.data() as Record<string, unknown>
+          ))
+          .filter((kennelType): kennelType is KennelTypeOption => kennelType !== null)
+          .sort((a, b) => a.name.localeCompare(b.name));
+
+        if (cancelled) return;
+
+        setKennelTypes(loadedKennelTypes);
+        setKennelCapacityTotal(sumKennelCapacity(loadedKennelTypes));
+      } catch (e) {
+        console.error('❌ Failed to load kennel types:', e);
+        if (!cancelled) {
+          setKennelTypes([]);
+          setKennelCapacityTotal(0);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [businessIdRaw]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const reservationEntries = Object.entries(kennelReservationContexts);
+
+    if (reservationEntries.length === 0) {
+      setReservationKennelAssignments({});
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    (async () => {
+      try {
+        const loadedEntries = await Promise.all(reservationEntries.map(async ([realtimeKey, context]) => {
+          const petIds = context.petOptions.map((petOption) => petOption.petId);
+          const reservationCollection = context.type === 'Boarding'
+            ? 'boardingReservations'
+            : 'daycareReservations';
+          const reservationSnap = await getDoc(doc(db, reservationCollection, realtimeKey));
+          const rawAssignments = reservationSnap.exists()
+            ? (reservationSnap.data()?.kennelAssignments as unknown)
+            : [];
+          const assignments = mergeMissingPetsIntoAssignments(
+            normalizeKennelAssignments(rawAssignments, {
+              allowedPetIds: petIds,
+              kennelTypes,
+            }),
+            petIds
+          );
+
+          return [realtimeKey, assignments] as const;
+        }));
+
+        if (cancelled) return;
+
+        setReservationKennelAssignments(Object.fromEntries(loadedEntries));
+      } catch (e) {
+        console.error('❌ Failed to load reservation kennel assignments:', e);
+        if (!cancelled) setReservationKennelAssignments({});
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [kennelReservationContexts, kennelTypes]);
 
   /** =========================
    * Snapshot parser (matches Swift)
@@ -981,6 +1196,92 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
     }
   }, [businessId]);
 
+  const openKennelEditor = useCallback((reservation: Reservation) => {
+    if (reservation.type === 'Daycare' && !daycareUsesKennels(daycareKennelMode)) return;
+
+    const petOptions = kennelReservationContexts[reservation.realtimeKey]?.petOptions || [];
+    const petIds = petOptions.map((petOption) => petOption.petId);
+    const assignments = mergeMissingPetsIntoAssignments(
+      reservationKennelAssignments[reservation.realtimeKey] || [],
+      petIds
+    );
+
+    setKennelModal({
+      reservation,
+      petOptions,
+      assignments,
+      error: null,
+      isSaving: false,
+    });
+  }, [daycareKennelMode, kennelReservationContexts, reservationKennelAssignments]);
+
+  const saveKennelAssignments = useCallback(async () => {
+    if (!kennelModal) return;
+
+    const petIds = kennelModal.petOptions.map((petOption) => petOption.petId);
+    const nextAssignments = normalizeKennelAssignments(kennelModal.assignments, {
+      allowedPetIds: petIds,
+      kennelTypes,
+    });
+    const petAssignmentCounts = new Map<string, number>();
+
+    for (const assignment of nextAssignments) {
+      if (assignment.petIds.length === 0) {
+        setKennelModal((prev) => prev ? { ...prev, error: t('kennel_validation_empty_assignment') } : prev);
+        return;
+      }
+
+      for (const petId of assignment.petIds) {
+        petAssignmentCounts.set(petId, (petAssignmentCounts.get(petId) || 0) + 1);
+      }
+    }
+
+    const missingPet = petIds.find((petId) => !petAssignmentCounts.has(petId));
+    if (missingPet) {
+      setKennelModal((prev) => prev ? { ...prev, error: t('kennel_validation_missing_pet') } : prev);
+      return;
+    }
+
+    const duplicatedPet = petIds.find((petId) => (petAssignmentCounts.get(petId) || 0) > 1);
+    if (duplicatedPet) {
+      setKennelModal((prev) => prev ? { ...prev, error: t('kennel_validation_duplicate_pet') } : prev);
+      return;
+    }
+
+    const finalizedAssignments = nextAssignments.map((assignment) => {
+      const kennelType = kennelTypes.find((kennelTypeOption) => (
+        kennelTypeOption.id === assignment.kennelTypeId
+      ));
+
+      return {
+        ...assignment,
+        kennelTypeName: kennelType?.name || assignment.kennelTypeName || '',
+      };
+    });
+
+    setKennelModal((prev) => prev ? { ...prev, error: null, isSaving: true } : prev);
+
+    try {
+      const reservationCollection = kennelModal.reservation.type === 'Boarding'
+        ? 'boardingReservations'
+        : 'daycareReservations';
+
+      await updateDoc(doc(db, reservationCollection, kennelModal.reservation.realtimeKey), {
+        kennelAssignments: finalizedAssignments,
+        modifiedAt: serverTimestamp(),
+      });
+
+      setReservationKennelAssignments((prev) => ({
+        ...prev,
+        [kennelModal.reservation.realtimeKey]: finalizedAssignments,
+      }));
+      setKennelModal(null);
+    } catch (e) {
+      console.error('❌ Failed to save kennel assignments:', e);
+      setKennelModal((prev) => prev ? { ...prev, error: t('kennel_save_failed'), isSaving: false } : prev);
+    }
+  }, [kennelModal, kennelTypes, t]);
+
   // NEW — Unified decline logic (Daycare + Boarding) — mirrors iOS
   const declineReservation = useCallback(async (r: Reservation) => {
     try {
@@ -1108,8 +1409,17 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
           <p className="text-center text-sm text-gray-600">{t('no_reservations_found')}</p>
         ) : (
           <div className="space-y-4">
-            {Object.keys(grouped).sort().map((dateKey) => (
-              <section key={dateKey} className="rounded-xl bg-white/70 shadow-sm">
+            {Object.keys(grouped).sort().map((dateKey) => {
+              const occupiedKennels = boardingOvernightCount(dateKey) + daycareKennelCount(dateKey);
+              const remainingKennels = kennelCapacityTotal > 0
+                ? Math.max(kennelCapacityTotal - occupiedKennels, 0)
+                : 0;
+              const percentFull = kennelCapacityTotal > 0
+                ? Math.min(100, Math.round((occupiedKennels / kennelCapacityTotal) * 100))
+                : 0;
+
+              return (
+                <section key={dateKey} className="rounded-xl bg-white/70 shadow-sm">
                 {/* DATE HEADER */}
                 <button
                   className="w-full flex items-start justify-between px-4 py-3"
@@ -1132,8 +1442,21 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                     </span>
 
                     <span className="text-sm text-gray-500">
-                      Dogs staying overnight: {boardingOvernightCount(dateKey)}
+                      {kennelCapacityTotal > 0
+                        ? t('kennel_occupied_summary', {
+                          occupied: occupiedKennels,
+                          total: kennelCapacityTotal,
+                        })
+                        : t('kennel_occupied_no_total', {
+                          occupied: occupiedKennels,
+                        })}
                     </span>
+
+                    {kennelCapacityTotal > 0 && (
+                      <span className="text-xs text-gray-500">
+                        {t('kennel_remaining_summary', { remaining: remainingKennels })} • {t('kennel_full_summary', { percent: percentFull })}
+                      </span>
+                    )}
                   </span>
 
                   <span className="text-gray-500 pt-0.5">
@@ -1145,6 +1468,7 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                   <div className="px-3 pb-3">
                     {grouped[dateKey].map((r) => {
                       const statusLower = r.status.toLowerCase();
+                      const kennelSummary = kennelAssignmentSummariesByReservation[r.realtimeKey] || [];
 
                       const needsApproval =
                         (r.type === 'Daycare' && requireDaycareReservationApproval) ||
@@ -1267,6 +1591,16 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                               <strong>{t('status_label')}:</strong>{' '}
                               {r.status.charAt(0).toUpperCase() + r.status.slice(1)}
                             </div>
+
+                            {((r.type === 'Boarding' && !r.isPickup)
+                              || (r.type === 'Daycare' && daycareUsesKennels(daycareKennelMode))) && (
+                              <div className="text-gray-600 text-[12px] mt-1 mb-3">
+                                <strong>{t('kennel_summary_label')}:</strong>{' '}
+                                {kennelSummary.length > 0
+                                  ? kennelSummary.join(' | ')
+                                  : t('kennel_not_assigned')}
+                              </div>
+                            )}
                           </div>
 
                           {/* ================================
@@ -1348,6 +1682,16 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                             {t('change_appointment_time_button')}
                           </button>
 
+                          {((r.type === 'Boarding' && !r.isPickup)
+                            || (r.type === 'Daycare' && daycareUsesKennels(daycareKennelMode))) && (
+                            <button
+                              className="w-full px-4 py-2 rounded bg-slate-700 hover:bg-slate-600 text-white text-sm mb-2"
+                              onClick={() => openKennelEditor(r)}
+                            >
+                              {t('manage_kennels_button')}
+                            </button>
+                          )}
+
                           {/* APPROVAL UI (unchanged) */}
                           {!r.isPickup && (
                             <>
@@ -1418,7 +1762,8 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                   </div>
                 )}
               </section>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>
@@ -1569,6 +1914,183 @@ export default function BoardingAndDaycareUpcomingReservationsPage() {
                 }}
               >
                 {t('save_button')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {kennelModal && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+          <div className="bg-white rounded-xl shadow-md w-full max-w-lg p-5 space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-semibold">{t('kennel_modal_title')}</h3>
+                <p className="text-sm text-gray-500">{t('kennel_modal_description')}</p>
+              </div>
+              <button
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setKennelModal(null)}
+                aria-label={t('cancel_button')}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="text-sm border rounded-lg p-3 bg-gray-50 space-y-1">
+              <div>🐶 <strong>{kennelModal.reservation.dogName}</strong></div>
+              <div><strong>{t('owner_label')}:</strong> {kennelModal.reservation.ownerName}</div>
+              <div><strong>{t('status_label')}:</strong> {kennelModal.reservation.status}</div>
+            </div>
+
+            {kennelModal.error && (
+              <p className="text-sm text-red-600">❌ {kennelModal.error}</p>
+            )}
+
+            <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+              {kennelModal.assignments.map((assignment, index) => (
+                <div key={assignment.id} className="rounded-lg border border-gray-200 p-3 space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="font-medium">
+                      {t('kennel_assignment_label', { index: index + 1 })}
+                    </div>
+                    <button
+                      className="text-xs text-red-600 hover:text-red-500"
+                      onClick={() => {
+                        setKennelModal((prev) => {
+                          if (!prev) return prev;
+                          return {
+                            ...prev,
+                            assignments: prev.assignments.filter((row) => row.id !== assignment.id),
+                            error: null,
+                          };
+                        });
+                      }}
+                    >
+                      {t('kennel_remove_assignment_button')}
+                    </button>
+                  </div>
+
+                  <label className="block text-sm text-gray-700">
+                    <span className="block mb-1">{t('kennel_type_label')}</span>
+                    <select
+                      value={assignment.kennelTypeId}
+                      onChange={(e) => {
+                        const nextKennelTypeId = e.target.value;
+                        const nextKennelType = kennelTypes.find((kennelTypeOption) => (
+                          kennelTypeOption.id === nextKennelTypeId
+                        ));
+
+                        setKennelModal((prev) => {
+                          if (!prev) return prev;
+                          return {
+                            ...prev,
+                            assignments: prev.assignments.map((row) => (
+                              row.id === assignment.id
+                                ? {
+                                  ...row,
+                                  kennelTypeId: nextKennelTypeId,
+                                  kennelTypeName: nextKennelType?.name || '',
+                                }
+                                : row
+                            )),
+                            error: null,
+                          };
+                        });
+                      }}
+                      className="w-full rounded border border-gray-300 px-3 py-2"
+                    >
+                      <option value="">{t('kennel_unassigned')}</option>
+                      {kennelTypes.map((kennelTypeOption) => (
+                        <option key={kennelTypeOption.id} value={kennelTypeOption.id}>
+                          {kennelTypeOption.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <div className="space-y-2">
+                    <div className="text-sm text-gray-700">{t('kennel_pets_label')}</div>
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      {kennelModal.petOptions.map((petOption) => {
+                        const checked = assignment.petIds.includes(petOption.petId);
+
+                        return (
+                          <label key={`${assignment.id}-${petOption.petId}`} className="flex items-center gap-2 text-sm">
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={(e) => {
+                                const isChecked = e.target.checked;
+                                setKennelModal((prev) => {
+                                  if (!prev) return prev;
+                                  return {
+                                    ...prev,
+                                    assignments: prev.assignments.map((row) => {
+                                      if (row.id === assignment.id) {
+                                        const nextPetIds = isChecked
+                                          ? Array.from(new Set([...row.petIds, petOption.petId]))
+                                          : row.petIds.filter((petId) => petId !== petOption.petId);
+                                        return { ...row, petIds: nextPetIds };
+                                      }
+
+                                      return isChecked
+                                        ? { ...row, petIds: row.petIds.filter((petId) => petId !== petOption.petId) }
+                                        : row;
+                                    }),
+                                    error: null,
+                                  };
+                                });
+                              }}
+                            />
+                            <span>{petOption.dogName}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              className="w-full rounded border border-dashed border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+              onClick={() => {
+                setKennelModal((prev) => {
+                  if (!prev) return prev;
+                  return {
+                    ...prev,
+                    assignments: [
+                      ...prev.assignments,
+                      {
+                        id: crypto.randomUUID(),
+                        kennelTypeId: '',
+                        kennelTypeName: '',
+                        petIds: [],
+                      },
+                    ],
+                    error: null,
+                  };
+                });
+              }}
+            >
+              {t('kennel_add_assignment_button')}
+            </button>
+
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+                onClick={() => setKennelModal(null)}
+                disabled={kennelModal.isSaving}
+              >
+                {t('cancel_button')}
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-green-700 hover:bg-green-600 text-white disabled:opacity-50"
+                onClick={() => void saveKennelAssignments()}
+                disabled={kennelModal.isSaving}
+              >
+                {kennelModal.isSaving ? t('saving_button') : t('save_button')}
               </button>
             </div>
           </div>

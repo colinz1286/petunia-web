@@ -15,6 +15,8 @@
   "select_checkout_time": "Select Check-Out Time",
 
   "select_pets": "Select Pets",
+  "pet_kennel_type_label": "Kennel type: {name}",
+  "pet_kennel_type_unassigned": "Kennel type not assigned yet",
 
   "select_grooming_addons": "Select Grooming Add-Ons",
   "select_boarding_addons": "Select Boarding Add-Ons",
