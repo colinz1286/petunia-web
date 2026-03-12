@@ -266,7 +266,7 @@ export default function BostonTerrierLifespan2025() {
 
         <section className="mb-10">
           <h2 className="text-2xl font-semibold mb-3">Questions that sharpen the next veterinary conversation</h2>
-          <p className="mb-4">A short list of better questions usually improves the appointment more than bringing in ten vague worries. Ask what matters most for your dog's age, body condition, lifestyle, and family history.</p>
+          <p className="mb-4">A short list of better questions usually improves the appointment more than bringing in ten vague worries. Ask what matters most for your dog&rsquo;s age, body condition, lifestyle, and family history.</p>
           <ul className="list-disc pl-5 space-y-2 mb-0">
             <li>Which changes in stamina, weight, or behavior would you treat as early warning signs rather than normal variation?</li>
             <li>Are there screening tests, imaging decisions, or referral thresholds that make sense for this breed and age bracket?</li>

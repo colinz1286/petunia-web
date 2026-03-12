@@ -133,7 +133,7 @@ export default function ArticlePage() {
         {/* Expanded depth content start */}
         <section className="mb-10">
           <h2 className="text-2xl font-semibold mb-3">How professionals separate rule sets without getting trapped by summaries</h2>
-          <p className="mb-4">Travel and import issues become confusing when owners blend three different questions into one: what the government allows, what the carrier will handle operationally, and what the dog's health situation can realistically tolerate. Good planning keeps those categories separate all the way to departure day, because being compliant on one side does not guarantee clearance on the others.</p>
+          <p className="mb-4">Travel and import issues become confusing when owners blend three different questions into one: what the government allows, what the carrier will handle operationally, and what the dog&rsquo;s health situation can realistically tolerate. Good planning keeps those categories separate all the way to departure day, because being compliant on one side does not guarantee clearance on the others.</p>
           <ul className="list-disc pl-5 space-y-2 mb-4">
             <li><strong>Government rule:</strong> who can enter, what documents are required, and what timing windows matter.</li>
             <li><strong>Carrier rule:</strong> booking limits, crate or carrier specifications, check-in timing, embargoes, and handling exceptions.</li>

@@ -245,7 +245,7 @@ export default function BostonTerrierSheddingGuide2025() {
         {/* Expanded depth content start */}
         <section className="mb-10">
           <h2 className="text-2xl font-semibold mb-3">How professionals evaluate a feeding plan before calling it good or bad</h2>
-          <p className="mb-4">The most useful nutrition lens is not hype or tribe loyalty. It is whether the plan is complete, practical, tolerated by the dog in front of you, and monitored closely enough to catch trouble early. Good feeding decisions hold up across body condition, stool quality, appetite, energy, skin, long-term compliance, and risk profile for that dog's age and medical history.</p>
+          <p className="mb-4">The most useful nutrition lens is not hype or tribe loyalty. It is whether the plan is complete, practical, tolerated by the dog in front of you, and monitored closely enough to catch trouble early. Good feeding decisions hold up across body condition, stool quality, appetite, energy, skin, long-term compliance, and risk profile for that dog&rsquo;s age and medical history.</p>
           <ul className="list-disc pl-5 space-y-2 mb-4">
             <li><strong>Start with adequacy:</strong> can the plan reliably meet protein, mineral, fatty acid, and calorie needs?</li>
             <li><strong>Then look at tolerance:</strong> stools, appetite, vomiting, itching, and weight trend are part of the evaluation.</li>
@@ -268,7 +268,7 @@ export default function BostonTerrierSheddingGuide2025() {
           <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
           <ul className="list-disc pl-5 space-y-2 mb-0">
             <li><a href="https://www.petuniapets.com/en/blog/boston-terrier-grooming-guide-2025" className="underline hover:opacity-80">Boston Terrier Grooming Guide (2025): Brushing, Bathing, Facial Folds, Nails &amp; Shedding Patterns</a></li>
-            <li><a href="https://www.petuniapets.com/en/blog/excessive-shedding-in-dogs-when-its-normal-and-when-to-see-the-vet" className="underline hover:opacity-80">Excessive Shedding in Dogs: When It's Normal and When to See the Vet</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/excessive-shedding-in-dogs-when-its-normal-and-when-to-see-the-vet" className="underline hover:opacity-80">Excessive Shedding in Dogs: When It&rsquo;s Normal and When to See the Vet</a></li>
             <li><a href="https://www.petuniapets.com/en/blog/grooming-tips-for-labrador-retrievers" className="underline hover:opacity-80">Grooming Tips for Labrador Retrievers: Real-World Shedding Control, Bathing, Tools, Costs, Nutrition for a Healthy Coat, and Owner Checklists</a></li>
           </ul>
         </section>

@@ -3,7 +3,7 @@
 // NOTE: This web page is intended to mirror the iOS view at
 // .local-only/ios-real-reference/BoardingAndDaycareEmployeeManagementEmployeeSchedulingShiftTemplatesView.swift.
 // Keep list loading, empty state, and add-template entry aligned across both files.
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -41,11 +41,7 @@ export default function BoardingAndDaycareEmployeeManagementEmployeeSchedulingSh
     const [templates, setTemplates] = useState<EmployeeShiftTemplate[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        void loadTemplates();
-    }, [businessId]);
-
-    const loadTemplates = async () => {
+    const loadTemplates = useCallback(async () => {
         setIsLoading(true);
 
         if (businessId === '') {
@@ -80,7 +76,11 @@ export default function BoardingAndDaycareEmployeeManagementEmployeeSchedulingSh
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [businessId]);
+
+    useEffect(() => {
+        void loadTemplates();
+    }, [loadTemplates]);
 
     const addTemplateHref = businessId === ''
         ? '/boardinganddaycare-employeemanagementemployeescheduling-shifttemplateeditor'

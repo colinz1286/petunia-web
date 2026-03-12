@@ -3,7 +3,7 @@
 // NOTE: This web page is intended to mirror the iOS view at
 // .local-only/ios-real-reference/BoardingAndDaycareEmployeeManagementEmployeeSchedulingEmployeeAvailabilityView.swift.
 // Keep day availability structure, Firestore reads/writes, and save flow aligned across both files.
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { getApp, getApps, initializeApp } from 'firebase/app';
@@ -78,11 +78,7 @@ export default function BoardingAndDaycareEmployeeManagementEmployeeSchedulingEm
     const [statusMessage, setStatusMessage] = useState<string | null>(null);
     const [availability, setAvailability] = useState<WeeklyAvailabilityDay[]>(() => buildDefaultAvailability());
 
-    useEffect(() => {
-        void loadAvailability();
-    }, [businessId, employeeUserId]);
-
-    const loadAvailability = async () => {
+    const loadAvailability = useCallback(async () => {
         setIsLoading(true);
         setStatusMessage(null);
         setAvailability(buildDefaultAvailability());
@@ -130,7 +126,11 @@ export default function BoardingAndDaycareEmployeeManagementEmployeeSchedulingEm
             setIsLoading(false);
             setStatusMessage(error instanceof Error ? error.message : t('unknown_error'));
         }
-    };
+    }, [businessId, employeeUserId, t]);
+
+    useEffect(() => {
+        void loadAvailability();
+    }, [loadAvailability]);
 
     const updateDay = (dayId: string, updates: Partial<WeeklyAvailabilityDay>) => {
         setAvailability((current) =>

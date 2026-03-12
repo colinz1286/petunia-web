@@ -112,6 +112,7 @@ export default function WalkerSitterBusinessSettingsPage() {
     const [showLeavePrompt, setShowLeavePrompt] = useState(false);
     const nextPathRef = useRef<string | null>(null);
     const initialJsonRef = useRef<string>('');
+    const hasCapturedInitialSnapshotRef = useRef(false);
 
     // --- New row inputs for dynamic lists
     const [newService, setNewService] = useState('');
@@ -257,11 +258,19 @@ export default function WalkerSitterBusinessSettingsPage() {
 
     // After first load completes, capture a clean snapshot
     useEffect(() => {
-        if (!loading) {
-            initialJsonRef.current = JSON.stringify(buildSettingsPayload());
-            setDirty(false);
+        if (loading) {
+            hasCapturedInitialSnapshotRef.current = false;
+            return;
         }
-    }, [loading]);
+
+        if (hasCapturedInitialSnapshotRef.current) {
+            return;
+        }
+
+        initialJsonRef.current = JSON.stringify(buildSettingsPayload());
+        hasCapturedInitialSnapshotRef.current = true;
+        setDirty(false);
+    }, [loading, buildSettingsPayload]);
 
     // Watch all fields; flip dirty when payload diverges from snapshot
     useEffect(() => {

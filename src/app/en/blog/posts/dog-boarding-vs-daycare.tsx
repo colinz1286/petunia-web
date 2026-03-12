@@ -201,7 +201,7 @@ export default function DogBoardingVsDaycare() {
             <li>No clear answer on how dogs are separated for rest, medical needs, or overstimulation.</li>
             <li>Facility staff cannot explain incident reporting, medication handling, or emergency veterinary access.</li>
             <li>Evaluation relies on a quick meet-and-greet rather than structured observation over time.</li>
-            <li>Communication after a trial stay is vague and focuses only on whether the dog was "fine."</li>
+            <li>Communication after a trial stay is vague and focuses only on whether the dog was &quot;fine.&quot;</li>
           </ul>
         </section>
         <section className="mb-10">

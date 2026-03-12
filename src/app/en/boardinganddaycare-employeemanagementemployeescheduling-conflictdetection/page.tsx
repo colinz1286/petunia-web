@@ -3,7 +3,7 @@
 // NOTE: This web page is intended to mirror the iOS view at
 // .local-only/ios-real-reference/BoardingAndDaycareEmployeeManagementEmployeeSchedulingConflictDetectionView.swift.
 // Keep conflict detection logic, list rendering, and date formatting aligned across both files.
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { getApp, getApps, initializeApp } from 'firebase/app';
@@ -52,11 +52,7 @@ export default function BoardingAndDaycareEmployeeManagementEmployeeSchedulingCo
     const [conflicts, setConflicts] = useState<SchedulingConflict[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        void detectConflicts();
-    }, [businessId]);
-
-    const detectConflicts = async () => {
+    const detectConflicts = useCallback(async () => {
         setIsLoading(true);
 
         if (businessId === '') {
@@ -125,7 +121,11 @@ export default function BoardingAndDaycareEmployeeManagementEmployeeSchedulingCo
         }
 
         setIsLoading(false);
-    };
+    }, [businessId, t]);
+
+    useEffect(() => {
+        void detectConflicts();
+    }, [detectConflicts]);
 
     return (
         <div className="min-h-screen bg-[color:var(--color-background)] px-4 py-8 text-[color:var(--color-foreground)]">

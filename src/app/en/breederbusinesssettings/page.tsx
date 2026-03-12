@@ -419,6 +419,7 @@ export default function BreederBusinessSettingsPage() {
     }
   }, [
     businessId,
+    businessBio,
     breedsOffered,
     applicationQuestions,
     maxQuestions,

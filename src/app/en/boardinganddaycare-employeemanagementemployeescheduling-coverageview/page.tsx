@@ -3,7 +3,7 @@
 // NOTE: This web page is intended to mirror the iOS view at
 // .local-only/ios-real-reference/BoardingAndDaycareEmployeeManagementEmployeeSchedulingCoverageView.swift.
 // Keep date navigation, hourly coverage math, and status rendering aligned across both files.
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { getApp, getApps, initializeApp } from 'firebase/app';
@@ -93,11 +93,7 @@ export default function BoardingAndDaycareEmployeeManagementEmployeeSchedulingCo
     const [coverage, setCoverage] = useState<CoverageHour[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        void loadCoverage();
-    }, [businessId, selectedDate]);
-
-    const loadCoverage = async () => {
+    const loadCoverage = useCallback(async () => {
         setIsLoading(true);
 
         if (businessId === '') {
@@ -156,7 +152,11 @@ export default function BoardingAndDaycareEmployeeManagementEmployeeSchedulingCo
         }
 
         setIsLoading(false);
-    };
+    }, [businessId, selectedDate]);
+
+    useEffect(() => {
+        void loadCoverage();
+    }, [loadCoverage]);
 
     return (
         <div className="min-h-screen bg-[color:var(--color-background)] px-4 py-8 text-[color:var(--color-foreground)]">

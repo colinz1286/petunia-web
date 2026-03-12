@@ -156,7 +156,7 @@ export default function ArticlePage() {
           <h2 className="text-2xl font-semibold mb-3">Related Reading Inside Petunia</h2>
           <ul className="list-disc pl-5 space-y-2 mb-0">
             <li><a href="https://www.petuniapets.com/en/blog/metronidazole-for-dogs" className="underline hover:opacity-80">Metronidazole for Dogs: Uses, Side Effects, and When to Be Concerned</a></li>
-            <li><a href="https://www.petuniapets.com/en/blog/excessive-shedding-in-dogs-when-its-normal-and-when-to-see-the-vet" className="underline hover:opacity-80">Excessive Shedding in Dogs: When It's Normal and When to See the Vet</a></li>
+            <li><a href="https://www.petuniapets.com/en/blog/excessive-shedding-in-dogs-when-its-normal-and-when-to-see-the-vet" className="underline hover:opacity-80">Excessive Shedding in Dogs: When It&rsquo;s Normal and When to See the Vet</a></li>
             <li><a href="https://www.petuniapets.com/en/blog/how-to-know-if-my-dog-is-sick" className="underline hover:opacity-80">How to Know If My Dog Is Sick: Subtle Signs, Red Flags, Home Checks, Vet Care, Costs, and a Practical 72-Hour Plan</a></li>
           </ul>
         </section>

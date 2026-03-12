@@ -88,6 +88,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
     const listenerRef = useRef<{ ref: DatabaseReference; cb: (snap: DataSnapshot) => void } | null>(
         null
     );
+    const subscribeAllRef = useRef<(sanitizedBId: string) => void>(() => {});
 
     // -------- Assessment modal state --------
     const [showAssessmentModal, setShowAssessmentModal] = useState(false);
@@ -360,7 +361,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
             setSanitizedBusinessId(sanitized);
 
             // 4) Subscribe once to ALL current check-ins under /checkIns/{businessId}
-            subscribeAll(sanitized);
+            subscribeAllRef.current(sanitized);
         } catch {
             setError('Failed to initialize. Please try again.');
             setIsBootstrapping(false);
@@ -435,6 +436,7 @@ export default function IndividualEmployeeDogsOnPropertyPage() {
         onValue(ref, cb);
         listenerRef.current = { ref, cb };
     }, []); // stable, no dependencies
+    subscribeAllRef.current = subscribeAll;
 
     useEffect(() => {
         return () => {

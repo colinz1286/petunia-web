@@ -3,7 +3,7 @@
 // NOTE: This web page is intended to mirror the iOS view at
 // .local-only/ios-real-reference/BoardingAndDaycareEmployeeManagementEmployeeSchedulingCreateShiftView.swift.
 // Keep employee loading, time composition, and save payload aligned across both files.
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { getApp, getApps, initializeApp } from 'firebase/app';
@@ -69,11 +69,7 @@ export default function BoardingAndDaycareEmployeeManagementEmployeeSchedulingCr
     const [isSaving, setIsSaving] = useState(false);
     const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
-    useEffect(() => {
-        void loadEmployees();
-    }, [businessId]);
-
-    const loadEmployees = async () => {
+    const loadEmployees = useCallback(async () => {
         setIsLoadingEmployees(true);
 
         if (businessId === '') {
@@ -100,7 +96,11 @@ export default function BoardingAndDaycareEmployeeManagementEmployeeSchedulingCr
             console.error('Error loading employees:', error);
             setIsLoadingEmployees(false);
         }
-    };
+    }, [businessId, t]);
+
+    useEffect(() => {
+        void loadEmployees();
+    }, [loadEmployees]);
 
     const saveShift = async () => {
         setIsSaving(true);

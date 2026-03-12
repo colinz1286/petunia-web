@@ -3,7 +3,7 @@
 // NOTE: This web page is intended to mirror the iOS view at
 // .local-only/ios-real-reference/BoardingAndDaycareEmployeeManagementEmployeeSchedulingScheduleCalendarView.swift.
 // Keep date navigation, Firestore filtering, and create-shift entry aligned across both files.
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { getApp, getApps, initializeApp } from 'firebase/app';
@@ -71,11 +71,7 @@ export default function BoardingAndDaycareEmployeeManagementEmployeeSchedulingSc
     const [shifts, setShifts] = useState<EmployeeScheduledShift[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        void loadShifts();
-    }, [businessId, selectedDate]);
-
-    const loadShifts = async () => {
+    const loadShifts = useCallback(async () => {
         setIsLoading(true);
 
         if (businessId === '') {
@@ -125,7 +121,11 @@ export default function BoardingAndDaycareEmployeeManagementEmployeeSchedulingSc
         }
 
         setIsLoading(false);
-    };
+    }, [businessId, selectedDate, t]);
+
+    useEffect(() => {
+        void loadShifts();
+    }, [loadShifts]);
 
     const createShiftHref = businessId === ''
         ? ''

@@ -84,7 +84,6 @@ export default function GroomingDashboardPage() {
             unsubscribeAuth();
             if (unsubscribeUnread) unsubscribeUnread();
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [router]);
 
     const fetchBusinessInfo = async (uid: string): Promise<string> => {

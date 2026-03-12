@@ -3,7 +3,7 @@
 // NOTE: This web page is intended to mirror the iOS view at
 // .local-only/ios-real-reference/BoardingAndDaycareDashboardView.swift.
 // Keep labels, feature access, and core behavior aligned across both files.
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   getAuth,
@@ -73,29 +73,11 @@ export default function BoardingAndDaycareDashboardPage() {
   const [enableFinancialManagement, setEnableFinancialManagement] = useState(false);
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        router.push('/en/loginsignup');
-        return;
-      }
-      await fetchBusinessInfo(user.uid);
-
-      // ✅ Once business info is loaded, attach unread listener
-      if (businessId) {
-        const unsubscribeMessages = listenForUnreadMessages(businessId);
-        return () => unsubscribeMessages(); // cleanup on unmount
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
-
-  const fetchBusinessInfo = async (uid: string) => {
+  const fetchBusinessInfo = useCallback(async (uid: string): Promise<string> => {
     const q = query(collection(db, 'businesses'), where('ownerId', '==', uid));
     const snapshot = await getDocs(q);
     const docSnap = snapshot.docs[0];
-    if (!docSnap) return;
+    if (!docSnap) return '';
 
     const data = docSnap.data();
     const id = docSnap.id;
@@ -108,22 +90,52 @@ export default function BoardingAndDaycareDashboardPage() {
     setEnableEmployeeManagement(features.enableEmployeeManagement || false);
     setEnableStatePaperwork(features.enableStatePaperwork || false);
     setEnableFinancialManagement(features.enableFinancialManagement || false);
-  };
+    return id;
+  }, []);
 
   // 🔴 Checks for unread client messages for this business
-  const listenForUnreadMessages = (businessId: string) => {
+  const listenForUnreadMessages = useCallback((currentBusinessId: string) => {
     const q = query(
       collectionGroup(db, 'threadMessages'),
-      where('receiverId', '==', businessId),
+      where('receiverId', '==', currentBusinessId),
       where('read', '==', false)
     );
 
     return onSnapshot(q, (snapshot) => {
       const unreadCount = snapshot.docs.length;
       setHasUnreadMessages(unreadCount > 0);
-      console.log(`📩 Unread messages for ${businessId}: ${unreadCount}`);
+      console.log(`📩 Unread messages for ${currentBusinessId}: ${unreadCount}`);
     });
-  };
+  }, []);
+
+  useEffect(() => {
+    let unsubscribeUnread: (() => void) | null = null;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        router.push('/en/loginsignup');
+        return;
+      }
+
+      const resolvedBusinessId = await fetchBusinessInfo(user.uid);
+
+      if (unsubscribeUnread) {
+        unsubscribeUnread();
+        unsubscribeUnread = null;
+      }
+
+      if (resolvedBusinessId) {
+        unsubscribeUnread = listenForUnreadMessages(resolvedBusinessId);
+      }
+    });
+
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeUnread) {
+        unsubscribeUnread();
+      }
+    };
+  }, [fetchBusinessInfo, listenForUnreadMessages, router]);
 
   const handleLogoUpload = async () => {
     if (!logoFile || !businessId) return;

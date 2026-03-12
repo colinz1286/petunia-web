@@ -135,7 +135,7 @@ export default function ArticlePage() {
           <h2 className="text-2xl font-semibold mb-3">The document control system that prevents same-day failures</h2>
           <p className="mb-4">Travel problems rarely come from one giant missing item. They usually come from small mismatches across names, chip numbers, signature fields, date windows, route assumptions, and who was supposed to verify what. The fix is a simple document-control system: one master packet, one backup packet, and a line-by-line audit against the exact route and date.</p>
           <ul className="list-disc pl-5 space-y-2 mb-4">
-            <li><strong>Separate the rule sources:</strong> government entry rules, airline handling rules, and your dog's medical needs should be checked as three different systems.</li>
+            <li><strong>Separate the rule sources:</strong> government entry rules, airline handling rules, and your dog&rsquo;s medical needs should be checked as three different systems.</li>
             <li><strong>Match identifiers everywhere:</strong> owner name, dog name, chip number, travel date, and destination must read the same across every core record.</li>
             <li><strong>Keep proof in more than one format:</strong> phone screenshots are not enough if batteries die, files do not load, or staff ask for a printed copy.</li>
             <li><strong>Log the last verification time:</strong> if nobody can say when a rule was last checked, assume it needs to be checked again.</li>
@@ -147,7 +147,7 @@ export default function ArticlePage() {
           <h2 className="text-2xl font-semibold mb-3">The 48-hour and day-of audit</h2>
           <ol className="list-decimal pl-5 space-y-2 mb-0">
             <li>Re-open every official page tied to the trip instead of relying on memory or saved screenshots.</li>
-            <li>Read the reservation, health certificate timing, and handling instructions as if you were checking someone else's packet for mistakes.</li>
+            <li>Read the reservation, health certificate timing, and handling instructions as if you were checking someone else&rsquo;s packet for mistakes.</li>
             <li>Confirm backup plans for weather, missed connections, check-in rejection, medication timing, and overnight delays.</li>
             <li>On the day itself, do one last identifier match before leaving home.</li>
           </ol>

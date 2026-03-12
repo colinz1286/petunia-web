@@ -91,7 +91,73 @@ export default function BoardingAndDaycareMessageClientPage() {
         let unsubscribe: (() => void) | undefined;
         let cancelled = false;
 
-        ensureThreadExistsAndWait().then(() => {
+        const markUnreadAsRead = async (msgs: ChatMessage[]) => {
+            const unread = msgs.filter(
+                (m) => m.receiverId === businessId && !m.read
+            );
+            if (unread.length === 0) return;
+
+            const batch = writeBatch(db);
+            for (const m of unread) {
+                const msgRef = doc(db, 'messages', threadId, 'threadMessages', m.id);
+                batch.update(msgRef, { read: true, readAt: serverTimestamp() });
+            }
+            batch.update(doc(db, 'messages', threadId), {
+                [`unreadBy.${businessId}`]: 0,
+                [`lastReadAt.${businessId}`]: serverTimestamp(),
+            });
+            await batch.commit();
+        };
+
+        const attachListener = () => {
+            const messagesQuery = query(
+                collection(db, 'messages', threadId, 'threadMessages'),
+                orderBy('sentAt', 'asc')
+            );
+
+            return onSnapshot(messagesQuery, async (snapshot) => {
+                const msgs: ChatMessage[] = snapshot.docs.map((docSnap) => {
+                    const data = docSnap.data();
+                    return {
+                        id: docSnap.id,
+                        senderId: data.senderId,
+                        receiverId: data.receiverId,
+                        text: data.text,
+                        sentAt: data.sentAt?.toDate?.() || null,
+                        read: data.read ?? false,
+                    };
+                });
+
+                setMessages(msgs);
+                await markUnreadAsRead(msgs);
+            });
+        };
+
+        const ensureThreadExistsAndWait = async () => {
+            const threadRef = doc(db, 'messages', threadId);
+            const snap = await getDoc(threadRef);
+
+            if (!snap.exists()) {
+                await setDoc(threadRef, {
+                    threadId,
+                    businessId,
+                    userId: clientId,
+                    participants: [businessId, clientId],
+                    lastMessageText: '',
+                    lastMessageAt: serverTimestamp(),
+                    unreadBy: { [businessId]: 0, [clientId]: 0 },
+                    lastReadAt: {
+                        [businessId]: serverTimestamp(),
+                        [clientId]: serverTimestamp(),
+                    },
+                });
+
+                // 🔒 Hard wait until readable by rules
+                await getDoc(threadRef);
+            }
+        };
+
+        void ensureThreadExistsAndWait().then(() => {
             if (!cancelled) {
                 unsubscribe = attachListener();
             }
@@ -101,80 +167,11 @@ export default function BoardingAndDaycareMessageClientPage() {
             cancelled = true;
             if (unsubscribe) unsubscribe();
         };
-    }, [userId, businessId, clientId]);
+    }, [businessId, clientId, threadId, userId]);
 
     // ======================================================
     // 🔹 Firestore logic
     // ======================================================
-
-    const messagesCollection = () =>
-        collection(db, 'messages', threadId, 'threadMessages');
-
-    const threadDoc = () => doc(db, 'messages', threadId);
-
-    const ensureThreadExistsAndWait = async () => {
-        const threadRef = threadDoc();
-        const snap = await getDoc(threadRef);
-
-        if (snap.exists()) return;
-
-        await setDoc(threadRef, {
-            threadId,
-            businessId,
-            userId: clientId,
-            participants: [businessId, clientId],
-            lastMessageText: '',
-            lastMessageAt: serverTimestamp(),
-            unreadBy: { [businessId]: 0, [clientId]: 0 },
-            lastReadAt: {
-                [businessId]: serverTimestamp(),
-                [clientId]: serverTimestamp(),
-            },
-        });
-
-        // 🔒 Hard wait until readable by rules
-        await getDoc(threadRef);
-    };
-
-    const attachListener = () => {
-        // ✅ Use server timestamp field that always exists
-        const q = query(messagesCollection(), orderBy('sentAt', 'asc'));
-
-        return onSnapshot(q, async (snapshot) => {
-            const msgs: ChatMessage[] = snapshot.docs.map((docSnap) => {
-                const data = docSnap.data();
-                return {
-                    id: docSnap.id,
-                    senderId: data.senderId,
-                    receiverId: data.receiverId,
-                    text: data.text,
-                    sentAt: data.sentAt?.toDate?.() || null,
-                    read: data.read ?? false,
-                };
-            });
-
-            setMessages(msgs);
-            await markUnreadAsRead(msgs);
-        });
-    };
-
-    const markUnreadAsRead = async (msgs: ChatMessage[]) => {
-        const unread = msgs.filter(
-            (m) => m.receiverId === businessId && !m.read
-        );
-        if (unread.length === 0) return;
-
-        const batch = writeBatch(db);
-        for (const m of unread) {
-            const msgRef = doc(db, 'messages', threadId, 'threadMessages', m.id);
-            batch.update(msgRef, { read: true, readAt: serverTimestamp() });
-        }
-        batch.update(threadDoc(), {
-            [`unreadBy.${businessId}`]: 0,
-            [`lastReadAt.${businessId}`]: serverTimestamp(),
-        });
-        await batch.commit();
-    };
 
     const sendMessage = async () => {
         const text = newMessageText.trim();
@@ -194,7 +191,7 @@ export default function BoardingAndDaycareMessageClientPage() {
         const batch = writeBatch(db);
         const newDoc = doc(msgRef);
         batch.set(newDoc, msgData);
-        batch.update(threadDoc(), {
+        batch.update(doc(db, 'messages', threadId), {
             lastMessageText: text.length > 300 ? text.substring(0, 300) : text,
             lastMessageAt: serverTimestamp(),
             unreadBy: { [businessId]: 0, [clientId]: 1 },
