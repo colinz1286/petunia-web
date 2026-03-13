@@ -50,6 +50,7 @@ import {
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
+import DaycareGroomingFlow from '@/components/individualbookdaycare/DaycareGroomingFlow';
 import {
   consumeMembershipPurchaseForClient,
   createMembershipPurchaseForClient,
@@ -72,11 +73,8 @@ import {
   type KennelAssignment,
 } from '@/lib/boardingKennels';
 import {
-  buildVisibleGroomingOptions,
-  DEFAULT_GENERIC_BATH_LABEL,
-  findBathServiceForSize,
-  isBaseBathService,
-  type VisibleGroomingOption,
+  buildPreferredBathServiceByPetId,
+  extractBathSizeFromAssessmentData,
 } from '@/lib/groomingBathOptions';
 
 const firebaseConfig = {
@@ -409,29 +407,11 @@ export default function IndividualBookDaycarePage() {
   const showDaycareMembershipFeature = daycareUsableMembershipPurchases.length > 0
     || (daycareOnlinePaymentsEnabled && daycarePurchasableMembershipPlans.length > 0);
   const preferredBathServiceByPetId = useMemo(() => (
-    Object.entries(petBathSizeById).reduce<Record<string, string>>((acc, [petId, bathSize]) => {
-      const matchedBath = findBathServiceForSize(bathSize, groomingServices);
-      if (matchedBath) acc[petId] = matchedBath;
-      return acc;
-    }, {})
+    buildPreferredBathServiceByPetId({
+      bathSizeByPetId: petBathSizeById,
+      services: groomingServices,
+    })
   ), [groomingServices, petBathSizeById]);
-
-  const extractBathSizeFromAssessment = useCallback((assessment: DogAssessmentDoc): string | null => {
-    const direct = assessment.bathSize || assessment.bath_size || assessment.bathsize;
-    if (typeof direct === 'string' && direct.trim() !== '') {
-      return direct.trim();
-    }
-
-    const notes = (assessment.notes || '').trim();
-    if (!notes) return null;
-
-    const match = notes.match(/bath\s*size\s*[:\-]\s*([a-z0-9+\- ]+)/i)
-      || notes.match(/bath\s*[:\-]\s*([a-z0-9+\- ]+)/i);
-
-    if (!match?.[1]) return null;
-    const parsed = match[1].trim();
-    return parsed === '' ? null : parsed;
-  }, []);
 
   /* =========================
    Vaccine loading + alerts
@@ -808,7 +788,7 @@ export default function IndividualBookDaycarePage() {
               return [pet.id, { bathSize: '', kennelPreference: null }] as const;
             }
             const data = snap.data() as Record<string, unknown>;
-            const parsed = extractBathSizeFromAssessment(data as DogAssessmentDoc) || '';
+            const parsed = extractBathSizeFromAssessmentData(data as DogAssessmentDoc) || '';
             const kennelPreference = getDogKennelPreferenceFromData(data);
             return [pet.id, { bathSize: parsed, kennelPreference }] as const;
           } catch {
@@ -828,7 +808,7 @@ export default function IndividualBookDaycarePage() {
     };
 
     void hydrateBathSizes();
-  }, [businessId, pets, extractBathSizeFromAssessment]);
+  }, [businessId, pets]);
 
   // 1) filterUnavailableTimes (keep as-is; shown here for placement)
   const filterUnavailableTimes = useCallback(
@@ -1081,6 +1061,79 @@ export default function IndividualBookDaycarePage() {
     setPickUpTimeOptions((prev) => [...prev]);
   }, [pets]);
 
+  const appendDraftBooking = useCallback((draft: DraftBooking) => {
+    setDraftBookings((prev) => [...prev, draft]);
+  }, []);
+
+  const commitDraftBooking = useCallback((draft: DraftBooking) => {
+    appendDraftBooking(draft);
+    resetFormAfterDraft();
+  }, [appendDraftBooking, resetFormAfterDraft]);
+
+  const beginPendingDraftGroomingFlow = useCallback((draft: DraftBooking) => {
+    setPendingDraft(draft);
+    setShowGroomingPrompt(true);
+  }, []);
+
+  const startPendingDraftGrooming = useCallback(() => {
+    if (!pendingDraft) return;
+
+    setGroomingSelections((prev) => {
+      const next = { ...prev };
+
+      pendingDraft.petIds.forEach((petId) => {
+        if (next[petId]?.length) return;
+        const preferredBath = preferredBathServiceByPetId[petId];
+        next[petId] = preferredBath ? [preferredBath] : [];
+      });
+
+      return next;
+    });
+
+    setShowGroomingUI(true);
+    setShowGroomingPrompt(false);
+  }, [pendingDraft, preferredBathServiceByPetId]);
+
+  const skipPendingDraftGrooming = useCallback(() => {
+    if (!pendingDraft) return;
+
+    commitDraftBooking(pendingDraft);
+    setShowGroomingPrompt(false);
+    setShowGroomingUI(false);
+    setPendingDraft(null);
+  }, [commitDraftBooking, pendingDraft]);
+
+  const closePendingDraftGrooming = useCallback(() => {
+    if (!pendingDraft) return;
+
+    commitDraftBooking({
+      ...pendingDraft,
+      groomingAddOns: groomingSelections,
+    });
+    setShowGroomingPrompt(false);
+    setShowGroomingUI(false);
+    setPendingDraft(null);
+  }, [commitDraftBooking, groomingSelections, pendingDraft]);
+
+  const savePendingDraftGrooming = useCallback((selections: GroomingSelections) => {
+    if (!pendingDraft) return;
+
+    setGroomingSelections(selections);
+    commitDraftBooking({
+      ...pendingDraft,
+      groomingAddOns: selections,
+    });
+    setShowGroomingPrompt(false);
+    setShowGroomingUI(false);
+    setPendingDraft(null);
+  }, [commitDraftBooking, pendingDraft]);
+
+  const pendingDraftPets = useMemo(() => (
+    pendingDraft
+      ? pets.filter((pet) => pendingDraft.petIds.includes(pet.id))
+      : []
+  ), [pendingDraft, pets]);
+
   const addBookingDraft = useCallback(async () => {
     // 🚫 BLACKOUT CHECK (add-to-list)
     if (selectedDate) {
@@ -1116,13 +1169,13 @@ export default function IndividualBookDaycarePage() {
     };
 
     if (groomingAvailable && groomingServices.length > 0) {
-      setPendingDraft(draft);
-      setShowGroomingPrompt(true);
+      beginPendingDraftGroomingFlow(draft);
     } else {
-      setDraftBookings((prev) => [...prev, draft]);
-      resetFormAfterDraft();
+      commitDraftBooking(draft);
     }
   }, [
+    beginPendingDraftGroomingFlow,
+    commitDraftBooking,
     selectedDate,
     dropOffTimeRequired,
     selectedTime,
@@ -1132,7 +1185,6 @@ export default function IndividualBookDaycarePage() {
     groomingAvailable,
     groomingServices,
     t,
-    resetFormAfterDraft,
     pickUpTimeRequired,
     selectedPickUpTime,
     blackoutDates,
@@ -1775,83 +1827,21 @@ export default function IndividualBookDaycarePage() {
             </button>
           </div>
 
-          {/* Grooming Yes/No prompt */}
-          {showGroomingPrompt && pendingDraft && (
-            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 shadow-md max-w-sm w-full">
-                <p className="text-sm mb-4">{t('grooming_prompt_message')}</p>
-                <div className="flex justify-end gap-3">
-                  <button
-                    onClick={() => {
-                      // Prepare selections for each pet, auto-prefilling matching bath size when available.
-                      setGroomingSelections((prev) => {
-                        const cp = { ...prev };
-                        pendingDraft.petIds.forEach((pid) => {
-                          if (cp[pid]?.length) return;
-
-                          const bathSize = petBathSizeById[pid];
-                          const matchedBath = bathSize ? findBathServiceForSize(bathSize, groomingServices) : null;
-                          cp[pid] = matchedBath ? [matchedBath] : [];
-                        });
-                        return cp;
-                      });
-                      setShowGroomingUI(true);
-                      setShowGroomingPrompt(false);
-                    }}
-                    className="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded text-sm"
-                  >
-                    {t('yes')}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setDraftBookings((prev) => [...prev, pendingDraft]);
-                      resetFormAfterDraft();
-                      setShowGroomingPrompt(false);
-                      setPendingDraft(null);
-                    }}
-                    className="bg-gray-400 hover:bg-gray-300 text-black px-4 py-2 rounded text-sm"
-                  >
-                    {t('no')}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Grooming Modal (per-pet), uses your website contract */}
-          {showGroomingUI && pendingDraft && (
-            <GroomingModal
-              services={groomingServices}
-              servicePriceCentsByName={groomingServicePriceCentsByName}
-              preferredBathServiceByPetId={preferredBathServiceByPetId}
-              pets={pets.filter((p) => pendingDraft.petIds.includes(p.id))}
-              selections={groomingSelections}
-              onClose={() => {
-                // Add draft even if user closes without saving changes
-                const draft: DraftBooking = {
-                  ...pendingDraft,
-                  groomingAddOns: groomingSelections,
-                };
-                setDraftBookings((prev) => [...prev, draft]);
-                resetFormAfterDraft();
-                setPendingDraft(null);
-                setShowGroomingUI(false);
-              }}
-              onSave={(sel) => {
-                // Save selections and add draft
-                const draft: DraftBooking = {
-                  ...pendingDraft,
-                  groomingAddOns: sel,
-                } as DraftBooking;
-                setGroomingSelections(sel);
-                setDraftBookings((prev) => [...prev, draft]);
-                resetFormAfterDraft();
-                setPendingDraft(null);
-                setShowGroomingUI(false);
-              }}
-              t={t}
-            />
-          )}
+          <DaycareGroomingFlow
+            hasPendingDraft={pendingDraft !== null}
+            showPrompt={showGroomingPrompt}
+            showModal={showGroomingUI}
+            services={groomingServices}
+            servicePriceCentsByName={groomingServicePriceCentsByName}
+            preferredBathServiceByPetId={preferredBathServiceByPetId}
+            pets={pendingDraftPets}
+            selections={groomingSelections}
+            t={t}
+            onStartGrooming={startPendingDraftGrooming}
+            onSkipGrooming={skipPendingDraftGrooming}
+            onCloseModal={closePendingDraftGrooming}
+            onSaveSelections={savePendingDraftGrooming}
+          />
 
           {/* Drafts (match Vaccine Alerts width) */}
           {draftBookings.length > 0 && (
@@ -1991,143 +1981,6 @@ export default function IndividualBookDaycarePage() {
             disabled={draftBookings.length === 0 || isProcessingPayment}
           >
             {t('submit_all')}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* =========================
-   Grooming Modal (website contract)
-   ========================= */
-function GroomingModal(props: {
-  services: string[];
-  servicePriceCentsByName: Record<string, number>;
-  preferredBathServiceByPetId: Record<string, string>;
-  pets: Pet[];
-  selections: GroomingSelections;
-  onSave: (sel: GroomingSelections) => void;
-  onClose: () => void;
-  t: ReturnType<typeof useTranslations>;
-}) {
-  const { services, servicePriceCentsByName, preferredBathServiceByPetId, pets, selections, onSave, onClose, t } = props;
-  const [localSel, setLocalSel] = useState<GroomingSelections>(() => ({ ...selections }));
-
-  useEffect(() => {
-    // Keep bath selections normalized to one value per pet for legacy bath-size gaps.
-    setLocalSel((prev) => {
-      const next: GroomingSelections = { ...prev };
-      for (const pet of pets) {
-        const current = next[pet.id] || [];
-        const nonBathSelections = current.filter((svc) => !isBaseBathService(svc));
-        const hasBathSelection = current.some((svc) => isBaseBathService(svc));
-        const preferred = preferredBathServiceByPetId[pet.id];
-        const nextSelections = [...nonBathSelections];
-        if (hasBathSelection) {
-          nextSelections.push(preferred || DEFAULT_GENERIC_BATH_LABEL);
-        }
-
-        if (nextSelections.length > 0) {
-          next[pet.id] = Array.from(new Set(nextSelections));
-        } else {
-          delete next[pet.id];
-        }
-      }
-      return next;
-    });
-  }, [pets, preferredBathServiceByPetId]);
-
-  const toggle = (petId: string, option: VisibleGroomingOption, on: boolean) => {
-    setLocalSel((prev) => {
-      const next = { ...prev };
-      const arr = new Set(next[petId] || []);
-
-      if (option.kind === 'collapsedBath' || isBaseBathService(option.value)) {
-        Array.from(arr).forEach((service) => {
-          if (isBaseBathService(service)) arr.delete(service);
-        });
-      }
-
-      if (on) {
-        arr.add(option.value);
-      } else {
-        arr.delete(option.value);
-      }
-
-      if (arr.size > 0) next[petId] = Array.from(arr);
-      else delete next[petId];
-      return next;
-    });
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-      <div className="bg-white w-full max-w-lg rounded-xl shadow-md p-0 flex flex-col max-h-[85vh]">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b">
-          <h3 className="text-lg font-semibold text-[color:var(--color-accent)]">
-            {t('grooming_addons_title')}
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-sm px-3 py-1 rounded bg-gray-100 hover:bg-gray-200"
-          >
-            {t('cancel_button')}
-          </button>
-        </div>
-
-        {/* Scrollable content */}
-        <div className="flex-1 overflow-auto p-4 space-y-4">
-          {pets.map((pet) => (
-            <div key={pet.id} className="border rounded p-3">
-              <div className="font-medium mb-2">
-                {t('grooming_for_pet', { name: pet.name })}
-              </div>
-              {services.length === 0 ? (
-                <div className="text-sm text-gray-500">{t('no_services_available')}</div>
-              ) : (
-                <div className="grid grid-cols-1 gap-2">
-                  {buildVisibleGroomingOptions({
-                    services,
-                    pricesByName: servicePriceCentsByName,
-                    preferredBathService: preferredBathServiceByPetId[pet.id],
-                  }).map((option) => {
-                    const on = (localSel[pet.id] || []).some((svc) => (
-                      option.kind === 'collapsedBath'
-                        ? isBaseBathService(svc)
-                        : svc === option.value
-                    ));
-                    const priceCents = option.priceCents;
-                    return (
-                      <label key={`${pet.id}-${option.key}`} className="flex items-center gap-2 text-sm">
-                        <input
-                          type="checkbox"
-                          checked={on}
-                          onChange={(e) => toggle(pet.id, option, e.target.checked)}
-                        />
-                        <span>
-                          {option.label}
-                          {typeof priceCents === 'number' ? ` - $${(priceCents / 100).toFixed(2)}` : ''}
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Footer */}
-        <div className="sticky bottom-0 bg-white/95 backdrop-blur px-4 py-3 border-t">
-          <button
-            onClick={() => onSave(localSel)}
-            className="w-full py-3 rounded-lg text-white text-base font-semibold
-                       bg-green-800 hover:bg-green-700 shadow-md
-                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-600"
-          >
-            {t('done_button')}
           </button>
         </div>
       </div>

@@ -78,6 +78,78 @@ export const findUniformPricedBathService = (
   return uniquePrices.length === 1 ? pricedBathServices[0]!.service : null;
 };
 
+export const buildPreferredBathServiceByPetId = ({
+  bathSizeByPetId,
+  services,
+}: {
+  bathSizeByPetId: Record<string, string>;
+  services: string[];
+}): Record<string, string> => (
+  Object.entries(bathSizeByPetId).reduce<Record<string, string>>((acc, [petId, bathSize]) => {
+    const matchedBath = findBathServiceForSize(bathSize, services);
+    if (matchedBath) {
+      acc[petId] = matchedBath;
+    }
+    return acc;
+  }, {})
+);
+
+export const normalizeBathSelectionsForVisiblePets = ({
+  selections,
+  petIds,
+  preferredBathServiceByPetId,
+}: {
+  selections: GroomingSelectionMap;
+  petIds: string[];
+  preferredBathServiceByPetId: Record<string, string>;
+}): GroomingSelectionMap => {
+  const next: GroomingSelectionMap = { ...selections };
+
+  petIds.forEach((petId) => {
+    const currentSelections = next[petId] || [];
+    const nonBathSelections = currentSelections.filter((service) => !isBaseBathService(service));
+    const hasBathSelection = currentSelections.some((service) => isBaseBathService(service));
+    const normalizedSelections = [...nonBathSelections];
+
+    if (hasBathSelection) {
+      normalizedSelections.push(
+        preferredBathServiceByPetId[petId] || DEFAULT_GENERIC_BATH_LABEL
+      );
+    }
+
+    if (normalizedSelections.length > 0) {
+      next[petId] = Array.from(new Set(normalizedSelections));
+    } else {
+      delete next[petId];
+    }
+  });
+
+  return next;
+};
+
+export const extractBathSizeFromAssessmentData = (data: {
+  notes?: string;
+  bathSize?: string;
+  bath_size?: string;
+  bathsize?: string;
+}): string | null => {
+  const direct = data.bathSize || data.bath_size || data.bathsize;
+  if (typeof direct === 'string' && direct.trim() !== '') {
+    return direct.trim();
+  }
+
+  const notes = (data.notes || '').trim();
+  if (!notes) return null;
+
+  const match = notes.match(/bath\s*size\s*[:\-]\s*([a-z0-9+\- ]+)/i)
+    || notes.match(/bath\s*[:\-]\s*([a-z0-9+\- ]+)/i);
+
+  if (!match?.[1]) return null;
+
+  const parsed = match[1].trim();
+  return parsed || null;
+};
+
 export const resolveBathServiceForCheckout = ({
   service,
   bathSize,
