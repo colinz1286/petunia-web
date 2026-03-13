@@ -54,6 +54,13 @@ import {
     type DogKennelPreference,
     type KennelAssignment,
 } from '@/lib/boardingKennels';
+import {
+    buildVisibleGroomingOptions,
+    DEFAULT_GENERIC_BATH_LABEL,
+    findBathServiceForSize,
+    isBaseBathService,
+    type VisibleGroomingOption,
+} from '@/lib/groomingBathOptions';
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -217,6 +224,13 @@ type CreateBoardingPaymentIntentResponse = {
     itemizedLineItems?: unknown;
 };
 
+type DogAssessmentDoc = {
+    notes?: string;
+    bathSize?: string;
+    bath_size?: string;
+    bathsize?: string;
+};
+
 /** =========================
  *  Time helpers (business TZ)
  *  ========================= */
@@ -368,6 +382,7 @@ export default function IndividualBookBoardingPage() {
     const [groomingServices, setGroomingServices] = useState<string[]>([]);
     const [groomingSelections, setGroomingSelections] = useState<GroomingSelections>({});
     const [showGroomingModal, setShowGroomingModal] = useState(false);
+    const [petBathSizeById, setPetBathSizeById] = useState<Record<string, string>>({});
     const [groomingServicePriceCentsByName, setGroomingServicePriceCentsByName] = useState<Record<string, number>>({});
     const [boardingAddOnServices, setBoardingAddOnServices] = useState<string[]>([]);
     const [boardingAddOnPriceCentsByName, setBoardingAddOnPriceCentsByName] = useState<Record<string, number>>({});
@@ -453,6 +468,13 @@ export default function IndividualBookBoardingPage() {
     const selectedMembershipPlanForPurchase = useMemo(() => (
         membershipPlans.find((plan) => plan.id === selectedMembershipPlanId) || null
     ), [membershipPlans, selectedMembershipPlanId]);
+    const preferredBathServiceByPetId = useMemo(() => (
+        Object.entries(petBathSizeById).reduce<Record<string, string>>((acc, [petId, bathSize]) => {
+            const matchedBath = findBathServiceForSize(bathSize, groomingServices);
+            if (matchedBath) acc[petId] = matchedBath;
+            return acc;
+        }, {})
+    ), [groomingServices, petBathSizeById]);
     const membershipUnitsCovered = useMemo(() => {
         if (selectedMembershipPurchase) {
             if (selectedMembershipPurchase.status !== 'active' || !selectedMembershipPurchase.appliesToServices.boarding) {
@@ -1157,6 +1179,23 @@ export default function IndividualBookBoardingPage() {
         }
     }, []);
 
+    const extractBathSizeFromAssessment = useCallback((assessment: DogAssessmentDoc): string | null => {
+        const direct = assessment.bathSize || assessment.bath_size || assessment.bathsize;
+        if (typeof direct === 'string' && direct.trim() !== '') {
+            return direct.trim();
+        }
+
+        const notes = (assessment.notes || '').trim();
+        if (!notes) return null;
+
+        const match = notes.match(/bath\s*size\s*[:\-]\s*([a-z0-9+\- ]+)/i)
+            || notes.match(/bath\s*[:\-]\s*([a-z0-9+\- ]+)/i);
+
+        if (!match?.[1]) return null;
+        const parsed = match[1].trim();
+        return parsed === '' ? null : parsed;
+    }, []);
+
     /** =========================
  *  Load auth, pets, business settings (dup-guarded) — waiver removed
  *  ========================= */
@@ -1216,6 +1255,7 @@ export default function IndividualBookBoardingPage() {
         let cancelled = false;
 
         if (!businessId || pets.length === 0) {
+            setPetBathSizeById({});
             setPetKennelPreferences({});
             return () => {
                 cancelled = true;
@@ -1226,31 +1266,43 @@ export default function IndividualBookBoardingPage() {
             try {
                 const loadedEntries = await Promise.all(pets.map(async (pet) => {
                     const assessmentSnap = await getDoc(doc(db, 'dogAssessments', pet.id, 'businesses', businessId));
-                    if (!assessmentSnap.exists()) return null;
+                    if (!assessmentSnap.exists()) {
+                        return [pet.id, { bathSize: '', kennelPreference: null }] as const;
+                    }
 
-                    const preference = getDogKennelPreferenceFromData(
-                        assessmentSnap.data() as Record<string, unknown>
-                    );
-                    return preference ? [pet.id, preference] as const : null;
+                    const data = assessmentSnap.data() as Record<string, unknown>;
+                    return [pet.id, {
+                        bathSize: extractBathSizeFromAssessment(data as DogAssessmentDoc) || '',
+                        kennelPreference: getDogKennelPreferenceFromData(data),
+                    }] as const;
                 }));
 
                 if (cancelled) return;
 
+                const nextBathSizes: Record<string, string> = {};
+                const nextKennelPreferences: Record<string, DogKennelPreference> = {};
+                for (const [petId, row] of loadedEntries) {
+                    if (row.bathSize) nextBathSizes[petId] = row.bathSize;
+                    if (row.kennelPreference) nextKennelPreferences[petId] = row.kennelPreference;
+                }
+
+                setPetBathSizeById(nextBathSizes);
                 setPetKennelPreferences(
-                    Object.fromEntries(
-                        loadedEntries.filter((entry): entry is readonly [string, DogKennelPreference] => entry !== null)
-                    )
+                    nextKennelPreferences
                 );
             } catch (e) {
-                console.error('❌ Failed to load pet kennel preferences:', e);
-                if (!cancelled) setPetKennelPreferences({});
+                console.error('❌ Failed to load pet assessment data:', e);
+                if (!cancelled) {
+                    setPetBathSizeById({});
+                    setPetKennelPreferences({});
+                }
             }
         })();
 
         return () => {
             cancelled = true;
         };
-    }, [businessId, pets]);
+    }, [businessId, pets, extractBathSizeFromAssessment]);
 
 
     function checkBlackoutOverlapIfProhibited(): boolean {
@@ -1923,6 +1975,8 @@ export default function IndividualBookBoardingPage() {
             {showGroomingModal && (
                 <GroomingModal
                     services={groomingServices}
+                    servicePriceCentsByName={groomingServicePriceCentsByName}
+                    preferredBathServiceByPetId={preferredBathServiceByPetId}
                     pets={pets.filter(p => selectedPetIds.has(p.id))}
                     selections={groomingSelections}
                     onClose={() => setShowGroomingModal(false)}
@@ -2186,22 +2240,57 @@ export default function IndividualBookBoardingPage() {
  *  ========================= */
 function GroomingModal(props: {
     services: string[];
+    servicePriceCentsByName: Record<string, number>;
+    preferredBathServiceByPetId: Record<string, string>;
     pets: Pet[];
     selections: GroomingSelections;
     onSave: (sel: GroomingSelections) => void;
     onClose: () => void;
     t: ReturnType<typeof useTranslations>;
 }) {
-    const { services, pets, selections, onSave, onClose, t } = props;
+    const { services, servicePriceCentsByName, preferredBathServiceByPetId, pets, selections, onSave, onClose, t } = props;
     const [localSel, setLocalSel] = useState<GroomingSelections>(() => ({ ...selections }));
 
-    const toggle = (petId: string, service: string, on: boolean) => {
+    useEffect(() => {
+        setLocalSel((prev) => {
+            const next: GroomingSelections = { ...prev };
+            for (const pet of pets) {
+                const current = next[pet.id] || [];
+                const nonBathSelections = current.filter((svc) => !isBaseBathService(svc));
+                const hasBathSelection = current.some((svc) => isBaseBathService(svc));
+                const preferred = preferredBathServiceByPetId[pet.id];
+                const nextSelections = [...nonBathSelections];
+
+                if (hasBathSelection) {
+                    nextSelections.push(preferred || DEFAULT_GENERIC_BATH_LABEL);
+                }
+
+                if (nextSelections.length > 0) {
+                    next[pet.id] = Array.from(new Set(nextSelections));
+                } else {
+                    delete next[pet.id];
+                }
+            }
+            return next;
+        });
+    }, [pets, preferredBathServiceByPetId]);
+
+    const toggle = (petId: string, option: VisibleGroomingOption, on: boolean) => {
         setLocalSel(prev => {
             const next = { ...prev };
             const arr = new Set(next[petId] || []);
-            if (on) arr.add(service); else arr.delete(service);
-            next[petId] = Array.from(arr);
-            if (next[petId].length === 0) delete next[petId];
+
+            if (option.kind === 'collapsedBath' || isBaseBathService(option.value)) {
+                Array.from(arr).forEach((service) => {
+                    if (isBaseBathService(service)) arr.delete(service);
+                });
+            }
+
+            if (on) arr.add(option.value);
+            else arr.delete(option.value);
+
+            if (arr.size > 0) next[petId] = Array.from(arr);
+            else delete next[petId];
             return next;
         });
     };
@@ -2233,16 +2322,24 @@ function GroomingModal(props: {
                                 <div className="text-sm text-gray-500">{t('no_services_available')}</div>
                             ) : (
                                 <div className="grid grid-cols-1 gap-2">
-                                    {services.map(svc => {
-                                        const on = (localSel[pet.id] || []).includes(svc);
+                                    {buildVisibleGroomingOptions({
+                                        services,
+                                        pricesByName: servicePriceCentsByName,
+                                        preferredBathService: preferredBathServiceByPetId[pet.id],
+                                    }).map(option => {
+                                        const on = (localSel[pet.id] || []).some((svc) => (
+                                            option.kind === 'collapsedBath'
+                                                ? isBaseBathService(svc)
+                                                : svc === option.value
+                                        ));
                                         return (
-                                            <label key={`${pet.id}-${svc}`} className="flex items-center gap-2 text-sm">
+                                            <label key={`${pet.id}-${option.key}`} className="flex items-center gap-2 text-sm">
                                                 <input
                                                     type="checkbox"
                                                     checked={on}
-                                                    onChange={(e) => toggle(pet.id, svc, e.target.checked)}
+                                                    onChange={(e) => toggle(pet.id, option, e.target.checked)}
                                                 />
-                                                <span>{svc}</span>
+                                                <span>{option.label}</span>
                                             </label>
                                         );
                                     })}

@@ -71,6 +71,13 @@ import {
   type DogKennelPreference,
   type KennelAssignment,
 } from '@/lib/boardingKennels';
+import {
+  buildVisibleGroomingOptions,
+  DEFAULT_GENERIC_BATH_LABEL,
+  findBathServiceForSize,
+  isBaseBathService,
+  type VisibleGroomingOption,
+} from '@/lib/groomingBathOptions';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -401,8 +408,13 @@ export default function IndividualBookDaycarePage() {
   ), [membershipPlans]);
   const showDaycareMembershipFeature = daycareUsableMembershipPurchases.length > 0
     || (daycareOnlinePaymentsEnabled && daycarePurchasableMembershipPlans.length > 0);
-
-  const normalizeText = useCallback((value: string) => value.trim().toLowerCase(), []);
+  const preferredBathServiceByPetId = useMemo(() => (
+    Object.entries(petBathSizeById).reduce<Record<string, string>>((acc, [petId, bathSize]) => {
+      const matchedBath = findBathServiceForSize(bathSize, groomingServices);
+      if (matchedBath) acc[petId] = matchedBath;
+      return acc;
+    }, {})
+  ), [groomingServices, petBathSizeById]);
 
   const extractBathSizeFromAssessment = useCallback((assessment: DogAssessmentDoc): string | null => {
     const direct = assessment.bathSize || assessment.bath_size || assessment.bathsize;
@@ -420,22 +432,6 @@ export default function IndividualBookDaycarePage() {
     const parsed = match[1].trim();
     return parsed === '' ? null : parsed;
   }, []);
-
-  const findBathServiceForSize = useCallback((bathSize: string, services: string[]): string | null => {
-    const normalizedSize = normalizeText(bathSize);
-    if (!normalizedSize) return null;
-
-    const bathServices = services.filter((service) => normalizeText(service).startsWith('bath'));
-    if (bathServices.length === 0) return null;
-
-    const exact = bathServices.find((service) => {
-      const normalizedService = normalizeText(service);
-      return normalizedService === `bath - ${normalizedSize}` || normalizedService === `bath ${normalizedSize}`;
-    });
-    if (exact) return exact;
-
-    return bathServices.find((service) => normalizeText(service).includes(normalizedSize)) || null;
-  }, [normalizeText]);
 
   /* =========================
    Vaccine loading + alerts
@@ -1827,12 +1823,7 @@ export default function IndividualBookDaycarePage() {
             <GroomingModal
               services={groomingServices}
               servicePriceCentsByName={groomingServicePriceCentsByName}
-              preferredBathServiceByPetId={pendingDraft.petIds.reduce<Record<string, string>>((acc, pid) => {
-                const bathSize = petBathSizeById[pid];
-                const matched = bathSize ? findBathServiceForSize(bathSize, groomingServices) : null;
-                if (matched) acc[pid] = matched;
-                return acc;
-              }, {})}
+              preferredBathServiceByPetId={preferredBathServiceByPetId}
               pets={pets.filter((p) => pendingDraft.petIds.includes(p.id))}
               selections={groomingSelections}
               onClose={() => {
@@ -2023,31 +2014,49 @@ function GroomingModal(props: {
   const { services, servicePriceCentsByName, preferredBathServiceByPetId, pets, selections, onSave, onClose, t } = props;
   const [localSel, setLocalSel] = useState<GroomingSelections>(() => ({ ...selections }));
 
-  const isBathService = useCallback((service: string) => service.trim().toLowerCase().startsWith('bath'), []);
-
   useEffect(() => {
-    // If a dog has a preferred bath service, remove any other bath-size selections for that dog.
+    // Keep bath selections normalized to one value per pet for legacy bath-size gaps.
     setLocalSel((prev) => {
       const next: GroomingSelections = { ...prev };
       for (const pet of pets) {
-        const preferred = preferredBathServiceByPetId[pet.id];
-        if (!preferred) continue;
         const current = next[pet.id] || [];
-        const cleaned = current.filter((svc) => !isBathService(svc) || svc === preferred);
-        next[pet.id] = cleaned;
+        const nonBathSelections = current.filter((svc) => !isBaseBathService(svc));
+        const hasBathSelection = current.some((svc) => isBaseBathService(svc));
+        const preferred = preferredBathServiceByPetId[pet.id];
+        const nextSelections = [...nonBathSelections];
+        if (hasBathSelection) {
+          nextSelections.push(preferred || DEFAULT_GENERIC_BATH_LABEL);
+        }
+
+        if (nextSelections.length > 0) {
+          next[pet.id] = Array.from(new Set(nextSelections));
+        } else {
+          delete next[pet.id];
+        }
       }
       return next;
     });
-  }, [pets, preferredBathServiceByPetId, isBathService]);
+  }, [pets, preferredBathServiceByPetId]);
 
-  const toggle = (petId: string, service: string, on: boolean) => {
+  const toggle = (petId: string, option: VisibleGroomingOption, on: boolean) => {
     setLocalSel((prev) => {
       const next = { ...prev };
       const arr = new Set(next[petId] || []);
-      if (on) arr.add(service);
-      else arr.delete(service);
-      next[petId] = Array.from(arr);
-      if (next[petId].length === 0) delete next[petId];
+
+      if (option.kind === 'collapsedBath' || isBaseBathService(option.value)) {
+        Array.from(arr).forEach((service) => {
+          if (isBaseBathService(service)) arr.delete(service);
+        });
+      }
+
+      if (on) {
+        arr.add(option.value);
+      } else {
+        arr.delete(option.value);
+      }
+
+      if (arr.size > 0) next[petId] = Array.from(arr);
+      else delete next[petId];
       return next;
     });
   };
@@ -2079,23 +2088,26 @@ function GroomingModal(props: {
                 <div className="text-sm text-gray-500">{t('no_services_available')}</div>
               ) : (
                 <div className="grid grid-cols-1 gap-2">
-                  {services.map((svc) => {
-                    const preferredBath = preferredBathServiceByPetId[pet.id];
-                    const hideBecauseWrongBathSize =
-                      !!preferredBath && isBathService(svc) && svc !== preferredBath;
-                    if (hideBecauseWrongBathSize) return null;
-
-                    const on = (localSel[pet.id] || []).includes(svc);
-                    const priceCents = servicePriceCentsByName[svc];
+                  {buildVisibleGroomingOptions({
+                    services,
+                    pricesByName: servicePriceCentsByName,
+                    preferredBathService: preferredBathServiceByPetId[pet.id],
+                  }).map((option) => {
+                    const on = (localSel[pet.id] || []).some((svc) => (
+                      option.kind === 'collapsedBath'
+                        ? isBaseBathService(svc)
+                        : svc === option.value
+                    ));
+                    const priceCents = option.priceCents;
                     return (
-                      <label key={`${pet.id}-${svc}`} className="flex items-center gap-2 text-sm">
+                      <label key={`${pet.id}-${option.key}`} className="flex items-center gap-2 text-sm">
                         <input
                           type="checkbox"
                           checked={on}
-                          onChange={(e) => toggle(pet.id, svc, e.target.checked)}
+                          onChange={(e) => toggle(pet.id, option, e.target.checked)}
                         />
                         <span>
-                          {svc}
+                          {option.label}
                           {typeof priceCents === 'number' ? ` - $${(priceCents / 100).toFixed(2)}` : ''}
                         </span>
                       </label>
