@@ -583,12 +583,21 @@ export default function IndividualBookDaycarePage() {
   const fetchBusinessSettings = useCallback(async (bizId: string) => {
     if (!bizId) return;
     try {
-      const [bsnap, kennelSnap] = await Promise.all([
+      const [bsnapResult, kennelResult] = await Promise.allSettled([
         getDoc(doc(db, 'businesses', bizId)),
         getDocs(collection(db, 'businesses', bizId, 'kennelTypes')),
       ]);
+      if (bsnapResult.status !== 'fulfilled') {
+        throw bsnapResult.reason;
+      }
+      if (kennelResult.status !== 'fulfilled') {
+        console.warn('⚠️ Kennel types failed to load for daycare booking page:', kennelResult.reason);
+      }
+
+      const bsnap = bsnapResult.value;
+      const kennelSnap = kennelResult.status === 'fulfilled' ? kennelResult.value : null;
       const data = (bsnap.data() || {}) as BusinessSettings;
-      const loadedKennelTypes = kennelSnap.docs
+      const loadedKennelTypes = (kennelSnap?.docs || [])
         .map((kennelDoc) => normalizeKennelTypeOption(
           kennelDoc.id,
           kennelDoc.data() as Record<string, unknown>
@@ -1677,7 +1686,6 @@ export default function IndividualBookDaycarePage() {
               <div className="flex flex-col space-y-2 w-full">
                 {pets.map((pet) => {
                   const checked = selectedPetIds.includes(pet.id);
-                  const kennelPreference = petKennelPreferences[pet.id];
                   return (
                     <label key={pet.id} className="flex items-start gap-2 text-sm">
                       <input
@@ -1694,11 +1702,6 @@ export default function IndividualBookDaycarePage() {
                       />
                       <div className="flex flex-col">
                         <span>{pet.name}</span>
-                        <span className="text-xs text-gray-500">
-                          {kennelPreference?.defaultKennelTypeName
-                            ? t('pet_kennel_type_label', { name: kennelPreference.defaultKennelTypeName })
-                            : t('pet_kennel_type_unassigned')}
-                        </span>
                       </div>
                     </label>
                   );

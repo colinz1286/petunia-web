@@ -936,7 +936,16 @@ export default function IndividualBookBoardingPage() {
     const fetchBusinessSettings = useCallback(async (bizId: string, uidOverride?: string) => {
         try {
             const activeUserId = uidOverride || '';
-            const [bsnap, pricingSnap, addOnSnap, invoiceSnap, groomingSnap, discountSnap, clientSnap, kennelSnap] = await Promise.all([
+            const [
+                bsnapResult,
+                pricingResult,
+                addOnResult,
+                invoiceResult,
+                groomingResult,
+                discountResult,
+                clientResult,
+                kennelResult,
+            ] = await Promise.allSettled([
                 getDoc(doc(db, 'businesses', bizId)),
                 getDoc(doc(db, 'businesses', bizId, 'settings', 'boardingPricing')),
                 getDoc(doc(db, 'businesses', bizId, 'settings', 'boardingAddOnPricing')),
@@ -946,6 +955,41 @@ export default function IndividualBookBoardingPage() {
                 activeUserId ? getDoc(doc(db, 'userApprovedBusinesses', bizId, 'clients', activeUserId)) : Promise.resolve(null),
                 getDocs(collection(db, 'businesses', bizId, 'kennelTypes')),
             ]);
+
+            if (bsnapResult.status !== 'fulfilled') {
+                throw bsnapResult.reason;
+            }
+
+            if (pricingResult.status !== 'fulfilled') {
+                console.warn('⚠️ Boarding pricing settings failed to load for booking page:', pricingResult.reason);
+            }
+            if (addOnResult.status !== 'fulfilled') {
+                console.warn('⚠️ Boarding add-on settings failed to load for booking page:', addOnResult.reason);
+            }
+            if (invoiceResult.status !== 'fulfilled') {
+                console.warn('⚠️ Invoice library failed to load for booking page:', invoiceResult.reason);
+            }
+            if (groomingResult.status !== 'fulfilled') {
+                console.warn('⚠️ Grooming pricing failed to load for booking page:', groomingResult.reason);
+            }
+            if (discountResult.status !== 'fulfilled') {
+                console.warn('⚠️ Discount rules failed to load for booking page:', discountResult.reason);
+            }
+            if (clientResult.status !== 'fulfilled') {
+                console.warn('⚠️ Approved-client settings failed to load for booking page:', clientResult.reason);
+            }
+            if (kennelResult.status !== 'fulfilled') {
+                console.warn('⚠️ Kennel types failed to load for booking page:', kennelResult.reason);
+            }
+
+            const bsnap = bsnapResult.value;
+            const pricingSnap = pricingResult.status === 'fulfilled' ? pricingResult.value : null;
+            const addOnSnap = addOnResult.status === 'fulfilled' ? addOnResult.value : null;
+            const invoiceSnap = invoiceResult.status === 'fulfilled' ? invoiceResult.value : null;
+            const groomingSnap = groomingResult.status === 'fulfilled' ? groomingResult.value : null;
+            const discountSnap = discountResult.status === 'fulfilled' ? discountResult.value : null;
+            const clientSnap = clientResult.status === 'fulfilled' ? clientResult.value : null;
+            const kennelSnap = kennelResult.status === 'fulfilled' ? kennelResult.value : null;
             const data = (bsnap.data() || {}) as BusinessSettingsDoc;
             const nextBusinessTimeZoneId = data.timeZoneId || null;
             const nextBizTZ = nextBusinessTimeZoneId || Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -962,7 +1006,7 @@ export default function IndividualBookBoardingPage() {
             setBoardingPayAtBookingEnabled(!!boardingPayments.payAtBooking);
 
             // Capacity
-            const loadedKennelTypes = kennelSnap.docs
+            const loadedKennelTypes = (kennelSnap?.docs || [])
                 .map((kennelDoc) => normalizeKennelTypeOption(
                     kennelDoc.id,
                     kennelDoc.data() as Record<string, unknown>
@@ -998,7 +1042,7 @@ export default function IndividualBookBoardingPage() {
             // Grooming
             setGroomingAvailableAsAddOn(!!data.groomingAvailableAsAddOnToBoarding);
             setGroomingServices((data.groomingServices || []).map(s => (s || '').trim()).filter(Boolean));
-            if (groomingSnap.exists()) {
+            if (groomingSnap?.exists()) {
                 const groomingData = groomingSnap.data() as {
                     grooming?: { services?: Record<string, { priceCents?: number }> };
                 };
@@ -1021,7 +1065,7 @@ export default function IndividualBookBoardingPage() {
                 setGroomingServicePriceCentsByName({});
             }
 
-            if (addOnSnap.exists()) {
+            if (addOnSnap?.exists()) {
                 const addOnData = addOnSnap.data() as {
                     services?: Record<string, { priceCents?: number }>;
                 };
@@ -1043,19 +1087,19 @@ export default function IndividualBookBoardingPage() {
                 setBoardingAddOnPriceCentsByName({});
             }
 
-            if (pricingSnap.exists()) {
+            if (pricingSnap?.exists()) {
                 setBoardingPricingSettings(normalizeBoardingPricingDoc(pricingSnap.data()));
             } else {
                 setBoardingPricingSettings(normalizeBoardingPricingDoc(null));
             }
 
-            if (invoiceSnap.exists()) {
+            if (invoiceSnap?.exists()) {
                 setInvoiceLibraryItems(normalizeInvoiceLibraryItemsDoc(invoiceSnap.data()));
             } else {
                 setInvoiceLibraryItems([]);
             }
 
-            if (discountSnap.exists()) {
+            if (discountSnap?.exists()) {
                 setClientDiscountSettings(normalizeBoardingClientDiscountSettings(discountSnap.data()));
             } else {
                 setClientDiscountSettings(null);
@@ -1689,7 +1733,6 @@ export default function IndividualBookBoardingPage() {
                             <div className="flex flex-col space-y-2 w-full">
                                 {pets.map((pet) => {
                                     const checked = selectedPetIds.has(pet.id);
-                                    const kennelPreference = petKennelPreferences[pet.id];
                                     return (
                                         <label key={pet.id} className="flex items-start gap-2 text-sm">
                                             <input
@@ -1706,11 +1749,6 @@ export default function IndividualBookBoardingPage() {
                                             />
                                             <div className="flex flex-col">
                                                 <span>{pet.name}</span>
-                                                <span className="text-xs text-gray-500">
-                                                    {kennelPreference?.defaultKennelTypeName
-                                                        ? t('pet_kennel_type_label', { name: kennelPreference.defaultKennelTypeName })
-                                                        : t('pet_kennel_type_unassigned')}
-                                                </span>
                                             </div>
                                         </label>
                                     );
