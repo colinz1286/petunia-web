@@ -22,6 +22,8 @@ import {
 } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { executeRecaptchaEnterpriseAction } from '@/lib/recaptchaEnterprise';
+import AddressAutocompleteSearch from '@/components/AddressAutocompleteSearch';
+import { formatUsPhoneNumber, formatUsZipCode } from '@/lib/signUpFormUtils';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -83,8 +85,15 @@ export default function BusinessSignUpPage() {
   // Enabled set (Walker/Sitter intentionally left out for now)
   const enabledBusinessTypeValues = new Set(['boardingDaycare', 'breeder', 'groomer']);
 
-  const handleChange = (field: string, value: string) =>
+  const handleChange = (field: string, value: string) => {
+    if (field === 'phoneNumber' || field === 'businessPhone') {
+      value = formatUsPhoneNumber(value);
+    }
+    if (field === 'zipCode' || field === 'businessZip') {
+      value = formatUsZipCode(value);
+    }
     setForm((prev) => ({ ...prev, [field]: value }));
+  };
 
   // Helpers
   const digitsOnly = (s: string) => s.replace(/\D/g, '');
@@ -278,27 +287,51 @@ export default function BusinessSignUpPage() {
           <input type="email" placeholder="Email" value={form.email} onChange={e => handleChange('email', e.target.value)} className={input} />
           <input type="password" placeholder="Password" value={form.password} onChange={e => handleChange('password', e.target.value)} className={input} />
           <input type="password" placeholder="Confirm Password" value={form.confirmPassword} onChange={e => handleChange('confirmPassword', e.target.value)} className={input} />
-          <input type="text" placeholder="Phone Number" value={form.phoneNumber} onChange={e => handleChange('phoneNumber', e.target.value)} className={input} />
+          <input type="tel" inputMode="tel" autoComplete="tel" placeholder="Phone Number" value={form.phoneNumber} onChange={e => handleChange('phoneNumber', e.target.value)} className={input} />
         </div>
 
         {/* Personal Address */}
         <h2 className="text-lg font-semibold mt-8">Your Address</h2>
         <div className="space-y-4">
-          <input type="text" placeholder="Street Address" value={form.streetAddress} onChange={e => handleChange('streetAddress', e.target.value)} className={input} />
-          <input type="text" placeholder="City" value={form.city} onChange={e => handleChange('city', e.target.value)} className={input} />
-          <input type="text" placeholder="State" value={form.state} onChange={e => handleChange('state', e.target.value)} className={input} />
-          <input type="text" placeholder="Zip Code" value={form.zipCode} onChange={e => handleChange('zipCode', e.target.value.slice(0, 5))} className={input} />
+          <AddressAutocompleteSearch
+            id="business-owner-address-search"
+            label="Find Your Address"
+            locale={locale}
+            placeholder="Start typing your street address"
+            onAddressSelected={({ street, city, state, zipCode }) => {
+              handleChange('streetAddress', street);
+              handleChange('city', city);
+              handleChange('state', state);
+              handleChange('zipCode', zipCode);
+            }}
+          />
+          <input type="text" placeholder="Street Address" value={form.streetAddress} onChange={e => handleChange('streetAddress', e.target.value)} autoComplete="section-owner street-address" className={input} />
+          <input type="text" placeholder="City" value={form.city} onChange={e => handleChange('city', e.target.value)} autoComplete="section-owner address-level2" className={input} />
+          <input type="text" placeholder="State" value={form.state} onChange={e => handleChange('state', e.target.value)} autoComplete="section-owner address-level1" className={input} />
+          <input type="text" inputMode="numeric" placeholder="Zip Code" value={form.zipCode} onChange={e => handleChange('zipCode', e.target.value)} autoComplete="section-owner postal-code" className={input} />
         </div>
 
         {/* Business Info */}
         <h2 className="text-lg font-semibold mt-8">Business Information</h2>
         <div className="space-y-4">
           <input type="text" placeholder="Business Name" value={form.businessName} onChange={e => handleChange('businessName', e.target.value)} className={input} />
-          <input type="text" placeholder="Street Address" value={form.businessStreet} onChange={e => handleChange('businessStreet', e.target.value)} className={input} />
-          <input type="text" placeholder="City" value={form.businessCity} onChange={e => handleChange('businessCity', e.target.value)} className={input} />
-          <input type="text" placeholder="State" value={form.businessState} onChange={e => handleChange('businessState', e.target.value)} className={input} />
-          <input type="text" placeholder="Zip Code" value={form.businessZip} onChange={e => handleChange('businessZip', e.target.value.slice(0, 5))} className={input} />
-          <input type="text" placeholder="Phone Number" value={form.businessPhone} onChange={e => handleChange('businessPhone', e.target.value)} className={input} />
+          <AddressAutocompleteSearch
+            id="business-location-address-search"
+            label="Find Business Address"
+            locale={locale}
+            placeholder="Start typing the business address"
+            onAddressSelected={({ street, city, state, zipCode }) => {
+              handleChange('businessStreet', street);
+              handleChange('businessCity', city);
+              handleChange('businessState', state);
+              handleChange('businessZip', zipCode);
+            }}
+          />
+          <input type="text" placeholder="Street Address" value={form.businessStreet} onChange={e => handleChange('businessStreet', e.target.value)} autoComplete="section-business street-address" className={input} />
+          <input type="text" placeholder="City" value={form.businessCity} onChange={e => handleChange('businessCity', e.target.value)} autoComplete="section-business address-level2" className={input} />
+          <input type="text" placeholder="State" value={form.businessState} onChange={e => handleChange('businessState', e.target.value)} autoComplete="section-business address-level1" className={input} />
+          <input type="text" inputMode="numeric" placeholder="Zip Code" value={form.businessZip} onChange={e => handleChange('businessZip', e.target.value)} autoComplete="section-business postal-code" className={input} />
+          <input type="tel" inputMode="tel" autoComplete="tel" placeholder="Phone Number" value={form.businessPhone} onChange={e => handleChange('businessPhone', e.target.value)} className={input} />
           <input type="url" placeholder="Website (optional)" value={form.businessWebsite} onChange={e => handleChange('businessWebsite', e.target.value)} className={input} />
         </div>
 

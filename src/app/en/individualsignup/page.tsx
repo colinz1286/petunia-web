@@ -25,6 +25,8 @@ import {
 } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 import { executeRecaptchaEnterpriseAction } from '@/lib/recaptchaEnterprise';
+import AddressAutocompleteSearch from '@/components/AddressAutocompleteSearch';
+import { formatUsPhoneNumber, formatUsZipCode, usStates } from '@/lib/signUpFormUtils';
 
 // ✅ Inline Firebase config for local use (consistent with other pages)
 const firebaseConfig = {
@@ -65,30 +67,12 @@ export default function IndividualSignUpPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const usStates = [
-    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS',
-    'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY',
-    'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV',
-    'WI', 'WY'
-  ];
-
-  const formatPhone = (input: string) => {
-    const digits = input.replace(/\D/g, '').slice(0, 10);
-    const match = digits.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
-    if (!match) return digits;
-    return [
-      match[1] ? `(${match[1]}` : '',
-      match[2] ? `)${match[2]}` : '',
-      match[3] ? `-${match[3]}` : ''
-    ].join('');
-  };
-
   const handleChange = (field: string, value: string) => {
     if (field === 'phoneNumber' || field === 'emergencyPhoneNumber') {
-      value = formatPhone(value);
+      value = formatUsPhoneNumber(value);
     }
     if (field === 'zipCode') {
-      value = value.replace(/\D/g, '').slice(0, 5);
+      value = formatUsZipCode(value);
     }
     setForm(prev => ({ ...prev, [field]: value }));
   };
@@ -200,21 +184,33 @@ export default function IndividualSignUpPage() {
           <input type="email" placeholder="Email" value={form.email} onChange={e => handleChange('email', e.target.value)} className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white" />
           <input type="password" placeholder="Password" value={form.password} onChange={e => handleChange('password', e.target.value)} className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white" />
           <input type="password" placeholder="Confirm Password" value={form.confirmPassword} onChange={e => handleChange('confirmPassword', e.target.value)} className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white" />
-          <input type="text" placeholder="Phone Number" value={form.phoneNumber} onChange={e => handleChange('phoneNumber', e.target.value)} className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white" />
+          <input type="tel" inputMode="tel" autoComplete="tel" placeholder="Phone Number" value={form.phoneNumber} onChange={e => handleChange('phoneNumber', e.target.value)} className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white" />
         </div>
 
         {/* Address */}
         <h2 className="text-lg font-semibold mt-8">Address</h2>
         <div className="space-y-4">
-          <input type="text" placeholder="Street Address" value={form.streetAddress} onChange={e => handleChange('streetAddress', e.target.value)} className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white" />
-          <input type="text" placeholder="City" value={form.city} onChange={e => handleChange('city', e.target.value)} className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white" />
-          <select value={form.state} onChange={e => handleChange('state', e.target.value)} className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white">
+          <AddressAutocompleteSearch
+            id="individual-address-search"
+            label="Find Your Address"
+            locale={locale}
+            placeholder="Start typing your street address"
+            onAddressSelected={({ street, city, state, zipCode }) => {
+              handleChange('streetAddress', street);
+              handleChange('city', city);
+              handleChange('state', state);
+              handleChange('zipCode', zipCode);
+            }}
+          />
+          <input type="text" placeholder="Street Address" value={form.streetAddress} onChange={e => handleChange('streetAddress', e.target.value)} autoComplete="section-personal street-address" className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white" />
+          <input type="text" placeholder="City" value={form.city} onChange={e => handleChange('city', e.target.value)} autoComplete="section-personal address-level2" className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white" />
+          <select value={form.state} onChange={e => handleChange('state', e.target.value)} autoComplete="section-personal address-level1" className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white">
             <option value="">State</option>
             {usStates.map(state => (
               <option key={state} value={state}>{state}</option>
             ))}
           </select>
-          <input type="text" placeholder="Zip Code" value={form.zipCode} onChange={e => handleChange('zipCode', e.target.value)} className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white" />
+          <input type="text" inputMode="numeric" placeholder="Zip Code" value={form.zipCode} onChange={e => handleChange('zipCode', e.target.value)} autoComplete="section-personal postal-code" className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white" />
         </div>
 
         {/* Emergency Contact */}
@@ -222,7 +218,7 @@ export default function IndividualSignUpPage() {
         <div className="space-y-4">
           <input type="text" placeholder="First Name" value={form.emergencyFirstName} onChange={e => handleChange('emergencyFirstName', e.target.value)} className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white" />
           <input type="text" placeholder="Last Name" value={form.emergencyLastName} onChange={e => handleChange('emergencyLastName', e.target.value)} className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white" />
-          <input type="text" placeholder="Phone Number" value={form.emergencyPhoneNumber} onChange={e => handleChange('emergencyPhoneNumber', e.target.value)} className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white" />
+          <input type="tel" inputMode="tel" autoComplete="tel" placeholder="Phone Number" value={form.emergencyPhoneNumber} onChange={e => handleChange('emergencyPhoneNumber', e.target.value)} className="w-full px-4 py-2 border-2 border-gray-300 rounded text-sm outline-none bg-white" />
         </div>
 
         {error && <p className="text-red-600 text-sm text-center">{error}</p>}
