@@ -30,6 +30,7 @@ import {
 } from 'firebase/database';
 import { initializeApp } from 'firebase/app';
 import { useTranslations } from 'next-intl';
+import AddressAutocompleteSearch from '@/components/AddressAutocompleteSearch';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -211,6 +212,22 @@ export default function EditProfilePage() {
           <Field label={t('last_name')} value={lastName} onChange={setLastName} />
           <Field label={t('email')} value={email} disabled />
           <Field label={t('phone_number')} value={phone} onChange={setPhone} />
+
+          <div className="mb-4">
+            <AddressAutocompleteSearch
+              id="individual-edit-profile-address-search"
+              label="Find Your Address"
+              locale="en"
+              placeholder="Start typing your street address"
+              onAddressSelected={({ street, city, state, zipCode }) => {
+                setStreet(street);
+                setCity(city);
+                setState(state);
+                setZip(zipCode);
+              }}
+            />
+          </div>
+
           <Field label={t('street_address')} value={street} onChange={setStreet} />
           <Field label={t('city')} value={city} onChange={setCity} />
 
