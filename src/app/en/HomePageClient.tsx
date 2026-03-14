@@ -70,7 +70,7 @@ export default function HomePageClient() {
 
                 {/* Primary H1 */}
                 <h1 className="text-2xl sm:text-3xl font-bold text-[#2c4a30] mb-4 text-balance">
-                    Modern Pet Care Software Built by Real Boarding & Daycare Owners — Not Investors
+                    Modern Pet Care Software Built by Real Boarding & Daycare Owners
                 </h1>
 
                 {/* Slogan */}
