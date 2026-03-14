@@ -191,6 +191,7 @@ export default function IndividualSignUpPage() {
         <h2 className="text-lg font-semibold mt-8">Address</h2>
         <div className="space-y-4">
           <AddressAutocompleteSearch
+            clearLoadErrorOnSuccessfulSelection
             id="individual-address-search"
             label="Find Your Address"
             locale={locale}

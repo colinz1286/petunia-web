@@ -18,6 +18,7 @@ type AddressAutofillValue = {
 };
 
 type AddressAutocompleteSearchProps = {
+  clearLoadErrorOnSuccessfulSelection?: boolean;
   id: string;
   label: string;
   locale: string;
@@ -74,6 +75,7 @@ function parseAddress(place: GooglePlace): AddressAutofillValue {
 }
 
 export default function AddressAutocompleteSearch({
+  clearLoadErrorOnSuccessfulSelection = false,
   id,
   label,
   locale,
@@ -132,6 +134,9 @@ export default function AddressAutocompleteSearch({
             await place.fetchFields({
               fields: ['addressComponents', 'formattedAddress'],
             });
+            if (clearLoadErrorOnSuccessfulSelection) {
+              setLoadError(null);
+            }
             onAddressSelectedRef.current(parseAddress(place));
           } catch (error) {
             console.error('Address autocomplete selection failed:', error);
@@ -174,7 +179,7 @@ export default function AddressAutocompleteSearch({
         mountNode.removeChild(autocompleteElement);
       }
     };
-  }, [id, label, locale, placeholder]);
+  }, [clearLoadErrorOnSuccessfulSelection, id, label, locale, placeholder]);
 
   const missingApiKey = !hasGoogleMapsPlacesApiKey();
 

@@ -294,6 +294,7 @@ export default function BusinessSignUpPage() {
         <h2 className="text-lg font-semibold mt-8">Your Address</h2>
         <div className="space-y-4">
           <AddressAutocompleteSearch
+            clearLoadErrorOnSuccessfulSelection
             id="business-owner-address-search"
             label="Find Your Address"
             locale={locale}
@@ -316,6 +317,7 @@ export default function BusinessSignUpPage() {
         <div className="space-y-4">
           <input type="text" placeholder="Business Name" value={form.businessName} onChange={e => handleChange('businessName', e.target.value)} className={input} />
           <AddressAutocompleteSearch
+            clearLoadErrorOnSuccessfulSelection
             id="business-location-address-search"
             label="Find Business Address"
             locale={locale}

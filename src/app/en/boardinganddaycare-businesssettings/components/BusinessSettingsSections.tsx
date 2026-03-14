@@ -4,6 +4,7 @@ import { type Dispatch, type SetStateAction } from 'react';
 
 import { useTranslations } from 'next-intl';
 
+import BusinessAddressFields from '@/components/BusinessAddressFields';
 import { type DaycareKennelMode } from '@/lib/boardingKennels';
 
 import { RepeatingTextareaList } from './RepeatingTextareaList';
@@ -23,7 +24,15 @@ type OptionalFeatures = {
 type GeneralInformationSectionProps = {
     businessName: string;
     businessPhone: string;
-    businessAddress: string;
+    businessStreet: string;
+    setBusinessStreet: Dispatch<SetStateAction<string>>;
+    businessCity: string;
+    setBusinessCity: Dispatch<SetStateAction<string>>;
+    businessState: string;
+    setBusinessState: Dispatch<SetStateAction<string>>;
+    businessZip: string;
+    setBusinessZip: Dispatch<SetStateAction<string>>;
+    locale: string;
     businessBio: string;
     setBusinessBio: Dispatch<SetStateAction<string>>;
     bioLimit: number;
@@ -276,7 +285,15 @@ function ToggleGroupBlock({
 export function GeneralInformationSection({
     businessName,
     businessPhone,
-    businessAddress,
+    businessStreet,
+    setBusinessStreet,
+    businessCity,
+    setBusinessCity,
+    businessState,
+    setBusinessState,
+    businessZip,
+    setBusinessZip,
+    locale,
     businessBio,
     setBusinessBio,
     bioLimit,
@@ -296,9 +313,23 @@ export function GeneralInformationSection({
                         <label className="font-semibold text-sm">{t('business_phone_field')}</label>
                         <input value={businessPhone} disabled className="mt-1 w-full rounded border bg-gray-100 px-3 py-2 text-sm" />
                     </div>
-                    <div>
+                    <div className="lg:col-span-3">
                         <label className="font-semibold text-sm">{t('business_address_field')}</label>
-                        <input value={businessAddress} disabled className="mt-1 w-full rounded border bg-gray-100 px-3 py-2 text-sm" />
+                        <div className="mt-2">
+                            <BusinessAddressFields
+                                autocompleteId="boarding-daycare-business-address-search"
+                                locale={locale}
+                                street={businessStreet}
+                                onStreetChange={setBusinessStreet}
+                                city={businessCity}
+                                onCityChange={setBusinessCity}
+                                state={businessState}
+                                onStateChange={setBusinessState}
+                                zip={businessZip}
+                                onZipChange={setBusinessZip}
+                                inputClassName="w-full rounded border bg-white px-3 py-2 text-sm"
+                            />
+                        </div>
                     </div>
                 </div>
 

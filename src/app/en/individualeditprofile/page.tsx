@@ -29,7 +29,7 @@ import {
   remove,
 } from 'firebase/database';
 import { initializeApp } from 'firebase/app';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import AddressAutocompleteSearch from '@/components/AddressAutocompleteSearch';
 
 const firebaseConfig = {
@@ -69,6 +69,7 @@ function getErrorMessage(err: unknown): string {
 }
 
 export default function EditProfilePage() {
+  const locale = useLocale();
   const t = useTranslations('individualEditProfile');
   const router = useRouter();
 
@@ -215,9 +216,10 @@ export default function EditProfilePage() {
 
           <div className="mb-4">
             <AddressAutocompleteSearch
+              clearLoadErrorOnSuccessfulSelection
               id="individual-edit-profile-address-search"
               label="Find Your Address"
-              locale="en"
+              locale={locale}
               placeholder="Start typing your street address"
               onAddressSelected={({ street, city, state, zipCode }) => {
                 setStreet(street);

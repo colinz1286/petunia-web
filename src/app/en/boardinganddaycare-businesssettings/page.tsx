@@ -67,7 +67,10 @@ export default function BusinessSettingsPage() {
     const [businessId, setBusinessId] = useState('');
     const [businessName, setBusinessName] = useState('');
     const [businessPhone, setBusinessPhone] = useState('');
-    const [businessAddress, setBusinessAddress] = useState('');
+    const [businessStreet, setBusinessStreet] = useState('');
+    const [businessCity, setBusinessCity] = useState('');
+    const [businessState, setBusinessState] = useState('');
+    const [businessZip, setBusinessZip] = useState('');
 
     const [operatingHours, setOperatingHours] = useState<Record<string, { open: string; close: string }>>({});
 
@@ -291,7 +294,10 @@ export default function BusinessSettingsPage() {
                 setBusinessName(data.businessName || '');
                 setBusinessPhone(data.businessPhone || '');
                 const addr = data.businessAddress || {};
-                setBusinessAddress(`${addr.street || ''}, ${addr.city || ''}, ${addr.state || ''} ${addr.zipCode || ''}`);
+                setBusinessStreet(addr.street || '');
+                setBusinessCity(addr.city || '');
+                setBusinessState(addr.state || '');
+                setBusinessZip(addr.zipCode || '');
                 setBusinessBio(data.businessBio || '');
 
                 setOperatingHours(data.operatingHours || {});
@@ -497,6 +503,12 @@ export default function BusinessSettingsPage() {
             }
 
             await updateDoc(doc(db, 'businesses', businessId), {
+                businessAddress: {
+                    street: businessStreet.trim(),
+                    city: businessCity.trim(),
+                    state: businessState.trim(),
+                    zipCode: businessZip.trim(),
+                },
                 offersBoarding,
                 offersDaycare,
                 offersGrooming,
@@ -788,7 +800,15 @@ export default function BusinessSettingsPage() {
                         <GeneralInformationSection
                             businessName={businessName}
                             businessPhone={businessPhone}
-                            businessAddress={businessAddress}
+                            businessStreet={businessStreet}
+                            setBusinessStreet={setBusinessStreet}
+                            businessCity={businessCity}
+                            setBusinessCity={setBusinessCity}
+                            businessState={businessState}
+                            setBusinessState={setBusinessState}
+                            businessZip={businessZip}
+                            setBusinessZip={setBusinessZip}
+                            locale={locale}
                             businessBio={businessBio}
                             setBusinessBio={setBusinessBio}
                             bioLimit={BIO_LIMIT}
